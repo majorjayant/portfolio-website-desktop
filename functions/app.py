@@ -29,9 +29,11 @@ def index():
 def downloads():
     connection = get_db_connection()
     if connection:
+        print("Database connection successful")
         cursor = connection.cursor(dictionary=True)
         cursor.execute("SELECT * FROM documents")
         documents = cursor.fetchall()
+        print("Documents fetched:", documents)
         connection.close()
         return render_template('downloads.html', documents=documents)
     else:
