@@ -1,5 +1,5 @@
 [build]
-    command = "gunicorn --bind 0.0.0.0:8000 --workers 1 -k sync functions.app:app"
+    command = "gunicorn functions.app:app"
     publish = "static"
     functions = "functions"
 
