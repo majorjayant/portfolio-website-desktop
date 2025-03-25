@@ -1,8 +1,8 @@
 [build]
-   command = "gunicorn functions/minimal_app.py:app"
+   command = "gunicorn functions/minimal_app:app"
   publish = "static"
   functions = "functions"
-  
+
   # command = "python -V && gunicorn --version"
   # publish = "static"
   # functions = "functions"
