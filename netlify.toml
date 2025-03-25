@@ -1,7 +1,7 @@
 [build]
-   command = "gunicorn functions.minimal_app:app"
-  publish = "static"
-  functions = "functions"
+    command = "gunicorn --workers 1 --worker-class gevent functions.minimal_app:app"
+    publish = "static"
+    functions = "functions"
 
   # command = "python -V && gunicorn --version"
   # publish = "static"
