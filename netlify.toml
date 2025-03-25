@@ -1,12 +1,16 @@
 [build]
-  command = "python -V && gunicorn --version"
+   command = "gunicorn functions/minimal_app.py:app"
   publish = "static"
   functions = "functions"
+  
+  # command = "python -V && gunicorn --version"
+  # publish = "static"
+  # functions = "functions"
 
  # command = "gunicorn functions.app:app"  app:app is your flask file and flask instance
  # publish = "static"  This is important, as we are serving static files.
  # functions = "functions"
- 
+
 [build.environment]
   PYTHON_VERSION = "3.11.9" # or the version you are using.
 
