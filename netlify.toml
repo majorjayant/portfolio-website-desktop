@@ -1,12 +1,9 @@
 [build]
-    command = "gunicorn functions.app:app"
-    publish = "static"
-    functions = "functions"
-
-[build.environment]
-  PYTHON_VERSION = "3.11.9" # or the version you are using.
+    command = "echo 'Build Successful'"  # A placeholder build command
+    publish = "."  # Publish the root directory
+    # Remove the functions setting
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+    from = "/*"
+    to = "/index.html"
+    status = 200
