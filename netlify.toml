@@ -1,6 +1,6 @@
 [build]
- command = "gunicorn functions.app:app"  app:app is your flask file and flask instance
- publish = "static"  This is important, as we are serving static files.
+ command = "gunicorn functions.app:app"  # app:app is your flask file and flask instance
+ publish = "static" # This is important, as we are serving static files.
  functions = "functions"
 
 [build.environment]
