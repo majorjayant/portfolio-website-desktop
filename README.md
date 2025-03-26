@@ -1,66 +1,117 @@
-# Portfolio Website with Image Generator
+# Portfolio Website
 
-A portfolio website with a built-in image generator tool that creates logos, banners, profile photos, project thumbnails, icons, and text banners based on descriptions.
+A professional portfolio website built with Flask, featuring an image generator tool.
 
 ## Features
 
-- Modern, responsive portfolio website design
-- Image generator tool with six different image types
-- Multiple image variations with download functionality
-- Clean, intuitive user interface
+- Responsive design for desktop and mobile
+- Portfolio section to showcase projects and experience
+- Image Generator tool powered by AI
+- Contact form
 
 ## Local Development
 
 ### Prerequisites
 
 - Python 3.9+
-- Flask
-- Pillow (PIL fork)
-- Other dependencies in requirements.txt
+- pip (Python package manager)
 
-### Installation
+### Setup
 
-1. Clone the repository
-```bash
-git clone https://github.com/majorjayant/portfolio-website-desktop.git
-cd portfolio-website-desktop
-```
+1. Clone the repository:
+   ```
+   git clone https://github.com/majorjayant/portfolio-website-desktop.git
+   cd portfolio-website-desktop
+   ```
 
-2. Install dependencies
-```bash
-pip install -r requirements.txt
-```
+2. Run the setup script:
+   ```
+   python setup.py
+   ```
+   
+   This script will:
+   - Create a virtual environment
+   - Install dependencies
+   - Set up environment variables
+   - Offer to run the application
 
-3. Run the application
-```bash
-python app.py
-```
+3. Alternative manual setup:
+   ```
+   # Create virtual environment
+   python -m venv venv
+   
+   # Activate virtual environment
+   # On Windows:
+   venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
+   
+   # Install dependencies
+   pip install -r requirements.txt
+   
+   # Set up environment variables
+   # Create a .env file with the following:
+   FLASK_APP=run.py
+   FLASK_ENV=development
+   FLASK_DEBUG=1
+   DATABASE_URL=sqlite:///app.db
+   SECRET_KEY=your-secret-key
+   ```
 
-4. Open your browser and navigate to `http://localhost:5000`
+4. Run the application:
+   ```
+   python run.py
+   ```
+
+5. Visit `http://127.0.0.1:5000` in your browser.
 
 ## Deployment
 
-The application is configured for deployment on Netlify as a static site with serverless functions for dynamic features.
+This project is configured for deployment on Netlify as a static site.
 
-### Netlify Deployment
+### Deployment Steps
 
-1. Push your code to GitHub
-2. Connect your GitHub repository to Netlify
-3. Deploy with the following settings:
-   - Build command: `pip install -r requirements.txt && python build_static_site.py`
+1. Fork or clone this repository to your GitHub account.
+
+2. Connect your GitHub repository to Netlify.
+
+3. Configure the build settings:
+   - Build command: `python build_static_site.py`
    - Publish directory: `app/static`
 
-**Note:** The image generation functionality has limited capabilities in the static deployment. For full functionality, run the application locally.
+4. Deploy the site!
+
+## Static Site Generation
+
+This project includes a script to generate a static version of the site for deployment on platforms like Netlify:
+
+```
+python build_static_site.py
+```
+
+The script will:
+1. Render all Flask routes as static HTML files
+2. Copy all static assets (CSS, JS, images)
+3. Generate a special static version of the image generator tool
+4. Create the necessary directory structure for deployment
 
 ## Project Structure
 
-- `app/` - Main application directory
-  - `static/` - Static files (CSS, JS, images)
-  - `templates/` - HTML templates
-  - `utils/` - Utility functions including image generation
-  - `models/` - Database models
-- `netlify/` - Netlify serverless functions
-- `build_static_site.py` - Script to generate static HTML files for deployment
+```
+portfolio-website-desktop/
+├── app/
+│   ├── static/         # Static assets (CSS, JS, images)
+│   ├── templates/      # HTML templates
+│   ├── models.py       # Database models
+│   ├── routes.py       # Application routes
+│   └── __init__.py     # Application initialization
+├── build_static_site.py # Static site generator
+├── netlify.toml        # Netlify configuration
+├── requirements.txt    # Python dependencies
+├── runtime.txt         # Python runtime version
+├── run.py              # Application entry point
+└── setup.py            # Setup script for local development
+```
 
 ## License
 

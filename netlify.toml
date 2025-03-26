@@ -1,19 +1,27 @@
+# Netlify configuration for Portfolio Website
+# This file defines the build settings and redirects for Netlify deployment
+
 [build]
-  command = "pip install -r requirements.txt && python build_static_site.py"
+  # Command to build the static site
+  command = "python build_static_site.py"
+  
+  # Directory that contains the deployed site
   publish = "app/static"
 
 [build.environment]
+  # Specify Python version for the build
   PYTHON_VERSION = "3.9"
 
+# Redirect all requests to index.html (for SPA-like behavior)
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/app"
+  to = "/index.html"
   status = 200
 
-[functions]
-  directory = "netlify/functions"
-
+# Optional: Enable Netlify Dev for local development
 [dev]
-  command = "python app.py"
+  command = "python run.py"
   port = 5000
-  publish = "dist" 
+
+[functions]
+  directory = "netlify/functions" 

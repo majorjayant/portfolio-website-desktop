@@ -9,6 +9,7 @@ from app import app
 import os
 from io import BytesIO
 from PIL import Image
+from app.helpers import get_app_info
 
 @app.before_request
 def make_session_permanent():
@@ -306,4 +307,28 @@ def download_variation(variation_id):
     
     except Exception as e:
         print(f"Download error: {str(e)}")
-        return jsonify({"error": str(e)}), 500 
+        return jsonify({"error": str(e)}), 500
+
+# Health check route
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring"""
+    app_info = get_app_info()
+    return jsonify({
+        'status': 'ok',
+        'message': 'Application is running',
+        'environment': app_info['environment'],
+        'timestamp': app_info['timestamp']
+    })
+
+# 404 error handler
+@app.errorhandler(404)
+def page_not_found(e):
+    """Handle 404 errors"""
+    return render_template('404.html'), 404
+
+# 500 error handler
+@app.errorhandler(500)
+def server_error(e):
+    """Handle 500 errors"""
+    return render_template('500.html'), 500 
