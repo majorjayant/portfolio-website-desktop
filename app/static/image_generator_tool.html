@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generator | majorjayant</title>
+    
+    <!-- Google Fonts - Nexa Light -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="/">
+                    <img src="/static/img/logo.png" alt="Logo">
+                </a>
+            </div>
+            <div class="nav-links">
+                <ul>
+                    <li><a href="/" class="active">Home</a></li>
+                    <li><a href="/projects" class="">Projects</a></li>
+                    <li class="dropdown">
+                        <a href="/solutions" class="">Solutions</a>
+                        <div class="dropdown-content">
+                            <a href="/solutions">All Solutions</a>
+                            <a href="/image-generator-tool">Image Generator</a>
+                        </div>
+                    </li>
+                    <li><a href="/contact" class="">Contact</a></li>
+                </ul>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/majorjayant" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+            <div class="cta-button">
+                <a href="/contact" class="button">Get in Touch</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Flash Messages -->
+    
+        
+    
+
+    <!-- Main Content -->
+    <main>
+        
+<!-- Image Generator Header -->
+<section class="image-generator-banner">
+    <div class="container">
+        <h1 class="page-title">Image Generator</h1>
+        <p class="page-description">Generate custom images for your projects based on descriptions</p>
+    </div>
+</section>
+
+<!-- Static Site Notice -->
+<section class="static-notice">
+    <div class="container">
+        <div class="notice-card">
+            <div class="notice-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="notice-content">
+                <h2>Limited Functionality in Static Deployment</h2>
+                <p>The image generator requires server-side processing that is not available in this static deployment. To use the full functionality of the image generator, please:</p>
+                <ul>
+                    <li>Clone the repository from <a href="https://github.com/majorjayant/portfolio-website-desktop" target="_blank">GitHub</a></li>
+                    <li>Follow the installation instructions in the README</li>
+                    <li>Run the application locally on your machine</li>
+                </ul>
+                <div class="notice-cta">
+                    <a href="https://github.com/majorjayant/portfolio-website-desktop" class="github-button" target="_blank">
+                        <i class="fab fa-github"></i> View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-preview">
+            <h2>Features Available in Local Installation</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h3>Logo Generation</h3>
+                    <p>Create custom logos with your text and branding</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <h3>Banner Creation</h3>
+                    <p>Design banners for websites and social media</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3>Profile Photos</h3>
+                    <p>Generate placeholder profile images</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Project Thumbnails</h3>
+                    <p>Create thumbnails for your portfolio projects</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-icons"></i>
+                    </div>
+                    <h3>Icon Design</h3>
+                    <p>Generate custom icons for your applications</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-font"></i>
+                    </div>
+                    <h3>Text Banners</h3>
+                    <p>Create stylized text banners with custom messaging</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .image-generator-banner {
+        padding: 5rem 0 3rem;
+        background: linear-gradient(135deg, var(--primary-color), #3a4a70);
+        color: var(--text-light);
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 2.8rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .page-description {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .static-notice {
+        padding: 3rem 0 5rem;
+    }
+
+    .notice-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .notice-icon {
+        font-size: 2.5rem;
+        color: var(--accent-color);
+        margin-right: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .notice-content h2 {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .notice-content p {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .notice-content ul {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+    }
+
+    .notice-content li {
+        margin-bottom: 0.8rem;
+        position: relative;
+    }
+
+    .notice-cta {
+        margin-top: 2rem;
+    }
+
+    .github-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.8rem 1.5rem;
+        background-color: #24292e;
+        color: white;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .github-button:hover {
+        background-color: #1a1e22;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .github-button i {
+        margin-right: 0.8rem;
+        font-size: 1.3rem;
+    }
+
+    .features-preview {
+        margin-top: 4rem;
+    }
+
+    .features-preview h2 {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-item {
+        background-color: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .feature-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        color: var(--accent-color);
+        margin-bottom: 1.5rem;
+        background-color: rgba(122, 107, 95, 0.1);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .feature-item h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .feature-item p {
+        color: #6c757d;
+    }
+
+    @media (max-width: 768px) {
+        .notice-card {
+            flex-direction: column;
+        }
+
+        .notice-icon {
+            margin-bottom: 1.5rem;
+            margin-right: 0;
+        }
+
+        .features-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+    }
+</style>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                <p><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/projects">Projects</a></li>
+                    <li><a href="/solutions">Solutions</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/image-generator-tool">Image Generator</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Me</h3>
+                <div class="social-icons">
+                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://linkedin.com/in/majorjayant" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/static/js/script.js"></script>
+    
+</body>
+</html> 

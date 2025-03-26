@@ -11,24 +11,34 @@ from datetime import timedelta
 from flask_session import Session  # Import Flask-Session
 from flask_wtf.csrf import CSRFProtect  # Import CSRF protection
 
-# Load environment variables
+# Load environment variables from .env file
 load_dotenv()
 
-# Initialize app
+# Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'development-key')
 
-# Configure session to be permanent with a timeout of 30 minutes
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-app.config['SESSION_TYPE'] = 'filesystem'  # Set session type
-Session(app)  # Initialize Flask-Session
+# Configure app
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-dev-key')
 
-# Setup CSRF protection
+# Configure SQLAlchemy
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # Default to SQLite for development
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///portfolio.db'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configure CSRF protection
 csrf = CSRFProtect(app)
 
-# Configure database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///portfolio.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Set permanent session lifetime
+app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24 hours
+
+# Create a static folder for temp files during build if it doesn't exist
+temp_dir = os.path.join(app.static_folder, 'temp')
+os.makedirs(temp_dir, exist_ok=True)
 
 # Initialize database
 from app.models.portfolio_image import db

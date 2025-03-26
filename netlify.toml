@@ -1,15 +1,17 @@
 [build]
-  command = "pip install -r requirements.txt"
-  publish = "dist"
-  functions = "functions"
+  command = "pip install -r requirements.txt && python build_static_site.py"
+  publish = "app/static"
 
 [build.environment]
-  PYTHON_VERSION = "3.8"
+  PYTHON_VERSION = "3.9"
 
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/.netlify/functions/app"
   status = 200
+
+[functions]
+  directory = "netlify/functions"
 
 [dev]
   command = "python app.py"
