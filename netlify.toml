@@ -12,11 +12,17 @@
   # Specify Python version for the build
   PYTHON_VERSION = "3.9"
 
-# Redirect all requests to index.html (for SPA-like behavior)
+# Handle 404 errors by redirecting to the index page
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Redirect /static/* paths to the correct location
+[[redirects]]
+  from = "/static/*"
+  to = "/:splat"
+  status = 301
 
 # Optional: Enable Netlify Dev for local development
 [dev]

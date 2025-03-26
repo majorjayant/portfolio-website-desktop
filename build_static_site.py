@@ -9,6 +9,7 @@ import sys
 import shutil
 import traceback
 import time
+import re
 from flask import url_for, render_template
 
 # Start time for timing the build process
@@ -110,6 +111,19 @@ def copy_static_assets():
     except Exception as e:
         print(f"  ✗ Error copying static assets: {str(e)}")
         traceback.print_exc()
+
+# Fix asset paths in HTML content
+def fix_static_paths(html_content):
+    """Fix static asset paths in HTML content for proper deployment on Netlify"""
+    # Replace /static/ references with relative paths
+    fixed_html = html_content.replace('href="/static/', 'href="/')
+    fixed_html = fixed_html.replace('src="/static/', 'src="/')
+    
+    # Replace Flask url_for references that might have been rendered
+    fixed_html = re.sub(r'href="https?://[^/]+/static/', 'href="/', fixed_html)
+    fixed_html = re.sub(r'src="https?://[^/]+/static/', 'src="/', fixed_html)
+    
+    return fixed_html
 
 # Create a list of routes to generate static HTML files for
 def get_routes():
@@ -213,6 +227,9 @@ def build_static_site():
                         # Use the static version instead
                         html = render_template('image_generator_static.html')
                         
+                        # Fix static paths
+                        html = fix_static_paths(html)
+                        
                         # Write the HTML to file
                         output_path = os.path.join(html_dir, 'image_generator_tool.html')
                         ensure_dir(os.path.dirname(output_path))
@@ -243,6 +260,9 @@ def build_static_site():
                         response = client.get(url)
                         html = response.data.decode('utf-8')
                     
+                    # Fix static paths
+                    html = fix_static_paths(html)
+                    
                     # Write the HTML to file
                     with open(output_path, 'w', encoding='utf-8') as f:
                         f.write(html)
@@ -262,7 +282,17 @@ def build_static_site():
             dst_file = os.path.join(OUTPUT_DIR, file)
             if os.path.isfile(src_file):
                 try:
-                    shutil.copy2(src_file, dst_file)
+                    # Read the file, ensure paths are fixed
+                    with open(src_file, 'r', encoding='utf-8') as f:
+                        html_content = f.read()
+                    
+                    # Fix paths
+                    html_content = fix_static_paths(html_content)
+                    
+                    # Write to destination
+                    with open(dst_file, 'w', encoding='utf-8') as f:
+                        f.write(html_content)
+                    
                     root_copy_count += 1
                 except Exception as e:
                     print(f"  ✗ Error copying {file}: {str(e)}")
