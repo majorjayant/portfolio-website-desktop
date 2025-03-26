@@ -1,9 +1,17 @@
 [build]
-    command = "echo 'Build Successful'"  # A placeholder build command
-    publish = "."  # Publish the root directory
-    # Remove the functions setting
+  command = "pip install -r requirements.txt"
+  publish = "dist"
+  functions = "functions"
+
+[build.environment]
+  PYTHON_VERSION = "3.8"
 
 [[redirects]]
-    from = "/*"
-    to = "templates/index.html"
-    status = 200
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  command = "python app.py"
+  port = 5000
+  publish = "dist" 

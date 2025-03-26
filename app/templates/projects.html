@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}Projects | majorjayant{% endblock %}
+
+{% block content %}
+    <!-- Projects Banner -->
+    <section class="projects-banner">
+        <div class="container">
+            <h1 class="page-title">My Projects</h1>
+            <p class="page-description">A showcase of my professional work and deliverables</p>
+        </div>
+    </section>
+
+    <!-- Categories Menu -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="categories-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="prd">PRD</button>
+                <button class="filter-btn" data-filter="brd">BRD</button>
+                <button class="filter-btn" data-filter="srs">SRS</button>
+                <button class="filter-btn" data-filter="manual">User Manual</button>
+                <button class="filter-btn" data-filter="gap">GAP Analysis</button>
+                <button class="filter-btn" data-filter="roadmap">Roadmap</button>
+                <button class="filter-btn" data-filter="improvements">Improvements</button>
+                <button class="filter-btn" data-filter="dashboards">Dashboards</button>
+                <button class="filter-btn" data-filter="research">Research</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="projects-grid">
+        <div class="container">
+            <div class="projects-container">
+                {% if projects %}
+                    {% for project in projects %}
+                        <div class="project-card animate__animated animate__fadeIn" data-category="{{ project.category }}">
+                            <div class="project-thumbnail">
+                                {% if project.image_url %}
+                                    <img src="{{ project.image_url }}" alt="{{ project.title }}">
+                                {% else %}
+                                    <div class="default-thumbnail">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="project-info">
+                                <h3 class="project-title">{{ project.title }}</h3>
+                                <p class="project-category">{{ project.category }}</p>
+                                <p class="project-description">{{ project.description }}</p>
+                                {% if project.document_url %}
+                                    <a href="{{ project.document_url }}" target="_blank" class="project-link">View Document</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Sample PRD -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="prd">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">E-commerce Platform PRD</h3>
+                            <p class="project-category">PRD</p>
+                            <p class="project-description">Product Requirements Document for an enterprise e-commerce platform with detailed feature specifications.</p>
+                            <a href="#" class="project-link">View Document</a>
+                        </div>
+                    </div>
+
+                    <!-- Sample BRD -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="brd">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Financial Services BRD</h3>
+                            <p class="project-category">BRD</p>
+                            <p class="project-description">Business Requirements Document for a banking application highlighting needs and objectives.</p>
+                            <a href="#" class="project-link">View Document</a>
+                        </div>
+                    </div>
+
+                    <!-- Sample SRS -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="srs">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Inventory Management SRS</h3>
+                            <p class="project-category">SRS</p>
+                            <p class="project-description">Software Requirements Specification for an inventory management system with technical details.</p>
+                            <a href="#" class="project-link">View Document</a>
+                        </div>
+                    </div>
+
+                    <!-- Sample User Manual -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="manual">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">CRM System User Manual</h3>
+                            <p class="project-category">User Manual</p>
+                            <p class="project-description">Comprehensive guide for users on how to navigate and utilize the CRM system efficiently.</p>
+                            <a href="#" class="project-link">View Document</a>
+                        </div>
+                    </div>
+
+                    <!-- Sample GAP Analysis -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="gap">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Supply Chain GAP Analysis</h3>
+                            <p class="project-category">GAP Analysis</p>
+                            <p class="project-description">Analysis identifying gaps between current and desired state of supply chain operations.</p>
+                            <a href="#" class="project-link">View Document</a>
+                        </div>
+                    </div>
+
+                    <!-- Sample Roadmap -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="roadmap">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-map"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Product Roadmap 2023-2024</h3>
+                            <p class="project-category">Roadmap</p>
+                            <p class="project-description">Strategic timeline for product development with key milestones and feature releases.</p>
+                            <a href="#" class="project-link">View Document</a>
+                        </div>
+                    </div>
+
+                    <!-- Sample Improvements -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="improvements">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Mobile App UX Improvements</h3>
+                            <p class="project-category">Improvements</p>
+                            <p class="project-description">Analysis and recommendations for enhancing user experience in the mobile application.</p>
+                            <a href="#" class="project-link">View Document</a>
+                        </div>
+                    </div>
+
+                    <!-- Sample Dashboard -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="dashboards">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">Sales Performance Dashboard</h3>
+                            <p class="project-category">Dashboards</p>
+                            <p class="project-description">Power BI dashboard visualizing key sales metrics and performance indicators.</p>
+                            <a href="#" class="project-link">View Dashboard</a>
+                        </div>
+                    </div>
+
+                    <!-- Sample Research -->
+                    <div class="project-card animate__animated animate__fadeIn" data-category="research">
+                        <div class="project-thumbnail">
+                            <div class="default-thumbnail">
+                                <i class="fas fa-microscope"></i>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-title">AI Implementation in Customer Service</h3>
+                            <p class="project-category">Research</p>
+                            <p class="project-description">Research paper on the impact and implementation of AI in improving customer service operations.</p>
+                            <a href="#" class="project-link">View Paper</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category filtering functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get filter value
+                const filterValue = this.getAttribute('data-filter');
+                
+                // Filter projects
+                projectCards.forEach(card => {
+                    if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.classList.add('animate__fadeIn');
+                        }, 50);
+                    } else {
+                        card.style.display = 'none';
+                        card.classList.remove('animate__fadeIn');
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %} 

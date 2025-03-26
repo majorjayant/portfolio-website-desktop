@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Portfolio | majorjayant{% endblock %}
+
+{% block content %}
+    <!-- Banner Section -->
+    <section class="banner">
+        <div class="banner-image">
+            <!-- Banner image will be set as background in CSS -->
+        </div>
+    </section>
+
+    <!-- About Me Section -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h1 class="title">Hello, I'm <span class="highlight">Jayant</span></h1>
+                    <p class="bio">I am a passionate product manager with extensive experience in developing innovative solutions.
+                    My approach combines technical expertise with a deep understanding of user needs to deliver 
+                    products that truly make a difference.</p>
+                    
+                    <h2 class="subtitle">My Objective</h2>
+                    <p class="objective">To leverage my skills in product development, user experience design, and technical 
+                    implementation to create meaningful products that solve real-world problems and deliver 
+                    exceptional value to users and stakeholders alike.</p>
+                </div>
+                <div class="about-image">
+                    <img src="{{ url_for('static', filename='img/profile.jpg') }}" alt="Jayant's Profile">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section class="experience-section">
+        <div class="container">
+            <h2 class="section-title">Work Experience</h2>
+            <div class="timeline">
+                {% if experience %}
+                    {% for job in experience %}
+                        <div class="timeline-item animate__animated animate__fadeInUp">
+                            <div class="timeline-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>{{ job.title }}</h3>
+                                <h4>{{ job.company }}</h4>
+                                <p class="timeline-date">{{ job.start_date }} - {{ job.end_date or 'Present' }}</p>
+                                <p class="timeline-description">{{ job.description }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Senior Product Manager</h3>
+                            <h4>Tech Solutions Inc.</h4>
+                            <p class="timeline-date">January 2021 - Present</p>
+                            <p class="timeline-description">Leading product development initiatives for enterprise solutions. Responsible for roadmap planning, stakeholder management, and feature prioritization.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Product Manager</h3>
+                            <h4>InnovateTech</h4>
+                            <p class="timeline-date">March 2018 - December 2020</p>
+                            <p class="timeline-description">Managed the full product lifecycle from conception to launch. Collaborated with engineering and design teams to deliver successful products.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section class="education-section">
+        <div class="container">
+            <h2 class="section-title">Education</h2>
+            <div class="education-container">
+                {% if education %}
+                    {% for edu in education %}
+                        <div class="education-item animate__animated animate__fadeInUp">
+                            <div class="edu-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="edu-content">
+                                <h3>{{ edu.degree }}</h3>
+                                <h4>{{ edu.institution }}</h4>
+                                <p class="edu-date">{{ edu.start_date }} - {{ edu.end_date }}</p>
+                                <p class="edu-description">{{ edu.description }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="education-item">
+                        <div class="edu-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="edu-content">
+                            <h3>Master of Business Administration</h3>
+                            <h4>University of Management</h4>
+                            <p class="edu-date">2016 - 2018</p>
+                            <p class="edu-description">Specialized in Product Management and Innovation. Graduated with distinction.</p>
+                        </div>
+                    </div>
+                    <div class="education-item">
+                        <div class="edu-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="edu-content">
+                            <h3>Bachelor of Technology in Computer Science</h3>
+                            <h4>Technical University</h4>
+                            <p class="edu-date">2012 - 2016</p>
+                            <p class="edu-description">Specialized in Software Development and Database Management.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section -->
+    <section class="certifications-section">
+        <div class="container">
+            <h2 class="section-title">Certifications</h2>
+            <div class="certifications-container">
+                {% if certifications %}
+                    {% for cert in certifications %}
+                        <div class="cert-item animate__animated animate__fadeInUp">
+                            <div class="cert-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div class="cert-content">
+                                <h3>{{ cert.name }}</h3>
+                                <h4>{{ cert.issuer }}</h4>
+                                <p class="cert-date">Issued: {{ cert.issued_date }}</p>
+                                {% if cert.expiry_date %}
+                                    <p class="cert-expiry">Expires: {{ cert.expiry_date }}</p>
+                                {% endif %}
+                                {% if cert.link %}
+                                    <a href="{{ cert.link }}" target="_blank" class="cert-link">View Certificate</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="cert-item">
+                        <div class="cert-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="cert-content">
+                            <h3>Certified Product Manager</h3>
+                            <h4>Product Management Institute</h4>
+                            <p class="cert-date">Issued: June 2020</p>
+                            <p class="cert-expiry">Expires: June 2023</p>
+                            <a href="#" class="cert-link">View Certificate</a>
+                        </div>
+                    </div>
+                    <div class="cert-item">
+                        <div class="cert-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="cert-content">
+                            <h3>Agile Scrum Master</h3>
+                            <h4>Scrum Alliance</h4>
+                            <p class="cert-date">Issued: March 2019</p>
+                            <p class="cert-expiry">Expires: March 2022</p>
+                            <a href="#" class="cert-link">View Certificate</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock %} 

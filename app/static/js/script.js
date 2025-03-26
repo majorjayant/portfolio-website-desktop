@@ -1,0 +1,172 @@
+/**
+ * Portfolio Website JavaScript
+ * Author: majorjayant
+ */
+
+// Document ready function
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize animation elements
+    initAnimations();
+    
+    // Fade out flash messages after 5 seconds
+    setTimeout(function() {
+        const flashMessages = document.querySelectorAll('.flash');
+        flashMessages.forEach(message => {
+            message.style.opacity = '0';
+            setTimeout(() => {
+                message.remove();
+            }, 500);
+        });
+    }, 5000);
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Navbar scroll effect
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+            navbar.classList.add('navbar-scrolled');
+        } else {
+            navbar.classList.remove('navbar-scrolled');
+        }
+    });
+
+    // Form validation
+    const contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            let hasError = false;
+            
+            // Basic validation
+            const name = this.querySelector('#name');
+            const email = this.querySelector('#email');
+            const message = this.querySelector('#message');
+            
+            if (name && name.value.trim() === '') {
+                showInputError(name, 'Please enter your name');
+                hasError = true;
+            } else if (name) {
+                removeInputError(name);
+            }
+            
+            if (email && email.value.trim() === '') {
+                showInputError(email, 'Please enter your email');
+                hasError = true;
+            } else if (email && !isValidEmail(email.value)) {
+                showInputError(email, 'Please enter a valid email address');
+                hasError = true;
+            } else if (email) {
+                removeInputError(email);
+            }
+            
+            if (message && message.value.trim() === '') {
+                showInputError(message, 'Please enter your message');
+                hasError = true;
+            } else if (message) {
+                removeInputError(message);
+            }
+            
+            if (hasError) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+
+// Initialize animations when elements come into view
+function initAnimations() {
+    const animatedElements = document.querySelectorAll('.animate__animated');
+    
+    // Create observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            // Add animation class when element is in view
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated');
+                
+                // Get animation class (stored in data attribute)
+                const animationClass = entry.target.dataset.animation || 'animate__fadeIn';
+                entry.target.classList.add(animationClass);
+                
+                // Remove observer after animation is added
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+    
+    // Observe elements
+    animatedElements.forEach(element => {
+        // Store animation class and remove it temporarily
+        const animationClass = Array.from(element.classList).find(cls => cls.startsWith('animate__') && cls !== 'animate__animated');
+        
+        if (animationClass) {
+            element.dataset.animation = animationClass;
+            element.classList.remove(animationClass);
+            element.classList.remove('animate__animated');
+        }
+        
+        observer.observe(element);
+    });
+}
+
+// Show error message for form inputs
+function showInputError(inputElement, message) {
+    // Remove existing error message
+    removeInputError(inputElement);
+    
+    // Add error class to input
+    inputElement.classList.add('input-error');
+    
+    // Create error message element
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'error-message';
+    errorMessage.textContent = message;
+    
+    // Insert error message after input
+    inputElement.parentNode.insertBefore(errorMessage, inputElement.nextSibling);
+}
+
+// Remove error message from form input
+function removeInputError(inputElement) {
+    // Remove error class
+    inputElement.classList.remove('input-error');
+    
+    // Remove error message if exists
+    const errorMessage = inputElement.parentNode.querySelector('.error-message');
+    if (errorMessage) {
+        errorMessage.remove();
+    }
+}
+
+// Validate email format
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Mobile menu toggle
+const menuToggle = document.querySelector('.mobile-menu-toggle');
+if (menuToggle) {
+    menuToggle.addEventListener('click', function() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+    });
+} 
