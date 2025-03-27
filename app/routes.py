@@ -51,7 +51,7 @@ def register_routes(app):
         
         # Get about section content from the database with fallback
         try:
-            about_content = SiteConfig.get_about_content() if not app.config.get('STATIC_DEPLOYMENT', False) else None
+            about_content = SiteConfig.get_about_content()
         except Exception as e:
             app.logger.error(f"Error getting about content: {str(e)}")
             about_content = None

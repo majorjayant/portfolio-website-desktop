@@ -43,7 +43,6 @@
         font-size: 1.2rem;
         line-height: 1.6;
         color: #666;
-        text-align: justify;
     }
     
     .img-main {
@@ -315,6 +314,32 @@
             bannerImage.style.paddingBottom = '38.75%';
         }
 
+        // Fallback for about section content
+        const aboutTitle = document.querySelector('.text-main h1');
+        const aboutSubtitle = document.querySelector('.text-main .intro');
+        const aboutDescription = document.querySelector('.text-main .description');
+        
+        // Check if content exists or is empty and apply fallbacks
+        if (!aboutTitle || aboutTitle.textContent.trim() === '') {
+            if (aboutTitle) {
+                aboutTitle.textContent = 'about.';
+            }
+        }
+        
+        if (!aboutSubtitle || aboutSubtitle.textContent.trim() === '') {
+            if (aboutSubtitle) {
+                aboutSubtitle.textContent = "I'm a passionate product manager based in New Delhi, India.";
+            }
+        }
+        
+        if (!aboutDescription || aboutDescription.textContent.trim() === '') {
+            if (aboutDescription) {
+                aboutDescription.textContent = "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+                // Remove text justification
+                aboutDescription.style.textAlign = 'left';
+            }
+        }
+
         // Handle profile image in about section
         const profileImage = document.querySelector('.profile-image');
         if (profileImage) {
@@ -330,6 +355,43 @@
                     this.src = '/static/img/placeholder.png';
                 }
             };
+        }
+        
+        // Check if snaps section is empty or has no elements
+        const snapsContainer = document.getElementById('snaps');
+        if (snapsContainer && (!snapsContainer.children || snapsContainer.children.length === 0)) {
+            // Create and add fallback photo elements
+            const s3Urls = [
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+            ];
+            
+            const altTexts = [
+                'Personal photo 1',
+                'Personal photo 2',
+                'Personal photo 3',
+                'Personal photo 4'
+            ];
+            
+            s3Urls.forEach((url, index) => {
+                const container = document.createElement('a');
+                container.href = '#';
+                container.className = 'snap-container';
+                container.setAttribute('data-photo', url);
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = altTexts[index];
+                img.onerror = function() {
+                    this.onerror = null;
+                    this.src = '/static/img/placeholder.png';
+                };
+                
+                container.appendChild(img);
+                snapsContainer.appendChild(container);
+            });
         }
         
         // Handle photo snapshots in about section
