@@ -131,15 +131,15 @@
     <!-- Navigation Bar -->
     <header>
         <nav class="navbar">
-            <a href="/" class="logo">
-                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="height: 70px; width: auto; display: block;">
+            <a href="/" class="logo" style="display: block !important; padding: 5px 15px !important; position: relative !important;">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="height: 70px !important; width: auto !important; display: block !important; max-width: none !important; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));">
             </a>
-            <div class="nav-links" style="margin-left: auto; text-align: right;">
-                <ul style="display: flex; list-style: none; justify-content: flex-end; margin: 0; padding: 0;">
-                    <li style="margin: 0 1.5rem;"><a href="/" >Home</a></li>
-                    <li style="margin: 0 1.5rem;"><a href="/projects" >Projects</a></li>
-                    <li style="margin: 0 1.5rem;"><a href="/solutions" class="active">Solutions</a></li>
-                    <li style="margin: 0 1.5rem;"><a href="/contact" >Contact</a></li>
+            <div class="nav-links" style="flex-grow: 1 !important; margin-left: auto !important; text-align: right !important;">
+                <ul style="display: flex !important; list-style: none !important; justify-content: flex-end !important; margin: 0 !important; padding: 0 !important;">
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/projects"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/solutions" class="active" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Solutions</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/contact"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
                 </ul>
             </div>
             <div class="social-links">
@@ -388,5 +388,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/js/script.js"></script>
     
+
+    <!-- Add script for logo background that can't be done with inline styles -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add the pseudo-element effect that can't be done with inline styles
+            const logoElement = document.querySelector('.logo');
+            if (logoElement) {
+                // Create a div that will act as our :before pseudo-element
+                const beforeElement = document.createElement('div');
+                beforeElement.style.position = 'absolute';
+                beforeElement.style.top = '-6px';
+                beforeElement.style.left = '-3px';
+                beforeElement.style.right = '-3px';
+                beforeElement.style.bottom = '-6px';
+                beforeElement.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                beforeElement.style.borderRadius = '8px';
+                beforeElement.style.zIndex = '-1';
+                
+                // Insert as first child to be below the logo
+                logoElement.insertBefore(beforeElement, logoElement.firstChild);
+            }
+        });
+    </script>
 </body>
 </html> 
