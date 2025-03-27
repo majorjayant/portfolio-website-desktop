@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Generator | majorjayant</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+    
     <!-- Google Fonts - Nexa Light -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -12,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -23,32 +26,21 @@
     <!-- Navigation Bar -->
     <header>
         <nav class="navbar">
-            <div class="logo">
-                <a href="/">
-                    <img src="/static/img/logo.png" alt="Logo">
-                </a>
-            </div>
+            <a href="/" class="logo">
+                <img src="/img/logo.png" alt="Logo">
+            </a>
             <div class="nav-links">
                 <ul>
                     <li><a href="/" class="active">Home</a></li>
-                    <li><a href="/projects" class="">Projects</a></li>
-                    <li class="dropdown">
-                        <a href="/solutions" class="">Solutions</a>
-                        <div class="dropdown-content">
-                            <a href="/solutions">All Solutions</a>
-                            <a href="/image-generator-tool">Image Generator</a>
-                        </div>
-                    </li>
-                    <li><a href="/contact" class="">Contact</a></li>
+                    <li><a href="/projects" >Projects</a></li>
+                    <li><a href="/solutions" >Solutions</a></li>
+                    <li><a href="/contact" >Contact</a></li>
                 </ul>
             </div>
             <div class="social-links">
                 <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://linkedin.com/in/majorjayant" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
                 <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-            </div>
-            <div class="cta-button">
-                <a href="/contact" class="button">Get in Touch</a>
             </div>
         </nav>
     </header>
@@ -143,10 +135,19 @@
 </section>
 
 <style>
+    /* Define CSS variables inline for the static version */
+    :root {
+        --primary-color: #3a4a70;
+        --accent-color: #7a6b5f;
+        --text-light: #ffffff;
+        --text-dark: #333333;
+        --background-light: #f8f9fa;
+    }
+    
     .image-generator-banner {
         padding: 5rem 0 3rem;
-        background: linear-gradient(135deg, var(--primary-color), #3a4a70);
-        color: var(--text-light);
+        background: linear-gradient(135deg, #3a4a70, #2d3a59);
+        color: #ffffff;
         text-align: center;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         margin-bottom: 2rem;
@@ -315,6 +316,17 @@
     <footer>
         <div class="footer-container">
             <div class="footer-section">
+                <div class="footer-logo">
+                    <img src="/img/logo.png" alt="Logo">
+                </div>
+                <p>Turning Chaos Into Clarity</p>
+                <div class="social-icons">
+                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
                 <h3>Contact Info</h3>
                 <p><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
                 <p><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
@@ -346,7 +358,7 @@
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="/static/js/script.js"></script>
+    <script src="/js/script.js"></script>
     
 </body>
 </html> 

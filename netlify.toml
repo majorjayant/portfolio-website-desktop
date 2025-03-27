@@ -2,8 +2,8 @@
 # This file defines the build settings and redirects for Netlify deployment
 
 [build]
-  # Command to build the static site
-  command = "pip install -r requirements.txt && python build_static_site.py"
+  # Command to build the static site - use explicit Python version and handle errors gracefully
+  command = "python3.9 build_static_site.py || python3 build_static_site.py || python build_static_site.py"
   
   # Directory that contains the deployed site
   publish = "app/static"

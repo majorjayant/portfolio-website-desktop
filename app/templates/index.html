@@ -5,8 +5,8 @@
 {% block content %}
     <!-- Banner Section -->
     <section class="banner">
-        <div class="banner-image">
-            <!-- Banner image will be set as background in CSS -->
+        <div class="banner-image" style="background-image: url('{{ site_config.get_image_url('banner') }}');">
+            <!-- Banner image is set as background via inline style with dynamic URL -->
         </div>
     </section>
 

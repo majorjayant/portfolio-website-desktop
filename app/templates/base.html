@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Portfolio | majorjayant{% endblock %}</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ site_config.get_image_url('favicon') }}">
+    
     <!-- Google Fonts - Nexa Light -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -23,32 +26,21 @@
     <!-- Navigation Bar -->
     <header>
         <nav class="navbar">
-            <div class="logo">
-                <a href="{{ url_for('home') }}">
-                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
-                </a>
-            </div>
+            <a href="{{ url_for('home') }}" class="logo">
+                <img src="{{ site_config.get_image_url('logo') }}" alt="Logo">
+            </a>
             <div class="nav-links">
                 <ul>
-                    <li><a href="{{ url_for('home') }}" class="{% if request.path == url_for('home') %}active{% endif %}">Home</a></li>
-                    <li><a href="{{ url_for('projects') }}" class="{% if request.path == url_for('projects') %}active{% endif %}">Projects</a></li>
-                    <li class="dropdown">
-                        <a href="{{ url_for('solutions') }}" class="{% if request.path == url_for('solutions') %}active{% endif %}">Solutions</a>
-                        <div class="dropdown-content">
-                            <a href="{{ url_for('solutions') }}">All Solutions</a>
-                            <a href="{{ url_for('image_generator_tool') }}">Image Generator</a>
-                        </div>
-                    </li>
-                    <li><a href="{{ url_for('contact') }}" class="{% if request.path == url_for('contact') %}active{% endif %}">Contact</a></li>
+                    <li><a href="{{ url_for('home') }}" {% if request.endpoint == 'home' %}class="active"{% endif %}>Home</a></li>
+                    <li><a href="{{ url_for('projects') }}" {% if request.endpoint == 'projects' %}class="active"{% endif %}>Projects</a></li>
+                    <li><a href="{{ url_for('solutions') }}" {% if request.endpoint == 'solutions' %}class="active"{% endif %}>Solutions</a></li>
+                    <li><a href="{{ url_for('contact') }}" {% if request.endpoint == 'contact' %}class="active"{% endif %}>Contact</a></li>
                 </ul>
             </div>
             <div class="social-links">
                 <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://linkedin.com/in/majorjayant" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
                 <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-            </div>
-            <div class="cta-button">
-                <a href="{{ url_for('contact') }}" class="button">Get in Touch</a>
             </div>
         </nav>
     </header>
@@ -72,6 +64,17 @@
     <!-- Footer -->
     <footer>
         <div class="footer-container">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <img src="{{ site_config.get_image_url('logo') }}" alt="Logo">
+                </div>
+                <p>Turning Chaos Into Clarity</p>
+                <div class="social-icons">
+                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
             <div class="footer-section">
                 <h3>Contact Info</h3>
                 <p><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>

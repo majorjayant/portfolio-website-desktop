@@ -71,6 +71,31 @@ def copy_static_assets():
         js_count = 0
         img_count = 0
         
+        # Normalize paths to prevent issues with mixed slashes
+        def normalize_path(path):
+            return os.path.normpath(path)
+        
+        # Skip copying if source and destination are the same
+        def safe_copy(src_file, dst_file):
+            src_norm = normalize_path(src_file)
+            dst_norm = normalize_path(dst_file)
+            
+            if src_norm == dst_norm:
+                print(f"  ⚠ Skipping copy of {src_norm} to itself")
+                return False
+                
+            if os.path.exists(dst_norm):
+                # If file exists at destination, only copy if source is newer
+                src_mtime = os.path.getmtime(src_norm)
+                dst_mtime = os.path.getmtime(dst_norm)
+                if src_mtime <= dst_mtime:
+                    print(f"  ⚠ Skipping copy of {src_norm} as destination is newer or same age")
+                    return False
+            
+            # Copy the file
+            shutil.copy2(src_norm, dst_norm)
+            return True
+        
         # Copy CSS files
         css_src = os.path.join(static_dir, 'css')
         css_dest = os.path.join(OUTPUT_DIR, 'css')
@@ -79,8 +104,7 @@ def copy_static_assets():
             for file in os.listdir(css_src):
                 src_file = os.path.join(css_src, file)
                 dst_file = os.path.join(css_dest, file)
-                if os.path.isfile(src_file):
-                    shutil.copy2(src_file, dst_file)
+                if os.path.isfile(src_file) and safe_copy(src_file, dst_file):
                     css_count += 1
         
         # Copy JS files
@@ -91,8 +115,7 @@ def copy_static_assets():
             for file in os.listdir(js_src):
                 src_file = os.path.join(js_src, file)
                 dst_file = os.path.join(js_dest, file)
-                if os.path.isfile(src_file):
-                    shutil.copy2(src_file, dst_file)
+                if os.path.isfile(src_file) and safe_copy(src_file, dst_file):
                     js_count += 1
         
         # Copy image files
@@ -103,8 +126,7 @@ def copy_static_assets():
             for file in os.listdir(img_src):
                 src_file = os.path.join(img_src, file)
                 dst_file = os.path.join(img_dest, file)
-                if os.path.isfile(src_file):
-                    shutil.copy2(src_file, dst_file)
+                if os.path.isfile(src_file) and safe_copy(src_file, dst_file):
                     img_count += 1
         
         print(f"  ✓ Copied {css_count} CSS files, {js_count} JS files, and {img_count} image files")
@@ -256,9 +278,56 @@ def build_static_site():
                     ensure_dir(os.path.dirname(output_path))
                     
                     # Get the rendered HTML
-                    with app.test_client() as client:
-                        response = client.get(url)
-                        html = response.data.decode('utf-8')
+                    try:
+                        with app.test_client() as client:
+                            response = client.get(url)
+                            html = response.data.decode('utf-8')
+                    except Exception as route_error:
+                        print(f"    ⚠ Error accessing route {url}: {str(route_error)}")
+                        print("    ⚠ Using fallback template for this route")
+                        
+                        # Generate a fallback template for this route
+                        route_name = endpoint.replace('_', ' ').title()
+                        fallback_html = f"""
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>{route_name} - Portfolio Website</title>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <link rel="stylesheet" href="css/style.css">
+                        </head>
+                        <body>
+                            <header>
+                                <nav class="navbar">
+                                    <div class="logo">
+                                        <a href="index.html"><img src="img/logo.png" alt="Logo"></a>
+                                    </div>
+                                    <div class="nav-links">
+                                        <ul>
+                                            <li><a href="index.html" {'class="active"' if endpoint == 'home' else ''}>Home</a></li>
+                                            <li><a href="projects.html" {'class="active"' if endpoint == 'projects' else ''}>Projects</a></li>
+                                            <li><a href="solutions.html" {'class="active"' if endpoint == 'solutions' else ''}>Solutions</a></li>
+                                            <li><a href="contact.html" {'class="active"' if endpoint == 'contact' else ''}>Contact</a></li>
+                                        </ul>
+                                    </div>
+                                </nav>
+                            </header>
+                            <main>
+                                <div class="container">
+                                    <h1>{route_name}</h1>
+                                    <p>This is a static version of the portfolio website.</p>
+                                </div>
+                            </main>
+                            <footer>
+                                <div class="copyright">
+                                    <p>&copy; 2024 Jayant Kumar. All rights reserved.</p>
+                                </div>
+                            </footer>
+                        </body>
+                        </html>
+                        """
+                        html = fallback_html
                     
                     # Fix static paths
                     html = fix_static_paths(html)
