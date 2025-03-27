@@ -5,7 +5,7 @@
 {% block content %}
     <!-- Banner Section -->
     <section class="banner">
-        <div class="banner-image" style="background-image: url('{{ site_config.get_image_url('banner') }}');">
+        <div class="banner-image" style="background-image: url('{{ site_config.get_image_url('banner') }}');" id="banner-image">
             <!-- Banner image is set as background via inline style with dynamic URL -->
         </div>
     </section>
@@ -179,4 +179,26 @@
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Fallback for banner image if it fails to load
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                // Check if the background image has loaded
+                const computedStyle = window.getComputedStyle(bannerImage);
+                const backgroundImage = computedStyle.backgroundImage;
+                
+                // If no background image or it's set to 'none', set the fallback
+                if (!backgroundImage || backgroundImage === 'none' || backgroundImage.includes('undefined')) {
+                    bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                    console.log('Applied fallback banner image');
+                }
+            }
+        }, 500);
+    });
+</script>
 {% endblock %} 

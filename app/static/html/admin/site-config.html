@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Configuration | Admin</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon">
+    
+    <!-- Google Fonts - Nexa Light -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    
+<style>
+    .admin-container {
+        max-width: 800px;
+        margin: 120px auto 40px;
+        padding: 30px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .section-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    
+    .preview-image {
+        margin-top: 10px;
+        max-width: 300px;
+        max-height: 100px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        padding: 5px;
+    }
+    
+    .btn-section {
+        margin-top: 30px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .help-text {
+        font-size: 0.9rem;
+        color: #777;
+        margin-top: 5px;
+    }
+    
+    .image-preview-container {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-top: 10px;
+    }
+    
+    .current-image {
+        max-width: 150px;
+        max-height: 80px;
+        object-fit: contain;
+    }
+</style>
+
+    
+    <!-- Netlify deployment fix -->
+    <script>
+        // Handle case when SiteConfig not available (static sites)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if any of the image elements failed to load
+            const fixBrokenImages = function() {
+                // S3 fallback URLs
+                const fallbacks = {
+                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
+                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'
+                };
+                
+                // Fix header logo
+                const headerLogo = document.querySelector('.navbar .logo img');
+                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
+                    headerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix footer logo 
+                const footerLogo = document.querySelector('.footer-logo img');
+                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
+                    footerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix favicon
+                const favicon = document.querySelector('link[rel="icon"]');
+                if (favicon) {
+                    favicon.href = fallbacks.favicon;
+                }
+            };
+            
+            // Run immediately and also after a short delay to catch slow-loading elements
+            fixBrokenImages();
+            setTimeout(fixBrokenImages, 1000);
+        });
+    </script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+            <a href="/" class="logo">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo">
+            </a>
+            <div class="nav-links">
+                <ul>
+                    <li><a href="/" >Home</a></li>
+                    <li><a href="/projects" >Projects</a></li>
+                    <li><a href="/solutions" >Solutions</a></li>
+                    <li><a href="/contact" >Contact</a></li>
+                </ul>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Flash Messages -->
+    
+        
+    
+
+    <!-- Main Content -->
+    <main>
+        
+<div class="admin-container">
+    <h1 class="section-header">Site Configuration</h1>
+    
+    <form method="POST" action="/admin/site-config">
+        <h2>Image URLs</h2>
+        <p class="help-text">Manage the URLs for site images. Enter S3 or other external URLs.</p>
+        
+        <!-- Favicon URL -->
+        <div class="form-group">
+            <label for="image_favicon_url">Favicon URL</label>
+            <input type="text" id="image_favicon_url" name="image_favicon_url" class="form-control" 
+                   value="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon" placeholder="https://example.com/favicon.png">
+            <div class="image-preview-container">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon" alt="Current Favicon" class="current-image">
+                <div>
+                    <p class="help-text">Current favicon (16x16 or 32x32 recommended)</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logo URL -->
+        <div class="form-group">
+            <label for="image_logo_url">Logo URL</label>
+            <input type="text" id="image_logo_url" name="image_logo_url" class="form-control" 
+                   value="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" placeholder="https://example.com/logo.png">
+            <div class="image-preview-container">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Current Logo" class="current-image">
+                <div>
+                    <p class="help-text">Current logo for header and footer</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Banner URL -->
+        <div class="form-group">
+            <label for="image_banner_url">Banner URL</label>
+            <input type="text" id="image_banner_url" name="image_banner_url" class="form-control" 
+                   value="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner" placeholder="https://example.com/banner.png">
+            <div class="image-preview-container">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner" alt="Current Banner" class="current-image">
+                <div>
+                    <p class="help-text">Current homepage banner (recommended: 1600x620px)</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-section">
+            <button type="submit" class="btn-primary">Save Configuration</button>
+        </div>
+    </form>
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo">
+                </div>
+                <p>Turning Chaos Into Clarity</p>
+                <div class="social-icons">
+                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                <p><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/projects">Projects</a></li>
+                    <li><a href="/solutions">Solutions</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/image-generator-tool">Image Generator</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Me</h3>
+                <div class="social-icons">
+                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://linkedin.com/in/majorjayant" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/js/script.js"></script>
+    
+</body>
+</html> 

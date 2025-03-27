@@ -3,10 +3,10 @@
 
 [build]
   # Command to build the static site - use explicit Python version and handle errors gracefully
-  command = "python3.9 build_static_site.py || python3 build_static_site.py || python build_static_site.py"
+  command = "python build_static_site.py"
   
   # Directory that contains the deployed site
-  publish = "app/static"
+  publish = "app/static/"
 
 [build.environment]
   # Specify Python version for the build
@@ -15,8 +15,9 @@
 # Handle 404 errors by redirecting to the index page
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/html/:splat.html"
   status = 200
+  force = false
 
 # Redirect /static/* paths to the correct location
 [[redirects]]
@@ -30,4 +31,16 @@
   port = 5000
 
 [functions]
-  directory = "netlify/functions" 
+  directory = "netlify/functions"
+
+[context.production.environment]
+  STATIC_DEPLOYMENT = "true"
+  IMAGE_FAVICON_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon"
+  IMAGE_LOGO_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo"
+  IMAGE_BANNER_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner"
+
+[[redirects]]
+  from = "/"
+  to = "/html/index.html"
+  status = 200
+  force = true 

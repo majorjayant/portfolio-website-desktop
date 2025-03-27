@@ -11,6 +11,16 @@ import traceback
 import time
 import re
 from flask import url_for, render_template
+from pathlib import Path
+from urllib.parse import urlparse
+
+# Set static deployment flag
+os.environ['STATIC_DEPLOYMENT'] = 'true'
+
+# Set image URLs for the static site
+os.environ['IMAGE_FAVICON_URL'] = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon'
+os.environ['IMAGE_LOGO_URL'] = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo'
+os.environ['IMAGE_BANNER_URL'] = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'
 
 # Start time for timing the build process
 start_time = time.time()

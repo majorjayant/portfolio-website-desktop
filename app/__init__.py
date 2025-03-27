@@ -16,6 +16,9 @@ import tempfile
 db = SQLAlchemy()
 csrf = CSRFProtect()
 
+# Define a flag for static deployments
+IS_STATIC_DEPLOYMENT = os.environ.get('STATIC_DEPLOYMENT', 'false').lower() == 'true'
+
 def create_app(test_config=None):
     """Create and configure the Flask application"""
     try:
@@ -42,31 +45,40 @@ def create_app(test_config=None):
         
         # Database configuration
         try:
-            db_url = os.environ.get('DATABASE_URL')
-            if db_url:
-                # Use MySQL if provided
-                app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-                print(f"Using database URL from environment: {db_url[:10]}...")
+            if not IS_STATIC_DEPLOYMENT:
+                db_url = os.environ.get('DATABASE_URL')
+                if db_url:
+                    # Use MySQL if provided
+                    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+                    print(f"Using database URL from environment: {db_url[:10]}...")
+                else:
+                    # Fall back to SQLite
+                    db_path = os.path.join(os.getcwd(), 'app.db')
+                    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+                    print(f"Using SQLite database: {db_path}")
+                
+                app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+                
+                # Initialize database
+                db.init_app(app)
+                print("SQLAlchemy initialized successfully")
+                
+                # Create tables if they don't exist
+                with app.app_context():
+                    db.create_all()
+                    # Initialize site configuration
+                    try:
+                        from app.utils.db_migration import init_site_config
+                        init_site_config()
+                    except Exception as e:
+                        print(f"Error initializing site config: {e}")
             else:
-                # Fall back to SQLite
-                db_path = os.path.join(os.getcwd(), 'app.db')
-                app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-                print(f"Using SQLite database: {db_path}")
-            
-            app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-            
-            # Initialize database
-            db.init_app(app)
-            print("SQLAlchemy initialized successfully")
-            
-            # Create tables if they don't exist
-            with app.app_context():
-                db.create_all()
-                # Initialize site configuration
-                from app.utils.db_migration import init_site_config
-                init_site_config()
+                print("Static deployment mode: Database initialization skipped")
         except Exception as e:
             print(f"Error configuring database: {e}")
+            # In static deployment, we can continue without database
+            if not IS_STATIC_DEPLOYMENT:
+                print("Warning: Database initialization failed but not in static mode")
         
         # Initialize CSRF protection
         csrf.init_app(app)
@@ -90,8 +102,9 @@ def create_app(test_config=None):
         
         # Import models to ensure they are registered with SQLAlchemy
         try:
-            from app.models import __all__ as model_modules
-            print("Models imported successfully")
+            if not IS_STATIC_DEPLOYMENT:
+                from app.models import __all__ as model_modules
+                print("Models imported successfully")
         except Exception as e:
             print(f"Error importing models: {e}")
         
@@ -99,7 +112,10 @@ def create_app(test_config=None):
         
     except Exception as e:
         print(f"Error initializing application: {e}")
-        raise e
+        # Create minimal app for static sites if initialization fails
+        minimal_app = Flask(__name__)
+        minimal_app.config['SECRET_KEY'] = 'minimal-fallback-key'
+        return minimal_app
 
 # Create app instance
 app = create_app() 

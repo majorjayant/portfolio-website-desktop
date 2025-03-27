@@ -6,7 +6,7 @@
     <title>Projects | majorjayant</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/img/favicon.png">
+    <link rel="icon" type="image/png" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon">
     
     <!-- Google Fonts - Nexa Light -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -21,13 +21,51 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
     
+    
+    <!-- Netlify deployment fix -->
+    <script>
+        // Handle case when SiteConfig not available (static sites)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if any of the image elements failed to load
+            const fixBrokenImages = function() {
+                // S3 fallback URLs
+                const fallbacks = {
+                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
+                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'
+                };
+                
+                // Fix header logo
+                const headerLogo = document.querySelector('.navbar .logo img');
+                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
+                    headerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix footer logo 
+                const footerLogo = document.querySelector('.footer-logo img');
+                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
+                    footerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix favicon
+                const favicon = document.querySelector('link[rel="icon"]');
+                if (favicon) {
+                    favicon.href = fallbacks.favicon;
+                }
+            };
+            
+            // Run immediately and also after a short delay to catch slow-loading elements
+            fixBrokenImages();
+            setTimeout(fixBrokenImages, 1000);
+        });
+    </script>
 </head>
 <body>
     <!-- Navigation Bar -->
     <header>
         <nav class="navbar">
             <a href="/" class="logo">
-                <img src="/img/logo.png" alt="Logo">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo">
             </a>
             <div class="nav-links">
                 <ul>
@@ -230,7 +268,7 @@
         <div class="footer-container">
             <div class="footer-section">
                 <div class="footer-logo">
-                    <img src="/img/logo.png" alt="Logo">
+                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo">
                 </div>
                 <p>Turning Chaos Into Clarity</p>
                 <div class="social-icons">

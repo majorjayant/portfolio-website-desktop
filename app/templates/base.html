@@ -21,6 +21,44 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
     {% block extra_css %}{% endblock %}
+    
+    <!-- Netlify deployment fix -->
+    <script>
+        // Handle case when SiteConfig not available (static sites)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if any of the image elements failed to load
+            const fixBrokenImages = function() {
+                // S3 fallback URLs
+                const fallbacks = {
+                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
+                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'
+                };
+                
+                // Fix header logo
+                const headerLogo = document.querySelector('.navbar .logo img');
+                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
+                    headerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix footer logo 
+                const footerLogo = document.querySelector('.footer-logo img');
+                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
+                    footerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix favicon
+                const favicon = document.querySelector('link[rel="icon"]');
+                if (favicon) {
+                    favicon.href = fallbacks.favicon;
+                }
+            };
+            
+            // Run immediately and also after a short delay to catch slow-loading elements
+            fixBrokenImages();
+            setTimeout(fixBrokenImages, 1000);
+        });
+    </script>
 </head>
 <body>
     <!-- Navigation Bar -->
