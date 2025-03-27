@@ -319,76 +319,116 @@
         const aboutSubtitle = document.querySelector('.text-main .intro');
         const aboutDescription = document.querySelector('.text-main .description');
         
-        // Always fetch and use the latest data from JSON file, even if content already exists
-        // This ensures we're always showing the most recent database content
-        fetch('/data/site_config.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Loaded site config data from JSON');
-                if (data && data.about_content) {
-                    // Always apply the content from JSON to ensure it's the latest
-                    if (aboutTitle) {
-                        aboutTitle.textContent = data.about_content.title || 'about.';
+        // Function to fetch the latest about content from the API
+        function fetchLatestAboutContent() {
+            fetch('/api/about-content')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                    
-                    if (aboutSubtitle) {
-                        aboutSubtitle.textContent = data.about_content.subtitle || "I'm a passionate product manager based in New Delhi, India.";
+                    return response.json();
+                })
+                .then(apiResponse => {
+                    if (apiResponse.status === 'success' && apiResponse.data) {
+                        console.log('Loaded fresh about content from API:', apiResponse.timestamp);
+                        updateAboutContent(apiResponse.data);
+                    } else {
+                        throw new Error('API returned error or no data');
                     }
-                    
-                    if (aboutDescription) {
-                        aboutDescription.textContent = data.about_content.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
-                        aboutDescription.style.textAlign = 'left';
-                    }
-                    
-                    // Always update profile image
-                    const profileImage = document.querySelector('.profile-image');
-                    if (profileImage && data.about_content.profile_image) {
-                        profileImage.src = data.about_content.profile_image;
-                    }
-                    
-                    // Clear and repopulate photos to ensure they match the database version
-                    const snapsContainer = document.getElementById('snaps');
-                    if (snapsContainer && data.about_content.photos) {
-                        // Clear existing content
-                        snapsContainer.innerHTML = '';
-                        
-                        // Add fresh content from JSON
-                        data.about_content.photos.forEach(photo => {
-                            const container = document.createElement('a');
-                            container.href = '#';
-                            container.className = 'snap-container';
-                            container.setAttribute('data-photo', photo.url);
-                            
-                            const img = document.createElement('img');
-                            img.src = photo.url;
-                            img.alt = photo.alt;
-                            img.onerror = function() {
-                                this.onerror = null;
-                                this.src = '/static/img/placeholder.png';
-                            };
-                            
-                            container.appendChild(img);
-                            snapsContainer.appendChild(container);
-                        });
-                        
-                        // Reinitialize the modal functionality for the new photos
-                        initializeModalFunctionality();
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error loading site config JSON:', error);
-                // Fall back to hardcoded values only if we can't load the JSON
-                applyFallbackContent();
-            });
+                })
+                .catch(apiError => {
+                    console.error('Error loading about content from API:', apiError);
+                    console.log('Falling back to JSON file');
+                    // Fall back to the JSON file
+                    fetchJSONData();
+                });
+        }
         
-        // Function to apply fallback content if JSON fails
+        // Function to fetch data from the JSON file
+        function fetchJSONData() {
+            fetch('/data/site_config.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Loaded site config data from JSON');
+                    if (data && data.about_content) {
+                        updateAboutContent(data.about_content);
+                    } else {
+                        throw new Error('No about content in JSON');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading site config JSON:', error);
+                    // Fall back to hardcoded values only if we can't load the JSON
+                    applyFallbackContent();
+                });
+        }
+        
+        // Function to update the about content in the DOM
+        function updateAboutContent(aboutContent) {
+            // Always apply the content to ensure it's the latest
+            if (aboutTitle) {
+                aboutTitle.textContent = aboutContent.title || 'about.';
+            }
+            
+            if (aboutSubtitle) {
+                aboutSubtitle.textContent = aboutContent.subtitle || "I'm a passionate product manager based in New Delhi, India.";
+            }
+            
+            if (aboutDescription) {
+                aboutDescription.textContent = aboutContent.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+                aboutDescription.style.textAlign = 'left';
+            }
+            
+            // Always update profile image
+            const profileImage = document.querySelector('.profile-image');
+            if (profileImage && aboutContent.profile_image) {
+                profileImage.src = aboutContent.profile_image;
+            }
+            
+            // Clear and repopulate photos to ensure they match the latest version
+            const snapsContainer = document.getElementById('snaps');
+            if (snapsContainer && aboutContent.photos) {
+                // Clear existing content
+                snapsContainer.innerHTML = '';
+                
+                // Add fresh content
+                aboutContent.photos.forEach(photo => {
+                    const container = document.createElement('a');
+                    container.href = '#';
+                    container.className = 'snap-container';
+                    container.setAttribute('data-photo', photo.url);
+                    
+                    const img = document.createElement('img');
+                    img.src = photo.url;
+                    img.alt = photo.alt;
+                    img.onerror = function() {
+                        this.onerror = null;
+                        this.src = '/static/img/placeholder.png';
+                    };
+                    
+                    container.appendChild(img);
+                    snapsContainer.appendChild(container);
+                });
+                
+                // Reinitialize the modal functionality for the new photos
+                initializeModalFunctionality();
+            }
+        }
+        
+        // Try to fetch from API first, fall back to JSON and then hardcoded values
+        fetchLatestAboutContent();
+        
+        // Re-fetch data at regular intervals to keep content fresh
+        setInterval(fetchLatestAboutContent, 60000); // Refresh every minute
+        
+        // Function to apply fallback content if both API and JSON fail
         function applyFallbackContent() {
+            console.log('Applying fallback content');
             // Fallback for about section content
             if (aboutTitle && (!aboutTitle.textContent || aboutTitle.textContent.trim() === '')) {
                 aboutTitle.textContent = 'about.';
@@ -456,6 +496,9 @@
                     container.appendChild(img);
                     snapsContainer.appendChild(container);
                 });
+                
+                // Initialize modal functionality for fallback photos
+                initializeModalFunctionality();
             }
         }
 

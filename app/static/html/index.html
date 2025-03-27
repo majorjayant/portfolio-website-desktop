@@ -352,9 +352,9 @@
         <div class="container">
             <div class="about-container">
                 <div id="text-main" class="text-main">
-                    <h1>About Me</h1>
-                    <p class="intro">I&#39;m a passionate product manager based in New Delhi, India.</p>
-                    <p class="description">Since 2015, I&#39;ve enjoyed turning complex problems into simple, beautiful and intuitive designs. When I&#39;m not coding or managing products, you&#39;ll find me cooking, playing video games or exploring new places.</p>
+                    <h1>Jayant Arora</h1>
+                    <p class="intro">Curious Mind. Data Geek. Product Whisperer.</p>
+                    <p class="description">Ever since I was a kid, I’ve been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I’ve done it all, and I’m just getting started. Here’s the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you&#39;re looking for someone who can decode business problems, simplify the complex, and actually get things done - let’s talk.</p>
                 </div>
                 <div id="img-main" class="img-main">
                     <img class="profile-image" src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile.jpg';">
@@ -589,76 +589,116 @@
         const aboutSubtitle = document.querySelector('.text-main .intro');
         const aboutDescription = document.querySelector('.text-main .description');
         
-        // Always fetch and use the latest data from JSON file, even if content already exists
-        // This ensures we're always showing the most recent database content
-        fetch('/data/site_config.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Loaded site config data from JSON');
-                if (data && data.about_content) {
-                    // Always apply the content from JSON to ensure it's the latest
-                    if (aboutTitle) {
-                        aboutTitle.textContent = data.about_content.title || 'about.';
+        // Function to fetch the latest about content from the API
+        function fetchLatestAboutContent() {
+            fetch('/api/about-content')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                    
-                    if (aboutSubtitle) {
-                        aboutSubtitle.textContent = data.about_content.subtitle || "I'm a passionate product manager based in New Delhi, India.";
+                    return response.json();
+                })
+                .then(apiResponse => {
+                    if (apiResponse.status === 'success' && apiResponse.data) {
+                        console.log('Loaded fresh about content from API:', apiResponse.timestamp);
+                        updateAboutContent(apiResponse.data);
+                    } else {
+                        throw new Error('API returned error or no data');
                     }
-                    
-                    if (aboutDescription) {
-                        aboutDescription.textContent = data.about_content.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
-                        aboutDescription.style.textAlign = 'left';
-                    }
-                    
-                    // Always update profile image
-                    const profileImage = document.querySelector('.profile-image');
-                    if (profileImage && data.about_content.profile_image) {
-                        profileImage.src = data.about_content.profile_image;
-                    }
-                    
-                    // Clear and repopulate photos to ensure they match the database version
-                    const snapsContainer = document.getElementById('snaps');
-                    if (snapsContainer && data.about_content.photos) {
-                        // Clear existing content
-                        snapsContainer.innerHTML = '';
-                        
-                        // Add fresh content from JSON
-                        data.about_content.photos.forEach(photo => {
-                            const container = document.createElement('a');
-                            container.href = '#';
-                            container.className = 'snap-container';
-                            container.setAttribute('data-photo', photo.url);
-                            
-                            const img = document.createElement('img');
-                            img.src = photo.url;
-                            img.alt = photo.alt;
-                            img.onerror = function() {
-                                this.onerror = null;
-                                this.src = '/static/img/placeholder.png';
-                            };
-                            
-                            container.appendChild(img);
-                            snapsContainer.appendChild(container);
-                        });
-                        
-                        // Reinitialize the modal functionality for the new photos
-                        initializeModalFunctionality();
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error loading site config JSON:', error);
-                // Fall back to hardcoded values only if we can't load the JSON
-                applyFallbackContent();
-            });
+                })
+                .catch(apiError => {
+                    console.error('Error loading about content from API:', apiError);
+                    console.log('Falling back to JSON file');
+                    // Fall back to the JSON file
+                    fetchJSONData();
+                });
+        }
         
-        // Function to apply fallback content if JSON fails
+        // Function to fetch data from the JSON file
+        function fetchJSONData() {
+            fetch('/data/site_config.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Loaded site config data from JSON');
+                    if (data && data.about_content) {
+                        updateAboutContent(data.about_content);
+                    } else {
+                        throw new Error('No about content in JSON');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading site config JSON:', error);
+                    // Fall back to hardcoded values only if we can't load the JSON
+                    applyFallbackContent();
+                });
+        }
+        
+        // Function to update the about content in the DOM
+        function updateAboutContent(aboutContent) {
+            // Always apply the content to ensure it's the latest
+            if (aboutTitle) {
+                aboutTitle.textContent = aboutContent.title || 'about.';
+            }
+            
+            if (aboutSubtitle) {
+                aboutSubtitle.textContent = aboutContent.subtitle || "I'm a passionate product manager based in New Delhi, India.";
+            }
+            
+            if (aboutDescription) {
+                aboutDescription.textContent = aboutContent.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+                aboutDescription.style.textAlign = 'left';
+            }
+            
+            // Always update profile image
+            const profileImage = document.querySelector('.profile-image');
+            if (profileImage && aboutContent.profile_image) {
+                profileImage.src = aboutContent.profile_image;
+            }
+            
+            // Clear and repopulate photos to ensure they match the latest version
+            const snapsContainer = document.getElementById('snaps');
+            if (snapsContainer && aboutContent.photos) {
+                // Clear existing content
+                snapsContainer.innerHTML = '';
+                
+                // Add fresh content
+                aboutContent.photos.forEach(photo => {
+                    const container = document.createElement('a');
+                    container.href = '#';
+                    container.className = 'snap-container';
+                    container.setAttribute('data-photo', photo.url);
+                    
+                    const img = document.createElement('img');
+                    img.src = photo.url;
+                    img.alt = photo.alt;
+                    img.onerror = function() {
+                        this.onerror = null;
+                        this.src = '/static/img/placeholder.png';
+                    };
+                    
+                    container.appendChild(img);
+                    snapsContainer.appendChild(container);
+                });
+                
+                // Reinitialize the modal functionality for the new photos
+                initializeModalFunctionality();
+            }
+        }
+        
+        // Try to fetch from API first, fall back to JSON and then hardcoded values
+        fetchLatestAboutContent();
+        
+        // Re-fetch data at regular intervals to keep content fresh
+        setInterval(fetchLatestAboutContent, 60000); // Refresh every minute
+        
+        // Function to apply fallback content if both API and JSON fail
         function applyFallbackContent() {
+            console.log('Applying fallback content');
             // Fallback for about section content
             if (aboutTitle && (!aboutTitle.textContent || aboutTitle.textContent.trim() === '')) {
                 aboutTitle.textContent = 'about.';
@@ -726,6 +766,9 @@
                     container.appendChild(img);
                     snapsContainer.appendChild(container);
                 });
+                
+                // Initialize modal functionality for fallback photos
+                initializeModalFunctionality();
             }
         }
 

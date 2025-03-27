@@ -3,6 +3,7 @@ from flask import render_template, request, jsonify, flash, redirect, url_for, s
 from datetime import datetime
 import os
 import logging
+import json
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -162,4 +163,57 @@ def register_routes(app):
     @app.errorhandler(500)
     def server_error(e):
         """Handle 500 errors"""
-        return render_template('500.html'), 500 
+        return render_template('500.html'), 500
+        
+    @app.route('/api/about-content')
+    def get_about_content_api():
+        """API endpoint to get fresh about content from database"""
+        try:
+            # Always get fresh data from the database
+            about_content = SiteConfig.get_about_content()
+            
+            # Log the data being returned
+            app.logger.info(f"Fetched fresh about content: {about_content['title']}")
+            
+            # Update the static JSON file with the latest data
+            try:
+                # Get the static data path
+                static_data_dir = os.path.join(app.static_folder, 'data')
+                json_file_path = os.path.join(static_data_dir, 'site_config.json')
+                
+                # Ensure the directory exists
+                if not os.path.exists(static_data_dir):
+                    os.makedirs(static_data_dir)
+                
+                # Read existing file if it exists
+                existing_data = {}
+                if os.path.exists(json_file_path):
+                    with open(json_file_path, 'r', encoding='utf-8') as f:
+                        existing_data = json.load(f)
+                
+                # Update the about_content section
+                existing_data['about_content'] = about_content
+                existing_data['last_updated'] = datetime.utcnow().isoformat()
+                existing_data['update_source'] = 'api_request'
+                
+                # Write back to the file
+                with open(json_file_path, 'w', encoding='utf-8') as f:
+                    json.dump(existing_data, f, indent=2, ensure_ascii=False)
+                
+                app.logger.info(f"Updated static JSON file with fresh content at {json_file_path}")
+            except Exception as json_error:
+                app.logger.error(f"Error updating static JSON file: {str(json_error)}")
+            
+            # Return the data as JSON
+            return jsonify({
+                'status': 'success',
+                'data': about_content,
+                'timestamp': datetime.utcnow().isoformat()
+            })
+        except Exception as e:
+            app.logger.error(f"Error getting about content from API: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': str(e),
+                'timestamp': datetime.utcnow().isoformat()
+            }), 500 
