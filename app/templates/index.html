@@ -2,79 +2,249 @@
 
 {% block title %}Portfolio | majorjayant{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* About section styles */
+    .about-section {
+        padding: 6rem 0;
+        background-color: #f8f8f8;
+    }
+    
+    .about-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2rem;
+    }
+    
+    .text-main {
+        flex-basis: 45%;
+        flex-grow: 1;
+        opacity: 1;
+        transition: all 0.5s ease;
+    }
+    
+    .text-main h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #7a6b5f;
+    }
+    
+    .text-main .intro {
+        font-size: 1.8rem;
+        font-weight: 400;
+        margin-bottom: 1.5rem;
+        color: #555;
+        line-height: 1.4;
+    }
+    
+    .text-main .description {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: #666;
+        text-align: justify;
+    }
+    
+    .img-main {
+        flex-basis: 50%;
+        flex-grow: 1;
+        text-align: center;
+        opacity: 1;
+        transition: all 0.5s ease;
+    }
+    
+    .img-main img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .snaps {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 4rem;
+        width: 100%;
+    }
+    
+    .snaps a {
+        display: block;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .snaps a:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+    
+    .snaps img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .snaps a:hover img {
+        transform: scale(1.05);
+    }
+    
+    /* Modal styles */
+    .photo-modal {
+        display: none;
+        position: fixed;
+        z-index: 1100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+        animation: fadeIn 0.3s;
+    }
+    
+    .modal-content {
+        display: block;
+        position: relative;
+        margin: auto;
+        max-width: 90%;
+        max-height: 90vh;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .modal-content img {
+        width: 100%;
+        height: auto;
+        max-height: 85vh;
+        object-fit: contain;
+        border-radius: 4px;
+    }
+    
+    .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        z-index: 1101;
+    }
+    
+    .close-modal:hover,
+    .close-modal:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    @keyframes fadeIn {
+        from {opacity: 0}
+        to {opacity: 1}
+    }
+    
+    @media (max-width: 992px) {
+        .about-container {
+            flex-direction: column;
+        }
+        
+        .text-main, .img-main {
+            flex-basis: 100%;
+        }
+        
+        .text-main h1 {
+            font-size: 3rem;
+        }
+        
+        .text-main .intro {
+            font-size: 1.5rem;
+        }
+        
+        .snaps {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .modal-content {
+            max-width: 90%;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .text-main h1 {
+            font-size: 2.5rem;
+        }
+        
+        .snaps {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
     <!-- Banner Section -->
     <section class="banner" style="margin-top: 80px; width: 100%; overflow: hidden;">
-        <div class="banner-image" id="banner-image" style="width: 100%; height: 0; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat; background-image: url('{{ site_config.get_image_url('banner') }}');">
-            <!-- Banner image is set as background via inline style with dynamic URL -->
+        <div class="banner-image" id="banner-image" style="width: 100%; height: 0; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat;">
+            <!-- Banner image is set via JavaScript -->
         </div>
     </section>
 
-    <!-- About Me Section -->
+    <!-- About Me Section - New Design -->
     <section class="about-section">
         <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h1 class="title">Hello, I'm <span class="highlight">Jayant</span></h1>
-                    <p class="bio">I am a passionate product manager with extensive experience in developing innovative solutions.
-                    My approach combines technical expertise with a deep understanding of user needs to deliver 
-                    products that truly make a difference.</p>
-                    
-                    <h2 class="subtitle">My Objective</h2>
-                    <p class="objective">To leverage my skills in product development, user experience design, and technical 
-                    implementation to create meaningful products that solve real-world problems and deliver 
-                    exceptional value to users and stakeholders alike.</p>
+            <div class="about-container">
+                <div id="text-main" class="text-main">
+                    <h1>{{ about_content.title }}</h1>
+                    <p class="intro">{{ about_content.subtitle }}</p>
+                    <p class="description">{{ about_content.description }}</p>
                 </div>
-                <div class="about-image">
-                    <img src="{{ url_for('static', filename='img/profile.jpg') }}" alt="Jayant's Profile">
+                <div id="img-main" class="img-main">
+                    <img class="profile-image" src="{{ about_content.profile_image }}" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile.jpg';">
                 </div>
+            </div>
+            
+            <div id="snaps" class="snaps">
+                {% for photo in about_content.photos %}
+                <a href="#" class="snap-container" data-photo="{{ photo.url }}">
+                    <img src="{{ photo.url }}" alt="{{ photo.alt }}" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='{{ photo.alt }}';">
+                </a>
+                {% endfor %}
             </div>
         </div>
     </section>
+
+    <!-- Photo Modal -->
+    <div id="photoModal" class="photo-modal">
+        <span class="close-modal">&times;</span>
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Full size image">
+        </div>
+    </div>
 
     <!-- Experience Section -->
     <section class="experience-section">
         <div class="container">
             <h2 class="section-title">Work Experience</h2>
             <div class="timeline">
-                {% if experience %}
-                    {% for job in experience %}
-                        <div class="timeline-item animate__animated animate__fadeInUp">
-                            <div class="timeline-icon">
-                                <i class="fas fa-briefcase"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <h3>{{ job.title }}</h3>
-                                <h4>{{ job.company }}</h4>
-                                <p class="timeline-date">{{ job.start_date }} - {{ job.end_date or 'Present' }}</p>
-                                <p class="timeline-description">{{ job.description }}</p>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
+                {% for item in experience %}
                     <div class="timeline-item">
                         <div class="timeline-icon">
                             <i class="fas fa-briefcase"></i>
                         </div>
                         <div class="timeline-content">
-                            <h3>Senior Product Manager</h3>
-                            <h4>Tech Solutions Inc.</h4>
-                            <p class="timeline-date">January 2021 - Present</p>
-                            <p class="timeline-description">Leading product development initiatives for enterprise solutions. Responsible for roadmap planning, stakeholder management, and feature prioritization.</p>
+                            <h3>{{ item.title }}</h3>
+                            <h4>{{ item.company }}</h4>
+                            <p class="timeline-date">{{ item.period }}</p>
+                            <p class="timeline-description">{{ item.description }}</p>
                         </div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="timeline-icon">
-                            <i class="fas fa-briefcase"></i>
-                        </div>
-                        <div class="timeline-content">
-                            <h3>Product Manager</h3>
-                            <h4>InnovateTech</h4>
-                            <p class="timeline-date">March 2018 - December 2020</p>
-                            <p class="timeline-description">Managed the full product lifecycle from conception to launch. Collaborated with engineering and design teams to deliver successful products.</p>
-                        </div>
-                    </div>
-                {% endif %}
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -84,44 +254,19 @@
         <div class="container">
             <h2 class="section-title">Education</h2>
             <div class="education-container">
-                {% if education %}
-                    {% for edu in education %}
-                        <div class="education-item animate__animated animate__fadeInUp">
-                            <div class="edu-icon">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <div class="edu-content">
-                                <h3>{{ edu.degree }}</h3>
-                                <h4>{{ edu.institution }}</h4>
-                                <p class="edu-date">{{ edu.start_date }} - {{ edu.end_date }}</p>
-                                <p class="edu-description">{{ edu.description }}</p>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
+                {% for item in education %}
                     <div class="education-item">
                         <div class="edu-icon">
                             <i class="fas fa-graduation-cap"></i>
                         </div>
                         <div class="edu-content">
-                            <h3>Master of Business Administration</h3>
-                            <h4>University of Management</h4>
-                            <p class="edu-date">2016 - 2018</p>
-                            <p class="edu-description">Specialized in Product Management and Innovation. Graduated with distinction.</p>
+                            <h3>{{ item.degree }}</h3>
+                            <h4>{{ item.institution }}</h4>
+                            <p class="edu-date">{{ item.period }}</p>
+                            <p class="edu-description">{{ item.description }}</p>
                         </div>
                     </div>
-                    <div class="education-item">
-                        <div class="edu-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <div class="edu-content">
-                            <h3>Bachelor of Technology in Computer Science</h3>
-                            <h4>Technical University</h4>
-                            <p class="edu-date">2012 - 2016</p>
-                            <p class="edu-description">Specialized in Software Development and Database Management.</p>
-                        </div>
-                    </div>
-                {% endif %}
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -131,51 +276,22 @@
         <div class="container">
             <h2 class="section-title">Certifications</h2>
             <div class="certifications-container">
-                {% if certifications %}
-                    {% for cert in certifications %}
-                        <div class="cert-item animate__animated animate__fadeInUp">
-                            <div class="cert-icon">
-                                <i class="fas fa-certificate"></i>
-                            </div>
-                            <div class="cert-content">
-                                <h3>{{ cert.name }}</h3>
-                                <h4>{{ cert.issuer }}</h4>
-                                <p class="cert-date">Issued: {{ cert.issued_date }}</p>
-                                {% if cert.expiry_date %}
-                                    <p class="cert-expiry">Expires: {{ cert.expiry_date }}</p>
-                                {% endif %}
-                                {% if cert.link %}
-                                    <a href="{{ cert.link }}" target="_blank" class="cert-link">View Certificate</a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
+                {% for item in certifications %}
                     <div class="cert-item">
                         <div class="cert-icon">
                             <i class="fas fa-certificate"></i>
                         </div>
                         <div class="cert-content">
-                            <h3>Certified Product Manager</h3>
-                            <h4>Product Management Institute</h4>
-                            <p class="cert-date">Issued: June 2020</p>
-                            <p class="cert-expiry">Expires: June 2023</p>
-                            <a href="#" class="cert-link">View Certificate</a>
+                            <h3>{{ item.title }}</h3>
+                            <h4>{{ item.issuer }}</h4>
+                            <p class="cert-date">Issued: {{ item.issue_date }}</p>
+                            <p class="cert-expiry">{% if item.expiry_date %}Expires: {{ item.expiry_date }}{% else %}No Expiration{% endif %}</p>
+                            {% if item.certificate_url %}
+                            <a href="{{ item.certificate_url }}" target="_blank" class="cert-link">View Certificate</a>
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="cert-item">
-                        <div class="cert-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div class="cert-content">
-                            <h3>Agile Scrum Master</h3>
-                            <h4>Scrum Alliance</h4>
-                            <p class="cert-date">Issued: March 2019</p>
-                            <p class="cert-expiry">Expires: March 2022</p>
-                            <a href="#" class="cert-link">View Certificate</a>
-                        </div>
-                    </div>
-                {% endif %}
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -183,30 +299,134 @@
 
 {% block extra_js %}
 <script>
-    // Fallback for banner image if it fails to load
+    // Set banner image as soon as DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            const bannerImage = document.getElementById('banner-image');
-            if (bannerImage) {
-                // Check if the background image has loaded
-                const computedStyle = window.getComputedStyle(bannerImage);
-                const backgroundImage = computedStyle.backgroundImage;
-                
-                // If no background image or it's set to 'none', set the fallback
-                if (!backgroundImage || backgroundImage === 'none' || backgroundImage.includes('undefined')) {
-                    bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-                    console.log('Applied fallback banner image');
+        const bannerImage = document.getElementById('banner-image');
+        if (bannerImage) {
+            // Set the banner image
+            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+            
+            // Ensure correct styling
+            bannerImage.style.backgroundSize = 'contain';
+            bannerImage.style.backgroundPosition = 'center';
+            bannerImage.style.backgroundRepeat = 'no-repeat';
+            bannerImage.style.width = '100%';
+            bannerImage.style.height = '0';
+            bannerImage.style.paddingBottom = '38.75%';
+        }
+
+        // Handle profile image in about section
+        const profileImage = document.querySelector('.profile-image');
+        if (profileImage) {
+            // Fallback for profile image
+            profileImage.onerror = function() {
+                console.error("Error loading profile image: " + this.src);
+                this.onerror = null;
+                // Try direct S3 URL if the current URL fails
+                if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
+                    this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg';
+                } else {
+                    // If S3 URL also fails, use placeholder
+                    this.src = '/static/img/placeholder.png';
                 }
-                
-                // Ensure correct styling
-                bannerImage.style.backgroundSize = 'contain';
-                bannerImage.style.backgroundPosition = 'center';
-                bannerImage.style.backgroundRepeat = 'no-repeat';
-                bannerImage.style.width = '100%';
-                bannerImage.style.height = '0';
-                bannerImage.style.paddingBottom = '38.75%';
+            };
+        }
+        
+        // Handle photo snapshots in about section
+        const snapImages = document.querySelectorAll('.snaps img');
+        snapImages.forEach(function(img, index) {
+            // Pre-load the S3 images
+            let s3Urls = [
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+            ];
+            
+            // If the current image is a placeholder or not an S3 URL, try the corresponding S3 URL
+            if (img.src.includes('placeholder.png') || !img.src.includes('s3.eu-north-1.amazonaws.com')) {
+                if (index < s3Urls.length) {
+                    img.src = s3Urls[index];
+                }
             }
-        }, 500);
+            
+            img.onerror = function() {
+                console.error("Error loading image: " + this.src);
+                this.onerror = null;
+                
+                // Try direct S3 URL if the current URL fails
+                if (!this.src.includes('s3.eu-north-1.amazonaws.com') && index < s3Urls.length) {
+                    this.src = s3Urls[index];
+                } else {
+                    // If S3 URL also fails, use placeholder
+                    this.src = '/static/img/placeholder.png';
+                }
+            };
+        });
+        
+        // Modal functionality for about photos
+        const modal = document.getElementById('photoModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeModal = document.querySelector('.close-modal');
+        const snapContainers = document.querySelectorAll('.snap-container');
+        
+        // Open modal when clicking on a photo
+        snapContainers.forEach(function(container) {
+            container.addEventListener('click', function(e) {
+                e.preventDefault();
+                const photoUrl = this.getAttribute('data-photo');
+                modal.style.display = 'block';
+                modalImg.src = photoUrl;
+                
+                // If the modal image fails to load, try to use a direct S3 URL or fallback
+                modalImg.onerror = function() {
+                    console.error("Error loading modal image: " + this.src);
+                    this.onerror = null;
+                    
+                    // Try direct S3 URL if the current URL fails
+                    if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
+                        // Extract the photo number from the container's position
+                        const containers = Array.from(document.querySelectorAll('.snap-container'));
+                        const index = containers.indexOf(container);
+                        const s3Urls = [
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+                        ];
+                        
+                        if (index < s3Urls.length) {
+                            this.src = s3Urls[index];
+                        } else {
+                            // If S3 URL also fails, use placeholder
+                            this.src = '/static/img/placeholder.png';
+                        }
+                    } else {
+                        // If S3 URL also fails, use placeholder
+                        this.src = '/static/img/placeholder.png';
+                    }
+                };
+            });
+        });
+        
+        // Close modal when clicking on close button
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside the image
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
     });
 </script>
 {% endblock %} 

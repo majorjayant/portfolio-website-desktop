@@ -17,10 +17,26 @@ from urllib.parse import urlparse
 # Set static deployment flag
 os.environ['STATIC_DEPLOYMENT'] = 'true'
 
-# Set image URLs for the static site
-os.environ['IMAGE_FAVICON_URL'] = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon'
-os.environ['IMAGE_LOGO_URL'] = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo'
-os.environ['IMAGE_BANNER_URL'] = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'
+# Set image URLs from environment variables or use S3 fallbacks for the static site
+# For Netlify, these should be set in the Netlify environment variables settings
+s3_base_url = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com'
+os.environ['IMAGE_FAVICON_URL'] = os.environ.get('IMAGE_FAVICON_URL', f'{s3_base_url}/FavIcon')
+os.environ['IMAGE_LOGO_URL'] = os.environ.get('IMAGE_LOGO_URL', f'{s3_base_url}/Logo')
+os.environ['IMAGE_BANNER_URL'] = os.environ.get('IMAGE_BANNER_URL', f'{s3_base_url}/Banner')
+os.environ['IMAGE_ABOUT_PROFILE_URL'] = os.environ.get('IMAGE_ABOUT_PROFILE_URL', f'{s3_base_url}/profilephoto+(2).svg')
+os.environ['IMAGE_ABOUT_PHOTO1_URL'] = os.environ.get('IMAGE_ABOUT_PHOTO1_URL', f'{s3_base_url}/about_photo1.jpg')
+os.environ['IMAGE_ABOUT_PHOTO2_URL'] = os.environ.get('IMAGE_ABOUT_PHOTO2_URL', f'{s3_base_url}/about_photo2.jpg')
+os.environ['IMAGE_ABOUT_PHOTO3_URL'] = os.environ.get('IMAGE_ABOUT_PHOTO3_URL', f'{s3_base_url}/about_photo3.jpg')
+os.environ['IMAGE_ABOUT_PHOTO4_URL'] = os.environ.get('IMAGE_ABOUT_PHOTO4_URL', f'{s3_base_url}/about_photo4.jpg')
+
+# About content fallbacks - these should also be set in Netlify environment variables
+os.environ['ABOUT_TITLE'] = os.environ.get('ABOUT_TITLE', 'about.')
+os.environ['ABOUT_SUBTITLE'] = os.environ.get('ABOUT_SUBTITLE', "I'm a passionate product manager based in New Delhi, India.")
+os.environ['ABOUT_DESCRIPTION'] = os.environ.get('ABOUT_DESCRIPTION', "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.")
+os.environ['ABOUT_PHOTO1_ALT'] = os.environ.get('ABOUT_PHOTO1_ALT', 'Personal photo 1') 
+os.environ['ABOUT_PHOTO2_ALT'] = os.environ.get('ABOUT_PHOTO2_ALT', 'Personal photo 2')
+os.environ['ABOUT_PHOTO3_ALT'] = os.environ.get('ABOUT_PHOTO3_ALT', 'Personal photo 3')
+os.environ['ABOUT_PHOTO4_ALT'] = os.environ.get('ABOUT_PHOTO4_ALT', 'Personal photo 4')
 
 # Start time for timing the build process
 start_time = time.time()
@@ -166,7 +182,8 @@ def get_routes():
     try:
         for rule in app.url_map.iter_rules():
             # Skip static routes and any route that takes parameters
-            if "GET" in rule.methods and not rule.arguments and not rule.endpoint.startswith('static'):
+            # Also skip admin routes for the static site
+            if "GET" in rule.methods and not rule.arguments and not rule.endpoint.startswith('static') and not rule.endpoint.startswith('admin'):
                 routes.append(rule.endpoint)
         
         if routes:
@@ -250,190 +267,96 @@ def build_static_site():
         # Generate static HTML for each route
         print("\nGenerating HTML files for routes...")
         with app.test_request_context():
-            for endpoint in routes:
+            for route in routes:
                 try:
-                    # Special case for the image generator tool
-                    if endpoint == 'image_generator_tool':
-                        print(f"  ○ Processing route: {url_for(endpoint)} (using static template)")
-                        
-                        # Use the static version instead
-                        html = render_template('image_generator_static.html')
-                        
-                        # Fix static paths
-                        html = fix_static_paths(html)
-                        
-                        # Write the HTML to file
-                        output_path = os.path.join(html_dir, 'image_generator_tool.html')
-                        ensure_dir(os.path.dirname(output_path))
-                        with open(output_path, 'w', encoding='utf-8') as f:
-                            f.write(html)
-                        
-                        print(f"    ✓ Generated: {output_path}")
-                        success_count += 1
-                        continue
+                    # Create the request context for the route
+                    print(f"  ○ Processing route: {url_for(route)}")
                     
-                    # Get URL for the endpoint
-                    url = url_for(endpoint)
-                    print(f"  ○ Processing route: {url}")
-                    
-                    # Get the output path
-                    if url == '/':
-                        output_path = os.path.join(html_dir, 'index.html')
+                    # Special case for image generator which should use the static template
+                    if route == 'image_generator_tool':
+                        with open(os.path.join('app', 'templates', 'image_generator_static.html'), 'r', encoding='utf-8') as f:
+                            html_content = f.read()
                     else:
-                        # Remove leading slash and convert to HTML filename
-                        path = url.lstrip('/')
-                        output_path = os.path.join(html_dir, f"{path}.html")
+                        # Render the template
+                        html_content = app.view_functions[route]()
                     
-                    # Make sure the directory exists
-                    ensure_dir(os.path.dirname(output_path))
+                    # Fix static file references
+                    html_content = fix_static_paths(html_content)
                     
-                    # Get the rendered HTML
-                    try:
-                        with app.test_client() as client:
-                            response = client.get(url)
-                            html = response.data.decode('utf-8')
-                    except Exception as route_error:
-                        print(f"    ⚠ Error accessing route {url}: {str(route_error)}")
-                        print("    ⚠ Using fallback template for this route")
+                    # Prepare the output file path
+                    if route == 'home':
+                        # Save index page
+                        output_file = os.path.join(html_dir, 'index.html')
+                    else:
+                        # Create subdirectories if needed
+                        route_parts = url_for(route).strip('/').split('/')
+                        if len(route_parts) > 1:
+                            subdir = os.path.join(html_dir, *route_parts[:-1])
+                            ensure_dir(subdir)
                         
-                        # Generate a fallback template for this route
-                        route_name = endpoint.replace('_', ' ').title()
-                        fallback_html = f"""
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>{route_name} - Portfolio Website</title>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <link rel="stylesheet" href="css/style.css">
-                        </head>
-                        <body>
-                            <header>
-                                <nav class="navbar">
-                                    <div class="logo">
-                                        <a href="index.html"><img src="img/logo.png" alt="Logo"></a>
-                                    </div>
-                                    <div class="nav-links">
-                                        <ul>
-                                            <li><a href="index.html" {'class="active"' if endpoint == 'home' else ''}>Home</a></li>
-                                            <li><a href="projects.html" {'class="active"' if endpoint == 'projects' else ''}>Projects</a></li>
-                                            <li><a href="solutions.html" {'class="active"' if endpoint == 'solutions' else ''}>Solutions</a></li>
-                                            <li><a href="contact.html" {'class="active"' if endpoint == 'contact' else ''}>Contact</a></li>
-                                        </ul>
-                                    </div>
-                                </nav>
-                            </header>
-                            <main>
-                                <div class="container">
-                                    <h1>{route_name}</h1>
-                                    <p>This is a static version of the portfolio website.</p>
-                                </div>
-                            </main>
-                            <footer>
-                                <div class="copyright">
-                                    <p>&copy; 2024 Jayant Kumar. All rights reserved.</p>
-                                </div>
-                            </footer>
-                        </body>
-                        </html>
-                        """
-                        html = fallback_html
+                        # Use the last part of the route for the filename, or default to index.html
+                        filename = f"{route_parts[-1] if route_parts[-1] else route}.html"
+                        output_file = os.path.join(html_dir, *route_parts[:-1], filename)
                     
-                    # Fix static paths
-                    html = fix_static_paths(html)
+                    # Write the HTML file
+                    with open(output_file, 'w', encoding='utf-8') as f:
+                        f.write(html_content)
                     
-                    # Write the HTML to file
-                    with open(output_path, 'w', encoding='utf-8') as f:
-                        f.write(html)
-                    
-                    print(f"    ✓ Generated: {output_path}")
+                    print(f"    ✓ Generated: {output_file}")
                     success_count += 1
+                
                 except Exception as e:
-                    print(f"    ✗ Error generating HTML for {endpoint}: {str(e)}")
+                    print(f"    ✗ Error generating {route}: {str(e)}")
                     traceback.print_exc()
                     error_count += 1
         
-        # Copy HTML files to the root directory for Netlify
+        # Copy HTML files to root directory for Netlify
         print("\nCopying HTML files to root directory...")
-        root_copy_count = 0
-        for file in os.listdir(html_dir):
-            src_file = os.path.join(html_dir, file)
-            dst_file = os.path.join(OUTPUT_DIR, file)
-            if os.path.isfile(src_file):
-                try:
-                    # Read the file, ensure paths are fixed
-                    with open(src_file, 'r', encoding='utf-8') as f:
-                        html_content = f.read()
-                    
-                    # Fix paths
-                    html_content = fix_static_paths(html_content)
-                    
-                    # Write to destination
-                    with open(dst_file, 'w', encoding='utf-8') as f:
-                        f.write(html_content)
-                    
-                    root_copy_count += 1
-                except Exception as e:
-                    print(f"  ✗ Error copying {file}: {str(e)}")
+        files_copied = 0
         
-        print(f"  ✓ Copied {root_copy_count} HTML files to root directory")
+        for root, dirs, files in os.walk(html_dir):
+            for file in files:
+                if file.endswith('.html'):
+                    # Get relative path from html_dir
+                    rel_path = os.path.relpath(os.path.join(root, file), html_dir)
+                    
+                    # Prepare destination path
+                    dest_file = os.path.join(OUTPUT_DIR, rel_path)
+                    
+                    # Ensure directory exists
+                    dest_dir = os.path.dirname(dest_file)
+                    if dest_dir and not os.path.exists(dest_dir):
+                        os.makedirs(dest_dir)
+                    
+                    # Copy file
+                    shutil.copy2(os.path.join(root, file), dest_file)
+                    files_copied += 1
         
-        # Calculate build time
-        build_time = time.time() - start_time
+        print(f"  ✓ Copied {files_copied} HTML files to root directory")
         
-        # Print summary
+        # Create _redirects file for Netlify
+        redirects_file = os.path.join(OUTPUT_DIR, '_redirects')
+        with open(redirects_file, 'w', encoding='utf-8') as f:
+            f.write("# Netlify redirects file\n")
+            f.write("# Redirect all routes to index.html for SPA-like behavior\n")
+            f.write("/*    /index.html   200\n")
+        
+        print(f"  ✓ Created Netlify _redirects file")
+        
+        # Print build summary
         print("\n" + "=" * 80)
         print("BUILD SUMMARY")
         print("=" * 80)
         print(f"  ✓ Successfully generated: {success_count} pages")
-        if error_count > 0:
-            print(f"  ✗ Failed to generate: {error_count} pages")
-        print(f"  ○ Build time: {build_time:.2f} seconds")
+        print(f"  ✗ Failed to generate: {error_count} pages")
+        print(f"  ○ Build time: {time.time() - start_time:.2f} seconds")
+        
         print("\nStatic site generation completed! Ready for deployment.")
-    
+        
     except Exception as e:
-        print(f"\nFATAL ERROR building static site: {str(e)}")
+        print(f"\n✗ Error in build process: {str(e)}")
         traceback.print_exc()
-        
-        # Create a minimal index.html as fallback
-        print("\nCreating emergency fallback index.html...")
-        fallback_html = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Portfolio Website</title>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; text-align: center; background-color: #f8f9fa; }
-                .container { max-width: 800px; margin: 40px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                h1 { color: #3a4a70; }
-                .error { color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 4px; margin: 20px 0; }
-                .btn { display: inline-block; background-color: #3a4a70; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-top: 20px; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>Portfolio Website</h1>
-                <p>The site is currently experiencing technical difficulties.</p>
-                <div class="error">An error occurred during the build process. Please check the build logs.</div>
-                <p>For the full functionality, please run the application locally:</p>
-                <a href="https://github.com/majorjayant/portfolio-website-desktop" class="btn">View on GitHub</a>
-            </div>
-        </body>
-        </html>
-        """
-        try:
-            ensure_dir(OUTPUT_DIR)
-            with open(os.path.join(OUTPUT_DIR, 'index.html'), 'w', encoding='utf-8') as f:
-                f.write(fallback_html)
-            print("  ✓ Created fallback index.html")
-        except Exception as inner_e:
-            print(f"  ✗ Failed to create fallback index.html: {str(inner_e)}")
-            sys.exit(1)
-        
-        # Exit with error code
         sys.exit(1)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     build_static_site() 

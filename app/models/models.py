@@ -1,117 +1,104 @@
-import mysql.connector
-from mysql.connector import Error
-import os
-from dotenv import load_dotenv
+"""
+Helper functions to provide dummy data for the portfolio site.
+These functions are used as placeholder data when a database is not available.
+"""
 
-# Load environment variables
-load_dotenv()
+def get_projects():
+    """Return dummy projects data"""
+    return [
+        {
+            'id': 1,
+            'title': 'E-Commerce Platform',
+            'description': 'Developed a fully responsive e-commerce platform with payment processing integration.',
+            'image_url': '/static/img/project1.jpg',
+            'link': '#'
+        },
+        {
+            'id': 2,
+            'title': 'Travel Application',
+            'description': 'Mobile app for travelers to discover local experiences and book tours.',
+            'image_url': '/static/img/project2.jpg',
+            'link': '#'
+        },
+        {
+            'id': 3,
+            'title': 'Healthcare Dashboard',
+            'description': 'Analytics dashboard for healthcare providers to track patient outcomes.',
+            'image_url': '/static/img/project3.jpg',
+            'link': '#'
+        }
+    ]
 
-def create_db_connection():
-    try:
-        connection = mysql.connector.connect(
-            host=os.getenv('DB_HOST'),
-            port=os.getenv('DB_PORT'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
-            database=os.getenv('DB_NAME')
-        )
-        return connection
-    except Error as e:
-        print(f"Error connecting to MySQL database: {e}")
-        return None
+def get_experience():
+    """Return dummy experience data"""
+    return [
+        {
+            'id': 1,
+            'title': 'Senior Product Manager',
+            'company': 'Tech Solutions Inc.',
+            'period': 'Jan 2020 - Present',
+            'description': 'Leading product development for enterprise SaaS solutions. Managing a team of 5 developers and 2 designers.'
+        },
+        {
+            'id': 2,
+            'title': 'Product Manager',
+            'company': 'Digital Innovations Co.',
+            'period': 'Mar 2017 - Dec 2019',
+            'description': 'Managed the development of mobile applications for financial services clients.'
+        },
+        {
+            'id': 3,
+            'title': 'Associate Product Manager',
+            'company': 'StartupHub',
+            'period': 'Jun 2015 - Feb 2017',
+            'description': 'Assisted in the development and launch of three successful web applications.'
+        }
+    ]
 
-def fetch_projects():
-    connection = create_db_connection()
-    if connection:
-        try:
-            cursor = connection.cursor(dictionary=True)
-            query = """
-            SELECT * FROM projects 
-            ORDER BY created_at DESC
-            """
-            cursor.execute(query)
-            projects = cursor.fetchall()
-            cursor.close()
-            connection.close()
-            return projects
-        except Error as e:
-            print(f"Error fetching projects: {e}")
-            return []
-    return []
+def get_education():
+    """Return dummy education data"""
+    return [
+        {
+            'id': 1,
+            'degree': 'Master of Business Administration',
+            'institution': 'Business University',
+            'period': '2014 - 2015',
+            'description': 'Specialized in Technology Management with focus on Product Development.'
+        },
+        {
+            'id': 2,
+            'degree': 'Bachelor of Science in Computer Science',
+            'institution': 'Tech Institute',
+            'period': '2010 - 2014',
+            'description': 'Graduated with honors. Focused on software engineering and UI/UX design.'
+        }
+    ]
 
-def fetch_experience():
-    connection = create_db_connection()
-    if connection:
-        try:
-            cursor = connection.cursor(dictionary=True)
-            query = """
-            SELECT * FROM experience 
-            ORDER BY start_date DESC
-            """
-            cursor.execute(query)
-            experience = cursor.fetchall()
-            cursor.close()
-            connection.close()
-            return experience
-        except Error as e:
-            print(f"Error fetching experience: {e}")
-            return []
-    return []
-
-def fetch_education():
-    connection = create_db_connection()
-    if connection:
-        try:
-            cursor = connection.cursor(dictionary=True)
-            query = """
-            SELECT * FROM education 
-            ORDER BY start_date DESC
-            """
-            cursor.execute(query)
-            education = cursor.fetchall()
-            cursor.close()
-            connection.close()
-            return education
-        except Error as e:
-            print(f"Error fetching education: {e}")
-            return []
-    return []
-
-def fetch_certifications():
-    connection = create_db_connection()
-    if connection:
-        try:
-            cursor = connection.cursor(dictionary=True)
-            query = """
-            SELECT * FROM certifications 
-            ORDER BY issued_date DESC
-            """
-            cursor.execute(query)
-            certifications = cursor.fetchall()
-            cursor.close()
-            connection.close()
-            return certifications
-        except Error as e:
-            print(f"Error fetching certifications: {e}")
-            return []
-    return []
-
-def submit_enquiry(name, email, message):
-    connection = create_db_connection()
-    if connection:
-        try:
-            cursor = connection.cursor()
-            query = """
-            INSERT INTO enquiries (name, email, message) 
-            VALUES (%s, %s, %s)
-            """
-            values = (name, email, message)
-            cursor.execute(query, values)
-            connection.commit()
-            cursor.close()
-            connection.close()
-            return True
-        except Error as e:
-            print(f"Error submitting enquiry: {e}")
-            return False
-    return False 
+def get_certifications():
+    """Return dummy certification data"""
+    return [
+        {
+            'id': 1,
+            'title': 'Certified Product Manager',
+            'issuer': 'Product Management Institute',
+            'issue_date': 'Jun 2019',
+            'expiry_date': 'Jun 2022',
+            'certificate_url': '#'
+        },
+        {
+            'id': 2,
+            'title': 'Certified Scrum Master',
+            'issuer': 'Scrum Alliance',
+            'issue_date': 'Mar 2018',
+            'expiry_date': 'Mar 2020',
+            'certificate_url': '#'
+        },
+        {
+            'id': 3,
+            'title': 'Advanced UX Design',
+            'issuer': 'Design Academy',
+            'issue_date': 'Nov 2017',
+            'expiry_date': None,
+            'certificate_url': '#'
+        }
+    ] 

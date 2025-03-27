@@ -1,27 +1,3 @@
 # Netlify redirects file
-# This file defines custom redirects for Netlify deployment
-
-# Handle root path
-/ /html/index.html 200
-
-# Route for CSS files 
-/css/style.css /css/style.css 200
-/css/* /css/:splat 200
-
-# Route for JS files
-/js/* /js/:splat 200
-
-# Route for image files
-/img/* /img/:splat 200
-
-# Route html paths
-/projects /html/projects.html 200
-/solutions /html/solutions.html 200
-/contact /html/contact.html 200
-/image-generator-tool /html/image_generator_tool.html 200
-
-# Special handling for missing styles
-/style.css /css/style.css 301
-
-# Fallback for all paths
-/* /html/:splat.html 200 
+# Redirect all routes to index.html for SPA-like behavior
+/*    /index.html   200

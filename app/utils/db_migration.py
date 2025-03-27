@@ -1,31 +1,59 @@
-from app.models import db, SiteConfig
+"""Database migration utility functions"""
+from app.models.site_config import SiteConfig
+from app import db
 
 def init_site_config():
-    """Initialize site configuration with default values if they don't exist"""
-    print("Initializing site configuration...")
-    
-    # Default image URLs - corrected paths to match actual file structure
-    default_configs = {
-        'image_favicon_url': '/static/img/favicon.png',
-        'image_logo_url': '/static/img/logo.png',
-        'image_banner_url': '/static/img/banner_latest.png'
+    """Initialize site configuration with default values if not present"""
+    # Basic site configuration
+    defaults = {
+        # Site images
+        'image_favicon_url': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
+        'image_logo_url': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
+        'image_banner_url': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner',
+        
+        # About section content
+        'about_title': 'about.',
+        'about_subtitle': "I'm a passionate product manager based in New Delhi, India.",
+        'about_description': "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.",
+        
+        # About section images
+        'image_about_profile_url': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg',
+        'image_about_photo1_url': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+        'image_about_photo2_url': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+        'image_about_photo3_url': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+        'image_about_photo4_url': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg',
+        
+        # About photo alt text
+        'about_photo1_alt': 'Personal photo 1',
+        'about_photo2_alt': 'Personal photo 2',
+        'about_photo3_alt': 'Personal photo 3',
+        'about_photo4_alt': 'Personal photo 4'
     }
     
-    # Check if configurations exist and create them if they don't
-    for key, value in default_configs.items():
-        existing = SiteConfig.query.filter_by(key=key).first()
-        if not existing:
-            print(f"Creating default config for {key}")
-            config = SiteConfig(
-                key=key,
-                value=value,
-                description=f"URL for {key.replace('image_', '').replace('_url', '')}"
-            )
-            db.session.add(config)
+    # Set default values if not present
+    for key, value in defaults.items():
+        try:
+            existing = SiteConfig.query.filter_by(key=key).first()
+            if not existing:
+                config = SiteConfig(
+                    key=key, 
+                    value=value, 
+                    description=f"Value for {key} - can be overridden by environment variables on Netlify"
+                )
+                db.session.add(config)
+                print(f"Added default value for {key}")
+            else:
+                print(f"Config {key} already exists, skipping")
+        except Exception as e:
+            print(f"Error setting {key}: {str(e)}")
     
-    # Commit changes
-    db.session.commit()
-    print("Site configuration initialization complete")
+    # Commit all changes at once
+    try:
+        db.session.commit()
+        print("Committed all site configuration changes")
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error committing site config changes: {str(e)}")
 
 
 def run_migrations():
