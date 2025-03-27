@@ -17,63 +17,63 @@
     },
     "about_title": {
       "value": "Jayant Arora",
-      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:50.399961",
-      "updated_at": "2025-03-27T21:25:51"
+      "description": "About section title",
+      "updated_at": "2025-03-27T23:26:54"
     },
     "about_subtitle": {
       "value": "Curious Mind. Data Geek. Product Whisperer.",
-      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:51.036665",
-      "updated_at": "2025-03-27T21:25:51"
+      "description": "About section subtitle",
+      "updated_at": "2025-03-27T23:26:55"
     },
     "about_description": {
       "value": "Ever since I was a kid, I’ve been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I’ve done it all, and I’m just getting started. Here’s the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let’s talk.",
-      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:51.743138",
-      "updated_at": "2025-03-27T21:25:52"
+      "description": "About section description",
+      "updated_at": "2025-03-27T23:26:55"
     },
     "image_about_profile_url": {
       "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
-      "description": "Default value for image_about_profile_url",
-      "updated_at": "2025-03-27T18:35:26"
+      "description": "About profile image URL",
+      "updated_at": "2025-03-27T23:26:56"
     },
     "image_about_photo1_url": {
       "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
-      "description": "Default value for image_about_photo1_url",
-      "updated_at": "2025-03-27T18:41:06"
+      "description": "About photo 1 URL",
+      "updated_at": "2025-03-27T23:26:56"
     },
     "image_about_photo2_url": {
       "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
-      "description": "Default value for image_about_photo2_url",
-      "updated_at": "2025-03-27T18:41:06"
+      "description": "About photo 2 URL",
+      "updated_at": "2025-03-27T23:26:58"
     },
     "image_about_photo3_url": {
       "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
-      "description": "Default value for image_about_photo3_url",
-      "updated_at": "2025-03-27T18:41:06"
+      "description": "About photo 3 URL",
+      "updated_at": "2025-03-27T23:26:59"
     },
     "image_about_photo4_url": {
       "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
-      "description": "Default value for image_about_photo4_url",
-      "updated_at": "2025-03-27T18:41:07"
+      "description": "About photo 4 URL",
+      "updated_at": "2025-03-27T23:27:01"
     },
     "about_photo1_alt": {
       "value": "Test Photo 1 Alt Text",
-      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:52.553141",
-      "updated_at": "2025-03-27T21:25:53"
+      "description": "About photo 1 alt text",
+      "updated_at": "2025-03-27T23:26:57"
     },
     "about_photo2_alt": {
       "value": "Test Photo 2 Alt Text",
-      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:53.373367",
-      "updated_at": "2025-03-27T21:25:54"
+      "description": "About photo 2 alt text",
+      "updated_at": "2025-03-27T23:26:58"
     },
     "about_photo3_alt": {
       "value": "Test Photo 3 Alt Text",
-      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:54.141328",
-      "updated_at": "2025-03-27T21:25:54"
+      "description": "About photo 3 alt text",
+      "updated_at": "2025-03-27T23:27:00"
     },
     "about_photo4_alt": {
       "value": "Test Photo 4 Alt Text",
-      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:54.863177",
-      "updated_at": "2025-03-27T21:25:55"
+      "description": "About photo 4 alt text",
+      "updated_at": "2025-03-27T23:27:01"
     }
   },
   "about_content": {
@@ -110,8 +110,8 @@
     "about_photo3": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
     "about_photo4": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg"
   },
-  "exported_at": "2025-03-27T22:38:14.343541",
+  "exported_at": "2025-03-27T23:27:33.593789",
   "export_source": "database",
-  "last_updated": "2025-03-27T22:49:27.236986",
+  "last_updated": "2025-03-27T23:28:02.185570",
   "update_source": "api_request"
 }

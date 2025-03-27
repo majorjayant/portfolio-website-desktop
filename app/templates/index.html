@@ -321,31 +321,52 @@
         
         // Function to fetch the latest about content from the API
         function fetchLatestAboutContent() {
-            fetch('/api/about-content')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(apiResponse => {
-                    if (apiResponse.status === 'success' && apiResponse.data) {
-                        console.log('Loaded fresh about content from API:', apiResponse.timestamp);
-                        updateAboutContent(apiResponse.data);
-                    } else {
-                        throw new Error('API returned error or no data');
-                    }
-                })
-                .catch(apiError => {
-                    console.error('Error loading about content from API:', apiError);
-                    console.log('Falling back to JSON file');
-                    // Fall back to the JSON file
-                    fetchJSONData();
-                });
+            // Important: Get the current content before we do anything
+            const currentTitle = aboutTitle ? aboutTitle.textContent.trim() : '';
+            const currentSubtitle = aboutSubtitle ? aboutSubtitle.textContent.trim() : '';
+            const currentDescription = aboutDescription ? aboutDescription.textContent.trim() : '';
+            
+            // If we have real content from server-side rendering (not fallbacks), 
+            // store it to compare later and never replace with generic content
+            const hasServerContent = currentTitle && 
+                                    currentTitle !== 'about.' &&
+                                    currentDescription && 
+                                    currentDescription.length > 50; // Real content is usually longer
+            
+            console.log('Current About content: ', currentTitle);
+            
+            // Only attempt the API fetch if we're in development (not on Netlify static site)
+            if (window.location.hostname === 'localhost' || 
+                window.location.hostname.includes('127.0.0.1')) {
+                fetch('/api/about-content')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(apiResponse => {
+                        if (apiResponse.status === 'success' && apiResponse.data) {
+                            console.log('Loaded fresh about content from API:', apiResponse.timestamp);
+                            updateAboutContent(apiResponse.data);
+                        } else {
+                            throw new Error('API returned error or no data');
+                        }
+                    })
+                    .catch(apiError => {
+                        console.error('Error loading about content from API:', apiError);
+                        console.log('Falling back to JSON file');
+                        // Fall back to the JSON file
+                        fetchJSONData(hasServerContent, currentTitle, currentSubtitle, currentDescription);
+                    });
+            } else {
+                // On Netlify, just try the JSON file directly
+                fetchJSONData(hasServerContent, currentTitle, currentSubtitle, currentDescription);
+            }
         }
         
         // Function to fetch data from the JSON file
-        function fetchJSONData() {
+        function fetchJSONData(hasServerContent, currentTitle, currentSubtitle, currentDescription) {
             fetch('/data/site_config.json')
                 .then(response => {
                     if (!response.ok) {
@@ -356,43 +377,65 @@
                 .then(data => {
                     console.log('Loaded site config data from JSON');
                     if (data && data.about_content) {
-                        updateAboutContent(data.about_content);
+                        // IMPORTANT: If we have server-rendered content and JSON has generic fallbacks,
+                        // preserve our server content instead
+                        if (hasServerContent && data.about_content.title === 'about.') {
+                            console.log('JSON contains generic fallbacks, keeping server-rendered content');
+                            // Don't update - keep the server content
+                        } else {
+                            // JSON has real content, use it
+                            updateAboutContent(data.about_content);
+                        }
                     } else {
                         throw new Error('No about content in JSON');
                     }
                 })
                 .catch(error => {
                     console.error('Error loading site config JSON:', error);
-                    // Fall back to hardcoded values only if we can't load the JSON
-                    applyFallbackContent();
+                    
+                    // CRITICAL: If we have server content, NEVER replace with fallbacks
+                    if (hasServerContent) {
+                        console.log('Keeping existing server-rendered content instead of fallbacks');
+                        // Do nothing - keep the existing content
+                    } else {
+                        // Only apply fallbacks if we have no content at all
+                        applyFallbackContent();
+                    }
                 });
         }
         
         // Function to update the about content in the DOM
         function updateAboutContent(aboutContent) {
-            // Always apply the content to ensure it's the latest
-            if (aboutTitle) {
-                aboutTitle.textContent = aboutContent.title || 'about.';
+            // NEVER replace real content with generic fallbacks
+            if (aboutTitle && aboutContent.title && aboutContent.title !== 'about.') {
+                aboutTitle.textContent = aboutContent.title;
             }
             
-            if (aboutSubtitle) {
-                aboutSubtitle.textContent = aboutContent.subtitle || "I'm a passionate product manager based in New Delhi, India.";
+            if (aboutSubtitle && aboutContent.subtitle && 
+                !aboutContent.subtitle.includes("I'm a passionate product manager")) {
+                aboutSubtitle.textContent = aboutContent.subtitle;
             }
             
-            if (aboutDescription) {
-                aboutDescription.textContent = aboutContent.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+            if (aboutDescription && aboutContent.description && 
+                !aboutContent.description.includes("Since 2015, I've enjoyed turning complex problems")) {
+                aboutDescription.textContent = aboutContent.description;
                 aboutDescription.style.textAlign = 'left';
             }
             
-            // Always update profile image
+            // Update profile image only if it's not a generic fallback
             const profileImage = document.querySelector('.profile-image');
-            if (profileImage && aboutContent.profile_image) {
+            if (profileImage && aboutContent.profile_image && 
+                !aboutContent.profile_image.includes('/static/img/profile.jpg')) {
                 profileImage.src = aboutContent.profile_image;
             }
             
-            // Clear and repopulate photos to ensure they match the latest version
+            // Only update photos if we have real photos (not generic fallbacks)
             const snapsContainer = document.getElementById('snaps');
-            if (snapsContainer && aboutContent.photos) {
+            const hasRealPhotos = aboutContent.photos && 
+                                aboutContent.photos.length > 0 && 
+                                !aboutContent.photos[0].url.includes('/static/img/about_photo');
+            
+            if (snapsContainer && hasRealPhotos) {
                 // Clear existing content
                 snapsContainer.innerHTML = '';
                 
@@ -405,7 +448,7 @@
                     
                     const img = document.createElement('img');
                     img.src = photo.url;
-                    img.alt = photo.alt;
+                    img.alt = photo.alt || 'Photo';
                     img.onerror = function() {
                         this.onerror = null;
                         this.src = '/static/img/placeholder.png';
@@ -421,15 +464,16 @@
         }
         
         // Try to fetch from API first, fall back to JSON and then hardcoded values
-        fetchLatestAboutContent();
-        
-        // Re-fetch data at regular intervals to keep content fresh
-        setInterval(fetchLatestAboutContent, 60000); // Refresh every minute
+        // But only AFTER a short delay to ensure the page is fully loaded
+        setTimeout(fetchLatestAboutContent, 2000);
         
         // Function to apply fallback content if both API and JSON fail
         function applyFallbackContent() {
-            console.log('Applying fallback content');
-            // Fallback for about section content
+            console.log('Unable to fetch fresh data, keeping existing content');
+            
+            // Don't override existing content if it's already present
+            // Only apply fallbacks if the content is missing
+            
             if (aboutTitle && (!aboutTitle.textContent || aboutTitle.textContent.trim() === '')) {
                 aboutTitle.textContent = 'about.';
             }
@@ -444,10 +488,10 @@
                 aboutDescription.style.textAlign = 'left';
             }
             
-            // Handle profile image in about section
+            // Handle profile image in about section only if it failed to load
             const profileImage = document.querySelector('.profile-image');
-            if (profileImage) {
-                // Fallback for profile image
+            if (profileImage && (!profileImage.complete || profileImage.naturalWidth === 0)) {
+                // Only set fallback for profile image if it failed to load
                 profileImage.onerror = function() {
                     console.error("Error loading profile image: " + this.src);
                     this.onerror = null;
@@ -464,7 +508,7 @@
             // Check if snaps section is empty or has no elements
             const snapsContainer = document.getElementById('snaps');
             if (snapsContainer && (!snapsContainer.children || snapsContainer.children.length === 0)) {
-                // Create and add fallback photo elements
+                // Only create fallback photo elements if no photos exist
                 const s3Urls = [
                     'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
                     'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',

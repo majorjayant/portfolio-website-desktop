@@ -591,6 +591,17 @@
         
         // Function to fetch the latest about content from the API
         function fetchLatestAboutContent() {
+            // Check if we already have content - if so, don't risk replacing with generic fallback
+            const hasExistingContent = aboutTitle && aboutTitle.textContent && 
+                                       aboutTitle.textContent !== 'about.' &&
+                                       aboutDescription && aboutDescription.textContent;
+            
+            // If we already have non-fallback content, don't try to fetch unless forced
+            if (hasExistingContent) {
+                console.log('Using existing content from HTML - skipping fetch');
+                return;
+            }
+            
             fetch('/api/about-content')
                 .then(response => {
                     if (!response.ok) {
@@ -616,6 +627,17 @@
         
         // Function to fetch data from the JSON file
         function fetchJSONData() {
+            // Check if we already have content - if so, don't risk replacing with generic fallback
+            const hasExistingContent = aboutTitle && aboutTitle.textContent && 
+                                       aboutTitle.textContent !== 'about.' &&
+                                       aboutDescription && aboutDescription.textContent;
+            
+            // If we already have non-fallback content, don't try to fetch unless forced
+            if (hasExistingContent) {
+                console.log('Using existing content from HTML - skipping JSON fetch');
+                return;
+            }
+            
             fetch('/data/site_config.json')
                 .then(response => {
                     if (!response.ok) {
@@ -633,8 +655,10 @@
                 })
                 .catch(error => {
                     console.error('Error loading site config JSON:', error);
-                    // Fall back to hardcoded values only if we can't load the JSON
-                    applyFallbackContent();
+                    // IMPORTANT: Keep existing content instead of applying generic fallbacks
+                    if (!hasExistingContent) {
+                        applyFallbackContent();
+                    }
                 });
         }
         
@@ -693,13 +717,17 @@
         // Try to fetch from API first, fall back to JSON and then hardcoded values
         fetchLatestAboutContent();
         
-        // Re-fetch data at regular intervals to keep content fresh
-        setInterval(fetchLatestAboutContent, 60000); // Refresh every minute
+        // Don't continuously poll for data on Netlify static site
+        // This would keep triggering fallbacks and might override user content
+        // setInterval(fetchLatestAboutContent, 60000); // Refresh every minute
         
         // Function to apply fallback content if both API and JSON fail
         function applyFallbackContent() {
-            console.log('Applying fallback content');
-            // Fallback for about section content
+            console.log('Unable to fetch fresh data, keeping existing content');
+            
+            // Don't override existing content if it's already present
+            // Only apply fallbacks if the content is missing
+            
             if (aboutTitle && (!aboutTitle.textContent || aboutTitle.textContent.trim() === '')) {
                 aboutTitle.textContent = 'about.';
             }
@@ -714,10 +742,10 @@
                 aboutDescription.style.textAlign = 'left';
             }
             
-            // Handle profile image in about section
+            // Handle profile image in about section only if it failed to load
             const profileImage = document.querySelector('.profile-image');
-            if (profileImage) {
-                // Fallback for profile image
+            if (profileImage && (!profileImage.complete || profileImage.naturalWidth === 0)) {
+                // Only set fallback for profile image if it failed to load
                 profileImage.onerror = function() {
                     console.error("Error loading profile image: " + this.src);
                     this.onerror = null;
@@ -734,7 +762,7 @@
             // Check if snaps section is empty or has no elements
             const snapsContainer = document.getElementById('snaps');
             if (snapsContainer && (!snapsContainer.children || snapsContainer.children.length === 0)) {
-                // Create and add fallback photo elements
+                // Only create fallback photo elements if no photos exist
                 const s3Urls = [
                     'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
                     'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
