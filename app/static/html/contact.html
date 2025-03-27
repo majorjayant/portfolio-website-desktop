@@ -5,6 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact | majorjayant</title>
     
+    <!-- Critical CSS - Fallback styles in case external CSS fails -->
+    <style>
+        /* Fallback critical styles */
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background-color: rgba(0, 0, 0, 0.6); }
+        .logo { display: block; padding: 5px 15px; position: relative; }
+        .logo img { height: 70px; width: auto; display: block; }
+        .nav-links { flex-grow: 1; margin-left: auto; text-align: right; }
+        .nav-links ul { display: flex; list-style: none; justify-content: flex-end; margin: 0; padding: 0; }
+        .nav-links li { margin: 0 1.5rem; }
+        .nav-links a { color: #e6e0d4; text-decoration: none; font-weight: 600; }
+        .banner { margin-top: 80px; width: 100%; overflow: hidden; }
+        .banner-image { width: 100%; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat; }
+        footer { background-color: #0d141a; color: white; padding: 3rem 0 1rem; }
+        .footer-container { display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
+        .footer-logo img { max-width: 100px; max-height: 60px; }
+    </style>
+    
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon">
     
@@ -52,6 +71,54 @@
                 if (favicon) {
                     favicon.href = fallbacks.favicon;
                 }
+                
+                // Fix styles if needed
+                const fixStyles = function() {
+                    // Fix header styles
+                    const navbar = document.querySelector('.navbar');
+                    if (navbar) {
+                        navbar.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                        navbar.style.backdropFilter = 'blur(8px)';
+                    }
+                    
+                    // Fix logo styles
+                    if (headerLogo) {
+                        headerLogo.style.height = '70px';
+                        headerLogo.style.width = 'auto';
+                        headerLogo.style.display = 'block';
+                    }
+                    
+                    // Fix navigation
+                    const navLinks = document.querySelector('.nav-links');
+                    if (navLinks) {
+                        navLinks.style.marginLeft = 'auto';
+                        navLinks.style.textAlign = 'right';
+                    }
+                    
+                    const navLinksList = document.querySelector('.nav-links ul');
+                    if (navLinksList) {
+                        navLinksList.style.display = 'flex';
+                        navLinksList.style.justifyContent = 'flex-end';
+                        navLinksList.style.padding = '0';
+                        navLinksList.style.margin = '0';
+                    }
+                    
+                    // Fix banner
+                    const bannerImage = document.getElementById('banner-image');
+                    if (bannerImage) {
+                        bannerImage.style.backgroundSize = 'contain';
+                        bannerImage.style.backgroundPosition = 'center';
+                        bannerImage.style.backgroundRepeat = 'no-repeat';
+                    }
+                    
+                    // Fix footer logo
+                    if (footerLogo) {
+                        footerLogo.style.maxWidth = '100px';
+                        footerLogo.style.maxHeight = '60px';
+                    }
+                };
+                
+                fixStyles();
             };
             
             // Run immediately and also after a short delay to catch slow-loading elements
@@ -65,14 +132,14 @@
     <header>
         <nav class="navbar">
             <a href="/" class="logo">
-                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="height: 70px; width: auto; display: block;">
             </a>
-            <div class="nav-links">
-                <ul>
-                    <li><a href="/" >Home</a></li>
-                    <li><a href="/projects" >Projects</a></li>
-                    <li><a href="/solutions" >Solutions</a></li>
-                    <li><a href="/contact" class="active">Contact</a></li>
+            <div class="nav-links" style="margin-left: auto; text-align: right;">
+                <ul style="display: flex; list-style: none; justify-content: flex-end; margin: 0; padding: 0;">
+                    <li style="margin: 0 1.5rem;"><a href="/" >Home</a></li>
+                    <li style="margin: 0 1.5rem;"><a href="/projects" >Projects</a></li>
+                    <li style="margin: 0 1.5rem;"><a href="/solutions" >Solutions</a></li>
+                    <li style="margin: 0 1.5rem;"><a href="/contact" class="active">Contact</a></li>
                 </ul>
             </div>
             <div class="social-links">
@@ -197,45 +264,37 @@
     </main>
 
     <!-- Footer -->
-    <footer>
+    <footer style="padding: 2rem 0 0.5rem;">
         <div class="footer-container">
-            <div class="footer-section">
-                <div class="footer-logo">
-                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo">
+            <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
+                <div class="footer-logo" style="margin-bottom: 0.5rem;">
+                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
                 </div>
-                <p>Turning Chaos Into Clarity</p>
-                <div class="social-icons">
+                <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
+                <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
                     <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
                     <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
                     <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
                 </div>
             </div>
-            <div class="footer-section">
-                <h3>Contact Info</h3>
-                <p><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
-                <p><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
-                <p><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
+            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Contact Info</h3>
+                <p style="margin-bottom: 0.5rem;"><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
+                <p style="margin-bottom: 0.5rem;"><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                <p style="margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
             </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/projects">Projects</a></li>
-                    <li><a href="/solutions">Solutions</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/image-generator-tool">Image Generator</a></li>
+            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Quick Links</h3>
+                <ul style="margin: 0; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;"><a href="/">Home</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/projects">Projects</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/solutions">Solutions</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/contact">Contact</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/image-generator-tool">Image Generator</a></li>
                 </ul>
             </div>
-            <div class="footer-section">
-                <h3>Follow Me</h3>
-                <div class="social-icons">
-                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="https://linkedin.com/in/majorjayant" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
         </div>
-        <div class="copyright">
+        <div class="copyright" style="margin-top: 1rem; padding-top: 0.8rem;">
             <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
         </div>
     </footer>

@@ -108,59 +108,63 @@ header {
 }
 
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 5%;
-  background-color: rgba(0, 0, 0, 0.6);  /* Darker background */
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow);
-  transition: var(--transition);
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 1rem 5% !important;
 }
 
 /* On scroll, make navbar slightly more visible */
 .navbar.scrolled {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.8) !important;
 }
 
 .logo {
-  position: relative;
-  z-index: 2;
+  display: block !important;
+  padding: 5px 15px !important;
+  position: relative !important;
 }
 
 .logo:before {
   content: '';
   position: absolute;
-  top: -10px;
-  left: -15px;
-  right: -15px;
-  bottom: -10px;
-  background-color: rgba(0, 0, 0, 0.7);  /* Dark background behind logo */
+  top: -6px;
+  left: -3px;
+  right: -3px;
+  bottom: -6px;
+  background-color: rgba(0, 0, 0, 0.6);  /* Dark background behind logo */
   border-radius: 8px;
   z-index: -1;
 }
 
 .logo img {
-  height: 70px;
-  width: auto;
-  display: block;
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));  /* Enhanced glow effect */
+  height: 70px !important;
+  width: auto !important;
+  display: block !important;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+  max-width: none !important;
 }
 
 .nav-links {
-  flex-grow: 1;
-  margin-left: auto; /* Push menu to the right */
-  text-align: right; /* Align text to the right */
+  flex-grow: 1 !important;
+  margin-left: auto !important;
+  text-align: right !important;
 }
 
 .nav-links ul {
-  display: flex;
-  list-style: none;
-  justify-content: flex-end;  /* Right-aligned */
+  display: flex !important;
+  list-style: none !important;
+  justify-content: flex-end !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .nav-links li {
   margin: 0 1.5rem;
+  padding: 0;
 }
 
 .nav-links a {
@@ -238,9 +242,9 @@ header {
   width: 100%;
   height: 0;
   padding-bottom: 38.75%; /* Exact aspect ratio: (620/1600)*100 = 38.75% */
-  background-size: cover; /* Changed from 100% 100% to cover to prevent stretching */
-  background-position: center;
-  background-repeat: no-repeat;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
   position: relative;
   /* Enhanced fade effect on both sides */
   -webkit-mask-image: linear-gradient(to right, 
@@ -994,56 +998,56 @@ header {
 footer {
   background-color: var(--primary-color);
   color: var(--text-light);
-  padding: 3rem 0 1rem;
+  padding: 2rem 0 0.5rem; /* Reduced from 3rem 0 1rem */
 }
 
 .footer-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
 .footer-section {
   flex: 1;
-  min-width: 250px;
-  margin-bottom: 1.5rem;
-  display: flex;  /* Added for first section only */
-  flex-direction: column;  /* Added for first section only */
-  align-items: center;  /* Center align first section content */
-  text-align: center;  /* Center align text in first section */
+  min-width: 300px;
+  margin-bottom: 1rem; /* Reduced from 2rem */
+  padding: 0 0.5rem; /* Reduced from 0 1rem */
+  box-sizing: border-box;
 }
 
 .footer-section:first-child {
-  align-items: center;
-  text-align: center;
+  flex: 1.5; /* Give more space to the first section with logo */
+  text-align: center !important; /* Center align the content */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
-.footer-section:not(:first-child) {
-  align-items: flex-start;
-  text-align: left;
-}
+#.footer-section:not(:first-child) {
+#  border-left: 1px solid rgba(255,255,255,0.1);
+#}
 
 .footer-section h3 {
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem; /* Reduced from 1.2rem */
+  margin-bottom: 1rem; /* Reduced from 1.5rem */
   position: relative;
 }
 
 .footer-section h3:after {
   content: '';
   position: absolute;
-  bottom: -5px;
+  bottom: -5px; /* Reduced from -8px */
   left: 0;
-  width: 40px;
+  width: 25px; /* Reduced from 30px */
   height: 2px;
   background-color: var(--accent-color);
 }
 
 .footer-section p {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem; /* Reduced from 1rem */
 }
 
 .footer-section a {
@@ -1057,16 +1061,18 @@ footer {
 
 .footer-section ul {
   list-style: none;
-  padding: 0;
+  padding-left: 0;
+  margin: 0; /* Added to remove default margins */
 }
 
 .footer-section ul li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem; /* Reduced from 0.8rem */
 }
 
 .social-icons {
   display: flex;
-  margin-top: 1rem;
+  margin-top: 0.5rem; /* Reduced from 1rem */
+  flex-wrap: wrap;
 }
 
 .social-icons a {
@@ -1076,22 +1082,32 @@ footer {
 
 .copyright {
   text-align: center;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 1rem; /* Reduced from 2rem */
+  padding-top: 0.8rem; /* Reduced from 1.5rem */
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .footer-logo {
   display: block;
-  margin-bottom: 1rem;
-  text-align: center; /* Center the logo */
+  margin-bottom: 0.5rem; /* Reduced from 1rem */
+  max-width: 150px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .footer-logo img {
-  height: 180px; /* Increased from 60px to 180px (300% larger) */
-  width: auto;
-  display: block;
-  margin: 0 auto 15px; /* Center horizontally */
+  width: 100%;
+  height: auto;
+  max-width: 200px !important;
+  max-height: 180px !important;
+  object-fit: contain !important;
+}
+
+/* Center align social icons under logo */
+.footer-section:first-child .social-icons {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
 }
 
 /* Visitor count styles */
