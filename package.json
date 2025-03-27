@@ -1,7 +1,7 @@
 {
   "name": "portfolio-website-desktop",
   "version": "1.0.0",
-  "description": "Portfolio website with image generator",
+  "description": "Portfolio website",
   "scripts": {
     "build": "python build_static_site.py"
   },

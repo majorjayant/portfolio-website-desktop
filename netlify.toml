@@ -32,10 +32,6 @@
   force = false
   conditions = {Role = ["anonymous"]}
 
-# Plugin for Python dependencies
-[[plugins]]
-  package = "@netlify/plugin-python"
-
 [context.production.environment]
   STATIC_DEPLOYMENT = "true"
   IMAGE_FAVICON_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon"
