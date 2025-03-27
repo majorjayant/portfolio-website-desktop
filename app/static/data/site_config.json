@@ -110,8 +110,6 @@
     "about_photo3": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
     "about_photo4": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg"
   },
-  "exported_at": "2025-03-27T23:27:33.593789",
-  "export_source": "database",
-  "last_updated": "2025-03-27T23:28:02.185570",
-  "update_source": "api_request"
+  "exported_at": "2025-03-27T23:37:15.105161",
+  "export_source": "database"
 }
