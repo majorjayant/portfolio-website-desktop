@@ -67,6 +67,24 @@ except Exception as e:
 OUTPUT_DIR = 'app/static'
 print(f"\nOutput directory: {OUTPUT_DIR}")
 
+# Create about section content directly in the build script
+about_content = {
+    'title': os.environ.get('ABOUT_TITLE', 'about.'),
+    'subtitle': os.environ.get('ABOUT_SUBTITLE', "I'm a passionate product manager based in New Delhi, India."),
+    'description': os.environ.get('ABOUT_DESCRIPTION', "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places."),
+    'profile_image': os.environ.get('IMAGE_ABOUT_PROFILE_URL', 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg'),
+    'photos': [
+        {'url': os.environ.get('IMAGE_ABOUT_PHOTO1_URL', 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg'), 
+         'alt': os.environ.get('ABOUT_PHOTO1_ALT', 'Personal photo 1')},
+        {'url': os.environ.get('IMAGE_ABOUT_PHOTO2_URL', 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg'), 
+         'alt': os.environ.get('ABOUT_PHOTO2_ALT', 'Personal photo 2')},
+        {'url': os.environ.get('IMAGE_ABOUT_PHOTO3_URL', 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg'), 
+         'alt': os.environ.get('ABOUT_PHOTO3_ALT', 'Personal photo 3')},
+        {'url': os.environ.get('IMAGE_ABOUT_PHOTO4_URL', 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'), 
+         'alt': os.environ.get('ABOUT_PHOTO4_ALT', 'Personal photo 4')}
+    ]
+}
+
 # Make sure the output directories exist
 def ensure_dir(dir_path):
     """Make sure the directory exists"""
@@ -267,6 +285,49 @@ def build_static_site():
         # Generate static HTML for each route
         print("\nGenerating HTML files for routes...")
         with app.test_request_context():
+            # Monkey patch the app's view functions to inject about_content
+            orig_home_view = app.view_functions.get('home')
+            
+            # Define a wrapper function that injects our about_content
+            def home_view_with_content():
+                from flask import render_template
+                
+                # Get dummy data
+                try:
+                    projects = []
+                    experience = []
+                    education = []
+                    certifications = []
+                    
+                    # Import get_* functions only if they exist
+                    try:
+                        from app.models.models import get_projects, get_experience, get_education, get_certifications
+                        projects = get_projects()
+                        experience = get_experience()
+                        education = get_education()
+                        certifications = get_certifications()
+                    except Exception as e:
+                        print(f"  ⚠ Error getting model data: {str(e)}")
+                
+                except Exception as e:
+                    print(f"  ⚠ Error generating dummy data: {str(e)}")
+                    projects = []
+                    experience = []
+                    education = []
+                    certifications = []
+                
+                # Directly render template with our about_content
+                return render_template('index.html', 
+                                      projects=projects, 
+                                      experience=experience,
+                                      education=education,
+                                      certifications=certifications,
+                                      about_content=about_content)
+            
+            # Replace the home route with our wrapper if it exists
+            if 'home' in app.view_functions:
+                app.view_functions['home'] = home_view_with_content
+            
             for route in routes:
                 try:
                     # Create the request context for the route
