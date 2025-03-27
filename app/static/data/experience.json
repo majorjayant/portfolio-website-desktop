@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "Senior Product Manager",
+    "company": "Tech Solutions Inc.",
+    "period": "Jan 2020 - Present",
+    "description": "Leading product development for enterprise SaaS solutions. Managing a team of 5 developers and 2 designers."
+  },
+  {
+    "id": 2,
+    "title": "Product Manager",
+    "company": "Digital Innovations Co.",
+    "period": "Mar 2017 - Dec 2019",
+    "description": "Managed the development of mobile applications for financial services clients."
+  },
+  {
+    "id": 3,
+    "title": "Associate Product Manager",
+    "company": "StartupHub",
+    "period": "Jun 2015 - Feb 2017",
+    "description": "Assisted in the development and launch of three successful web applications."
+  }
+]

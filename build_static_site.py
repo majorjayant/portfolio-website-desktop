@@ -10,6 +10,7 @@ import shutil
 import traceback
 import time
 import re
+import json
 from flask import url_for, render_template
 from pathlib import Path
 from urllib.parse import urlparse
@@ -17,7 +18,104 @@ from urllib.parse import urlparse
 # Set static deployment flag
 os.environ['STATIC_DEPLOYMENT'] = 'true'
 
-# Set image URLs from environment variables or use S3 fallbacks for the static site
+# Start time for timing the build process
+start_time = time.time()
+
+# Print header for build process
+print("\n" + "=" * 80)
+print("STATIC SITE GENERATION FOR PORTFOLIO WEBSITE")
+print("=" * 80)
+
+# Print Python and environment information
+print(f"\nEnvironment Information:")
+print(f"  Python version: {sys.version}")
+print(f"  Python executable: {sys.executable}")
+print(f"  Current working directory: {os.getcwd()}")
+print(f"  Platform: {sys.platform}")
+
+# Check for existing exported data first
+exported_data_file = os.path.join('app', 'static', 'data', 'site_config.json')
+exported_data = None
+
+if os.path.exists(exported_data_file):
+    try:
+        print(f"\nFound existing exported data file: {exported_data_file}")
+        with open(exported_data_file, 'r', encoding='utf-8') as f:
+            exported_data = json.load(f)
+            
+        export_source = exported_data.get('export_source', 'unknown')
+        export_time = exported_data.get('exported_at', 'unknown')
+        print(f"  ○ Using previously exported data from {export_source} (exported at {export_time})")
+        
+        # Extract about content
+        about_content = exported_data.get('about_content', {})
+        image_urls = exported_data.get('image_urls', {})
+        
+        # Set environment variables based on exported data
+        if image_urls:
+            for key, url in image_urls.items():
+                env_key = f"IMAGE_{key.upper()}_URL"
+                os.environ[env_key] = url
+                print(f"  ○ Set environment variable: {env_key}")
+                
+        # Set about content environment variables
+        if about_content:
+            os.environ['ABOUT_TITLE'] = about_content.get('title', 'about.')
+            os.environ['ABOUT_SUBTITLE'] = about_content.get('subtitle', "I'm a passionate product manager based in New Delhi, India.")
+            os.environ['ABOUT_DESCRIPTION'] = about_content.get('description', "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.")
+            
+            photos = about_content.get('photos', [])
+            for i, photo in enumerate(photos, 1):
+                if i <= 4:  # Only handle up to 4 photos
+                    os.environ[f'ABOUT_PHOTO{i}_ALT'] = photo.get('alt', f'Personal photo {i}')
+                    
+    except Exception as e:
+        print(f"  ⚠ Error reading exported data file: {str(e)}")
+        exported_data = None
+        
+# If we don't have exported data yet, try to export it
+if not exported_data:
+    # Export database content
+    print("\nExporting database content...")
+    try:
+        from app.utils.db_exporter import export_site_configs
+        config_file = export_site_configs()
+        if config_file:
+            print(f"✓ Successfully exported database to {config_file}")
+            
+            # Load the exported data
+            with open(config_file, 'r', encoding='utf-8') as f:
+                exported_data = json.load(f)
+                
+            # Extract about content
+            about_content = exported_data.get('about_content', {})
+            image_urls = exported_data.get('image_urls', {})
+            
+            # Set environment variables based on exported data
+            if image_urls:
+                for key, url in image_urls.items():
+                    env_key = f"IMAGE_{key.upper()}_URL"
+                    os.environ[env_key] = url
+                    print(f"  ○ Set environment variable: {env_key}")
+                    
+            # Set about content environment variables
+            if about_content:
+                os.environ['ABOUT_TITLE'] = about_content.get('title', 'about.')
+                os.environ['ABOUT_SUBTITLE'] = about_content.get('subtitle', "I'm a passionate product manager based in New Delhi, India.")
+                os.environ['ABOUT_DESCRIPTION'] = about_content.get('description', "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.")
+                
+                photos = about_content.get('photos', [])
+                for i, photo in enumerate(photos, 1):
+                    if i <= 4:  # Only handle up to 4 photos
+                        os.environ[f'ABOUT_PHOTO{i}_ALT'] = photo.get('alt', f'Personal photo {i}')
+        else:
+            print("⚠ Database export failed, using fallback values")
+    except Exception as e:
+        print(f"⚠ Error exporting database: {str(e)}")
+        print("  ○ Using fallback values for environment variables")
+        traceback.print_exc()
+
+# Set fallback image URLs from environment variables or use S3 fallbacks for the static site
 # For Netlify, these should be set in the Netlify environment variables settings
 s3_base_url = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com'
 os.environ['IMAGE_FAVICON_URL'] = os.environ.get('IMAGE_FAVICON_URL', f'{s3_base_url}/FavIcon')
@@ -38,21 +136,6 @@ os.environ['ABOUT_PHOTO2_ALT'] = os.environ.get('ABOUT_PHOTO2_ALT', 'Personal ph
 os.environ['ABOUT_PHOTO3_ALT'] = os.environ.get('ABOUT_PHOTO3_ALT', 'Personal photo 3')
 os.environ['ABOUT_PHOTO4_ALT'] = os.environ.get('ABOUT_PHOTO4_ALT', 'Personal photo 4')
 
-# Start time for timing the build process
-start_time = time.time()
-
-# Print header for build process
-print("\n" + "=" * 80)
-print("STATIC SITE GENERATION FOR PORTFOLIO WEBSITE")
-print("=" * 80)
-
-# Print Python and environment information
-print(f"\nEnvironment Information:")
-print(f"  Python version: {sys.version}")
-print(f"  Python executable: {sys.executable}")
-print(f"  Current working directory: {os.getcwd()}")
-print(f"  Platform: {sys.platform}")
-
 try:
     # Import app after printing diagnostics
     print("\nImporting Flask application...")
@@ -67,7 +150,7 @@ except Exception as e:
 OUTPUT_DIR = 'app/static'
 print(f"\nOutput directory: {OUTPUT_DIR}")
 
-# Create about section content directly in the build script
+# Create about section content directly in the build script using the exported data or environment variables
 about_content = {
     'title': os.environ.get('ABOUT_TITLE', 'about.'),
     'subtitle': os.environ.get('ABOUT_SUBTITLE', "I'm a passionate product manager based in New Delhi, India."),
@@ -315,6 +398,13 @@ def build_static_site():
                     experience = []
                     education = []
                     certifications = []
+                
+                # Always use our prepared about_content directly instead of using SiteConfig.get_about_content()
+                # This ensures our exported database data is used during static site generation
+                print(f"  ○ Using exported about_content data for template rendering:")
+                print(f"    - Title: {about_content['title']}")
+                print(f"    - Subtitle: {about_content['subtitle']}")
+                print(f"    - Profile Image: {about_content['profile_image']}")
                 
                 # Directly render template with our about_content
                 return render_template('index.html', 

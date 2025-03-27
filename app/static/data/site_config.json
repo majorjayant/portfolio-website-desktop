@@ -1,0 +1,115 @@
+{
+  "site_configs": {
+    "image_favicon_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+      "description": "Default value for image_favicon_url",
+      "updated_at": "2025-03-27T18:35:24"
+    },
+    "image_logo_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+      "description": "Default value for image_logo_url",
+      "updated_at": "2025-03-27T18:35:25"
+    },
+    "image_banner_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+      "description": "Default value for image_banner_url",
+      "updated_at": "2025-03-27T18:35:25"
+    },
+    "about_title": {
+      "value": "About Me",
+      "description": "Replaced test content with real content",
+      "updated_at": "2025-03-27T21:25:51"
+    },
+    "about_subtitle": {
+      "value": "I'm a passionate product manager based in New Delhi, India.",
+      "description": "Replaced test content with real content",
+      "updated_at": "2025-03-27T21:25:51"
+    },
+    "about_description": {
+      "value": "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.",
+      "description": "Replaced test content with real content",
+      "updated_at": "2025-03-27T21:25:52"
+    },
+    "image_about_profile_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+      "description": "Default value for image_about_profile_url",
+      "updated_at": "2025-03-27T18:35:26"
+    },
+    "image_about_photo1_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+      "description": "Default value for image_about_photo1_url",
+      "updated_at": "2025-03-27T18:41:06"
+    },
+    "image_about_photo2_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+      "description": "Default value for image_about_photo2_url",
+      "updated_at": "2025-03-27T18:41:06"
+    },
+    "image_about_photo3_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+      "description": "Default value for image_about_photo3_url",
+      "updated_at": "2025-03-27T18:41:06"
+    },
+    "image_about_photo4_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+      "description": "Default value for image_about_photo4_url",
+      "updated_at": "2025-03-27T18:41:07"
+    },
+    "about_photo1_alt": {
+      "value": "Test Photo 1 Alt Text",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:52.553141",
+      "updated_at": "2025-03-27T21:25:53"
+    },
+    "about_photo2_alt": {
+      "value": "Test Photo 2 Alt Text",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:53.373367",
+      "updated_at": "2025-03-27T21:25:54"
+    },
+    "about_photo3_alt": {
+      "value": "Test Photo 3 Alt Text",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:54.141328",
+      "updated_at": "2025-03-27T21:25:54"
+    },
+    "about_photo4_alt": {
+      "value": "Test Photo 4 Alt Text",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:54.863177",
+      "updated_at": "2025-03-27T21:25:55"
+    }
+  },
+  "about_content": {
+    "title": "About Me",
+    "subtitle": "I'm a passionate product manager based in New Delhi, India.",
+    "description": "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.",
+    "profile_image": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+    "photos": [
+      {
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+        "alt": "Test Photo 1 Alt Text"
+      },
+      {
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+        "alt": "Test Photo 2 Alt Text"
+      },
+      {
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+        "alt": "Test Photo 3 Alt Text"
+      },
+      {
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+        "alt": "Test Photo 4 Alt Text"
+      }
+    ]
+  },
+  "image_urls": {
+    "favicon": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+    "logo": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+    "banner": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+    "about_profile": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+    "about_photo1": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+    "about_photo2": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+    "about_photo3": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+    "about_photo4": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg"
+  },
+  "exported_at": "2025-03-27T22:24:07.405795",
+  "export_source": "database"
+}

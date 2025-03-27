@@ -95,6 +95,63 @@ The script will:
 3. Generate a special static version of the image generator tool
 4. Create the necessary directory structure for deployment
 
+## Static Site Generation for Netlify
+
+This project supports static site generation for deployment on Netlify. The static site generation process has been enhanced to use content from your database even in static deployment mode.
+
+### Workflow for Static Site Deployment
+
+1. **Export database content**:
+   Before deploying to Netlify, export the current database content to a JSON file:
+
+   ```bash
+   python export_site_config.py
+   ```
+
+   This will create or update the file `app/static/data/site_config.json` with the current content from your database.
+
+2. **Commit the exported data**:
+   Make sure to commit this JSON file to your repository so Netlify can use it during the build process.
+
+3. **Build the static site**:
+   The build script automatically uses the exported data file when generating the static site:
+
+   ```bash
+   python build_static_site.py
+   ```
+
+   This script will:
+   - Look for the exported data file and use it if available
+   - Fall back to environment variables if the data file is not available
+   - Generate static HTML files for all routes
+   - Copy necessary assets
+
+4. **Deploy to Netlify**:
+   Push your changes to the branch connected to Netlify, and Netlify will automatically build and deploy your site.
+
+### Environment Variables
+
+The following environment variables can be set in Netlify to override default values:
+
+- `IMAGE_FAVICON_URL`: URL for the favicon
+- `IMAGE_LOGO_URL`: URL for the logo
+- `IMAGE_BANNER_URL`: URL for the banner
+- `IMAGE_ABOUT_PROFILE_URL`: URL for the about profile image
+- `IMAGE_ABOUT_PHOTO1_URL` to `IMAGE_ABOUT_PHOTO4_URL`: URLs for the about photos
+- `ABOUT_TITLE`: Title for the about section
+- `ABOUT_SUBTITLE`: Subtitle for the about section
+- `ABOUT_DESCRIPTION`: Description for the about section
+- `ABOUT_PHOTO1_ALT` to `ABOUT_PHOTO4_ALT`: Alt text for the about photos
+
+### Client-Side Fallbacks
+
+The static site includes client-side JavaScript fallbacks that will:
+1. Try to load content from the server-rendered HTML
+2. If that fails, try to load from the exported JSON file
+3. If that fails, use hardcoded fallbacks
+
+This ensures your site will always display something even if there are issues with the database or environment variables.
+
 ## Project Structure
 
 ```

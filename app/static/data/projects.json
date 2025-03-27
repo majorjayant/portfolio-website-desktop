@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "E-Commerce Platform",
+    "description": "Developed a fully responsive e-commerce platform with payment processing integration.",
+    "image_url": "/static/img/project1.jpg",
+    "link": "#"
+  },
+  {
+    "id": 2,
+    "title": "Travel Application",
+    "description": "Mobile app for travelers to discover local experiences and book tours.",
+    "image_url": "/static/img/project2.jpg",
+    "link": "#"
+  },
+  {
+    "id": 3,
+    "title": "Healthcare Dashboard",
+    "description": "Analytics dashboard for healthcare providers to track patient outcomes.",
+    "image_url": "/static/img/project3.jpg",
+    "link": "#"
+  }
+]

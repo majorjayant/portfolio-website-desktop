@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "degree": "Master of Business Administration",
+    "institution": "Business University",
+    "period": "2014 - 2015",
+    "description": "Specialized in Technology Management with focus on Product Development."
+  },
+  {
+    "id": 2,
+    "degree": "Bachelor of Science in Computer Science",
+    "institution": "Tech Institute",
+    "period": "2010 - 2014",
+    "description": "Graduated with honors. Focused on software engineering and UI/UX design."
+  }
+]

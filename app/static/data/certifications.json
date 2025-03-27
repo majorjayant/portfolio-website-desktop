@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Certified Product Manager",
+    "issuer": "Product Management Institute",
+    "issue_date": "Jun 2019",
+    "expiry_date": "Jun 2022",
+    "certificate_url": "#"
+  },
+  {
+    "id": 2,
+    "title": "Certified Scrum Master",
+    "issuer": "Scrum Alliance",
+    "issue_date": "Mar 2018",
+    "expiry_date": "Mar 2020",
+    "certificate_url": "#"
+  },
+  {
+    "id": 3,
+    "title": "Advanced UX Design",
+    "issuer": "Design Academy",
+    "issue_date": "Nov 2017",
+    "expiry_date": null,
+    "certificate_url": "#"
+  }
+]

@@ -1,0 +1,191 @@
+{
+  "about": {
+    "title": "Test About Title 02:55:48",
+    "subtitle": "Test Subtitle - 2025-03-28",
+    "description": "This is a test description added by the testing script on 2025-03-28 02:55:48",
+    "profile_image": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+    "photos": [
+      {
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+        "alt": "Test Photo 1 Alt Text"
+      },
+      {
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+        "alt": "Test Photo 2 Alt Text"
+      },
+      {
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+        "alt": "Test Photo 3 Alt Text"
+      },
+      {
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+        "alt": "Test Photo 4 Alt Text"
+      }
+    ]
+  },
+  "site_config": {
+    "image_favicon_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+      "description": "Default value for image_favicon_url",
+      "updated_at": "2025-03-27 18:35:24"
+    },
+    "image_logo_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+      "description": "Default value for image_logo_url",
+      "updated_at": "2025-03-27 18:35:25"
+    },
+    "image_banner_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+      "description": "Default value for image_banner_url",
+      "updated_at": "2025-03-27 18:35:25"
+    },
+    "about_title": {
+      "value": "Test About Title 02:55:48",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:50.399961",
+      "updated_at": "2025-03-27 21:25:51"
+    },
+    "about_subtitle": {
+      "value": "Test Subtitle - 2025-03-28",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:51.036665",
+      "updated_at": "2025-03-27 21:25:51"
+    },
+    "about_description": {
+      "value": "This is a test description added by the testing script on 2025-03-28 02:55:48",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:51.743138",
+      "updated_at": "2025-03-27 21:25:52"
+    },
+    "image_about_profile_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+      "description": "Default value for image_about_profile_url",
+      "updated_at": "2025-03-27 18:35:26"
+    },
+    "image_about_photo1_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+      "description": "Default value for image_about_photo1_url",
+      "updated_at": "2025-03-27 18:41:06"
+    },
+    "image_about_photo2_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+      "description": "Default value for image_about_photo2_url",
+      "updated_at": "2025-03-27 18:41:06"
+    },
+    "image_about_photo3_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+      "description": "Default value for image_about_photo3_url",
+      "updated_at": "2025-03-27 18:41:06"
+    },
+    "image_about_photo4_url": {
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+      "description": "Default value for image_about_photo4_url",
+      "updated_at": "2025-03-27 18:41:07"
+    },
+    "about_photo1_alt": {
+      "value": "Test Photo 1 Alt Text",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:52.553141",
+      "updated_at": "2025-03-27 21:25:53"
+    },
+    "about_photo2_alt": {
+      "value": "Test Photo 2 Alt Text",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:53.373367",
+      "updated_at": "2025-03-27 21:25:54"
+    },
+    "about_photo3_alt": {
+      "value": "Test Photo 3 Alt Text",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:54.141328",
+      "updated_at": "2025-03-27 21:25:54"
+    },
+    "about_photo4_alt": {
+      "value": "Test Photo 4 Alt Text",
+      "description": "Test value set by test_content_flow.py on 2025-03-28 02:55:54.863177",
+      "updated_at": "2025-03-27 21:25:55"
+    }
+  },
+  "projects": [
+    {
+      "id": 1,
+      "title": "E-Commerce Platform",
+      "description": "Developed a fully responsive e-commerce platform with payment processing integration.",
+      "image_url": "/static/img/project1.jpg",
+      "link": "#"
+    },
+    {
+      "id": 2,
+      "title": "Travel Application",
+      "description": "Mobile app for travelers to discover local experiences and book tours.",
+      "image_url": "/static/img/project2.jpg",
+      "link": "#"
+    },
+    {
+      "id": 3,
+      "title": "Healthcare Dashboard",
+      "description": "Analytics dashboard for healthcare providers to track patient outcomes.",
+      "image_url": "/static/img/project3.jpg",
+      "link": "#"
+    }
+  ],
+  "experience": [
+    {
+      "id": 1,
+      "title": "Senior Product Manager",
+      "company": "Tech Solutions Inc.",
+      "period": "Jan 2020 - Present",
+      "description": "Leading product development for enterprise SaaS solutions. Managing a team of 5 developers and 2 designers."
+    },
+    {
+      "id": 2,
+      "title": "Product Manager",
+      "company": "Digital Innovations Co.",
+      "period": "Mar 2017 - Dec 2019",
+      "description": "Managed the development of mobile applications for financial services clients."
+    },
+    {
+      "id": 3,
+      "title": "Associate Product Manager",
+      "company": "StartupHub",
+      "period": "Jun 2015 - Feb 2017",
+      "description": "Assisted in the development and launch of three successful web applications."
+    }
+  ],
+  "education": [
+    {
+      "id": 1,
+      "degree": "Master of Business Administration",
+      "institution": "Business University",
+      "period": "2014 - 2015",
+      "description": "Specialized in Technology Management with focus on Product Development."
+    },
+    {
+      "id": 2,
+      "degree": "Bachelor of Science in Computer Science",
+      "institution": "Tech Institute",
+      "period": "2010 - 2014",
+      "description": "Graduated with honors. Focused on software engineering and UI/UX design."
+    }
+  ],
+  "certifications": [
+    {
+      "id": 1,
+      "title": "Certified Product Manager",
+      "issuer": "Product Management Institute",
+      "issue_date": "Jun 2019",
+      "expiry_date": "Jun 2022",
+      "certificate_url": "#"
+    },
+    {
+      "id": 2,
+      "title": "Certified Scrum Master",
+      "issuer": "Scrum Alliance",
+      "issue_date": "Mar 2018",
+      "expiry_date": "Mar 2020",
+      "certificate_url": "#"
+    },
+    {
+      "id": 3,
+      "title": "Advanced UX Design",
+      "issuer": "Design Academy",
+      "issue_date": "Nov 2017",
+      "expiry_date": null,
+      "certificate_url": "#"
+    }
+  ]
+}
