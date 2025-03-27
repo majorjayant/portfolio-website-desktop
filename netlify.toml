@@ -7,6 +7,12 @@
   # Default build command
   command = "python build_static_site.py"
 
+# Environment variables for the build
+[build.environment]
+  STATIC_DEPLOYMENT = "true"
+  PYTHONUNBUFFERED = "1"
+  PYTHON_VERSION = "3.11"
+
 # Headers to set on static site
 [[headers]]
   # Define headers for all files
@@ -26,35 +32,17 @@
   force = false
   conditions = {Role = ["anonymous"]}
 
-# Environment variables for the build
-[build.environment]
-  STATIC_DEPLOYMENT = "true"
-  PYTHONUNBUFFERED = "1"
-  
-# Use Python 3.11
-[build.environment]
-  PYTHON_VERSION = "3.11"
-
 # Plugin for Python dependencies
 [[plugins]]
   package = "@netlify/plugin-python"
-
-# Optional: Enable Netlify Dev for local development
-[dev]
-  command = "python run.py"
-  port = 5000
-
-[functions]
-  directory = "netlify/functions"
 
 [context.production.environment]
   STATIC_DEPLOYMENT = "true"
   IMAGE_FAVICON_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon"
   IMAGE_LOGO_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo"
   IMAGE_BANNER_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner"
-
-[[redirects]]
-  from = "/"
-  to = "/html/index.html"
-  status = 200
-  force = true 
+  IMAGE_ABOUT_PROFILE_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg"
+  IMAGE_ABOUT_PHOTO1_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg"
+  IMAGE_ABOUT_PHOTO2_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg"
+  IMAGE_ABOUT_PHOTO3_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg"
+  IMAGE_ABOUT_PHOTO4_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg" 

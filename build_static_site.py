@@ -272,13 +272,8 @@ def build_static_site():
                     # Create the request context for the route
                     print(f"  ○ Processing route: {url_for(route)}")
                     
-                    # Special case for image generator which should use the static template
-                    if route == 'image_generator_tool':
-                        with open(os.path.join('app', 'templates', 'image_generator_static.html'), 'r', encoding='utf-8') as f:
-                            html_content = f.read()
-                    else:
-                        # Render the template
-                        html_content = app.view_functions[route]()
+                    # Render the template
+                    html_content = app.view_functions[route]()
                     
                     # Fix static file references
                     html_content = fix_static_paths(html_content)
