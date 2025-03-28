@@ -204,7 +204,7 @@
                     <p class="description">{{ about_content.description }}</p>
                 </div>
                 <div id="img-main" class="img-main">
-                    <img class="profile-image" src="{{ about_content.profile_image }}" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile.jpg';">
+                    <img class="profile-image" src="{{ about_content.profile_image }}" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile-photo.svg';">
                 </div>
             </div>
             
@@ -413,7 +413,7 @@
                     this.onerror = null;
                     // Try direct S3 URL if the current URL fails
                     if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
-                        this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg';
+                        this.src = '/static/img/profile.jpg';
                     } else {
                         // If S3 URL also fails, use placeholder
                         this.src = '/static/img/profile.jpg';
