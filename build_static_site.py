@@ -121,7 +121,7 @@ s3_base_url = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com'
 os.environ['IMAGE_FAVICON_URL'] = os.environ.get('IMAGE_FAVICON_URL', f'{s3_base_url}/FavIcon')
 os.environ['IMAGE_LOGO_URL'] = os.environ.get('IMAGE_LOGO_URL', f'{s3_base_url}/Logo')
 os.environ['IMAGE_BANNER_URL'] = os.environ.get('IMAGE_BANNER_URL', f'{s3_base_url}/Banner')
-os.environ['IMAGE_ABOUT_PROFILE_URL'] = os.environ.get('IMAGE_ABOUT_PROFILE_URL', f'{s3_base_url}/profilephoto+(2).svg')
+os.environ['IMAGE_ABOUT_PROFILE_URL'] = os.environ.get('IMAGE_ABOUT_PROFILE_URL', f'{s3_base_url}/Adobe+Express+-+file.png')
 os.environ['IMAGE_ABOUT_PHOTO1_URL'] = os.environ.get('IMAGE_ABOUT_PHOTO1_URL', f'{s3_base_url}/about_photo1.jpg')
 os.environ['IMAGE_ABOUT_PHOTO2_URL'] = os.environ.get('IMAGE_ABOUT_PHOTO2_URL', f'{s3_base_url}/about_photo2.jpg')
 os.environ['IMAGE_ABOUT_PHOTO3_URL'] = os.environ.get('IMAGE_ABOUT_PHOTO3_URL', f'{s3_base_url}/about_photo3.jpg')
@@ -155,7 +155,7 @@ about_content = {
     'title': os.environ.get('ABOUT_TITLE', 'about.'),
     'subtitle': os.environ.get('ABOUT_SUBTITLE', "I'm a passionate product manager based in New Delhi, India."),
     'description': os.environ.get('ABOUT_DESCRIPTION', "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places."),
-    'profile_image': os.environ.get('IMAGE_ABOUT_PROFILE_URL', 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg'),
+    'profile_image': os.environ.get('IMAGE_ABOUT_PROFILE_URL', 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png'),
     'photos': [
         {'url': os.environ.get('IMAGE_ABOUT_PHOTO1_URL', 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg'), 
          'alt': os.environ.get('ABOUT_PHOTO1_ALT', 'Personal photo 1')},
