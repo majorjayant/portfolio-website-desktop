@@ -342,13 +342,31 @@ header {
   background: none !important;
   background-color: transparent !important;
   object-fit: contain;
+  /* Additional fixes for transparent PNGs */
+  -webkit-mask-image: none;
+  mask-image: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  filter: none;
 }
 
-.img-main img.profile-image[src$=".svg"] {
+/* Prevent any backgrounds from being added to the profile image */
+.img-main, .img-main a, .img-main div {
+  background: none !important;
+  background-color: transparent !important;
+}
+
+.img-main img.profile-image[src$=".svg"],
+.img-main img.profile-image[src$=".png"] {
   background: none !important;
   background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
+  -webkit-mask-image: none;
+  mask-image: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  filter: none;
 }
 
 .img-main img:hover {

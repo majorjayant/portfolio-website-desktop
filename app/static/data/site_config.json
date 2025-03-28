@@ -77,26 +77,26 @@
     }
   },
   "about_content": {
-    "title": "hdjfdfjh",
-    "subtitle": "c,dsmvv",
-    "description": "clvkvcxmx, ",
+    "title": "Jayant Arora",
+    "subtitle": "Curious Mind. Data Geek. Product Whisperer.",
+    "description": "Ever since I was a kid, I’ve been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I’ve done it all, and I’m just getting started. Here’s the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let’s talk.",
     "profile_image": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
     "photos": [
       {
-        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
-        "alt": "scsd"
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+        "alt": "Test Photo 1 Alt Text"
       },
       {
-        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
-        "alt": "hjh"
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+        "alt": "Test Photo 2 Alt Text"
       },
       {
-        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
-        "alt": "hjvhj"
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+        "alt": "Test Photo 3 Alt Text"
       },
       {
-        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
-        "alt": "jhvj"
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+        "alt": "Test Photo 4 Alt Text"
       }
     ]
   },
@@ -110,8 +110,6 @@
     "about_photo3": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
     "about_photo4": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg"
   },
-  "exported_at": "2025-03-28T00:34:58.302288",
-  "export_source": "database",
-  "last_updated": "2025-03-28T01:07:02.072Z",
-  "update_source": "netlify_function"
+  "exported_at": "2025-03-28T01:36:38.556748",
+  "export_source": "database"
 }
