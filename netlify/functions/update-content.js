@@ -3,17 +3,35 @@ const { Octokit } = require("@octokit/rest");
 const fetch = require("node-fetch");
 
 exports.handler = async function(event, context) {
+  console.log("Update content function called");
+  
+  // Debug environment (without revealing sensitive values)
+  const envVarNames = Object.keys(process.env).sort();
+  console.log("Available environment variables:", envVarNames.map(name => {
+    // Don't log the actual value of sensitive variables
+    if (name.includes("TOKEN") || name.includes("KEY") || name.includes("SECRET")) {
+      return `${name}: [REDACTED]`;
+    }
+    return `${name}: ${typeof process.env[name] === 'string' ? process.env[name].substring(0, 10) + '...' : '[NOT_STRING]'}`;
+  }));
+  
   // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
   
   // Verify authentication token
-  const authToken = event.headers.authorization;
+  const authHeader = event.headers.authorization || event.headers.Authorization;
   const expectedToken = process.env.UPDATE_CONTENT_TOKEN;
   
-  if (!authToken || authToken !== `Bearer ${expectedToken}`) {
-    console.error("Authentication failed:", authToken ? "Invalid token" : "No token provided");
+  console.log("Auth header present:", !!authHeader);
+  console.log("Expected token present:", !!expectedToken);
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.replace('Bearer ', '') !== expectedToken) {
+    console.error("Authentication failed:", 
+                  !authHeader ? "No header" : 
+                  !authHeader.startsWith('Bearer ') ? "Invalid format" : 
+                  "Token mismatch");
     return { 
       statusCode: 401, 
       body: JSON.stringify({ error: "Unauthorized", details: "Invalid or missing authentication token" })
@@ -32,52 +50,51 @@ exports.handler = async function(event, context) {
       };
     }
     
-    // Log environment variables for debugging (don't log secret values in production)
-    const missingVars = [];
-    if (!process.env.GITHUB_TOKEN) missingVars.push("GITHUB_TOKEN");
-    if (!process.env.GITHUB_OWNER) missingVars.push("GITHUB_OWNER");
-    if (!process.env.GITHUB_REPO) missingVars.push("GITHUB_REPO");
+    // Check for GitHub token specifically
+    const githubToken = process.env.GITHUB_TOKEN;
+    const githubOwner = process.env.GITHUB_OWNER || "majorjayant";
+    const githubRepo = process.env.GITHUB_REPO || "portfolio-website-desktop";
     
-    console.log("Environment variables status:", {
-      GITHUB_OWNER: process.env.GITHUB_OWNER || "Not set",
-      GITHUB_REPO: process.env.GITHUB_REPO || "Not set",
-      GITHUB_TOKEN: process.env.GITHUB_TOKEN ? "Present" : "Not set",
-      missingVars: missingVars.length > 0 ? missingVars : "None"
+    console.log("GitHub config:", {
+      "GITHUB_TOKEN present": !!githubToken,
+      "GITHUB_OWNER": githubOwner,
+      "GITHUB_REPO": githubRepo
     });
     
-    // Check if required env vars are set
-    if (missingVars.length > 0) {
+    if (!githubToken) {
       return {
         statusCode: 500,
         body: JSON.stringify({ 
-          error: "Server configuration error", 
-          details: `Required environment variables not set: ${missingVars.join(", ")}. Please add these in your Netlify environment variables settings.` 
+          error: "GitHub token missing", 
+          details: "The GITHUB_TOKEN environment variable is not set. Add this in the Netlify environment variables settings." 
         })
       };
     }
     
     // Initialize Octokit with GitHub token
     const octokit = new Octokit({
-      auth: process.env.GITHUB_TOKEN
+      auth: githubToken
     });
     
     // Get the current site_config.json
     let fileData;
     try {
+      console.log(`Fetching content from GitHub: ${githubOwner}/${githubRepo}`);
       const response = await octokit.repos.getContent({
-        owner: process.env.GITHUB_OWNER,
-        repo: process.env.GITHUB_REPO,
+        owner: githubOwner,
+        repo: githubRepo,
         path: "app/static/data/site_config.json",
         ref: "main"
       });
       fileData = response.data;
+      console.log("Successfully fetched file from GitHub");
     } catch (err) {
       console.error("Error getting file from GitHub:", err);
       
       // Provide more specific error message based on the error
       let errorDetails = err.message;
       if (err.status === 404) {
-        errorDetails = `File not found at app/static/data/site_config.json in ${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}. Make sure the file exists and the path is correct.`;
+        errorDetails = `File not found at app/static/data/site_config.json in ${githubOwner}/${githubRepo}. Make sure the file exists and the path is correct.`;
       } else if (err.status === 401 || err.status === 403) {
         errorDetails = `GitHub authentication failed. Check that your GITHUB_TOKEN has the correct permissions (needs 'repo' scope).`;
       }
@@ -85,8 +102,14 @@ exports.handler = async function(event, context) {
       return {
         statusCode: 500,
         body: JSON.stringify({ 
-          error: "Failed to get current content", 
-          details: errorDetails
+          error: "Failed to get content from GitHub", 
+          details: errorDetails,
+          status: err.status,
+          github_info: {
+            owner: githubOwner,
+            repo: githubRepo,
+            token_present: !!githubToken
+          }
         })
       };
     }
@@ -96,6 +119,7 @@ exports.handler = async function(event, context) {
     try {
       content = Buffer.from(fileData.content, 'base64').toString();
       siteConfig = JSON.parse(content);
+      console.log("Successfully parsed site config");
     } catch (parseErr) {
       console.error("Error parsing site config JSON:", parseErr);
       return {
@@ -122,22 +146,24 @@ exports.handler = async function(event, context) {
     
     // Commit the changes back to GitHub
     try {
+      console.log("Committing changes to GitHub");
       await octokit.repos.createOrUpdateFileContents({
-        owner: process.env.GITHUB_OWNER,
-        repo: process.env.GITHUB_REPO,
+        owner: githubOwner,
+        repo: githubRepo,
         path: "app/static/data/site_config.json",
         message: "Update about content via Netlify function",
         content: Buffer.from(JSON.stringify(siteConfig, null, 2)).toString('base64'),
         sha: fileData.sha,
         branch: "main"
       });
+      console.log("Successfully committed changes to GitHub");
     } catch (commitErr) {
       console.error("Error committing to GitHub:", commitErr);
       
       // Provide more specific error message based on the error
       let errorDetails = commitErr.message;
       if (commitErr.status === 404) {
-        errorDetails = `Repository ${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO} not found. Check your GITHUB_OWNER and GITHUB_REPO environment variables.`;
+        errorDetails = `Repository ${githubOwner}/${githubRepo} not found. Check your GITHUB_OWNER and GITHUB_REPO environment variables.`;
       } else if (commitErr.status === 401 || commitErr.status === 403) {
         errorDetails = `GitHub authentication failed. Your GITHUB_TOKEN doesn't have write access to the repository.`;
       } else if (commitErr.status === 422) {
@@ -148,7 +174,8 @@ exports.handler = async function(event, context) {
         statusCode: 500,
         body: JSON.stringify({ 
           error: "Failed to update content on GitHub", 
-          details: errorDetails
+          details: errorDetails,
+          status: commitErr.status
         })
       };
     }
@@ -187,7 +214,7 @@ exports.handler = async function(event, context) {
         message: "Content updated successfully",
         updated_at: siteConfig.last_updated,
         updated_at_ist: istTime.toISOString(),
-        github_repo: `${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}`
+        github_repo: `${githubOwner}/${githubRepo}`
       })
     };
     

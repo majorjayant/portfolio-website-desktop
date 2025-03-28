@@ -119,10 +119,8 @@
     
     <script>
         // Store API token in session storage (in a real app, use a more secure approach)
-        const apiToken = sessionStorage.getItem('admin_token') || prompt('Enter your admin token:');
-        if (apiToken) {
-            sessionStorage.setItem('admin_token', apiToken);
-        }
+        let apiToken = sessionStorage.getItem('admin_token');
+        console.log('Initial token state:', apiToken ? 'Token found in session' : 'No token in session');
         
         const aboutForm = document.getElementById('about-form');
         const reloadBtn = document.getElementById('reload-btn');
@@ -416,14 +414,56 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Admin page loaded, checking token...');
             
+            // Debug info for troubleshooting
+            const debugInfo = document.createElement('div');
+            debugInfo.id = 'debug-info';
+            debugInfo.style.display = 'none';
+            debugInfo.className = 'mt-4 p-3 bg-light border';
+            debugInfo.innerHTML = `
+                <h5>Debug Information</h5>
+                <p><strong>Page URL:</strong> ${window.location.href}</p>
+                <p><strong>Hostname:</strong> ${window.location.hostname}</p>
+                <p><strong>Environment:</strong> ${window.location.hostname.includes('netlify.app') ? 'Netlify' : 'Local/Other'}</p>
+                <p><strong>Token Status:</strong> ${apiToken ? 'Token present in session' : 'No token in session'}</p>
+                <p><strong>Browser:</strong> ${navigator.userAgent}</p>
+                <button id="toggle-debug-info" class="btn btn-sm btn-secondary">Hide Debug Info</button>
+            `;
+            
+            document.querySelector('.container').appendChild(debugInfo);
+            
+            // Add debug toggle button at the top
+            const debugToggleBtn = document.createElement('button');
+            debugToggleBtn.id = 'show-debug-info';
+            debugToggleBtn.className = 'btn btn-sm btn-outline-secondary mt-2';
+            debugToggleBtn.textContent = 'Show Debug Info';
+            debugToggleBtn.addEventListener('click', function() {
+                const debugInfo = document.getElementById('debug-info');
+                debugInfo.style.display = 'block';
+                this.style.display = 'none';
+            });
+            
+            document.querySelector('h1.mb-4').insertAdjacentElement('afterend', debugToggleBtn);
+            
+            // Toggle debug info
+            document.getElementById('toggle-debug-info').addEventListener('click', function() {
+                const debugInfo = document.getElementById('debug-info');
+                debugInfo.style.display = 'none';
+                document.getElementById('show-debug-info').style.display = 'inline-block';
+            });
+            
             // Check for API token
             if (!apiToken) {
                 console.log('No token in session storage, prompting user');
-                const newToken = prompt('Enter your admin token:');
+                const newToken = prompt('Enter your admin token for content management:');
                 if (newToken) {
                     console.log('Token provided, storing in session');
+                    apiToken = newToken;
                     sessionStorage.setItem('admin_token', newToken);
-                    window.location.reload(); // Reload page with token
+                    
+                    // Update debug info
+                    document.querySelector('#debug-info').innerHTML = document.querySelector('#debug-info').innerHTML.replace(
+                        'No token in session', 'Token present in session (newly added)'
+                    );
                 } else {
                     console.warn('No token provided, continuing but updates will fail');
                     showStatus('Warning: No authentication token provided. You can view content but cannot save changes.', 'error');
@@ -431,6 +471,33 @@
             } else {
                 console.log('Token found in session storage');
             }
+            
+            // Test API connection
+            fetch('/.netlify/functions/get-content')
+                .then(response => {
+                    console.log('API connection test:', response.status, response.ok ? 'OK' : 'Failed');
+                    if (!response.ok) {
+                        showStatus(`API connection issue: ${response.status} ${response.statusText}. Functions may not be deployed correctly.`, 'error');
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API environment:', data.environment || 'No environment info');
+                    const newDebugInfo = `
+                        <p><strong>API Status:</strong> Connected</p>
+                        <p><strong>Content Source:</strong> ${data.fetch_source || 'Unknown'}</p>
+                        <p><strong>GitHub Config:</strong> ${data.environment?.github_configured ? 'Configured' : 'Not configured'}</p>
+                        <p><strong>Running on Netlify:</strong> ${data.environment?.netlify ? 'Yes' : 'No'}</p>
+                    `;
+                    document.querySelector('#debug-info').insertAdjacentHTML('beforeend', newDebugInfo);
+                })
+                .catch(err => {
+                    console.error('API test failed:', err);
+                    document.querySelector('#debug-info').insertAdjacentHTML('beforeend', 
+                        `<p><strong>API Status:</strong> <span class="text-danger">Failed - ${err.message}</span></p>`
+                    );
+                });
             
             // Set up event listeners
             aboutForm.addEventListener('submit', saveContent);
