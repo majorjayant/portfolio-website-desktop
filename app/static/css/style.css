@@ -351,7 +351,7 @@ header {
 }
 
 /* Prevent any backgrounds from being added to the profile image */
-.img-main, .img-main a, .img-main div {
+.img-main, .img-main a{
   background: none !important;
   background-color: transparent !important;
 }
