@@ -19,10 +19,11 @@ exports.handler = async function(event, context) {
     
     // 1. Try the local file first
     try {
+      console.log("Attempting to read from local file");
       const fileContents = fs.readFileSync(siteConfigPath, 'utf8');
       siteConfig = JSON.parse(fileContents);
       source = "file";
-      console.log("Loaded from local file");
+      console.log("Loaded from local file successfully");
     } catch (fileErr) {
       console.log("Could not read local file:", fileErr.message);
       
@@ -39,7 +40,7 @@ exports.handler = async function(event, context) {
           
           siteConfig = await resp.json();
           source = "github";
-          console.log("Loaded from GitHub");
+          console.log("Loaded from GitHub successfully");
         } catch (githubErr) {
           console.log("Could not fetch from GitHub:", githubErr.message);
         }
@@ -65,12 +66,21 @@ exports.handler = async function(event, context) {
       }
     }
     
+    // Get current time in IST
+    const now = new Date();
+    const istTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+    
     // Enrich the response with additional metadata
     const response = {
       ...siteConfig,
       served_by: "netlify_function",
       fetch_source: source,
-      timestamp: new Date().toISOString()
+      timestamp: now.toISOString(),
+      timestamp_ist: istTime.toISOString(),
+      environment: {
+        netlify: !!process.env.NETLIFY,
+        github_configured: !!(process.env.GITHUB_OWNER && process.env.GITHUB_REPO)
+      }
     };
     
     return {
@@ -85,6 +95,11 @@ exports.handler = async function(event, context) {
     
   } catch (error) {
     console.error("Error in get-content function:", error);
+    
+    // Get error time in IST
+    const errorTime = new Date();
+    const errorTimeIST = new Date(errorTime.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+    
     return {
       statusCode: 500,
       headers: {
@@ -95,7 +110,11 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ 
         error: "Failed to retrieve content", 
         details: error.message,
-        timestamp: new Date().toISOString()
+        timestamp: errorTime.toISOString(),
+        timestamp_ist: errorTimeIST.toISOString(),
+        path_attempted: process.env.FUNCTIONS_DIST 
+          ? `${process.env.FUNCTIONS_DIST}/data/site_config.json` 
+          : "app/static/data/site_config.json"
       })
     };
   }

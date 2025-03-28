@@ -141,6 +141,21 @@
             }, 5000);
         }
         
+        // Function to format date in IST timezone
+        function formatDateIST(dateString) {
+            if (!dateString) return 'Unknown';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString('en-IN', { 
+                    timeZone: 'Asia/Kolkata',
+                    dateStyle: 'medium', 
+                    timeStyle: 'medium' 
+                }) + ' IST';
+            } catch (e) {
+                return dateString + ' (unable to format)';
+            }
+        }
+        
         // Function to load content
         async function loadContent() {
             try {
@@ -273,10 +288,10 @@
                     // Display content info
                     contentInfo.innerHTML = `
                         <p><strong>Content Source:</strong> ${source}</p>
-                        <p><strong>Last Updated:</strong> ${data.last_updated || data.exported_at || 'Unknown'}</p>
+                        <p><strong>Last Updated:</strong> ${formatDateIST(data.last_updated || data.exported_at)}</p>
                         <p><strong>Source:</strong> ${data.update_source || data.export_source || source}</p>
                         <p><strong>Served By:</strong> ${data.served_by || source}</p>
-                        <p><strong>Timestamp:</strong> ${data.timestamp || new Date().toISOString()}</p>
+                        <p><strong>Timestamp:</strong> ${formatDateIST(data.timestamp)}</p>
                     `;
                     
                     if (source !== 'default') {
@@ -359,7 +374,11 @@
                     } else if (response.status === 400) {
                         showStatus(`Validation error: ${errorData.error || 'Missing required fields'}`, 'error');
                     } else if (response.status === 500) {
-                        showStatus(`Server error: ${errorData.details || 'Unknown server error'}. Check console for details.`, 'error');
+                        if (errorData.details && errorData.details.includes("Required environment variables not set")) {
+                            showStatus(`Server configuration error: GitHub token and repository info not set in Netlify. Please check the README troubleshooting section.`, 'error');
+                        } else {
+                            showStatus(`Server error: ${errorData.details || 'Unknown server error'}. Check console for details.`, 'error');
+                        }
                         console.error('Full error details:', errorData);
                     } else {
                         showStatus(`Failed to save content: ${errorData.error || 'Unknown error'} (${response.status})`, 'error');
@@ -370,11 +389,11 @@
                 const data = await response.json();
                 
                 // Add success message with timestamp
-                showStatus(`Content updated successfully! Changes will be live shortly. (${new Date().toLocaleTimeString()})`, 'success');
+                showStatus(`Content updated successfully! Changes will be live shortly. (${new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })})`, 'success');
                 
                 // Update content information
                 contentInfo.innerHTML = `
-                    <p><strong>Last Updated:</strong> ${data.updated_at || new Date().toISOString()}</p>
+                    <p><strong>Last Updated:</strong> ${formatDateIST(data.updated_at)}</p>
                     <p><strong>Source:</strong> Admin interface</p>
                     <p><strong>Served By:</strong> Netlify Function</p>
                     <p><strong>Status:</strong> ${data.message || 'Update successful'}</p>

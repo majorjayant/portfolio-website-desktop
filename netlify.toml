@@ -65,8 +65,8 @@
   IMAGE_ABOUT_PHOTO4_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg"
   
   # GitHub repository information (REQUIRED for content updates)
-  # Replace with your GitHub username and repository name
-  GITHUB_OWNER = "your-github-username"
+  # Replace with your actual GitHub username and repository name
+  GITHUB_OWNER = "majorjayant"
   GITHUB_REPO = "portfolio-website-desktop"
   
   # Create a GitHub Personal Access Token with repo scope
