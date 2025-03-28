@@ -1,32 +1,10 @@
 {
   "name": "portfolio-website-desktop",
   "version": "1.0.0",
-  "description": "Jayant Arora's Portfolio Website - Static site with Netlify Functions",
-  "main": "index.js",
+  "description": "Portfolio website",
   "scripts": {
-    "dev": "netlify dev",
     "build": "python build_static_site.py"
   },
-  "dependencies": {
-    "@octokit/rest": "^18.12.0",
-    "node-fetch": "^2.6.7"
-  },
-  "devDependencies": {
-    "netlify-cli": "^12.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/majorjayant/portfolio-website-desktop.git"
-  },
-  "keywords": [
-    "portfolio",
-    "netlify",
-    "python",
-    "flask",
-    "static-site"
-  ],
-  "author": "Jayant Arora",
-  "license": "MIT",
   "engines": {
     "node": ">=14"
   }

@@ -352,9 +352,9 @@
         <div class="container">
             <div class="about-container">
                 <div id="text-main" class="text-main">
-                    <h1>Jayant Arora</h1>
-                    <p class="intro">Curious Mind. Data Geek. Product Whisperer.</p>
-                    <p class="description">Ever since I was a kid, I’ve been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I’ve done it all, and I’m just getting started. Here’s the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you&#39;re looking for someone who can decode business problems, simplify the complex, and actually get things done - let’s talk.</p>
+                    <h1>About Me</h1>
+                    <p class="intro">I&#39;m a passionate product manager based in New Delhi, India.</p>
+                    <p class="description">Since 2015, I&#39;ve enjoyed turning complex problems into simple, beautiful and intuitive designs. When I&#39;m not coding or managing products, you&#39;ll find me cooking, playing video games or exploring new places.</p>
                 </div>
                 <div id="img-main" class="img-main">
                     <img class="profile-image" src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile.jpg';">
@@ -534,7 +534,7 @@
             <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
                 <div class="footer-logo" style="margin-bottom: 0.5rem;">
                     <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
-                </div>
+            </div>
                 <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
                 <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
                     <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
@@ -555,8 +555,6 @@
                     <li style="margin-bottom: 0.5rem;"><a href="/projects">Projects</a></li>
                     <li style="margin-bottom: 0.5rem;"><a href="/solutions">Solutions</a></li>
                     <li style="margin-bottom: 0.5rem;"><a href="/contact">Contact</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/admin/about-content">Admin - About</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/admin/site-config">Admin - Config</a></li>
                 </ul>
             </div>
         </div>
@@ -591,156 +589,77 @@
         const aboutSubtitle = document.querySelector('.text-main .intro');
         const aboutDescription = document.querySelector('.text-main .description');
         
-        // Function to fetch the latest about content from the API
-        function fetchLatestAboutContent() {
-            // Important: Get the current content before we do anything
-            const currentTitle = aboutTitle ? aboutTitle.textContent.trim() : '';
-            const currentSubtitle = aboutSubtitle ? aboutSubtitle.textContent.trim() : '';
-            const currentDescription = aboutDescription ? aboutDescription.textContent.trim() : '';
-            
-            // If we have real content from server-side rendering (not fallbacks), 
-            // store it to compare later and never replace with generic content
-            const hasServerContent = currentTitle && 
-                                    currentTitle !== 'about.' &&
-                                    currentDescription && 
-                                    currentDescription.length > 50; // Real content is usually longer
-            
-            console.log('Current About content: ', currentTitle);
-            
-            // Use the Netlify function for live sites
-            fetch('/.netlify/functions/get-content')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
+        // Always fetch and use the latest data from JSON file, even if content already exists
+        // This ensures we're always showing the most recent database content
+        fetch('/data/site_config.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Loaded site config data from JSON');
+                if (data && data.about_content) {
+                    // Always apply the content from JSON to ensure it's the latest
+                    if (aboutTitle) {
+                        aboutTitle.textContent = data.about_content.title || 'about.';
                     }
-                    return response.json();
-                })
-                .then(apiResponse => {
-                    if (apiResponse && apiResponse.about_content) {
-                        console.log('Loaded fresh about content, source: ' + 
-                                    (apiResponse.served_by || apiResponse.update_source || 'netlify_function'));
-                        updateAboutContent(apiResponse.about_content);
-                    } else {
-                        throw new Error('API returned no data');
-                    }
-                })
-                .catch(apiError => {
-                    console.error('Error loading about content from API:', apiError);
-                    console.log('Falling back to JSON file');
-                    // Fall back to the JSON file
-                    fetchJSONData(hasServerContent, currentTitle, currentSubtitle, currentDescription);
-                });
-        }
-        
-        // Function to fetch data from the JSON file
-        function fetchJSONData(hasServerContent, currentTitle, currentSubtitle, currentDescription) {
-            fetch('/data/site_config.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Loaded site config data from JSON');
-                    if (data && data.about_content) {
-                        // IMPORTANT: If we have server-rendered content and JSON has generic fallbacks,
-                        // preserve our server content instead
-                        if (hasServerContent && data.about_content.title === 'about.') {
-                            console.log('JSON contains generic fallbacks, keeping server-rendered content');
-                            // Don't update - keep the server content
-                        } else {
-                            // JSON has real content, use it
-                            updateAboutContent(data.about_content);
-                        }
-                    } else {
-                        throw new Error('No about content in JSON');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading site config JSON:', error);
                     
-                    // CRITICAL: If we have server content, NEVER replace with fallbacks
-                    if (hasServerContent) {
-                        console.log('Keeping existing server-rendered content instead of fallbacks');
-                        // Do nothing - keep the existing content
-                    } else {
-                        // Only apply fallbacks if we have no content at all
-                        applyFallbackContent();
+                    if (aboutSubtitle) {
+                        aboutSubtitle.textContent = data.about_content.subtitle || "I'm a passionate product manager based in New Delhi, India.";
                     }
-                });
-        }
-        
-        // Function to update the about content in the DOM
-        function updateAboutContent(aboutContent) {
-            // NEVER replace real content with generic fallbacks
-            if (aboutTitle && aboutContent.title && aboutContent.title !== 'about.') {
-                aboutTitle.textContent = aboutContent.title;
-            }
-            
-            if (aboutSubtitle && aboutContent.subtitle && 
-                !aboutContent.subtitle.includes("I'm a passionate product manager")) {
-                aboutSubtitle.textContent = aboutContent.subtitle;
-            }
-            
-            if (aboutDescription && aboutContent.description && 
-                !aboutContent.description.includes("Since 2015, I've enjoyed turning complex problems")) {
-                aboutDescription.textContent = aboutContent.description;
-                aboutDescription.style.textAlign = 'left';
-            }
-            
-            // Update profile image only if it's not a generic fallback
-            const profileImage = document.querySelector('.profile-image');
-            if (profileImage && aboutContent.profile_image && 
-                !aboutContent.profile_image.includes('/static/img/profile.jpg')) {
-                profileImage.src = aboutContent.profile_image;
-            }
-            
-            // Only update photos if we have real photos (not generic fallbacks)
-            const snapsContainer = document.getElementById('snaps');
-            const hasRealPhotos = aboutContent.photos && 
-                                aboutContent.photos.length > 0 && 
-                                !aboutContent.photos[0].url.includes('/static/img/about_photo');
-            
-            if (snapsContainer && hasRealPhotos) {
-                // Clear existing content
-                snapsContainer.innerHTML = '';
-                
-                // Add fresh content
-                aboutContent.photos.forEach(photo => {
-                    const container = document.createElement('a');
-                    container.href = '#';
-                    container.className = 'snap-container';
-                    container.setAttribute('data-photo', photo.url);
                     
-                    const img = document.createElement('img');
-                    img.src = photo.url;
-                    img.alt = photo.alt || 'Photo';
-                    img.onerror = function() {
-                        this.onerror = null;
-                        this.src = '/static/img/placeholder.png';
-                    };
+                    if (aboutDescription) {
+                        aboutDescription.textContent = data.about_content.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+                        aboutDescription.style.textAlign = 'left';
+                    }
                     
-                    container.appendChild(img);
-                    snapsContainer.appendChild(container);
-                });
-                
-                // Reinitialize the modal functionality for the new photos
-                initializeModalFunctionality();
-            }
-        }
+                    // Always update profile image
+                    const profileImage = document.querySelector('.profile-image');
+                    if (profileImage && data.about_content.profile_image) {
+                        profileImage.src = data.about_content.profile_image;
+                    }
+                    
+                    // Clear and repopulate photos to ensure they match the database version
+                    const snapsContainer = document.getElementById('snaps');
+                    if (snapsContainer && data.about_content.photos) {
+                        // Clear existing content
+                        snapsContainer.innerHTML = '';
+                        
+                        // Add fresh content from JSON
+                        data.about_content.photos.forEach(photo => {
+                            const container = document.createElement('a');
+                            container.href = '#';
+                            container.className = 'snap-container';
+                            container.setAttribute('data-photo', photo.url);
+                            
+                            const img = document.createElement('img');
+                            img.src = photo.url;
+                            img.alt = photo.alt;
+                            img.onerror = function() {
+                                this.onerror = null;
+                                this.src = '/static/img/placeholder.png';
+                            };
+                            
+                            container.appendChild(img);
+                            snapsContainer.appendChild(container);
+                        });
+                        
+                        // Reinitialize the modal functionality for the new photos
+                        initializeModalFunctionality();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading site config JSON:', error);
+                // Fall back to hardcoded values only if we can't load the JSON
+                applyFallbackContent();
+            });
         
-        // Try to fetch from API first, fall back to JSON and then hardcoded values
-        // But only AFTER a short delay to ensure the page is fully loaded
-        setTimeout(fetchLatestAboutContent, 2000);
-        
-        // Function to apply fallback content if both API and JSON fail
+        // Function to apply fallback content if JSON fails
         function applyFallbackContent() {
-            console.log('Unable to fetch fresh data, keeping existing content');
-            
-            // Don't override existing content if it's already present
-            // Only apply fallbacks if the content is missing
-            
+            // Fallback for about section content
             if (aboutTitle && (!aboutTitle.textContent || aboutTitle.textContent.trim() === '')) {
                 aboutTitle.textContent = 'about.';
             }
@@ -755,10 +674,10 @@
                 aboutDescription.style.textAlign = 'left';
             }
             
-            // Handle profile image in about section only if it failed to load
+            // Handle profile image in about section
             const profileImage = document.querySelector('.profile-image');
-            if (profileImage && (!profileImage.complete || profileImage.naturalWidth === 0)) {
-                // Only set fallback for profile image if it failed to load
+            if (profileImage) {
+                // Fallback for profile image
                 profileImage.onerror = function() {
                     console.error("Error loading profile image: " + this.src);
                     this.onerror = null;
@@ -775,7 +694,7 @@
             // Check if snaps section is empty or has no elements
             const snapsContainer = document.getElementById('snaps');
             if (snapsContainer && (!snapsContainer.children || snapsContainer.children.length === 0)) {
-                // Only create fallback photo elements if no photos exist
+                // Create and add fallback photo elements
                 const s3Urls = [
                     'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
                     'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
@@ -807,9 +726,6 @@
                     container.appendChild(img);
                     snapsContainer.appendChild(container);
                 });
-                
-                // Initialize modal functionality for fallback photos
-                initializeModalFunctionality();
             }
         }
 
