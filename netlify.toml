@@ -6,12 +6,12 @@
   publish = "app/static"
   # Default build command
   command = "python build_static_site.py"
+  environment = { PYTHON_VERSION = "3.11" }
 
 # Environment variables for the build
 [build.environment]
   STATIC_DEPLOYMENT = "true"
   PYTHONUNBUFFERED = "1"
-  PYTHON_VERSION = "3.11"
 
 # Headers to set on static site
 [[headers]]
@@ -32,8 +32,44 @@
   force = false
   conditions = {Role = ["anonymous"]}
 
+[dev]
+  command = "python app.py"
+  port = 8888
+  targetPort = 5000
+
+[functions]
+  directory = "netlify/functions"
+
+# Redirects for the admin interface
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+# API proxy for the functions
+[[redirects]]
+  from = "/api/about-content"
+  to = "/.netlify/functions/get-content"
+  status = 200
+
+# Environment variables for production (REPLACE WITH YOUR VALUES)
 [context.production.environment]
   STATIC_DEPLOYMENT = "true"
+  IMAGE_FAVICON_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon"
+  IMAGE_LOGO_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo"
+  IMAGE_BANNER_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner"
+  IMAGE_ABOUT_PROFILE_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png"
+  IMAGE_ABOUT_PHOTO1_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg"
+  IMAGE_ABOUT_PHOTO2_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg"
+  IMAGE_ABOUT_PHOTO3_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg"
+  IMAGE_ABOUT_PHOTO4_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg"
+  
+  # Security token for content updating - create a strong random token
+  UPDATE_CONTENT_TOKEN = "CREATE_A_STRONG_RANDOM_TOKEN_HERE"
+
+# Environment variables for development
+[context.development.environment]
+  STATIC_DEPLOYMENT = "false"
   IMAGE_FAVICON_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon"
   IMAGE_LOGO_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo"
   IMAGE_BANNER_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner"

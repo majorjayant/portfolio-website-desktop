@@ -335,34 +335,29 @@
             
             console.log('Current About content: ', currentTitle);
             
-            // Only attempt the API fetch if we're in development (not on Netlify static site)
-            if (window.location.hostname === 'localhost' || 
-                window.location.hostname.includes('127.0.0.1')) {
-                fetch('/api/about-content')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(apiResponse => {
-                        if (apiResponse.status === 'success' && apiResponse.data) {
-                            console.log('Loaded fresh about content from API:', apiResponse.timestamp);
-                            updateAboutContent(apiResponse.data);
-                        } else {
-                            throw new Error('API returned error or no data');
-                        }
-                    })
-                    .catch(apiError => {
-                        console.error('Error loading about content from API:', apiError);
-                        console.log('Falling back to JSON file');
-                        // Fall back to the JSON file
-                        fetchJSONData(hasServerContent, currentTitle, currentSubtitle, currentDescription);
-                    });
-            } else {
-                // On Netlify, just try the JSON file directly
-                fetchJSONData(hasServerContent, currentTitle, currentSubtitle, currentDescription);
-            }
+            // Use the Netlify function for live sites
+            fetch('/.netlify/functions/get-content')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(apiResponse => {
+                    if (apiResponse && apiResponse.about_content) {
+                        console.log('Loaded fresh about content, source: ' + 
+                                    (apiResponse.served_by || apiResponse.update_source || 'netlify_function'));
+                        updateAboutContent(apiResponse.about_content);
+                    } else {
+                        throw new Error('API returned no data');
+                    }
+                })
+                .catch(apiError => {
+                    console.error('Error loading about content from API:', apiError);
+                    console.log('Falling back to JSON file');
+                    // Fall back to the JSON file
+                    fetchJSONData(hasServerContent, currentTitle, currentSubtitle, currentDescription);
+                });
         }
         
         // Function to fetch data from the JSON file
