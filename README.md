@@ -152,6 +152,76 @@ The static site includes client-side JavaScript fallbacks that will:
 
 This ensures your site will always display something even if there are issues with the database or environment variables.
 
+## Troubleshooting Netlify Deployment
+
+If you encounter issues with your Netlify deployment, here are some common problems and solutions:
+
+### Environment Variables
+
+For content updates to work properly, you must set the following environment variables in the Netlify UI:
+
+1. **GITHUB_TOKEN**: A GitHub Personal Access Token with `repo` scope
+2. **GITHUB_OWNER**: Your GitHub username
+3. **GITHUB_REPO**: Your repository name (usually `portfolio-website-desktop`)
+4. **UPDATE_CONTENT_TOKEN**: A strong random token you create for authentication
+5. **NETLIFY_AUTH_TOKEN**: Your Netlify personal access token (for rebuild triggers)
+6. **NETLIFY_SITE_ID**: Your Netlify site ID
+
+### Content Not Loading
+
+If content isn't loading in the admin panel:
+
+1. Check your browser console for errors
+2. Verify that the `site_config.json` file exists in the `/app/static/data/` directory
+3. Make sure your CSP (Content-Security-Policy) in `netlify.toml` allows connections to GitHub and Netlify APIs
+4. Try running the export script locally with `python export_site_config.py` and redeploy
+
+### Function Permissions
+
+If your Netlify functions aren't working:
+
+1. Check function logs in the Netlify UI (Functions → Your Function → View details)
+2. Make sure the dependencies are installed (`@octokit/rest` and `node-fetch`)
+3. Verify your function permissions in `netlify.toml` 
+4. Try deploying the `netlify/functions` directory manually
+
+### Admin Token Issues
+
+If you're having trouble with the admin token:
+
+1. Make sure you're using the exact token you set in `UPDATE_CONTENT_TOKEN`
+2. Clear your browser's session storage and try again
+3. Check network requests in your browser's developer tools to see the exact error
+
+### Function Not Found
+
+If you get "Function not found" errors:
+
+1. Make sure you have `functions = "netlify/functions"` in your `netlify.toml`
+2. Check that your functions are actually deployed (check Function tab in Netlify UI)
+3. Verify the correct redirects are in place for your API endpoints
+
+### Clearing Netlify Cache
+
+If you've made changes but they're not showing up:
+
+1. Go to the Netlify UI → Site settings → Build & deploy → Clear cache and deploy site
+2. Alternatively, trigger a new build with a small change to force a clean deployment
+
+### Local Testing
+
+To test functions locally:
+
+```bash
+# Install Netlify CLI
+npm install -g netlify-cli
+
+# Run with Netlify dev environment
+netlify dev
+```
+
+This will simulate the Netlify environment, including functions, on your local machine.
+
 ## Project Structure
 
 ```

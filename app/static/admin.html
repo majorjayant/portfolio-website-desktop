@@ -145,22 +145,74 @@
         async function loadContent() {
             try {
                 aboutForm.classList.add('loading');
+                contentInfo.innerHTML = '<p>Loading content information...</p>';
                 
-                // Fetch content from API
-                const response = await fetch('/.netlify/functions/get-content');
-                const data = await response.json();
+                let data = null;
+                let source = 'unknown';
                 
-                if (data.about_content) {
+                // Try the Netlify function first
+                try {
+                    console.log('Fetching content from Netlify function...');
+                    const response = await fetch('/.netlify/functions/get-content');
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('API error:', response.status, errorText);
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    
+                    data = await response.json();
+                    source = 'netlify_function';
+                    console.log('Successfully loaded from Netlify function');
+                } catch (apiError) {
+                    console.warn('Failed to load from API:', apiError.message);
+                    
+                    // Try the static JSON file as fallback
+                    try {
+                        console.log('Trying static JSON fallback...');
+                        const jsonResponse = await fetch('/data/site_config.json');
+                        
+                        if (!jsonResponse.ok) {
+                            throw new Error(`JSON file error: ${jsonResponse.status}`);
+                        }
+                        
+                        data = await jsonResponse.json();
+                        source = 'static_json';
+                        console.log('Successfully loaded from static JSON');
+                    } catch (jsonError) {
+                        console.error('Failed to load from static JSON:', jsonError.message);
+                        showStatus(`Failed to load content: ${jsonError.message}`, 'error');
+                        
+                        // Create default content as last resort
+                        data = {
+                            about_content: {
+                                title: '',
+                                subtitle: '',
+                                description: '',
+                                profile_image: '',
+                                photos: []
+                            },
+                            source: 'default_fallback',
+                            timestamp: new Date().toISOString()
+                        };
+                        source = 'default';
+                        console.log('Using default empty content');
+                    }
+                }
+                
+                if (data) {
+                    console.log('Using content from source:', source);
+                    
                     // Populate form fields
-                    document.getElementById('title').value = data.about_content.title || '';
-                    document.getElementById('subtitle').value = data.about_content.subtitle || '';
-                    document.getElementById('description').value = data.about_content.description || '';
-                    document.getElementById('profile_image').value = data.about_content.profile_image || '';
+                    document.getElementById('title').value = data.about_content?.title || '';
+                    document.getElementById('subtitle').value = data.about_content?.subtitle || '';
+                    document.getElementById('description').value = data.about_content?.description || '';
+                    document.getElementById('profile_image').value = data.about_content?.profile_image || '';
                     
                     // Show profile image preview
                     const profilePreview = document.getElementById('profile-image-preview');
                     profilePreview.innerHTML = '';
-                    if (data.about_content.profile_image) {
+                    if (data.about_content?.profile_image) {
                         const img = document.createElement('img');
                         img.src = data.about_content.profile_image;
                         img.alt = 'Profile Preview';
@@ -172,56 +224,64 @@
                     const photosContainer = document.getElementById('photos-container');
                     photosContainer.innerHTML = '';
                     
-                    if (data.about_content.photos && data.about_content.photos.length > 0) {
-                        data.about_content.photos.forEach((photo, index) => {
-                            const photoItem = document.createElement('div');
-                            photoItem.className = 'photo-item';
-                            
-                            const photoTitle = document.createElement('h5');
-                            photoTitle.textContent = `Photo ${index + 1}`;
-                            
-                            const urlInput = document.createElement('input');
-                            urlInput.type = 'text';
-                            urlInput.className = 'form-control mb-2';
-                            urlInput.placeholder = 'Photo URL';
-                            urlInput.value = photo.url || '';
-                            urlInput.name = `photo${index + 1}_url`;
-                            
-                            const altInput = document.createElement('input');
-                            altInput.type = 'text';
-                            altInput.className = 'form-control mb-2';
-                            altInput.placeholder = 'Alt Text';
-                            altInput.value = photo.alt || '';
-                            altInput.name = `photo${index + 1}_alt`;
-                            
-                            const preview = document.createElement('div');
-                            preview.className = 'photo-preview';
-                            
-                            if (photo.url) {
-                                const img = document.createElement('img');
-                                img.src = photo.url;
-                                img.alt = photo.alt || `Photo ${index + 1}`;
-                                img.className = 'preview-image';
-                                preview.appendChild(img);
-                            }
-                            
-                            photoItem.appendChild(photoTitle);
-                            photoItem.appendChild(urlInput);
-                            photoItem.appendChild(altInput);
-                            photoItem.appendChild(preview);
-                            photosContainer.appendChild(photoItem);
-                        });
+                    // Ensure we have at least 4 photo slots
+                    const photoCount = Math.max(4, data.about_content?.photos?.length || 0);
+                    
+                    for (let i = 0; i < photoCount; i++) {
+                        const photo = (data.about_content?.photos && i < data.about_content.photos.length) 
+                            ? data.about_content.photos[i] 
+                            : { url: '', alt: '' };
+                        
+                        const photoItem = document.createElement('div');
+                        photoItem.className = 'photo-item';
+                        
+                        const photoTitle = document.createElement('h5');
+                        photoTitle.textContent = `Photo ${i + 1}`;
+                        
+                        const urlInput = document.createElement('input');
+                        urlInput.type = 'text';
+                        urlInput.className = 'form-control mb-2';
+                        urlInput.placeholder = 'Photo URL';
+                        urlInput.value = photo.url || '';
+                        urlInput.name = `photo${i + 1}_url`;
+                        
+                        const altInput = document.createElement('input');
+                        altInput.type = 'text';
+                        altInput.className = 'form-control mb-2';
+                        altInput.placeholder = 'Alt Text';
+                        altInput.value = photo.alt || '';
+                        altInput.name = `photo${i + 1}_alt`;
+                        
+                        const preview = document.createElement('div');
+                        preview.className = 'photo-preview';
+                        
+                        if (photo.url) {
+                            const img = document.createElement('img');
+                            img.src = photo.url;
+                            img.alt = photo.alt || `Photo ${i + 1}`;
+                            img.className = 'preview-image';
+                            preview.appendChild(img);
+                        }
+                        
+                        photoItem.appendChild(photoTitle);
+                        photoItem.appendChild(urlInput);
+                        photoItem.appendChild(altInput);
+                        photoItem.appendChild(preview);
+                        photosContainer.appendChild(photoItem);
                     }
                     
                     // Display content info
                     contentInfo.innerHTML = `
+                        <p><strong>Content Source:</strong> ${source}</p>
                         <p><strong>Last Updated:</strong> ${data.last_updated || data.exported_at || 'Unknown'}</p>
-                        <p><strong>Source:</strong> ${data.update_source || data.export_source || 'Unknown'}</p>
-                        <p><strong>Served By:</strong> ${data.served_by || 'Static File'}</p>
+                        <p><strong>Source:</strong> ${data.update_source || data.export_source || source}</p>
+                        <p><strong>Served By:</strong> ${data.served_by || source}</p>
                         <p><strong>Timestamp:</strong> ${data.timestamp || new Date().toISOString()}</p>
                     `;
                     
-                    showStatus('Content loaded successfully', 'success');
+                    if (source !== 'default') {
+                        showStatus('Content loaded successfully', 'success');
+                    }
                 }
             } catch (error) {
                 console.error('Error loading content:', error);
@@ -269,6 +329,8 @@
                     photos
                 };
                 
+                console.log('Saving content with token:', apiToken ? 'Token present' : 'No token');
+                
                 // Send to API
                 const response = await fetch('/.netlify/functions/update-content', {
                     method: 'POST',
@@ -279,47 +341,133 @@
                     body: JSON.stringify(payload)
                 });
                 
+                // Check response status
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch (e) {
+                        errorData = { error: 'Unknown error', details: errorText };
+                    }
+                    
+                    console.error('API error response:', errorData);
+                    
+                    // Show appropriate error message based on status code
+                    if (response.status === 401) {
+                        showStatus(`Authentication failed: ${errorData.details || 'Invalid token'}. Please refresh and enter a valid token.`, 'error');
+                    } else if (response.status === 400) {
+                        showStatus(`Validation error: ${errorData.error || 'Missing required fields'}`, 'error');
+                    } else if (response.status === 500) {
+                        showStatus(`Server error: ${errorData.details || 'Unknown server error'}. Check console for details.`, 'error');
+                        console.error('Full error details:', errorData);
+                    } else {
+                        showStatus(`Failed to save content: ${errorData.error || 'Unknown error'} (${response.status})`, 'error');
+                    }
+                    return;
+                }
+                
                 const data = await response.json();
                 
-                if (response.ok) {
-                    showStatus('Content updated successfully!', 'success');
-                    // Reload content after a short delay
-                    setTimeout(loadContent, 1000);
-                } else {
-                    throw new Error(data.error || data.message || 'Unknown error');
-                }
+                // Add success message with timestamp
+                showStatus(`Content updated successfully! Changes will be live shortly. (${new Date().toLocaleTimeString()})`, 'success');
+                
+                // Update content information
+                contentInfo.innerHTML = `
+                    <p><strong>Last Updated:</strong> ${data.updated_at || new Date().toISOString()}</p>
+                    <p><strong>Source:</strong> Admin interface</p>
+                    <p><strong>Served By:</strong> Netlify Function</p>
+                    <p><strong>Status:</strong> ${data.message || 'Update successful'}</p>
+                `;
+                
+                // Auto reload content after 2 seconds
+                setTimeout(() => {
+                    loadContent();
+                }, 2000);
+                
             } catch (error) {
                 console.error('Error saving content:', error);
-                showStatus('Failed to save content: ' + error.message, 'error');
+                showStatus(`Failed to save content: ${error.message}. Check console for details.`, 'error');
             } finally {
                 aboutForm.classList.remove('loading');
             }
         }
         
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', loadContent);
-        aboutForm.addEventListener('submit', saveContent);
-        reloadBtn.addEventListener('click', loadContent);
-        
-        // Preview images when URLs change
-        document.body.addEventListener('input', (event) => {
-            if (event.target.matches('input[name$="_url"]')) {
-                const input = event.target;
-                const previewContainer = input.parentNode.querySelector('.photo-preview') || 
-                                         document.getElementById('profile-image-preview');
-                
-                if (previewContainer) {
-                    previewContainer.innerHTML = '';
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Admin page loaded, checking token...');
+            
+            // Check for API token
+            if (!apiToken) {
+                console.log('No token in session storage, prompting user');
+                const newToken = prompt('Enter your admin token:');
+                if (newToken) {
+                    console.log('Token provided, storing in session');
+                    sessionStorage.setItem('admin_token', newToken);
+                    window.location.reload(); // Reload page with token
+                } else {
+                    console.warn('No token provided, continuing but updates will fail');
+                    showStatus('Warning: No authentication token provided. You can view content but cannot save changes.', 'error');
+                }
+            } else {
+                console.log('Token found in session storage');
+            }
+            
+            // Set up event listeners
+            aboutForm.addEventListener('submit', saveContent);
+            reloadBtn.addEventListener('click', function() {
+                console.log('Manual reload requested');
+                showStatus('Reloading content...', 'success');
+                loadContent();
+            });
+            
+            // Monitor profile image input for preview
+            const profileImageInput = document.getElementById('profile_image');
+            if (profileImageInput) {
+                profileImageInput.addEventListener('input', function() {
+                    const preview = document.getElementById('profile-image-preview');
+                    preview.innerHTML = '';
                     
-                    if (input.value) {
+                    if (this.value) {
                         const img = document.createElement('img');
-                        img.src = input.value;
-                        img.alt = 'Preview';
-                        img.className = 'preview-image';
-                        previewContainer.appendChild(img);
+                        img.src = this.value;
+                        img.alt = 'Profile Preview';
+                        img.className = 'preview-image mt-2';
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                            preview.innerHTML += '<div class="alert alert-warning mt-2">Invalid image URL</div>';
+                        };
+                        preview.appendChild(img);
+                    }
+                });
+            }
+            
+            // Add preview for photo URLs
+            document.addEventListener('input', function(event) {
+                if (event.target.name && event.target.name.endsWith('_url')) {
+                    const photoItem = event.target.closest('.photo-item');
+                    if (photoItem) {
+                        const preview = photoItem.querySelector('.photo-preview');
+                        preview.innerHTML = '';
+                        
+                        if (event.target.value) {
+                            const img = document.createElement('img');
+                            img.src = event.target.value;
+                            img.alt = 'Photo Preview';
+                            img.className = 'preview-image';
+                            img.onerror = function() {
+                                this.style.display = 'none';
+                                preview.innerHTML += '<div class="alert alert-warning mt-2">Invalid image URL</div>';
+                            };
+                            preview.appendChild(img);
+                        }
                     }
                 }
-            }
+            });
+            
+            // Initial load
+            console.log('Loading initial content...');
+            loadContent();
         });
     </script>
 </body>

@@ -17,7 +17,7 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self' https://*.amazonaws.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' https://*.amazonaws.com data:; connect-src 'self' https://*.amazonaws.com;"
+    Content-Security-Policy = "default-src 'self' https://*.amazonaws.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' https://*.amazonaws.com data:; connect-src 'self' https://*.amazonaws.com https://api.netlify.com https://api.github.com;"
 
 # Redirect all requests to the root if no path exists
 [[redirects]]
@@ -47,6 +47,11 @@
   to = "/.netlify/functions/get-content"
   status = 200
 
+[[redirects]]
+  from = "/api/update-content"
+  to = "/.netlify/functions/update-content"
+  status = 200
+
 # Environment variables for production (REPLACE WITH YOUR VALUES)
 [context.production.environment]
   STATIC_DEPLOYMENT = "true"
@@ -59,8 +64,23 @@
   IMAGE_ABOUT_PHOTO3_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg"
   IMAGE_ABOUT_PHOTO4_URL = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg"
   
+  # GitHub repository information (REQUIRED for content updates)
+  # Replace with your GitHub username and repository name
+  GITHUB_OWNER = "your-github-username"
+  GITHUB_REPO = "portfolio-website-desktop"
+  
+  # Create a GitHub Personal Access Token with repo scope
+  # Add this in the Netlify UI environment variables (not directly here)
+  # GITHUB_TOKEN = "your-github-token" 
+  
+  # Netlify API tokens for triggering builds after content updates
+  # Add these in the Netlify UI environment variables (not directly here)
+  # NETLIFY_AUTH_TOKEN = "your-netlify-auth-token"
+  # NETLIFY_SITE_ID = "your-netlify-site-id"
+  
   # Security token for content updating - create a strong random token
-  UPDATE_CONTENT_TOKEN = "CREATE_A_STRONG_RANDOM_TOKEN_HERE"
+  # Add this in the Netlify UI environment variables (not directly here)
+  # UPDATE_CONTENT_TOKEN = "CREATE_A_STRONG_RANDOM_TOKEN_HERE"
 
 # Environment variables for development
 [context.development.environment]
