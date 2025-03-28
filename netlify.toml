@@ -6,12 +6,7 @@
   publish = "app/static"
   # Default build command
   command = "python build_static_site.py"
-  environment = { PYTHON_VERSION = "3.11" }
-
-# Environment variables for the build
-[build.environment]
-  STATIC_DEPLOYMENT = "true"
-  PYTHONUNBUFFERED = "1"
+  environment = { PYTHON_VERSION = "3.11", STATIC_DEPLOYMENT = "true", PYTHONUNBUFFERED = "1" }
 
 # Headers to set on static site
 [[headers]]
