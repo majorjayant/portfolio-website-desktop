@@ -77,26 +77,26 @@
     }
   },
   "about_content": {
-    "title": "about.",
-    "subtitle": "I'm a passionate product manager based in New Delhi, India.",
-    "description": "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.",
+    "title": "hdjfdfjh",
+    "subtitle": "c,dsmvv",
+    "description": "clvkvcxmx, ",
     "profile_image": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
     "photos": [
       {
-        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
-        "alt": "Personal photo 1"
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+        "alt": "scsd"
       },
       {
-        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
-        "alt": "Personal photo 2"
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+        "alt": "hjh"
       },
       {
-        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
-        "alt": "Personal photo 3"
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+        "alt": "hjvhj"
       },
       {
-        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
-        "alt": "Personal photo 4"
+        "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+        "alt": "jhvj"
       }
     ]
   },
@@ -112,6 +112,6 @@
   },
   "exported_at": "2025-03-28T00:34:58.302288",
   "export_source": "database",
-  "last_updated": "2025-03-28T00:35:17.707612",
-  "update_source": "api_request"
+  "last_updated": "2025-03-28T01:07:02.072Z",
+  "update_source": "netlify_function"
 }
