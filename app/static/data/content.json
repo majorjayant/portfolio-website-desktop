@@ -3,7 +3,7 @@
     "title": "Test About Title 02:55:48",
     "subtitle": "Test Subtitle - 2025-03-28",
     "description": "This is a test description added by the testing script on 2025-03-28 02:55:48",
-    "profile_image": "/static/img/profile-photo.svg",
+    "profile_image": "/static/img/profile-photo.png",
     "photos": [
       {
         "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
@@ -55,7 +55,7 @@
       "updated_at": "2025-03-27 21:25:52"
     },
     "image_about_profile_url": {
-      "value": "/static/img/profile-photo.svg",
+      "value": "/static/img/profile-photo.png",
       "description": "Default value for image_about_profile_url",
       "updated_at": "2025-03-27 18:35:26"
     },
