@@ -26,12 +26,12 @@
       "updated_at": "2025-03-27T23:26:55"
     },
     "about_description": {
-      "value": "Ever since I was a kid, I’ve been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I’ve done it all, and I’m just getting started. Here’s the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let’s talk.",
+      "value": "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I've done it all, and I'm just getting started. Here's the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let's talk.",
       "description": "About section description",
       "updated_at": "2025-03-27T23:26:55"
     },
     "image_about_profile_url": {
-      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+      "value": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
       "description": "About profile image URL",
       "updated_at": "2025-03-27T23:26:56"
     },
@@ -79,8 +79,8 @@
   "about_content": {
     "title": "Jayant Arora",
     "subtitle": "Curious Mind. Data Geek. Product Whisperer.",
-    "description": "Ever since I was a kid, I’ve been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I’ve done it all, and I’m just getting started. Here’s the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let’s talk.",
-    "profile_image": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+    "description": "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I've done it all, and I'm just getting started. Here's the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let's talk.",
+    "profile_image": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
     "photos": [
       {
         "url": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
@@ -104,7 +104,7 @@
     "favicon": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
     "logo": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
     "banner": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
-    "about_profile": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Adobe+Express+-+file.png",
+    "about_profile": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
     "about_photo1": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
     "about_photo2": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
     "about_photo3": "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
