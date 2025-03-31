@@ -1,0 +1,20 @@
+{
+  "name": "website-portfolio-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function for website portfolio with RDS database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "lambda",
+    "aws",
+    "rds",
+    "mysql"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mysql2": "^3.6.0"
+  }
+} 
