@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Portfolio | majorjayant{% endblock %}</title>
     
+    <!-- Tailwind CSS for admin panel -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    {% if not request.path.startswith('/admin') %}
     <!-- Critical CSS - Fallback styles in case external CSS fails -->
     <style>
         /* Fallback critical styles */
@@ -23,6 +27,7 @@
         .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
         .footer-logo img { max-width: 100px; max-height: 60px; }
     </style>
+    {% endif %}
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ site_config.get_image_url('favicon') }}">
@@ -33,14 +38,17 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    {% if not request.path.startswith('/admin') %}
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    {% endif %}
     
     {% block extra_css %}{% endblock %}
     
+    {% if not request.path.startswith('/admin') %}
     <!-- Netlify deployment fix -->
     <script>
         // Handle case when SiteConfig not available (static sites)
@@ -126,8 +134,10 @@
             setTimeout(fixBrokenImages, 1000);
         });
     </script>
+    {% endif %}
 </head>
-<body>
+<body class="{% if request.path.startswith('/admin') %}bg-gray-100{% endif %}">
+    {% if not request.path.startswith('/admin') %}
     <!-- Navigation Bar -->
     <header>
         <nav class="navbar">
@@ -149,6 +159,7 @@
             </div>
         </nav>
     </header>
+    {% endif %}
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -166,6 +177,7 @@
         {% block content %}{% endblock %}
     </main>
 
+    {% if not request.path.startswith('/admin') %}
     <!-- Footer -->
     <footer style="padding: 2rem 0 0.5rem;">
         <div class="footer-container">
@@ -200,12 +212,16 @@
             <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
         </div>
     </footer>
+    {% endif %}
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    {% if not request.path.startswith('/admin') %}
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% endif %}
     {% block extra_js %}{% endblock %}
 
+    {% if not request.path.startswith('/admin') %}
     <!-- Add script for logo background that can't be done with inline styles -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -228,5 +244,6 @@
             }
         });
     </script>
+    {% endif %}
 </body>
 </html> 

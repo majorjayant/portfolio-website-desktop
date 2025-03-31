@@ -3,6 +3,7 @@ from flask import render_template, request, jsonify, flash, redirect, url_for, s
 from datetime import datetime
 import os
 import logging
+from app.routes.admin import admin_bp  # Add this import
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -22,6 +23,10 @@ def register_routes(app):
         # Create a placeholder if the model doesn't exist
         class PortfolioImage:
             pass
+    
+    # Register admin blueprint first
+    app.register_blueprint(admin_bp)
+    print("Admin blueprint registered successfully")
     
     # Create a site_config singleton for use in templates
     @app.context_processor

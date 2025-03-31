@@ -3,37 +3,51 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app import db, login_manager
 from app.models import Admin, SiteConfig
 from app.forms import LoginForm, SiteConfigForm
+import logging
+
+# Setup logging
+logger = logging.getLogger(__name__)
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @login_manager.user_loader
 def load_user(user_id):
     """Load user by ID."""
+    logger.info(f"Loading user with ID: {user_id}")
     return Admin.query.get(int(user_id))
 
 def check_static_mode():
     """Check if app is in static deployment mode"""
-    if current_app.config.get('STATIC_DEPLOYMENT', False):
+    is_static = current_app.config.get('STATIC_DEPLOYMENT', False)
+    logger.info(f"Checking static mode: {is_static}")
+    if is_static:
         return render_template('404.html', message="Admin panel is not available in static mode")
     return None
 
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Admin login route"""
+    logger.info("Accessing admin login route")
+    
     # Check static mode
     static_response = check_static_mode()
     if static_response:
+        logger.warning("Admin access blocked due to static mode")
         return static_response
 
     if current_user.is_authenticated:
+        logger.info("User already authenticated, redirecting to dashboard")
         return redirect(url_for('admin.dashboard'))
     
     form = LoginForm()
     if form.validate_on_submit():
+        logger.info(f"Login attempt for username: {form.username.data}")
         user = Admin.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
+            logger.info("Login successful")
             return redirect(url_for('admin.dashboard'))
+        logger.warning("Invalid login attempt")
         flash('Invalid username or password')
     return render_template('admin/login.html', form=form)
 
