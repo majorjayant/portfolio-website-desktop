@@ -6,13 +6,20 @@ frontend:
         - echo "Setting up Python environment..."
         - python --version
         - python -m pip install --upgrade pip
-        - pip install -r requirements.txt
-        - echo "Installing additional dependencies..."
-        - pip install Flask==2.3.3 Jinja2==3.1.2 python-dotenv==1.0.0 boto3==1.34.69 botocore==1.34.69
+        - pip install Flask==2.3.3 Jinja2==3.1.2 python-dotenv==1.0.0
     build:
       commands:
         - echo "Building static files..."
-        - python -m flask --app app.py build
+        - mkdir -p app/static
+        - cp -r app/static/css app/static/
+        - cp -r app/static/js app/static/
+        - cp -r app/static/img app/static/
+        - cp -r app/static/data app/static/
+        - cp -r app/static/admin app/static/
+        - cp -r app/static/api app/static/
+        - cp app/static/_redirects app/static/
+        - cp app/static/robots.txt app/static/
+        - cp app/static/favicon.ico app/static/
         - echo "Build complete!"
   artifacts:
     baseDirectory: app/static
