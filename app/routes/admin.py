@@ -8,7 +8,19 @@ import logging
 # Setup logging
 logger = logging.getLogger(__name__)
 
+# Create blueprint with explicit url_prefix
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+@admin_bp.before_request
+def check_admin_access():
+    """Check access to admin routes"""
+    logger.info(f"Accessing admin route: {request.path}")
+    # Check static mode
+    is_static = current_app.config.get('STATIC_DEPLOYMENT', False)
+    logger.info(f"Static deployment mode: {is_static}")
+    if is_static:
+        logger.warning("Admin access blocked due to static mode")
+        return render_template('404.html', message="Admin panel is not available in static mode")
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -16,25 +28,11 @@ def load_user(user_id):
     logger.info(f"Loading user with ID: {user_id}")
     return Admin.query.get(int(user_id))
 
-def check_static_mode():
-    """Check if app is in static deployment mode"""
-    is_static = current_app.config.get('STATIC_DEPLOYMENT', False)
-    logger.info(f"Checking static mode: {is_static}")
-    if is_static:
-        return render_template('404.html', message="Admin panel is not available in static mode")
-    return None
-
-@admin_bp.route('/login', methods=['GET', 'POST'])
+@admin_bp.route('/login', methods=['GET', 'POST'], strict_slashes=False)
 def login():
     """Admin login route"""
     logger.info("Accessing admin login route")
     
-    # Check static mode
-    static_response = check_static_mode()
-    if static_response:
-        logger.warning("Admin access blocked due to static mode")
-        return static_response
-
     if current_user.is_authenticated:
         logger.info("User already authenticated, redirecting to dashboard")
         return redirect(url_for('admin.dashboard'))

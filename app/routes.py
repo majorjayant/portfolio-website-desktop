@@ -3,7 +3,6 @@ from flask import render_template, request, jsonify, flash, redirect, url_for, s
 from datetime import datetime
 import os
 import logging
-from app.routes.admin import admin_bp  # Add this import
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -24,10 +23,6 @@ def register_routes(app):
         class PortfolioImage:
             pass
     
-    # Register admin blueprint first
-    app.register_blueprint(admin_bp)
-    print("Admin blueprint registered successfully")
-    
     # Create a site_config singleton for use in templates
     @app.context_processor
     def inject_site_config():
@@ -38,9 +33,13 @@ def register_routes(app):
         """Make the session permanent with the configured lifetime"""
         session.permanent = True
 
-    @app.route('/')
+    @app.route('/', strict_slashes=False)
     def home():
         """Render the home page"""
+        # Only handle exact '/' path to prevent catching all routes
+        if request.path != '/':
+            return abort(404)
+            
         # Get dummy data if database operations fail
         try:
             projects = get_projects()
