@@ -133,6 +133,37 @@ exports.handler = async (event) => {
                         })
                     };
                 }
+            } else if (action === 'update_site_config') {
+                console.log('Processing update site configuration request');
+                
+                // Verify token - In a real implementation, you would validate the JWT token
+                const token = event.headers.Authorization || '';
+                if (!token) {
+                    console.log('Unauthorized: No token provided');
+                    return {
+                        statusCode: 401,
+                        headers,
+                        body: JSON.stringify({
+                            success: false,
+                            error: 'Unauthorized: No token provided'
+                        })
+                    };
+                }
+                
+                // Extract site configuration from the request body
+                const siteConfig = body.site_config || {};
+                console.log('Updating site configuration with:', JSON.stringify(siteConfig, null, 2));
+                
+                // In a real implementation, you would update a database here
+                // For this example, we'll just return success
+                return {
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        success: true,
+                        message: 'Site configuration updated successfully'
+                    })
+                };
             } else {
                 // Return error for unsupported action
                 console.log('Unsupported action:', action);
