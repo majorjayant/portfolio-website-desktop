@@ -49,13 +49,13 @@
                 <div id="already-authenticated" class="hidden text-center">
                     <p class="text-lg text-gray-700 mb-6">You are already logged in</p>
                     <div class="space-y-4">
-                        <a href="javascript:void(0);" onclick="goToDashboard()" class="block w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-center">Go to Dashboard</a>
+                        <a href="/admin/dashboard" class="block w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-center">Go to Dashboard</a>
                         <button id="go-to-login-button" class="block w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md">Logout & Login Again</button>
                     </div>
                 </div>
                 
                 <div class="mt-4 text-center">
-                    <a href="javascript:void(0);" onclick="goToHome()" class="text-sm text-indigo-600 hover:text-indigo-500">Back to home</a>
+                    <a href="/" class="text-sm text-indigo-600 hover:text-indigo-500">Back to home</a>
                 </div>
             </div>
         </div>
@@ -73,15 +73,6 @@
         const successDiv = document.getElementById('login-success');
         const submitButton = document.getElementById('submit-button');
         const goToLoginButton = document.getElementById('go-to-login-button');
-        
-        // Navigation functions
-        window.goToDashboard = function() {
-            window.location.href = window.location.origin + '/admin/dashboard';
-        };
-        
-        window.goToHome = function() {
-            window.location.href = window.location.origin;
-        };
         
         // Check if user is already logged in
         checkAuth();
@@ -190,9 +181,7 @@
                 
                 // Redirect to dashboard after short delay
                 setTimeout(() => {
-                    console.log('Redirecting to dashboard');
-                    // Use full URL to avoid issues with trailing slashes
-                    window.location.href = window.location.origin + '/admin/dashboard';
+                    window.location.href = '/admin/dashboard';
                 }, 1000);
             }
             
