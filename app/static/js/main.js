@@ -253,9 +253,43 @@ async function loadSiteConfig() {
             }
         }
         
-        const siteConfig = await response.json();
-        console.log('Site config loaded:', siteConfig);
+        const data = await response.json();
+        console.log('Raw data loaded:', data);
         
+        // Handle different possible structures of the JSON response
+        let siteConfig;
+        
+        if (data.site_configs) {
+            // If data is nested under site_configs key
+            siteConfig = data.site_configs;
+            console.log('Using nested site_configs data');
+        } else if (data.image_favicon_url) {
+            // If data is at the root level
+            siteConfig = data;
+            console.log('Using root level data');
+        } else {
+            console.log('Unexpected data structure, using defaults');
+            // Default values if structure is unexpected
+            siteConfig = {
+                image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+                image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+                image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+                about_title: "J A",
+                about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
+                about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter.",
+                image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
+                image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+                image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+                image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+                image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+                about_photo1_alt: "Test Photo 1 Alt Text",
+                about_photo2_alt: "Test Photo 2 Alt Text",
+                about_photo3_alt: "Test Photo 3 Alt Text",
+                about_photo4_alt: "Test Photo 4 Alt Text"
+            };
+        }
+        
+        console.log('Processed site config:', siteConfig);
         return siteConfig;
     } catch (error) {
         console.error('Error loading site configuration:', error);
