@@ -18,20 +18,10 @@ echo "Python version: $(python --version 2>&1)"
 echo "Python path: $(which python 2>&1)"
 echo "Pip version: $(pip --version 2>&1)"
 echo "Python executable: $(python -c "import sys; print(sys.executable)" 2>&1)"
-echo "Python path:"
-python -c "import sys; print('\n'.join(sys.path))" 2>&1
 
 # Check critical files
 echo -e "\n--- CRITICAL FILES CHECK ---"
-echo "Checking amplify.yml:"
-if [ -f "amplify.yml" ]; then
-    echo "✓ amplify.yml exists"
-    cat amplify.yml
-else
-    echo "✗ amplify.yml not found!"
-fi
-
-echo -e "\nChecking requirements-dev.txt:"
+echo "Checking requirements-dev.txt:"
 if [ -f "requirements-dev.txt" ]; then
     echo "✓ requirements-dev.txt exists"
     cat requirements-dev.txt
@@ -43,7 +33,6 @@ echo -e "\nChecking build_static_site.py:"
 if [ -f "build_static_site.py" ]; then
     echo "✓ build_static_site.py exists"
     head -n 20 build_static_site.py
-    echo "..."
 else
     echo "✗ build_static_site.py not found!"
 fi
@@ -76,17 +65,11 @@ echo -e "\n============================================="
 echo "DIAGNOSTIC SUMMARY"
 echo "============================================="
 
-if [ -f "amplify.yml" ] && [ -f "requirements-dev.txt" ] && [ -f "build_static_site.py" ]; then
-    echo "✓ All build configuration files are present"
+if [ -f "app/static/index.html" ]; then
+    echo "✓ Build appears successful - index.html exists"
 else
-    echo "✗ Some build configuration files are missing!"
+    echo "✗ Build appears to have failed - index.html not found"
 fi
 
-if [ -d "app/static" ] && [ -f "app/static/index.html" ]; then
-    echo "✓ Output directory and index.html exist"
-else
-    echo "✗ Output directory or index.html is missing!"
-fi
-
-echo -e "\nPlease attach this output when reporting issues."
+echo -e "\nPlease check logs for more details."
 echo "=============================================" 

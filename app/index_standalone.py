@@ -4,11 +4,13 @@ This provides a fallback in case the main build process fails
 """
 
 import os
-import json
+import sys
 from pathlib import Path
 
 def generate_index_html():
     """Generate a simple index.html file that can be used as a fallback"""
+    
+    print("Generating fallback index.html file")
     
     html = """<!DOCTYPE html>
 <html lang="en">
@@ -109,15 +111,30 @@ def generate_index_html():
 </body>
 </html>"""
     
+    # Print system info for debugging
+    print(f"Python version: {sys.version}")
+    print(f"Current working directory: {os.getcwd()}")
+    
     # Create the static directory if it doesn't exist
     static_dir = Path("app/static")
     static_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Created directory: {static_dir}")
     
     # Write the HTML to index.html
-    with open(static_dir / "index.html", "w", encoding="utf-8") as f:
-        f.write(html)
-    
-    print(f"✓ Generated fallback index.html at {static_dir}/index.html")
+    try:
+        with open(static_dir / "index.html", "w", encoding="utf-8") as f:
+            f.write(html)
+        print(f"✓ Generated fallback index.html at {static_dir}/index.html")
+    except Exception as e:
+        print(f"Error writing file: {str(e)}")
+        
+    # List the contents of the directory to verify
+    print("Directory contents:")
+    try:
+        for path in static_dir.iterdir():
+            print(f"  - {path.name}")
+    except Exception as e:
+        print(f"Error listing directory: {str(e)}")
 
 if __name__ == "__main__":
     generate_index_html() 
