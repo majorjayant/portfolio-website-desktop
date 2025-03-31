@@ -93,50 +93,6 @@ def register_routes(app):
         """Render the contact page"""
         return render_template('contact.html')
 
-    @app.route('/admin/site-config', methods=['GET', 'POST'])
-    def admin_site_config():
-        """Admin page for managing site configuration"""
-        if not app.config.get('STATIC_DEPLOYMENT', False):
-            try:
-                if request.method == 'POST':
-                    # Get form data
-                    key = request.form.get('key')
-                    value = request.form.get('value')
-                    description = request.form.get('description')
-                    
-                    # Update or create config entry
-                    config = SiteConfig.set_value(key, value, description)
-                    if config:
-                        flash('Config updated successfully', 'success')
-                    else:
-                        flash('Error updating config', 'error')
-                
-                # Get all config entries
-                try:
-                    configs = SiteConfig.query.all()
-                except:
-                    configs = []
-                
-                # Prepare image URLs for display
-                image_urls = {
-                    'favicon': SiteConfig.get_image_url('favicon'),
-                    'logo': SiteConfig.get_image_url('logo'),
-                    'banner': SiteConfig.get_image_url('banner'),
-                    'about_profile': SiteConfig.get_image_url('about_profile'),
-                    'about_photo1': SiteConfig.get_image_url('about_photo1'),
-                    'about_photo2': SiteConfig.get_image_url('about_photo2'),
-                    'about_photo3': SiteConfig.get_image_url('about_photo3'),
-                    'about_photo4': SiteConfig.get_image_url('about_photo4')
-                }
-                
-                return render_template('admin/site-config.html', configs=configs, image_urls=image_urls)
-            except Exception as e:
-                app.logger.error(f"Error in admin_site_config: {str(e)}")
-                return render_template('admin/site-config.html', configs=[], image_urls={})
-        else:
-            # In static mode, show a message that admin is not available
-            return render_template('admin/site-config.html', configs=[], image_urls={}, static_mode=True)
-
     @app.route('/health')
     def health_check():
         """Health check endpoint for monitoring"""

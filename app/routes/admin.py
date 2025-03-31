@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db, login_manager
 from app.models import Admin, SiteConfig
@@ -11,9 +11,20 @@ def load_user(user_id):
     """Load user by ID."""
     return Admin.query.get(int(user_id))
 
+def check_static_mode():
+    """Check if app is in static deployment mode"""
+    if current_app.config.get('STATIC_DEPLOYMENT', False):
+        return render_template('404.html', message="Admin panel is not available in static mode")
+    return None
+
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Admin login route"""
+    # Check static mode
+    static_response = check_static_mode()
+    if static_response:
+        return static_response
+
     if current_user.is_authenticated:
         return redirect(url_for('admin.dashboard'))
     
@@ -30,6 +41,11 @@ def login():
 @login_required
 def logout():
     """Admin logout route"""
+    # Check static mode
+    static_response = check_static_mode()
+    if static_response:
+        return static_response
+
     logout_user()
     return redirect(url_for('admin.login'))
 
@@ -37,6 +53,11 @@ def logout():
 @login_required
 def dashboard():
     """Admin dashboard route"""
+    # Check static mode
+    static_response = check_static_mode()
+    if static_response:
+        return static_response
+
     form = SiteConfigForm()
     config = SiteConfig.query.first()
     
@@ -64,6 +85,11 @@ def dashboard():
 @login_required
 def update_config():
     """Update site configuration"""
+    # Check static mode
+    static_response = check_static_mode()
+    if static_response:
+        return static_response
+
     form = SiteConfigForm()
     if form.validate_on_submit():
         config = SiteConfig.query.first()
