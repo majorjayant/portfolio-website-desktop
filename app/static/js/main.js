@@ -214,8 +214,16 @@ function filterProjects(category) {
 // Function to load site configuration
 async function loadSiteConfig() {
     try {
+        // The API Gateway endpoint URL - replace with your actual API Gateway URL
+        const API_ENDPOINT = 'https://YOUR_API_GATEWAY_ID.execute-api.YOUR_REGION.amazonaws.com/prod/get-content';
+        
         // Try to load from the API endpoint
-        let response = await fetch('/api/site-config');
+        let response = await fetch(`${API_ENDPOINT}?type=site_config`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
         
         // If API call fails, try the static JSON file
         if (!response.ok) {
@@ -227,10 +235,8 @@ async function loadSiteConfig() {
             }
         }
         
-        const config = await response.json();
-        
-        // Get the site config data - it might be nested differently depending on the source
-        const siteConfig = config.site_configs || config;
+        const siteConfig = await response.json();
+        console.log('Site config loaded:', siteConfig);
         
         // Update page title
         document.title = siteConfig.about_title || 'Portfolio Website';

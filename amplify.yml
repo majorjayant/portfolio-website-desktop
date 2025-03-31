@@ -20,6 +20,12 @@ frontend:
       headers:
         - key: 'Cache-Control'
           value: 'no-store'
+    - pattern: '/data/site_config.json'
+      headers:
+        - key: 'Content-Type'
+          value: 'application/json'
+        - key: 'Access-Control-Allow-Origin'
+          value: '*'
   rewrites:
     - source: '/admin'
       target: '/admin/index.html'
@@ -31,12 +37,9 @@ frontend:
       target: '/admin/dashboard.html'
       status: '200'
     - source: '/api/admin/login'
-      target: '/.netlify/functions/admin-login'
+      target: '/api/admin-login.js'
       status: '200'
     - source: '/api/site-config'
-      target: '/amplify/backend/function/getSiteConfig/src/index.js'
-      status: '200'
-    - source: '/data/site_config.json'
       target: '/data/site_config.json'
       status: '200'
     - source: '/<*>'
