@@ -1,32 +1,37 @@
 version: 1
-applications:
-  - frontend:
-      phases:
-        preBuild:
-          commands:
-            - pip install -r requirements.txt
-        build:
-          commands:
-            - echo "Building Flask application"
-            - python build_static_site.py
-      artifacts:
-        baseDirectory: app/static
-        files:
-          - '**/*'
-      cache:
-        paths: []
-    customHeaders:
-      - pattern: '**/*'
-        headers:
-          - key: 'Cache-Control'
-            value: 'no-store, no-cache, must-revalidate'
-    rewrites:
-      - source: '/admin/<*>'
-        target: '/index.html'
-        status: '200'
-      - source: '/static/<*>'
-        target: '/static/<*>'
-        status: '200'
-      - source: '/<*>'
-        target: '/index.html'
-        status: '200'
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - pip install -r requirements.txt
+    build:
+      commands:
+        - mkdir -p app/static/admin
+        - cp app/templates/admin/index.html app/static/admin/index.html
+        - cp app/templates/admin/login.html app/static/admin/login.html
+        - cp -r app/static/* app/static/
+  artifacts:
+    baseDirectory: app/static
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'no-store'
+  rewrites:
+    - source: '/admin'
+      target: '/admin/index.html'
+      status: '200'
+    - source: '/admin/login'
+      target: '/admin/login.html'
+      status: '200'
+    - source: '/api/admin/login'
+      target: '/.netlify/functions/admin-login'
+      status: '200'
+    - source: '/<*>'
+      target: '/index.html'
+      status: '200'
