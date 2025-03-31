@@ -47,3 +47,22 @@ frontend:
       headers:
         - key: 'Cache-Control'
           value: 'public, max-age=0, must-revalidate'
+    - pattern: '/api/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'no-cache, no-store, must-revalidate'
+        - key: 'Access-Control-Allow-Origin'
+          value: '*'
+        - key: 'Access-Control-Allow-Headers'
+          value: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'
+        - key: 'Access-Control-Allow-Methods'
+          value: 'GET,OPTIONS'
+
+  # Add API proxy configuration
+  rewrites:
+    - source: '/api/:path*'
+      destination: '/api/:path*'
+      status: '200'
+    - source: '**'
+      destination: '/index.html'
+      status: '200'

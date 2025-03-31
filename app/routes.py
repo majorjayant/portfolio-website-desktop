@@ -16,13 +16,6 @@ def register_routes(app):
     from app.models.site_config import SiteConfig
     from app.models.models import get_projects, get_experience, get_education, get_certifications
     
-    try:
-        from app.models.portfolio_image import PortfolioImage
-    except ImportError:
-        # Create a placeholder if the model doesn't exist
-        class PortfolioImage:
-            pass
-    
     # Create a site_config singleton for use in templates
     @app.context_processor
     def inject_site_config():
@@ -162,4 +155,109 @@ def register_routes(app):
     @app.errorhandler(500)
     def server_error(e):
         """Handle 500 errors"""
-        return render_template('500.html'), 500 
+        return render_template('500.html'), 500
+
+    # API Endpoints
+    @app.route('/api/site-config', methods=['GET'])
+    def get_site_config():
+        """API endpoint to get site configuration"""
+        try:
+            # Get all site configuration
+            configs = {}
+            for config in SiteConfig.query.all():
+                configs[config.key] = {
+                    'value': config.value,
+                    'description': config.description,
+                    'updated_at': config.updated_at.isoformat() if config.updated_at else None
+                }
+            
+            return jsonify({
+                'status': 'success',
+                'data': configs
+            })
+        except Exception as e:
+            logger.error(f"Error fetching site config: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+
+    @app.route('/api/about', methods=['GET'])
+    def get_about():
+        """API endpoint to get about section content"""
+        try:
+            about_content = SiteConfig.get_about_content()
+            return jsonify({
+                'status': 'success',
+                'data': about_content
+            })
+        except Exception as e:
+            logger.error(f"Error fetching about content: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+
+    @app.route('/api/projects', methods=['GET'])
+    def get_projects_api():
+        """API endpoint to get projects data"""
+        try:
+            projects = get_projects()
+            return jsonify({
+                'status': 'success',
+                'data': projects
+            })
+        except Exception as e:
+            logger.error(f"Error fetching projects: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+
+    @app.route('/api/experience', methods=['GET'])
+    def get_experience_api():
+        """API endpoint to get experience data"""
+        try:
+            experience = get_experience()
+            return jsonify({
+                'status': 'success',
+                'data': experience
+            })
+        except Exception as e:
+            logger.error(f"Error fetching experience: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+
+    @app.route('/api/education', methods=['GET'])
+    def get_education_api():
+        """API endpoint to get education data"""
+        try:
+            education = get_education()
+            return jsonify({
+                'status': 'success',
+                'data': education
+            })
+        except Exception as e:
+            logger.error(f"Error fetching education: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
+
+    @app.route('/api/certifications', methods=['GET'])
+    def get_certifications_api():
+        """API endpoint to get certifications data"""
+        try:
+            certifications = get_certifications()
+            return jsonify({
+                'status': 'success',
+                'data': certifications
+            })
+        except Exception as e:
+            logger.error(f"Error fetching certifications: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500 
