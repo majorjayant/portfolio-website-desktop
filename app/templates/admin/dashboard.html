@@ -1,117 +1,47 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="min-h-screen bg-gray-100">
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <h1 class="text-xl font-bold">Admin Dashboard</h1>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <a href="{{ url_for('admin.logout') }}" class="text-gray-500 hover:text-gray-700">Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="mb-4 {% if category == 'error' %}bg-red-100 border-red-400 text-red-700{% else %}bg-green-100 border-green-400 text-green-700{% endif %} px-4 py-3 rounded relative" role="alert">
-                        <span class="block sm:inline">{{ message }}</span>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form method="POST" action="{{ url_for('admin.update_config') }}" enctype="multipart/form-data" class="space-y-8 divide-y divide-gray-200">
-            {{ form.hidden_tag() }}
-            
-            <div class="space-y-8 divide-y divide-gray-200">
-                <div class="pt-8">
-                    <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Images</h3>
-                        <p class="mt-1 text-sm text-gray-500">Update website images and URLs</p>
-                    </div>
-                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-                        {% for field in ['image_favicon_url', 'image_logo_url', 'image_banner_url', 'image_about_profile_url', 
-                                       'image_about_photo1_url', 'image_about_photo2_url', 'image_about_photo3_url', 'image_about_photo4_url'] %}
-                            <div class="sm:col-span-1">
-                                <label for="{{ field }}" class="block text-sm font-medium text-gray-700">
-                                    {{ field | replace('_', ' ') | title }}
-                                </label>
-                                <div class="mt-1 flex items-center">
-                                    {{ form[field](class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
-                                </div>
-                                {% if form[field].errors %}
-                                    <p class="mt-2 text-sm text-red-600">{{ form[field].errors[0] }}</p>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="pt-8">
-                    <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">About Section</h3>
-                        <p class="mt-1 text-sm text-gray-500">Update about section content</p>
-                    </div>
-                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-                        <div class="sm:col-span-2">
-                            <label for="about_title" class="block text-sm font-medium text-gray-700">Title</label>
-                            <div class="mt-1">
-                                {{ form.about_title(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
-                            <div class="mt-1">
-                                {{ form.about_subtitle(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
-                            </div>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
-                            <div class="mt-1">
-                                {{ form.about_description(rows=4, class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
-                            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <nav class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <h1 class="text-xl font-bold text-gray-900">Admin Dashboard</h1>
                         </div>
                     </div>
-                </div>
-
-                <div class="pt-8">
-                    <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Image Descriptions</h3>
-                        <p class="mt-1 text-sm text-gray-500">Update image alt text</p>
-                    </div>
-                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-                        {% for field in ['about_photo1_alt', 'about_photo2_alt', 'about_photo3_alt', 'about_photo4_alt'] %}
-                            <div class="sm:col-span-1">
-                                <label for="{{ field }}" class="block text-sm font-medium text-gray-700">
-                                    {{ field | replace('_', ' ') | title }}
-                                </label>
-                                <div class="mt-1">
-                                    {{ form[field](class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
-                                </div>
-                            </div>
-                        {% endfor %}
+                    <div class="flex items-center">
+                        <button onclick="logout()" class="ml-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                            Logout
+                        </button>
                     </div>
                 </div>
             </div>
+        </nav>
 
-            <div class="pt-5">
-                <div class="flex justify-end">
-                    <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Save Changes
-                    </button>
+        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="border-4 border-dashed border-gray-200 rounded-lg h-96 p-4">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Welcome to the Admin Dashboard</h2>
+                    <p class="text-gray-600">This is where you'll manage your site content.</p>
                 </div>
             </div>
-        </form>
+        </main>
     </div>
-</div>
-{% endblock %} 
+
+    <script>
+        function logout() {
+            // Clear any stored session data
+            localStorage.removeItem('adminToken');
+            // Redirect to login page
+            window.location.href = '/admin/login';
+        }
+    </script>
+</body>
+</html> 
