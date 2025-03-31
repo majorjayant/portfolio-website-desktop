@@ -139,33 +139,23 @@
 <body class="{% if request.path.startswith('/admin') %}bg-gray-100{% endif %}">
     {% if not request.path.startswith('/admin') %}
     <!-- Navigation Bar -->
-    <header class="bg-white shadow-sm">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="{{ url_for('home') }}" class="text-xl font-bold text-gray-900">Portfolio</a>
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="{{ url_for('home') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            Home
-                        </a>
-                        <a href="{{ url_for('projects') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            Projects
-                        </a>
-                        <a href="{{ url_for('solutions') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            Solutions
-                        </a>
-                        <a href="{{ url_for('contact') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            Contact
-                        </a>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <a href="/admin/login" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-user-circle text-xl"></i>
-                    </a>
-                </div>
+    <header>
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="logo" style="display: block !important; padding: 5px 15px !important; position: relative !important;">
+                <img src="{{ site_config.get_image_url('logo') }}" alt="Logo" style="height: 70px !important; width: auto !important; display: block !important; max-width: none !important; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));">
+            </a>
+            <div class="nav-links" style="flex-grow: 1 !important; margin-left: auto !important; text-align: right !important;">
+                <ul style="display: flex !important; list-style: none !important; justify-content: flex-end !important; margin: 0 !important; padding: 0 !important;">
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="{{ url_for('home') }}" {% if request.endpoint == 'home' %}class="active"{% endif %} style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="{{ url_for('projects') }}" {% if request.endpoint == 'projects' %}class="active"{% endif %} style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="{{ url_for('solutions') }}" {% if request.endpoint == 'solutions' %}class="active"{% endif %} style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Solutions</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="{{ url_for('contact') }}" {% if request.endpoint == 'contact' %}class="active"{% endif %} style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
+                </ul>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
             </div>
         </nav>
     </header>

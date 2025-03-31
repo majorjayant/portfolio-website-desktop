@@ -1,0 +1,11 @@
+{
+    "paths": {
+        "/get-content": {
+            "name": "/get-content",
+            "lambdaFunction": "get-content",
+            "permissions": {
+                "setting": "open"
+            }
+        }
+    }
+} 
