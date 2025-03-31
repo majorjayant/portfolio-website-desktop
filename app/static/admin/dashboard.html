@@ -190,7 +190,8 @@
                 headers: {
                     'Accept': 'application/json',
                     'Cache-Control': 'no-cache'
-                }
+                },
+                mode: 'cors'
             })
             .then(response => {
                 console.log('API response status:', response.status);
@@ -216,18 +217,75 @@
             .catch(error => {
                 console.error('Error loading from API:', error);
                 
-                // Hide loading indicator
-                loadingIndicator.classList.add('hidden');
-                
-                // Show error message
-                apiError.classList.remove('hidden');
-                apiError.textContent = 'Error loading configuration data: ' + error.message;
-                setTimeout(() => {
-                    apiError.classList.add('hidden');
-                }, 5000);
-                
-                // Show form anyway in case user wants to input data manually
-                formContainer.classList.remove('hidden');
+                // Try fallback to local JSON file
+                console.log('Attempting to load from local site_config.json file');
+                fetch('/data/site_config.json', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Local file response not OK: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Successfully loaded site config from local file:', data);
+                    
+                    // Hide loading indicator and show form
+                    loadingIndicator.classList.add('hidden');
+                    formContainer.classList.remove('hidden');
+                    
+                    // Process data
+                    let configData = data;
+                    if (data.site_configs) {
+                        configData = data.site_configs;
+                    }
+                    populateForm(configData);
+                    
+                    // Show warning about using local data
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 p-4 bg-yellow-100 text-yellow-700 rounded-md shadow-md z-40';
+                    notification.textContent = 'Using local configuration data (API unavailable)';
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        notification.style.transition = 'opacity 0.5s';
+                        setTimeout(() => {
+                            document.body.removeChild(notification);
+                        }, 500);
+                    }, 5000);
+                })
+                .catch(localError => {
+                    console.error('Error loading from local file:', localError);
+                    
+                    // Hide loading indicator
+                    loadingIndicator.classList.add('hidden');
+                    
+                    // Show error message
+                    apiError.classList.remove('hidden');
+                    apiError.textContent = 'Error loading configuration data: ' + error.message;
+                    setTimeout(() => {
+                        apiError.classList.add('hidden');
+                    }, 5000);
+                    
+                    // Show form with empty data
+                    formContainer.classList.remove('hidden');
+                    
+                    // Use default values as last resort
+                    const defaultConfig = {
+                        about_title: "Portfolio Website",
+                        about_subtitle: "My Projects",
+                        about_description: "This is a portfolio website showcasing my projects",
+                        image_logo_url: "",
+                        image_banner_url: ""
+                    };
+                    populateForm(defaultConfig);
+                });
             });
         }
         
