@@ -23,7 +23,23 @@ custom:
   s3Bucket: ${self:service}-${self:provider.stage}-website
   s3BucketRegionalDomainName: ${self:custom.s3Bucket}.s3.${self:provider.region}.amazonaws.com
   pythonRequirements:
-    dockerizePip: non-linux
+    dockerizePip: false
+    useDownloadCache: true
+    useStaticCache: true
+    pythonBin: python
+    slim: true
+    strip: false
+    fileName: requirements-dev.txt
+    noDeploy:
+      - pytest
+      - boto3
+      - botocore
+      - docutils
+      - jmespath
+      - pip
+      - setuptools
+      - six
+      - python-dateutil
   customDomain:
     domainName: ${opt:domain, ''}
     certificateArn: ${opt:cert, ''}
@@ -156,8 +172,9 @@ resources:
                   - Authorization
                 Cookies:
                   Forward: all
-          Aliases: ${self:custom.customDomain.domainName ? [!Ref 'AWS::NoValue', self:custom.customDomain.domainName] : !Ref 'AWS::NoValue'}
-          ViewerCertificate: ${self:custom.customDomain.certificateArn ? { AcmCertificateArn: self:custom.customDomain.certificateArn, SslSupportMethod: 'sni-only' } : { CloudFrontDefaultCertificate: true }}
+          # Simplified to avoid YAML errors
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: true
 
   Outputs:
     WebsiteBucketName:

@@ -204,4 +204,9 @@ function filterProjects(category) {
             }, 300);
         }
     });
-} 
+}
+
+// Find and update any profile image URL references
+// Example:
+// From: profileImage.src = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg";
+// To: profileImage.src = "/static/img/profile-photo.svg"; 

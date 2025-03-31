@@ -15,6 +15,7 @@ A professional portfolio website built with Flask, featuring an image generator 
 
 - Python 3.9+
 - pip (Python package manager)
+- Node.js 14+ (for AWS deployment)
 
 ### Setup
 
@@ -65,25 +66,70 @@ A professional portfolio website built with Flask, featuring an image generator 
 
 5. Visit `http://127.0.0.1:5000` in your browser.
 
-## Deployment
+## AWS Deployment
 
-This project is configured for deployment on Netlify as a static site.
+This project is configured for deployment on AWS using Lambda, CloudFront, and S3.
 
-### Deployment Steps
+### AWS Deployment Prerequisites
 
-1. Fork or clone this repository to your GitHub account.
+1. AWS Account with appropriate permissions
+2. AWS CLI installed and configured
+3. Node.js 14+ and npm installed
+4. Serverless Framework installed globally (`npm install -g serverless`)
 
-2. Connect your GitHub repository to Netlify.
+### AWS Deployment Steps
 
-3. Configure the build settings:
-   - Build command: `python build_static_site.py`
-   - Publish directory: `app/static`
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-4. Deploy the site!
+2. Configure AWS credentials:
+   ```bash
+   aws configure
+   ```
+
+3. Export your database content to JSON:
+   ```bash
+   python export_site_config.py
+   ```
+
+4. Build the static site:
+   ```bash
+   python build_static_site.py
+   ```
+
+5. Deploy to AWS:
+   ```bash
+   npm run deploy
+   ```
+   
+   This will:
+   - Create an S3 bucket for your website content
+   - Set up a CloudFront distribution with proper caching
+   - Deploy Lambda functions for dynamic content
+   - Upload your static content to S3
+
+6. For custom domain deployment:
+   ```bash
+   npm run deploy -- --domain your-domain.com --cert arn:aws:acm:us-east-1:YOUR_ACCOUNT_ID:certificate/YOUR_CERT_ID
+   ```
+
+### GitHub Actions Deployment
+
+The repository includes a GitHub Actions workflow that will automatically deploy your site to AWS when you push to the main branch.
+
+To set up GitHub Actions deployment:
+
+1. Add your AWS credentials as GitHub secrets:
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
+
+2. Push to the main branch, and GitHub Actions will handle the deployment automatically.
 
 ## Static Site Generation
 
-This project includes a script to generate a static version of the site for deployment on platforms like Netlify:
+This project includes a script to generate a static version of the site for deployment:
 
 ```
 python build_static_site.py
@@ -95,62 +141,20 @@ The script will:
 3. Generate a special static version of the image generator tool
 4. Create the necessary directory structure for deployment
 
-## Static Site Generation for Netlify
+## Migrating from Netlify to AWS
 
-This project supports static site generation for deployment on Netlify. The static site generation process has been enhanced to use content from your database even in static deployment mode.
+We've migrated this project from Netlify to AWS for improved flexibility and performance. Key changes include:
 
-### Workflow for Static Site Deployment
+1. AWS Lambda replaces Netlify Functions
+2. S3 static hosting with CloudFront CDN
+3. API Gateway for secure API endpoints
+4. Automated deployment via GitHub Actions
 
-1. **Export database content**:
-   Before deploying to Netlify, export the current database content to a JSON file:
+If you were previously using Netlify, follow these steps to migrate:
 
-   ```bash
-   python export_site_config.py
-   ```
-
-   This will create or update the file `app/static/data/site_config.json` with the current content from your database.
-
-2. **Commit the exported data**:
-   Make sure to commit this JSON file to your repository so Netlify can use it during the build process.
-
-3. **Build the static site**:
-   The build script automatically uses the exported data file when generating the static site:
-
-   ```bash
-   python build_static_site.py
-   ```
-
-   This script will:
-   - Look for the exported data file and use it if available
-   - Fall back to environment variables if the data file is not available
-   - Generate static HTML files for all routes
-   - Copy necessary assets
-
-4. **Deploy to Netlify**:
-   Push your changes to the branch connected to Netlify, and Netlify will automatically build and deploy your site.
-
-### Environment Variables
-
-The following environment variables can be set in Netlify to override default values:
-
-- `IMAGE_FAVICON_URL`: URL for the favicon
-- `IMAGE_LOGO_URL`: URL for the logo
-- `IMAGE_BANNER_URL`: URL for the banner
-- `IMAGE_ABOUT_PROFILE_URL`: URL for the about profile image
-- `IMAGE_ABOUT_PHOTO1_URL` to `IMAGE_ABOUT_PHOTO4_URL`: URLs for the about photos
-- `ABOUT_TITLE`: Title for the about section
-- `ABOUT_SUBTITLE`: Subtitle for the about section
-- `ABOUT_DESCRIPTION`: Description for the about section
-- `ABOUT_PHOTO1_ALT` to `ABOUT_PHOTO4_ALT`: Alt text for the about photos
-
-### Client-Side Fallbacks
-
-The static site includes client-side JavaScript fallbacks that will:
-1. Try to load content from the server-rendered HTML
-2. If that fails, try to load from the exported JSON file
-3. If that fails, use hardcoded fallbacks
-
-This ensures your site will always display something even if there are issues with the database or environment variables.
+1. Update DNS settings to point to your CloudFront distribution
+2. Transfer environment variables to AWS parameter store or directly in serverless.yml
+3. Ensure all files are properly deployed to S3 via the deployment process
 
 ## Project Structure
 
@@ -162,11 +166,12 @@ portfolio-website-desktop/
 │   ├── models.py       # Database models
 │   ├── routes.py       # Application routes
 │   └── __init__.py     # Application initialization
+├── lambda/             # AWS Lambda functions
 ├── build_static_site.py # Static site generator
-├── netlify.toml        # Netlify configuration
+├── serverless.yml      # AWS serverless configuration
+├── package.json        # Node.js dependencies
 ├── requirements.txt    # Python dependencies
 ├── runtime.txt         # Python runtime version
-├── run.py              # Application entry point
 └── setup.py            # Setup script for local development
 ```
 

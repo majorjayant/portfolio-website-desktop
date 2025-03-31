@@ -357,7 +357,7 @@
                     <p class="description">Ever since I was a kid, I’ve been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I’ve done it all, and I’m just getting started. Here’s the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you&#39;re looking for someone who can decode business problems, simplify the complex, and actually get things done - let’s talk.</p>
                 </div>
                 <div id="img-main" class="img-main">
-                    <img class="profile-image" src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile.jpg';">
+                    <img class="profile-image" src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile-photo.png';">
                 </div>
             </div>
             
@@ -534,7 +534,7 @@
             <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
                 <div class="footer-logo" style="margin-bottom: 0.5rem;">
                     <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
-                </div>
+            </div>
                 <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
                 <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
                     <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
@@ -584,14 +584,21 @@
             bannerImage.style.paddingBottom = '38.75%';
         }
 
-        // Load about content from JSON if needed
-        const aboutTitle = document.querySelector('.text-main h1');
-        const aboutSubtitle = document.querySelector('.text-main .intro');
-        const aboutDescription = document.querySelector('.text-main .description');
+        // Try to fetch the latest content from our AWS Lambda endpoint
+        fetchLatestAboutContent();
         
-        // Always fetch and use the latest data from JSON file, even if content already exists
-        // This ensures we're always showing the most recent database content
-        fetch('/data/site_config.json')
+        // Initialize modal functionality for initial page load
+        initializeModalFunctionality();
+    });
+
+    // Function to fetch the latest content from our API
+    function fetchLatestAboutContent() {
+        console.log('Checking for latest content from API');
+        
+        // For AWS API Gateway endpoint
+        const apiUrl = '/api/get-content?type=site_config';
+        
+        fetch(apiUrl)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -599,9 +606,15 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Loaded site config data from JSON');
+                console.log('Loaded content from AWS API Gateway:', data);
+                
                 if (data && data.about_content) {
-                    // Always apply the content from JSON to ensure it's the latest
+                    // Update about content with latest data
+                    const aboutTitle = document.querySelector('.text-main h1');
+                    const aboutSubtitle = document.querySelector('.text-main .intro');
+                    const aboutDescription = document.querySelector('.text-main .description');
+                    const profileImage = document.querySelector('.profile-image');
+                    
                     if (aboutTitle) {
                         aboutTitle.textContent = data.about_content.title || 'about.';
                     }
@@ -615,19 +628,17 @@
                         aboutDescription.style.textAlign = 'left';
                     }
                     
-                    // Always update profile image
-                    const profileImage = document.querySelector('.profile-image');
                     if (profileImage && data.about_content.profile_image) {
                         profileImage.src = data.about_content.profile_image;
                     }
                     
-                    // Clear and repopulate photos to ensure they match the database version
+                    // Update photos
                     const snapsContainer = document.getElementById('snaps');
-                    if (snapsContainer && data.about_content.photos) {
+                    if (snapsContainer && data.about_content.photos && data.about_content.photos.length > 0) {
                         // Clear existing content
                         snapsContainer.innerHTML = '';
                         
-                        // Add fresh content from JSON
+                        // Add fresh content from API
                         data.about_content.photos.forEach(photo => {
                             const container = document.createElement('a');
                             container.href = '#';
@@ -652,186 +663,263 @@
                 }
             })
             .catch(error => {
+                console.error('Error fetching content from AWS API:', error);
+                // Fall back to local JSON file
+                fetchDataFromLocalJson();
+            });
+    }
+
+    // Function to fetch data from local JSON file (as fallback)
+    function fetchDataFromLocalJson() {
+        console.log('Falling back to local JSON file');
+        
+        fetch('/static/data/site_config.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Loaded content from local JSON file');
+                // Apply the data using same logic as above
+                if (data && data.about_content) {
+                    const aboutTitle = document.querySelector('.text-main h1');
+                    const aboutSubtitle = document.querySelector('.text-main .intro');
+                    const aboutDescription = document.querySelector('.text-main .description');
+                    const profileImage = document.querySelector('.profile-image');
+                    
+                    if (aboutTitle) {
+                        aboutTitle.textContent = data.about_content.title || 'about.';
+                    }
+                    
+                    if (aboutSubtitle) {
+                        aboutSubtitle.textContent = data.about_content.subtitle || "I'm a passionate product manager based in New Delhi, India.";
+                    }
+                    
+                    if (aboutDescription) {
+                        aboutDescription.textContent = data.about_content.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+                        aboutDescription.style.textAlign = 'left';
+                    }
+                    
+                    if (profileImage && data.about_content.profile_image) {
+                        profileImage.src = data.about_content.profile_image;
+                    }
+                    
+                    // Update photos if present in JSON
+                    const snapsContainer = document.getElementById('snaps');
+                    if (snapsContainer && data.about_content.photos && data.about_content.photos.length > 0) {
+                        // Clear existing content
+                        snapsContainer.innerHTML = '';
+                        
+                        // Add fresh content from JSON
+                        data.about_content.photos.forEach(photo => {
+                            const container = document.createElement('a');
+                            container.href = '#';
+                            container.className = 'snap-container';
+                            container.setAttribute('data-photo', photo.url);
+                            
+                            const img = document.createElement('img');
+                            img.src = photo.url;
+                            img.alt = photo.alt;
+                            img.onerror = function() {
+                                this.onerror = null;
+                                this.src = '/static/img/placeholder.png';
+                            };
+                            
+                            container.appendChild(img);
+                            snapsContainer.appendChild(container);
+                        });
+                        
+                        // Reinitialize the modal functionality
+                        initializeModalFunctionality();
+                    }
+                }
+            })
+            .catch(error => {
                 console.error('Error loading site config JSON:', error);
-                // Fall back to hardcoded values only if we can't load the JSON
+                // Apply fallback content as last resort
                 applyFallbackContent();
             });
-        
-        // Function to apply fallback content if JSON fails
-        function applyFallbackContent() {
-            // Fallback for about section content
-            if (aboutTitle && (!aboutTitle.textContent || aboutTitle.textContent.trim() === '')) {
-                aboutTitle.textContent = 'about.';
-            }
-            
-            if (aboutSubtitle && (!aboutSubtitle.textContent || aboutSubtitle.textContent.trim() === '')) {
-                aboutSubtitle.textContent = "I'm a passionate product manager based in New Delhi, India.";
-            }
-            
-            if (aboutDescription && (!aboutDescription.textContent || aboutDescription.textContent.trim() === '')) {
-                aboutDescription.textContent = "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
-                // Remove text justification
-                aboutDescription.style.textAlign = 'left';
-            }
-            
-            // Handle profile image in about section
-            const profileImage = document.querySelector('.profile-image');
-            if (profileImage) {
-                // Fallback for profile image
-                profileImage.onerror = function() {
-                    console.error("Error loading profile image: " + this.src);
-                    this.onerror = null;
-                    // Try direct S3 URL if the current URL fails
-                    if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
-                        this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg';
-                    } else {
-                        // If S3 URL also fails, use placeholder
-                        this.src = '/static/img/profile.jpg';
-                    }
-                };
-            }
-            
-            // Check if snaps section is empty or has no elements
-            const snapsContainer = document.getElementById('snaps');
-            if (snapsContainer && (!snapsContainer.children || snapsContainer.children.length === 0)) {
-                // Create and add fallback photo elements
-                const s3Urls = [
-                    'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
-                    'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
-                    'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
-                    'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
-                ];
-                
-                const altTexts = [
-                    'Personal photo 1',
-                    'Personal photo 2',
-                    'Personal photo 3',
-                    'Personal photo 4'
-                ];
-                
-                s3Urls.forEach((url, index) => {
-                    const container = document.createElement('a');
-                    container.href = '#';
-                    container.className = 'snap-container';
-                    container.setAttribute('data-photo', url);
-                    
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.alt = altTexts[index];
-                    img.onerror = function() {
-                        this.onerror = null;
-                        this.src = '/static/img/placeholder.png';
-                    };
-                    
-                    container.appendChild(img);
-                    snapsContainer.appendChild(container);
-                });
-            }
-        }
+    }
 
-        // Handle photo snapshots in about section
-        const snapImages = document.querySelectorAll('.snaps img');
-        snapImages.forEach(function(img, index) {
-            // Pre-load the S3 images
-            let s3Urls = [
+    // Function to apply fallback content if both API and JSON file fail
+    function applyFallbackContent() {
+        console.log('Applying hardcoded fallback content');
+        
+        // Fallback for about section content
+        const aboutTitle = document.querySelector('.text-main h1');
+        const aboutSubtitle = document.querySelector('.text-main .intro');
+        const aboutDescription = document.querySelector('.text-main .description');
+        
+        if (aboutTitle && (!aboutTitle.textContent || aboutTitle.textContent.trim() === '')) {
+            aboutTitle.textContent = 'about.';
+        }
+        
+        if (aboutSubtitle && (!aboutSubtitle.textContent || aboutSubtitle.textContent.trim() === '')) {
+            aboutSubtitle.textContent = "I'm a passionate product manager based in New Delhi, India.";
+        }
+        
+        if (aboutDescription && (!aboutDescription.textContent || aboutDescription.textContent.trim() === '')) {
+            aboutDescription.textContent = "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+            // Remove text justification
+            aboutDescription.style.textAlign = 'left';
+        }
+        
+        // Handle profile image in about section
+        const profileImage = document.querySelector('.profile-image');
+        if (profileImage) {
+            // Fallback for profile image
+            profileImage.onerror = function() {
+                console.error("Error loading profile image: " + this.src);
+                this.onerror = null;
+                // Try local image if not already tried
+                if (!this.src.includes('/static/img/')) {
+                    this.src = '/static/img/profile-photo.png';
+                } else {
+                    // If local image also fails, use S3 URL
+                    this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profile.jpg';
+                }
+            };
+        }
+        
+        // Check if snaps section is empty or has no elements
+        const snapsContainer = document.getElementById('snaps');
+        if (snapsContainer && (!snapsContainer.children || snapsContainer.children.length === 0)) {
+            // Create and add fallback photo elements
+            const s3Urls = [
                 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
                 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
                 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
                 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
             ];
             
-            // If the current image is a placeholder or not an S3 URL, try the corresponding S3 URL
-            if (img.src.includes('placeholder.png') || !img.src.includes('s3.eu-north-1.amazonaws.com')) {
-                if (index < s3Urls.length) {
-                    img.src = s3Urls[index];
-                }
-            }
+            const altTexts = [
+                'Personal photo 1',
+                'Personal photo 2',
+                'Personal photo 3',
+                'Personal photo 4'
+            ];
             
-            img.onerror = function() {
-                console.error("Error loading image: " + this.src);
-                this.onerror = null;
+            s3Urls.forEach((url, index) => {
+                const container = document.createElement('a');
+                container.href = '#';
+                container.className = 'snap-container';
+                container.setAttribute('data-photo', url);
                 
-                // Try direct S3 URL if the current URL fails
-                if (!this.src.includes('s3.eu-north-1.amazonaws.com') && index < s3Urls.length) {
-                    this.src = s3Urls[index];
-                } else {
-                    // If S3 URL also fails, use placeholder
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = altTexts[index];
+                img.onerror = function() {
+                    this.onerror = null;
                     this.src = '/static/img/placeholder.png';
-                }
-            };
-        });
+                };
+                
+                container.appendChild(img);
+                snapsContainer.appendChild(container);
+            });
+        }
+    }
+
+    // Handle photo snapshots in about section
+    const snapImages = document.querySelectorAll('.snaps img');
+    snapImages.forEach(function(img, index) {
+        // Pre-load the S3 images
+        let s3Urls = [
+            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+        ];
         
-        // Modal functionality for about photos
-        function initializeModalFunctionality() {
-            const modal = document.getElementById('photoModal');
-            const modalImg = document.getElementById('modalImage');
-            const closeModal = document.querySelector('.close-modal');
-            const snapContainers = document.querySelectorAll('.snap-container');
+        // If the current image is a placeholder or not an S3 URL, try the corresponding S3 URL
+        if (img.src.includes('placeholder.png') || !img.src.includes('s3.eu-north-1.amazonaws.com')) {
+            if (index < s3Urls.length) {
+                img.src = s3Urls[index];
+            }
+        }
+        
+        img.onerror = function() {
+            console.error("Error loading image: " + this.src);
+            this.onerror = null;
             
-            // Open modal when clicking on a photo
-            snapContainers.forEach(function(container) {
-                container.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const photoUrl = this.getAttribute('data-photo');
-                    modal.style.display = 'block';
-                    modalImg.src = photoUrl;
+            // Try direct S3 URL if the current URL fails
+            if (!this.src.includes('s3.eu-north-1.amazonaws.com') && index < s3Urls.length) {
+                this.src = s3Urls[index];
+            } else {
+                // If S3 URL also fails, use placeholder
+                this.src = '/static/img/placeholder.png';
+            }
+        };
+    });
+    
+    // Modal functionality for about photos
+    function initializeModalFunctionality() {
+        const modal = document.getElementById('photoModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeModal = document.querySelector('.close-modal');
+        const snapContainers = document.querySelectorAll('.snap-container');
+        
+        // Open modal when clicking on a photo
+        snapContainers.forEach(function(container) {
+            container.addEventListener('click', function(e) {
+                e.preventDefault();
+                const photoUrl = this.getAttribute('data-photo');
+                modal.style.display = 'block';
+                modalImg.src = photoUrl;
+                
+                // If the modal image fails to load, try to use a direct S3 URL or fallback
+                modalImg.onerror = function() {
+                    console.error("Error loading modal image: " + this.src);
+                    this.onerror = null;
                     
-                    // If the modal image fails to load, try to use a direct S3 URL or fallback
-                    modalImg.onerror = function() {
-                        console.error("Error loading modal image: " + this.src);
-                        this.onerror = null;
+                    // Try direct S3 URL if the current URL fails
+                    if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
+                        // Extract the photo number from the container's position
+                        const containers = Array.from(document.querySelectorAll('.snap-container'));
+                        const index = containers.indexOf(container);
+                        const s3Urls = [
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+                        ];
                         
-                        // Try direct S3 URL if the current URL fails
-                        if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
-                            // Extract the photo number from the container's position
-                            const containers = Array.from(document.querySelectorAll('.snap-container'));
-                            const index = containers.indexOf(container);
-                            const s3Urls = [
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
-                            ];
-                            
-                            if (index < s3Urls.length) {
-                                this.src = s3Urls[index];
-                            } else {
-                                // If S3 URL also fails, use placeholder
-                                this.src = '/static/img/placeholder.png';
-                            }
+                        if (index < s3Urls.length) {
+                            this.src = s3Urls[index];
                         } else {
                             // If S3 URL also fails, use placeholder
                             this.src = '/static/img/placeholder.png';
                         }
-                    };
-                });
+                    } else {
+                        // If S3 URL also fails, use placeholder
+                        this.src = '/static/img/placeholder.png';
+                    }
+                };
             });
-        }
-        
-        // Initialize modal functionality for initial page load
-        initializeModalFunctionality();
-        
-        // Close modal when clicking on close button
-        closeModal.addEventListener('click', function() {
-            const modal = document.getElementById('photoModal');
+        });
+    }
+    
+    // Close modal when clicking on close button
+    closeModal.addEventListener('click', function() {
+        const modal = document.getElementById('photoModal');
+        modal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside the image
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (e.target === modal) {
             modal.style.display = 'none';
-        });
-        
-        // Close modal when clicking outside the image
-        window.addEventListener('click', function(e) {
-            const modal = document.getElementById('photoModal');
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            const modal = document.getElementById('photoModal');
-            if (e.key === 'Escape' && modal.style.display === 'block') {
-                modal.style.display = 'none';
-            }
-        });
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+        }
     });
 </script>
 
