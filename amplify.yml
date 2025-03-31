@@ -8,13 +8,13 @@ applications:
         build:
           commands:
             - echo "Building Flask application"
+            - python build_static_site.py
       artifacts:
-        baseDirectory: /
+        baseDirectory: app/static
         files:
           - '**/*'
       cache:
         paths: []
-    appRoot: /
     customHeaders:
       - pattern: '**/*'
         headers:
