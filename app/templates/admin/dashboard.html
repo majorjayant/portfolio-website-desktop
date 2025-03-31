@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard{% endblock %}
-
 {% block content %}
 <div class="min-h-screen bg-gray-100">
     <nav class="bg-white shadow-sm">
@@ -19,97 +17,101 @@
         </div>
     </nav>
 
-    <div class="py-10">
-        <main>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="mb-4 {% if category == 'error' %}bg-red-100 border-red-400 text-red-700{% else %}bg-green-100 border-green-400 text-green-700{% endif %} px-4 py-3 rounded relative" role="alert">
-                                <span class="block sm:inline">{{ message }}</span>
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 {% if category == 'error' %}bg-red-100 border-red-400 text-red-700{% else %}bg-green-100 border-green-400 text-green-700{% endif %} px-4 py-3 rounded relative" role="alert">
+                        <span class="block sm:inline">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('admin.update_config') }}" enctype="multipart/form-data" class="space-y-8 divide-y divide-gray-200">
+            {{ form.hidden_tag() }}
+            
+            <div class="space-y-8 divide-y divide-gray-200">
+                <div class="pt-8">
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Images</h3>
+                        <p class="mt-1 text-sm text-gray-500">Update website images and URLs</p>
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                        {% for field in ['image_favicon_url', 'image_logo_url', 'image_banner_url', 'image_about_profile_url', 
+                                       'image_about_photo1_url', 'image_about_photo2_url', 'image_about_photo3_url', 'image_about_photo4_url'] %}
+                            <div class="sm:col-span-1">
+                                <label for="{{ field }}" class="block text-sm font-medium text-gray-700">
+                                    {{ field | replace('_', ' ') | title }}
+                                </label>
+                                <div class="mt-1 flex items-center">
+                                    {{ form[field](class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
+                                </div>
+                                {% if form[field].errors %}
+                                    <p class="mt-2 text-sm text-red-600">{{ form[field].errors[0] }}</p>
+                                {% endif %}
                             </div>
                         {% endfor %}
-                    {% endif %}
-                {% endwith %}
+                    </div>
+                </div>
 
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <form action="{{ url_for('admin.update_config') }}" method="POST" enctype="multipart/form-data" class="space-y-8 divide-y divide-gray-200">
-                            {{ form.hidden_tag() }}
-                            
-                            <div class="space-y-6 sm:space-y-5">
-                                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
-                                    <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                                        Images
-                                    </label>
-                                    <div class="mt-1 sm:mt-0 sm:col-span-2 space-y-4">
-                                        {% for field in ['image_favicon_url', 'image_logo_url', 'image_banner_url', 'image_about_profile_url', 
-                                                       'image_about_photo1_url', 'image_about_photo2_url', 'image_about_photo3_url', 'image_about_photo4_url'] %}
-                                            <div class="flex items-center space-x-4">
-                                                <div class="flex-grow">
-                                                    <label class="block text-sm font-medium text-gray-700">{{ field | replace('_', ' ') | title }}</label>
-                                                    <input type="text" name="{{ field }}" value="{{ config[field] }}" 
-                                                           class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
-                                                </div>
-                                                {% if config[field] %}
-                                                    <img src="{{ config[field] }}" alt="{{ field }}" class="h-12 w-12 object-cover rounded">
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
+                <div class="pt-8">
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">About Section</h3>
+                        <p class="mt-1 text-sm text-gray-500">Update about section content</p>
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                        <div class="sm:col-span-2">
+                            <label for="about_title" class="block text-sm font-medium text-gray-700">Title</label>
+                            <div class="mt-1">
+                                {{ form.about_title(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
+                            </div>
+                        </div>
 
-                                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
-                                    <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                                        About Section
-                                    </label>
-                                    <div class="mt-1 sm:mt-0 sm:col-span-2 space-y-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700">Title</label>
-                                            <input type="text" name="about_title" value="{{ config.about_title }}" 
-                                                   class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700">Subtitle</label>
-                                            <input type="text" name="about_subtitle" value="{{ config.about_subtitle }}" 
-                                                   class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700">Description</label>
-                                            <textarea name="about_description" rows="4" 
-                                                      class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">{{ config.about_description }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="sm:col-span-2">
+                            <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
+                            <div class="mt-1">
+                                {{ form.about_subtitle(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
+                            </div>
+                        </div>
 
-                                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
-                                    <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                                        Photo Alt Text
-                                    </label>
-                                    <div class="mt-1 sm:mt-0 sm:col-span-2 space-y-4">
-                                        {% for field in ['about_photo1_alt', 'about_photo2_alt', 'about_photo3_alt', 'about_photo4_alt'] %}
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700">{{ field | replace('_', ' ') | title }}</label>
-                                                <input type="text" name="{{ field }}" value="{{ config[field] }}" 
-                                                       class="mt-1 block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
-                                            </div>
-                                        {% endfor %}
-                                    </div>
+                        <div class="sm:col-span-2">
+                            <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <div class="mt-1">
+                                {{ form.about_description(rows=4, class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-8">
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Image Descriptions</h3>
+                        <p class="mt-1 text-sm text-gray-500">Update image alt text</p>
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                        {% for field in ['about_photo1_alt', 'about_photo2_alt', 'about_photo3_alt', 'about_photo4_alt'] %}
+                            <div class="sm:col-span-1">
+                                <label for="{{ field }}" class="block text-sm font-medium text-gray-700">
+                                    {{ field | replace('_', ' ') | title }}
+                                </label>
+                                <div class="mt-1">
+                                    {{ form[field](class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md") }}
                                 </div>
                             </div>
-
-                            <div class="pt-5">
-                                <div class="flex justify-end">
-                                    <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        Save Changes
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-        </main>
+
+            <div class="pt-5">
+                <div class="flex justify-end">
+                    <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %} 

@@ -11,9 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import the Flask application
-from app import create_app
-
-app = create_app()
+from app import app, db
 
 if __name__ == '__main__':
     # Create all database tables if they don't exist

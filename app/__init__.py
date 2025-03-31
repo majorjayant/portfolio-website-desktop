@@ -8,15 +8,14 @@ import sys
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
-from datetime import timedelta
-from flask_migrate import Migrate
 from flask_login import LoginManager
+from datetime import timedelta
 
 # Initialize Flask extensions
 db = SQLAlchemy()
-migrate = Migrate()
 csrf = CSRFProtect()
 login_manager = LoginManager()
+login_manager.login_view = 'admin.login'
 
 # Create app instance
 app = None
@@ -41,16 +40,40 @@ def create_app(test_config=None):
     print(f"Flask app initialized with static folder: {app.static_folder}")
     
     # Configure the app
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///portfolio.db')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-development-only')
     
-    # Initialize extensions
-    db.init_app(app)
-    migrate.init_app(app, db)
+    # Database configuration
+    is_static_deployment = os.environ.get('STATIC_DEPLOYMENT', 'false').lower() == 'true'
+    app.config['STATIC_DEPLOYMENT'] = is_static_deployment
+    
+    if not is_static_deployment:
+        db_url = os.environ.get('DATABASE_URL')
+        if db_url:
+            # Use MySQL if provided
+            app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+        else:
+            # Fall back to SQLite
+            db_path = os.path.join(os.getcwd(), 'app.db')
+            app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+        
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        
+        # Initialize database
+        db.init_app(app)
+        print("SQLAlchemy initialized successfully")
+    else:
+        print("Static deployment mode: Database initialization skipped")
+    
+    # Initialize CSRF protection
     csrf.init_app(app)
+    print("CSRF protection initialized successfully")
+    
+    # Initialize Flask-Login
     login_manager.init_app(app)
-    login_manager.login_view = 'admin.login'
+    print("Flask-Login initialized successfully")
+    
+    # Set session lifetime
+    app.permanent_session_lifetime = timedelta(days=7)
     
     # Create a temporary directory for file uploads
     try:
@@ -60,27 +83,26 @@ def create_app(test_config=None):
     except Exception as e:
         print(f"Error creating temp directory: {e}")
     
-    # Import models
-    from app.models import Admin
+    # Now initialize database
+    if not is_static_deployment:
+        with app.app_context():
+            try:
+                db.create_all()
+                print("Database tables created successfully")
+                
+                # Initialize site config after all models are imported
+                from app.utils.db_migration import init_site_config
+                init_site_config()
+            except Exception as e:
+                print(f"Error initializing database: {e}")
     
-    @login_manager.user_loader
-    def load_user(user_id):
-        return Admin.query.get(int(user_id))
-    
-    # Create database tables
+    # Import and register blueprints/routes
     with app.app_context():
-        db.create_all()
-        
-        # Create admin user if it doesn't exist
-        if not Admin.query.first():
-            admin = Admin(username='admin')
-            admin.set_password('admin')  # Change this password in production!
-            db.session.add(admin)
-            db.session.commit()
-    
-    # Register blueprints
-    from app.routes.admin import admin_bp
-    app.register_blueprint(admin_bp)
+        from app.routes import register_routes
+        from app.routes.admin import admin_bp
+        register_routes(app)
+        app.register_blueprint(admin_bp)
+        print("Routes and blueprints registered successfully")
     
     return app
 
@@ -91,7 +113,7 @@ app = create_app()
 if not app.config.get('STATIC_DEPLOYMENT', False):
     try:
         from app.models.site_config import SiteConfig
-        from app.models.portfolio_image import PortfolioImage
+        from app.models.admin import Admin
         print("Models imported successfully")
     except Exception as e:
         print(f"Error importing models: {e}") 
