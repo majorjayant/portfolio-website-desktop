@@ -1,0 +1,66 @@
+name: Test Amplify Build
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'amplify.yml'
+      - 'requirements-dev.txt'
+      - 'build_static_site.py'
+      - 'app/**'
+      - '.github/workflows/amplify-test-build.yml'
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+        python -m pip install Flask==2.3.3 Jinja2==3.1.2 python-dotenv==1.0.0
+    
+    - name: Build static site
+      env:
+        STATIC_DEPLOYMENT: true
+        AWS_REGION: eu-north-1
+        IMAGE_FAVICON_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon
+        IMAGE_LOGO_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo
+        IMAGE_BANNER_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner
+        IMAGE_ABOUT_PROFILE_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg
+      run: |
+        python build_static_site.py
+        
+    - name: Verify build output
+      run: |
+        if [ -f app/static/index.html ]; then
+          echo "✅ index.html found"
+        else
+          echo "❌ index.html not found!"
+          exit 1
+        fi
+        
+        # Count HTML files
+        HTML_COUNT=$(find app/static -name "*.html" | wc -l)
+        echo "Found $HTML_COUNT HTML files"
+        
+        if [ "$HTML_COUNT" -lt 1 ]; then
+          echo "❌ No HTML files found in build output!"
+          exit 1
+        else
+          echo "✅ Build successful"
+        fi
+        
+    - name: Upload build artifact for review
+      uses: actions/upload-artifact@v3
+      with:
+        name: static-site
+        path: app/static 

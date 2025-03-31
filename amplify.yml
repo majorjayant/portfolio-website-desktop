@@ -1,0 +1,49 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Setting up Python environment..."
+        - python --version
+        - python -c "import sys; print(f'Python executable: {sys.executable}')"
+        - echo "Installing pip and dependencies..."
+        - python -m pip install --upgrade pip
+        - python -m pip install -r requirements-dev.txt
+        - python -m pip install --no-cache-dir Flask==2.3.3 Jinja2==3.1.2 python-dotenv==1.0.0 boto3 botocore
+        - echo "Running build requirements check..."
+        - python check-build-requirements.py
+    build:
+      commands:
+        - echo "Environment info and checking files..."
+        - pwd
+        - ls -la
+        - echo "Setting AWS credentials for build..."
+        - export AWS_REGION=eu-north-1
+        - export STATIC_DEPLOYMENT=true
+        - echo "Building static site..."
+        - python build_static_site.py || echo "Main build failed, using fallback..."
+        - echo "Checking if index.html was generated..."
+        - if [ ! -f app/static/index.html ]; then echo "Using fallback index file"; python app/index_standalone.py; fi
+        - echo "Checking build output:"
+        - ls -la app/static/
+        - echo "Verifying index.html exists:"
+        - ls -la app/static/index.html || echo "WARNING: index.html not found!"
+        - echo "Running debug script..."
+        - chmod +x amplify-debug.sh
+        - ./amplify-debug.sh
+  artifacts:
+    baseDirectory: app/static
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - .pip-cache/**/*
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: 'index.html'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=0, must-revalidate' 
