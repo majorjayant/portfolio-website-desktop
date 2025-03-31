@@ -1,32 +1,30 @@
 version: 1
-applications:
-  - frontend:
-      phases:
-        preBuild:
-          commands:
-            - pip install -r requirements.txt
-        build:
-          commands:
-            - python app.py
-      artifacts:
-        baseDirectory: app/static
-        files:
-          - '**/*'
-      cache:
-        paths: []
-    appRoot: /
-    customHeaders:
-      - pattern: '**/*'
-        headers:
-          - key: 'Cache-Control'
-            value: 'no-store, no-cache, must-revalidate'
-    rewrites:
-      - source: '/admin'
-        target: '/admin/login'
-        status: '200'
-      - source: '/admin/<*>'
-        target: '/index.html'
-        status: '200'
-      - source: '/<*>'
-        target: '/index.html'
-        status: '200'
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - pip install -r requirements.txt
+    build:
+      commands:
+        - python app.py
+  artifacts:
+    baseDirectory: app/static
+    files:
+      - '**/*'
+  cache:
+    paths: []
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'no-store, no-cache, must-revalidate'
+  redirects:
+    - source: '/admin'
+      target: '/admin/login'
+      status: '200'
+    - source: '/admin/*'
+      target: '/index.html'
+      status: '200'
+    - source: '/*'
+      target: '/index.html'
+      status: '200'
