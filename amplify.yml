@@ -11,13 +11,13 @@ frontend:
         - cp -r app/static/css app/static/
         - cp -r app/static/js app/static/
         - cp -r app/static/img app/static/
-        - cp -r app/static/data app/static/
-        - cp -r app/static/admin app/static/
-        - cp -r app/static/api app/static/
         - cp app/static/_redirects app/static/
         - cp app/static/robots.txt app/static/
         - cp app/static/favicon.ico app/static/
-        - cp app/static/*.html app/static/
+        - cp app/static/index.html app/static/
+        - cp app/static/projects.html app/static/
+        - cp app/static/solutions.html app/static/
+        - cp app/static/contact.html app/static/
         - echo "Build complete!"
   artifacts:
     baseDirectory: app/static
