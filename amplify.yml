@@ -5,7 +5,7 @@ frontend:
       commands:
         - echo "Setting up Python environment..."
         - python --version
-        - python -c "import sys; print(f'Python executable: {sys.executable}')"
+        - python -c "import sys; print('Python executable:', sys.executable)"
         - echo "Installing pip and dependencies..."
         - python -m pip install --upgrade pip
         - python -m pip install -r requirements-dev.txt
