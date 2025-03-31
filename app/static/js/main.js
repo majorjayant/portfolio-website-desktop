@@ -216,14 +216,12 @@ async function loadSiteConfig() {
     try {
         // Try different API endpoints
         const endpoints = [
-            // Original endpoint
-            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/get-content?type=site_config',
-            // Try without resource path
+            // Primary endpoint - direct Lambda proxy
+            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config',
+            // Staging endpoint without resource path
             'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging?type=site_config',
-            // Try with different resource name
-            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/site-config',
-            // Try root path
-            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/'
+            // Root endpoint 
+            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com?type=site_config'
         ];
         
         let response = null;

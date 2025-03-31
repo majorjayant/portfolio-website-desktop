@@ -87,8 +87,14 @@ exports.handler = async (event) => {
                 };
             }
         } else if (method === 'POST') {
-            // POST requests (for admin login, etc.)
-            const body = JSON.parse(event.body || '{}');
+            // Parse the body
+            let body = {};
+            try {
+                body = JSON.parse(event.body || '{}');
+            } catch (error) {
+                console.error('Error parsing body:', error);
+            }
+            
             const action = body.action || '';
             
             if (action === 'login') {
@@ -135,7 +141,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: 'Internal server error' })
+            body: JSON.stringify({ error: 'Internal server error', details: error.message })
         };
     }
 }; 

@@ -49,7 +49,7 @@ frontend:
       target: '/api/admin-login.js'
       status: '200'
     - source: '/api/site-config'
-      target: '/data/site_config.json'
+      target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config'
       status: '200'
     - source: '/data/site_config.json'
       target: '/data/site_config.json'
