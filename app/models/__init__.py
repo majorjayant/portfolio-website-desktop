@@ -6,6 +6,7 @@ from app import db
 
 # Import models
 from app.models.site_config import SiteConfig
+from app.models.admin import Admin
 
 # Export all models 
-__all__ = ['db', 'SiteConfig'] 
+__all__ = ['db', 'SiteConfig', 'Admin'] 

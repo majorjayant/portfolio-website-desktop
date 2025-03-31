@@ -9,10 +9,14 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta
+from flask_migrate import Migrate
+from flask_login import LoginManager
 
 # Initialize Flask extensions
 db = SQLAlchemy()
+migrate = Migrate()
 csrf = CSRFProtect()
+login_manager = LoginManager()
 
 # Create app instance
 app = None
@@ -37,7 +41,7 @@ def create_app(test_config=None):
     print(f"Flask app initialized with static folder: {app.static_folder}")
     
     # Configure the app
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-development-only')
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
     
     # Database configuration
     is_static_deployment = os.environ.get('STATIC_DEPLOYMENT', 'false').lower() == 'true'
@@ -57,6 +61,7 @@ def create_app(test_config=None):
         
         # Initialize database
         db.init_app(app)
+        migrate.init_app(app, db)
         print("SQLAlchemy initialized successfully")
     else:
         print("Static deployment mode: Database initialization skipped")
@@ -86,13 +91,29 @@ def create_app(test_config=None):
                 # Initialize site config after all models are imported
                 from app.utils.db_migration import init_site_config
                 init_site_config()
+
+                # Import models
+                from app.models import Admin
+                
+                @login_manager.user_loader
+                def load_user(user_id):
+                    return Admin.query.get(int(user_id))
+                
+                # Create admin user if it doesn't exist
+                if not Admin.query.first():
+                    admin = Admin(username='admin')
+                    admin.set_password('admin')  # Change this password in production!
+                    db.session.add(admin)
+                    db.session.commit()
             except Exception as e:
                 print(f"Error initializing database: {e}")
     
     # Import and register blueprints/routes
     with app.app_context():
         from app.routes import register_routes
+        from app.routes.admin import admin_bp
         register_routes(app)
+        app.register_blueprint(admin_bp)
     
     return app
 
