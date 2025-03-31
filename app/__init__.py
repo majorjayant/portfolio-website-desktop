@@ -42,78 +42,40 @@ def create_app(test_config=None):
     
     # Configure the app
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    # Database configuration
-    is_static_deployment = os.environ.get('STATIC_DEPLOYMENT', 'false').lower() == 'true'
-    app.config['STATIC_DEPLOYMENT'] = is_static_deployment
-    
-    if not is_static_deployment:
-        db_url = os.environ.get('DATABASE_URL')
-        if db_url:
-            # Use MySQL if provided
-            app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-        else:
-            # Fall back to SQLite
-            db_path = os.path.join(os.getcwd(), 'app.db')
-            app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-        
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        
-        # Initialize database
-        db.init_app(app)
-        migrate.init_app(app, db)
-        print("SQLAlchemy initialized successfully")
-    else:
-        print("Static deployment mode: Database initialization skipped")
-    
-    # Initialize CSRF protection
+    # Initialize extensions
+    db.init_app(app)
+    migrate.init_app(app, db)
     csrf.init_app(app)
-    print("CSRF protection initialized successfully")
     
-    # Set session lifetime
-    app.permanent_session_lifetime = timedelta(days=7)
+    # Configure Flask-Login
+    login_manager.init_app(app)
+    login_manager.login_view = 'admin.login'
+    login_manager.login_message = 'Please log in to access this page.'
     
-    # Create a temporary directory for file uploads
-    try:
-        temp_dir = os.path.join(app.static_folder, 'temp')
-        os.makedirs(temp_dir, exist_ok=True)
-        print(f"Created temp directory in static folder")
-    except Exception as e:
-        print(f"Error creating temp directory: {e}")
+    # Import models
+    from app.models import Admin
     
-    # Now initialize database
-    if not is_static_deployment:
-        with app.app_context():
-            try:
-                db.create_all()
-                print("Database tables created successfully")
-                
-                # Initialize site config after all models are imported
-                from app.utils.db_migration import init_site_config
-                init_site_config()
-
-                # Import models
-                from app.models import Admin
-                
-                @login_manager.user_loader
-                def load_user(user_id):
-                    return Admin.query.get(int(user_id))
-                
-                # Create admin user if it doesn't exist
-                if not Admin.query.first():
-                    admin = Admin(username='admin')
-                    admin.set_password('admin')  # Change this password in production!
-                    db.session.add(admin)
-                    db.session.commit()
-            except Exception as e:
-                print(f"Error initializing database: {e}")
+    @login_manager.user_loader
+    def load_user(user_id):
+        return Admin.query.get(int(user_id))
     
-    # Import and register blueprints/routes
+    # Create database tables
     with app.app_context():
-        from app.routes import register_routes
-        from app.routes.admin import admin_bp
-        register_routes(app)
-        app.register_blueprint(admin_bp)
+        db.create_all()
+        
+        # Create default admin user if none exists
+        if not Admin.query.first():
+            admin = Admin(username='admin')
+            admin.set_password('admin')
+            db.session.add(admin)
+            db.session.commit()
+    
+    # Register blueprints
+    from app.routes.admin import admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/admin')
     
     return app
 
