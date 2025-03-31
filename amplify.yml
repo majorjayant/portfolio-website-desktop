@@ -66,6 +66,12 @@ frontend:
     - source: '/api/site-config'
       target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config'
       status: '200'
+    - source: '/api/get-content'
+      target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio'
+      status: '200'
+    - source: '/api/get-content/'
+      target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio'
+      status: '200'
     # Catch-all route for SPA
     - source: '/<*>'
       target: '/index.html'
