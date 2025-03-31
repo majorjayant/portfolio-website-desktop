@@ -1,0 +1,11 @@
+{
+  "paths": {
+    "/site-config": {
+      "name": "/site-config",
+      "lambdaFunction": "getSiteConfig",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+} 

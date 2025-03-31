@@ -36,9 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize animations for elements when they come into view
     initScrollAnimations();
-
-    // Load site configuration
-    loadSiteConfig();
 });
 
 // Initialize chatbot functionality
@@ -212,26 +209,36 @@ function filterProjects(category) {
 // Find and update any profile image URL references
 // Example:
 // From: profileImage.src = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg";
-// To: profileImage.src = "/static/img/profile-photo.svg"; 
+// To: profileImage.src = "/static/img/profile-photo.svg";
 
 // Function to load site configuration
 async function loadSiteConfig() {
     try {
-        console.log('Fetching site configuration...');
-        const response = await fetch('/api/get-content?type=site_config');
+        // Try to load from the API endpoint
+        let response = await fetch('/api/site-config');
+        
+        // If API call fails, try the static JSON file
         if (!response.ok) {
-            throw new Error('Failed to load site configuration');
+            console.log('API endpoint not available, falling back to static file');
+            response = await fetch('/data/site_config.json');
+            
+            if (!response.ok) {
+                throw new Error('Failed to load site configuration from both API and static file');
+            }
         }
+        
         const config = await response.json();
-        console.log('Site config loaded:', config);
+        
+        // Get the site config data - it might be nested differently depending on the source
+        const siteConfig = config.site_configs || config;
         
         // Update page title
-        document.title = config.site_name || 'Portfolio Website';
+        document.title = siteConfig.about_title || 'Portfolio Website';
         
         // Update favicon
         const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
         favicon.rel = 'icon';
-        favicon.href = config.image_favicon_url || '/img/favicon.ico';
+        favicon.href = siteConfig.image_favicon_url;
         if (!document.querySelector('link[rel="icon"]')) {
             document.head.appendChild(favicon);
         }
@@ -239,157 +246,49 @@ async function loadSiteConfig() {
         // Update logo
         const logo = document.querySelector('.logo img');
         if (logo) {
-            logo.src = config.image_logo_url || '/img/logo.png';
+            logo.src = siteConfig.image_logo_url;
         }
         
         // Update banner image
-        const bannerImage = document.getElementById('banner-image');
-        if (bannerImage) {
-            bannerImage.style.backgroundImage = `url('${config.image_banner_url || '/img/banner.jpg'}')`;
+        const banner = document.querySelector('.banner-image');
+        if (banner) {
+            banner.src = siteConfig.image_banner_url;
         }
         
         // Update about section
-        const aboutTitle = document.querySelector('.text-main h1');
+        const aboutTitle = document.querySelector('.about-title');
         if (aboutTitle) {
-            aboutTitle.textContent = config.about_title || 'About Me';
+            aboutTitle.textContent = siteConfig.about_title;
         }
         
-        const aboutSubtitle = document.querySelector('.text-main .intro');
+        const aboutSubtitle = document.querySelector('.about-subtitle');
         if (aboutSubtitle) {
-            aboutSubtitle.textContent = config.about_subtitle || 'Get to know me better';
+            aboutSubtitle.textContent = siteConfig.about_subtitle;
         }
         
-        const aboutDescription = document.querySelector('.text-main .description');
+        const aboutDescription = document.querySelector('.about-description');
         if (aboutDescription) {
-            aboutDescription.textContent = config.about_description || 'I am a passionate developer...';
+            aboutDescription.textContent = siteConfig.about_description;
         }
         
         // Update profile image
         const profileImage = document.querySelector('.profile-image');
         if (profileImage) {
-            profileImage.src = config.image_profile_url || 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg';
-            profileImage.onerror = function() {
-                this.onerror = null;
-                this.src = '/static/img/profile-photo.png';
-            };
+            profileImage.src = siteConfig.image_about_profile_url;
         }
         
         // Update about photos
-        const snapsContainer = document.getElementById('snaps');
-        if (snapsContainer) {
-            const photos = [
-                { url: config.about_photo1_url, alt: config.about_photo1_alt },
-                { url: config.about_photo2_url, alt: config.about_photo2_alt },
-                { url: config.about_photo3_url, alt: config.about_photo3_alt },
-                { url: config.about_photo4_url, alt: config.about_photo4_alt }
-            ];
-            
-            // Clear existing content
-            snapsContainer.innerHTML = '';
-            
-            // Add fresh content
-            photos.forEach(photo => {
-                const container = document.createElement('a');
-                container.href = '#';
-                container.className = 'snap-container';
-                container.setAttribute('data-photo', photo.url);
-                
-                const img = document.createElement('img');
-                img.src = photo.url;
-                img.alt = photo.alt;
-                img.onerror = function() {
-                    this.onerror = null;
-                    this.src = '/static/img/placeholder.png';
-                };
-                
-                container.appendChild(img);
-                snapsContainer.appendChild(container);
-            });
-            
-            // Initialize the modal functionality
-            initializeModalFunctionality();
-        }
+        const aboutPhotos = document.querySelectorAll('.about-photo');
+        aboutPhotos.forEach((photo, index) => {
+            const photoNumber = index + 1;
+            photo.src = siteConfig[`image_about_photo${photoNumber}_url`];
+            photo.alt = siteConfig[`about_photo${photoNumber}_alt`];
+        });
         
     } catch (error) {
         console.error('Error loading site configuration:', error);
-        // Apply fallback content as last resort
-        applyFallbackContent();
     }
-}
-
-// Apply fallback content if API fails
-function applyFallbackContent() {
-    console.log('Applying fallback content');
-    
-    // Fallback for banner image
-    const bannerImage = document.getElementById('banner-image');
-    if (bannerImage) {
-        bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-    }
-    
-    // Fallback for profile image
-    const profileImage = document.querySelector('.profile-image');
-    if (profileImage) {
-        profileImage.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg';
-    }
-}
-
-// Modal functionality for about photos
-function initializeModalFunctionality() {
-    const modal = document.getElementById('photoModal');
-    const modalImg = document.getElementById('modalImage');
-    const closeModal = document.querySelector('.close-modal');
-    const snapContainers = document.querySelectorAll('.snap-container');
-    
-    if (!modal || !modalImg || !closeModal) return;
-    
-    // Open modal when clicking on a photo
-    snapContainers.forEach(function(container) {
-        container.addEventListener('click', function(e) {
-            e.preventDefault();
-            const photoUrl = this.getAttribute('data-photo');
-            modal.style.display = 'block';
-            modalImg.src = photoUrl;
-        });
-    });
-    
-    // Close modal when clicking on close button
-    closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-    
-    // Close modal when clicking outside the image
-    window.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.style.display === 'block') {
-            modal.style.display = 'none';
-        }
-    });
 }
 
 // Load site configuration when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    loadSiteConfig();
-    
-    // Fix banner image if needed
-    const bannerImage = document.getElementById('banner-image');
-    if (bannerImage && (!bannerImage.style.backgroundImage || bannerImage.style.backgroundImage === '')) {
-        bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-    }
-    
-    // Ensure banner styles are correct
-    if (bannerImage) {
-        bannerImage.style.backgroundSize = 'contain';
-        bannerImage.style.backgroundPosition = 'center';
-        bannerImage.style.backgroundRepeat = 'no-repeat';
-        bannerImage.style.width = '100%';
-        bannerImage.style.height = '0';
-        bannerImage.style.paddingBottom = '38.75%';
-    }
-}); 
+document.addEventListener('DOMContentLoaded', loadSiteConfig); 

@@ -28,7 +28,7 @@ def build_static_site():
             d = os.path.join(static_dir, item)
             if os.path.isdir(s):
                 shutil.copytree(s, d, dirs_exist_ok=True)
-            else:
+        else:
                 shutil.copy2(s, d)
     
     # Generate static files

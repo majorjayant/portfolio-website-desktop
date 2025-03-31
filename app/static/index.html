@@ -221,6 +221,93 @@
         }
     }
 </style>
+
+    
+    <!-- Netlify deployment fix -->
+    <script>
+        // Handle case when SiteConfig not available (static sites)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if any of the image elements failed to load
+            const fixBrokenImages = function() {
+                // S3 fallback URLs
+                const fallbacks = {
+                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
+                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'
+                };
+                
+                // Fix header logo
+                const headerLogo = document.querySelector('.navbar .logo img');
+                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
+                    headerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix footer logo 
+                const footerLogo = document.querySelector('.footer-logo img');
+                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
+                    footerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix favicon
+                const favicon = document.querySelector('link[rel="icon"]');
+                if (favicon) {
+                    favicon.href = fallbacks.favicon;
+                }
+                
+                // Fix styles if needed
+                const fixStyles = function() {
+                    // Fix header styles
+                    const navbar = document.querySelector('.navbar');
+                    if (navbar) {
+                        navbar.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                        navbar.style.backdropFilter = 'blur(8px)';
+                    }
+                    
+                    // Fix logo styles
+                    if (headerLogo) {
+                        headerLogo.style.height = '70px';
+                        headerLogo.style.width = 'auto';
+                        headerLogo.style.display = 'block';
+                    }
+                    
+                    // Fix navigation
+                    const navLinks = document.querySelector('.nav-links');
+                    if (navLinks) {
+                        navLinks.style.marginLeft = 'auto';
+                        navLinks.style.textAlign = 'right';
+                    }
+                    
+                    const navLinksList = document.querySelector('.nav-links ul');
+                    if (navLinksList) {
+                        navLinksList.style.display = 'flex';
+                        navLinksList.style.justifyContent = 'flex-end';
+                        navLinksList.style.padding = '0';
+                        navLinksList.style.margin = '0';
+                    }
+                    
+                    // Fix banner
+                    const bannerImage = document.getElementById('banner-image');
+                    if (bannerImage) {
+                        bannerImage.style.backgroundSize = 'contain';
+                        bannerImage.style.backgroundPosition = 'center';
+                        bannerImage.style.backgroundRepeat = 'no-repeat';
+                    }
+                    
+                    // Fix footer logo
+                    if (footerLogo) {
+                        footerLogo.style.maxWidth = '100px';
+                        footerLogo.style.maxHeight = '60px';
+                    }
+                };
+                
+                fixStyles();
+            };
+            
+            // Run immediately and also after a short delay to catch slow-loading elements
+            fixBrokenImages();
+            setTimeout(fixBrokenImages, 1000);
+        });
+    </script>
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -241,61 +328,204 @@
                 <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
                 <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
                 <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-                <a href="/admin/login" class="admin-link"><i class="fas fa-user-circle"></i></a>
             </div>
         </nav>
     </header>
 
+    <!-- Flash Messages -->
+    
+        
+    
+
     <!-- Main Content -->
     <main>
-        <!-- Banner Section -->
-        <section class="banner" style="margin-top: 80px; width: 100%; overflow: hidden;">
-            <div class="banner-image" id="banner-image" style="width: 100%; height: 0; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat;">
-                <!-- Banner image is set via JavaScript -->
-            </div>
-        </section>
+        
+    <!-- Banner Section -->
+    <section class="banner" style="margin-top: 80px; width: 100%; overflow: hidden;">
+        <div class="banner-image" id="banner-image" style="width: 100%; height: 0; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat;">
+            <!-- Banner image is set via JavaScript -->
+        </div>
+    </section>
 
-        <!-- About Me Section - New Design -->
-        <section class="about-section">
-            <div class="container">
-                <div class="about-container">
-                    <div id="text-main" class="text-main">
-                        <h1>Jayant Arora</h1>
-                        <p class="intro">Curious Mind. Data Geek. Product Whisperer.</p>
-                        <p class="description">Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I've done it all, and I'm just getting started. Here's the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you&#39;re looking for someone who can decode business problems, simplify the complex, and actually get things done - let's talk.</p>
-                    </div>
-                    <div id="img-main" class="img-main">
-                        <img class="profile-image" src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile-photo.png';">
-                    </div>
+    <!-- About Me Section - New Design -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-container">
+                <div id="text-main" class="text-main">
+                    <h1>Jayant Arora</h1>
+                    <p class="intro">Curious Mind. Data Geek. Product Whisperer.</p>
+                    <p class="description">Ever since I was a kid, I’ve been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I’ve done it all, and I’m just getting started. Here’s the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you&#39;re looking for someone who can decode business problems, simplify the complex, and actually get things done - let’s talk.</p>
                 </div>
+                <div id="img-main" class="img-main">
+                    <img class="profile-image" src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile-photo.png';">
+                </div>
+            </div>
+            
+            <div id="snaps" class="snaps">
                 
-                <div id="snaps" class="snaps">
-                    <a href="#" class="snap-container" data-photo="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg">
-                        <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg" alt="Test Photo 1 Alt Text" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='Test Photo 1 Alt Text';">
-                    </a>
-                    
-                    <a href="#" class="snap-container" data-photo="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg">
-                        <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg" alt="Test Photo 2 Alt Text" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='Test Photo 2 Alt Text';">
-                    </a>
-                    
-                    <a href="#" class="snap-container" data-photo="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg">
-                        <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg" alt="Test Photo 3 Alt Text" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='Test Photo 3 Alt Text';">
-                    </a>
-                    
-                    <a href="#" class="snap-container" data-photo="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg">
-                        <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg" alt="Test Photo 4 Alt Text" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='Test Photo 4 Alt Text';">
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Photo Modal -->
-        <div id="photoModal" class="photo-modal">
-            <span class="close-modal">&times;</span>
-            <div class="modal-content">
-                <img id="modalImage" src="" alt="Full size image">
+                <a href="#" class="snap-container" data-photo="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg">
+                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg" alt="Test Photo 1 Alt Text" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='Test Photo 1 Alt Text';">
+                </a>
+                
+                <a href="#" class="snap-container" data-photo="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg">
+                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg" alt="Test Photo 2 Alt Text" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='Test Photo 2 Alt Text';">
+                </a>
+                
+                <a href="#" class="snap-container" data-photo="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg">
+                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg" alt="Test Photo 3 Alt Text" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='Test Photo 3 Alt Text';">
+                </a>
+                
+                <a href="#" class="snap-container" data-photo="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg">
+                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg" alt="Test Photo 4 Alt Text" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='Test Photo 4 Alt Text';">
+                </a>
+                
             </div>
         </div>
+    </section>
+
+    <!-- Photo Modal -->
+    <div id="photoModal" class="photo-modal">
+        <span class="close-modal">&times;</span>
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Full size image">
+        </div>
+    </div>
+
+    <!-- Experience Section -->
+    <section class="experience-section">
+        <div class="container">
+            <h2 class="section-title">Work Experience</h2>
+            <div class="timeline">
+                
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Senior Product Manager</h3>
+                            <h4>Tech Solutions Inc.</h4>
+                            <p class="timeline-date">Jan 2020 - Present</p>
+                            <p class="timeline-description">Leading product development for enterprise SaaS solutions. Managing a team of 5 developers and 2 designers.</p>
+                        </div>
+                    </div>
+                
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Product Manager</h3>
+                            <h4>Digital Innovations Co.</h4>
+                            <p class="timeline-date">Mar 2017 - Dec 2019</p>
+                            <p class="timeline-description">Managed the development of mobile applications for financial services clients.</p>
+                        </div>
+                    </div>
+                
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Associate Product Manager</h3>
+                            <h4>StartupHub</h4>
+                            <p class="timeline-date">Jun 2015 - Feb 2017</p>
+                            <p class="timeline-description">Assisted in the development and launch of three successful web applications.</p>
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section class="education-section">
+        <div class="container">
+            <h2 class="section-title">Education</h2>
+            <div class="education-container">
+                
+                    <div class="education-item">
+                        <div class="edu-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="edu-content">
+                            <h3>Master of Business Administration</h3>
+                            <h4>Business University</h4>
+                            <p class="edu-date">2014 - 2015</p>
+                            <p class="edu-description">Specialized in Technology Management with focus on Product Development.</p>
+                        </div>
+                    </div>
+                
+                    <div class="education-item">
+                        <div class="edu-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="edu-content">
+                            <h3>Bachelor of Science in Computer Science</h3>
+                            <h4>Tech Institute</h4>
+                            <p class="edu-date">2010 - 2014</p>
+                            <p class="edu-description">Graduated with honors. Focused on software engineering and UI/UX design.</p>
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section -->
+    <section class="certifications-section">
+        <div class="container">
+            <h2 class="section-title">Certifications</h2>
+            <div class="certifications-container">
+                
+                    <div class="cert-item">
+                        <div class="cert-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="cert-content">
+                            <h3>Certified Product Manager</h3>
+                            <h4>Product Management Institute</h4>
+                            <p class="cert-date">Issued: Jun 2019</p>
+                            <p class="cert-expiry">Expires: Jun 2022</p>
+                            
+                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
+                            
+                        </div>
+                    </div>
+                
+                    <div class="cert-item">
+                        <div class="cert-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="cert-content">
+                            <h3>Certified Scrum Master</h3>
+                            <h4>Scrum Alliance</h4>
+                            <p class="cert-date">Issued: Mar 2018</p>
+                            <p class="cert-expiry">Expires: Mar 2020</p>
+                            
+                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
+                            
+                        </div>
+                    </div>
+                
+                    <div class="cert-item">
+                        <div class="cert-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="cert-content">
+                            <h3>Advanced UX Design</h3>
+                            <h4>Design Academy</h4>
+                            <p class="cert-date">Issued: Nov 2017</p>
+                            <p class="cert-expiry">No Expiration</p>
+                            
+                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
+                            
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+    </section>
+
     </main>
 
     <!-- Footer -->
@@ -304,7 +534,7 @@
             <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
                 <div class="footer-logo" style="margin-bottom: 0.5rem;">
                     <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
-                </div>
+            </div>
                 <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
                 <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
                     <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
@@ -334,6 +564,387 @@
     </footer>
 
     <!-- JavaScript -->
-    <script src="/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/js/script.js"></script>
+    
+<script>
+    // Set banner image as soon as DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        const bannerImage = document.getElementById('banner-image');
+        if (bannerImage) {
+            // Set the banner image
+            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+            
+            // Ensure correct styling
+            bannerImage.style.backgroundSize = 'contain';
+            bannerImage.style.backgroundPosition = 'center';
+            bannerImage.style.backgroundRepeat = 'no-repeat';
+            bannerImage.style.width = '100%';
+            bannerImage.style.height = '0';
+            bannerImage.style.paddingBottom = '38.75%';
+        }
+
+        // Try to fetch the latest content from our AWS Lambda endpoint
+        fetchLatestAboutContent();
+        
+        // Initialize modal functionality for initial page load
+        initializeModalFunctionality();
+    });
+
+    // Function to fetch the latest content from our API
+    function fetchLatestAboutContent() {
+        console.log('Checking for latest content from API');
+        
+        // For AWS API Gateway endpoint
+        const apiUrl = '/api/get-content?type=site_config';
+        
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Loaded content from AWS API Gateway:', data);
+                
+                if (data && data.about_content) {
+                    // Update about content with latest data
+                    const aboutTitle = document.querySelector('.text-main h1');
+                    const aboutSubtitle = document.querySelector('.text-main .intro');
+                    const aboutDescription = document.querySelector('.text-main .description');
+                    const profileImage = document.querySelector('.profile-image');
+                    
+                    if (aboutTitle) {
+                        aboutTitle.textContent = data.about_content.title || 'about.';
+                    }
+                    
+                    if (aboutSubtitle) {
+                        aboutSubtitle.textContent = data.about_content.subtitle || "I'm a passionate product manager based in New Delhi, India.";
+                    }
+                    
+                    if (aboutDescription) {
+                        aboutDescription.textContent = data.about_content.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+                        aboutDescription.style.textAlign = 'left';
+                    }
+                    
+                    if (profileImage && data.about_content.profile_image) {
+                        profileImage.src = data.about_content.profile_image;
+                    }
+                    
+                    // Update photos
+                    const snapsContainer = document.getElementById('snaps');
+                    if (snapsContainer && data.about_content.photos && data.about_content.photos.length > 0) {
+                        // Clear existing content
+                        snapsContainer.innerHTML = '';
+                        
+                        // Add fresh content from API
+                        data.about_content.photos.forEach(photo => {
+                            const container = document.createElement('a');
+                            container.href = '#';
+                            container.className = 'snap-container';
+                            container.setAttribute('data-photo', photo.url);
+                            
+                            const img = document.createElement('img');
+                            img.src = photo.url;
+                            img.alt = photo.alt;
+                            img.onerror = function() {
+                                this.onerror = null;
+                                this.src = '/static/img/placeholder.png';
+                            };
+                            
+                            container.appendChild(img);
+                            snapsContainer.appendChild(container);
+                        });
+                        
+                        // Reinitialize the modal functionality for the new photos
+                        initializeModalFunctionality();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching content from AWS API:', error);
+                // Fall back to local JSON file
+                fetchDataFromLocalJson();
+            });
+    }
+
+    // Function to fetch data from local JSON file (as fallback)
+    function fetchDataFromLocalJson() {
+        console.log('Falling back to local JSON file');
+        
+        fetch('/static/data/site_config.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Loaded content from local JSON file');
+                // Apply the data using same logic as above
+                if (data && data.about_content) {
+                    const aboutTitle = document.querySelector('.text-main h1');
+                    const aboutSubtitle = document.querySelector('.text-main .intro');
+                    const aboutDescription = document.querySelector('.text-main .description');
+                    const profileImage = document.querySelector('.profile-image');
+                    
+                    if (aboutTitle) {
+                        aboutTitle.textContent = data.about_content.title || 'about.';
+                    }
+                    
+                    if (aboutSubtitle) {
+                        aboutSubtitle.textContent = data.about_content.subtitle || "I'm a passionate product manager based in New Delhi, India.";
+                    }
+                    
+                    if (aboutDescription) {
+                        aboutDescription.textContent = data.about_content.description || "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+                        aboutDescription.style.textAlign = 'left';
+                    }
+                    
+                    if (profileImage && data.about_content.profile_image) {
+                        profileImage.src = data.about_content.profile_image;
+                    }
+                    
+                    // Update photos if present in JSON
+                    const snapsContainer = document.getElementById('snaps');
+                    if (snapsContainer && data.about_content.photos && data.about_content.photos.length > 0) {
+                        // Clear existing content
+                        snapsContainer.innerHTML = '';
+                        
+                        // Add fresh content from JSON
+                        data.about_content.photos.forEach(photo => {
+                            const container = document.createElement('a');
+                            container.href = '#';
+                            container.className = 'snap-container';
+                            container.setAttribute('data-photo', photo.url);
+                            
+                            const img = document.createElement('img');
+                            img.src = photo.url;
+                            img.alt = photo.alt;
+                            img.onerror = function() {
+                                this.onerror = null;
+                                this.src = '/static/img/placeholder.png';
+                            };
+                            
+                            container.appendChild(img);
+                            snapsContainer.appendChild(container);
+                        });
+                        
+                        // Reinitialize the modal functionality
+                        initializeModalFunctionality();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading site config JSON:', error);
+                // Apply fallback content as last resort
+                applyFallbackContent();
+            });
+    }
+
+    // Function to apply fallback content if both API and JSON file fail
+    function applyFallbackContent() {
+        console.log('Applying hardcoded fallback content');
+        
+        // Fallback for about section content
+        const aboutTitle = document.querySelector('.text-main h1');
+        const aboutSubtitle = document.querySelector('.text-main .intro');
+        const aboutDescription = document.querySelector('.text-main .description');
+        
+        if (aboutTitle && (!aboutTitle.textContent || aboutTitle.textContent.trim() === '')) {
+            aboutTitle.textContent = 'about.';
+        }
+        
+        if (aboutSubtitle && (!aboutSubtitle.textContent || aboutSubtitle.textContent.trim() === '')) {
+            aboutSubtitle.textContent = "I'm a passionate product manager based in New Delhi, India.";
+        }
+        
+        if (aboutDescription && (!aboutDescription.textContent || aboutDescription.textContent.trim() === '')) {
+            aboutDescription.textContent = "Since 2015, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not coding or managing products, you'll find me cooking, playing video games or exploring new places.";
+            // Remove text justification
+            aboutDescription.style.textAlign = 'left';
+        }
+        
+        // Handle profile image in about section
+        const profileImage = document.querySelector('.profile-image');
+        if (profileImage) {
+            // Fallback for profile image
+            profileImage.onerror = function() {
+                console.error("Error loading profile image: " + this.src);
+                this.onerror = null;
+                // Try local image if not already tried
+                if (!this.src.includes('/static/img/')) {
+                    this.src = '/static/img/profile-photo.png';
+                } else {
+                    // If local image also fails, use S3 URL
+                    this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profile.jpg';
+                }
+            };
+        }
+        
+        // Check if snaps section is empty or has no elements
+        const snapsContainer = document.getElementById('snaps');
+        if (snapsContainer && (!snapsContainer.children || snapsContainer.children.length === 0)) {
+            // Create and add fallback photo elements
+            const s3Urls = [
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+            ];
+            
+            const altTexts = [
+                'Personal photo 1',
+                'Personal photo 2',
+                'Personal photo 3',
+                'Personal photo 4'
+            ];
+            
+            s3Urls.forEach((url, index) => {
+                const container = document.createElement('a');
+                container.href = '#';
+                container.className = 'snap-container';
+                container.setAttribute('data-photo', url);
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = altTexts[index];
+                img.onerror = function() {
+                    this.onerror = null;
+                    this.src = '/static/img/placeholder.png';
+                };
+                
+                container.appendChild(img);
+                snapsContainer.appendChild(container);
+            });
+        }
+    }
+
+    // Handle photo snapshots in about section
+    const snapImages = document.querySelectorAll('.snaps img');
+    snapImages.forEach(function(img, index) {
+        // Pre-load the S3 images
+        let s3Urls = [
+            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+        ];
+        
+        // If the current image is a placeholder or not an S3 URL, try the corresponding S3 URL
+        if (img.src.includes('placeholder.png') || !img.src.includes('s3.eu-north-1.amazonaws.com')) {
+            if (index < s3Urls.length) {
+                img.src = s3Urls[index];
+            }
+        }
+        
+        img.onerror = function() {
+            console.error("Error loading image: " + this.src);
+            this.onerror = null;
+            
+            // Try direct S3 URL if the current URL fails
+            if (!this.src.includes('s3.eu-north-1.amazonaws.com') && index < s3Urls.length) {
+                this.src = s3Urls[index];
+            } else {
+                // If S3 URL also fails, use placeholder
+                this.src = '/static/img/placeholder.png';
+            }
+        };
+    });
+    
+    // Modal functionality for about photos
+    function initializeModalFunctionality() {
+        const modal = document.getElementById('photoModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeModal = document.querySelector('.close-modal');
+        const snapContainers = document.querySelectorAll('.snap-container');
+        
+        // Open modal when clicking on a photo
+        snapContainers.forEach(function(container) {
+            container.addEventListener('click', function(e) {
+                e.preventDefault();
+                const photoUrl = this.getAttribute('data-photo');
+                modal.style.display = 'block';
+                modalImg.src = photoUrl;
+                
+                // If the modal image fails to load, try to use a direct S3 URL or fallback
+                modalImg.onerror = function() {
+                    console.error("Error loading modal image: " + this.src);
+                    this.onerror = null;
+                    
+                    // Try direct S3 URL if the current URL fails
+                    if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
+                        // Extract the photo number from the container's position
+                        const containers = Array.from(document.querySelectorAll('.snap-container'));
+                        const index = containers.indexOf(container);
+                        const s3Urls = [
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+                        ];
+                        
+                        if (index < s3Urls.length) {
+                            this.src = s3Urls[index];
+                        } else {
+                            // If S3 URL also fails, use placeholder
+                            this.src = '/static/img/placeholder.png';
+                        }
+                    } else {
+                        // If S3 URL also fails, use placeholder
+                        this.src = '/static/img/placeholder.png';
+                    }
+                };
+            });
+        });
+    }
+    
+    // Close modal when clicking on close button
+    closeModal.addEventListener('click', function() {
+        const modal = document.getElementById('photoModal');
+        modal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside the image
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+        }
+    });
+</script>
+
+
+    <!-- Add script for logo background that can't be done with inline styles -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add the pseudo-element effect that can't be done with inline styles
+            const logoElement = document.querySelector('.logo');
+            if (logoElement) {
+                // Create a div that will act as our :before pseudo-element
+                const beforeElement = document.createElement('div');
+                beforeElement.style.position = 'absolute';
+                beforeElement.style.top = '-6px';
+                beforeElement.style.left = '-3px';
+                beforeElement.style.right = '-3px';
+                beforeElement.style.bottom = '-6px';
+                beforeElement.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                beforeElement.style.borderRadius = '8px';
+                beforeElement.style.zIndex = '-1';
+                
+                // Insert as first child to be below the logo
+                logoElement.insertBefore(beforeElement, logoElement.firstChild);
+            }
+        });
+    </script>
 </body>
 </html> 

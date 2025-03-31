@@ -1,0 +1,9 @@
+{
+  "lambdaFunction": {
+    "permissions": {
+      "storage": {
+        "S3": ["read"]
+      }
+    }
+  }
+} 

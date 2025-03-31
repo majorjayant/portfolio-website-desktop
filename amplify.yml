@@ -7,7 +7,6 @@ frontend:
         - cp -f app/templates/admin/index.html app/static/admin/index.html
         - cp -f app/templates/admin/login.html app/static/admin/login.html
         - cp -f app/templates/admin/dashboard.html app/static/admin/dashboard.html
-        - mkdir -p app/static/api
         - rm -f app/static/test.html
   artifacts:
     baseDirectory: app/static
@@ -28,20 +27,17 @@ frontend:
     - source: '/admin/login'
       target: '/admin/login.html'
       status: '200'
-    - source: '/admin/login/'
-      target: '/admin/login.html'
-      status: '200'
     - source: '/admin/dashboard'
       target: '/admin/dashboard.html'
       status: '200'
-    - source: '/admin/dashboard/'
-      target: '/admin/dashboard.html'
-      status: '200'
     - source: '/api/admin/login'
-      target: '/api/admin-login.js'
+      target: '/.netlify/functions/admin-login'
       status: '200'
-    - source: '/api/get-content'
-      target: '/api/get-content.js'
+    - source: '/api/site-config'
+      target: '/amplify/backend/function/getSiteConfig/src/index.js'
+      status: '200'
+    - source: '/data/site_config.json'
+      target: '/data/site_config.json'
       status: '200'
     - source: '/<*>'
       target: '/index.html'
