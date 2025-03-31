@@ -3,10 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
+        - pip install --upgrade pip
         - pip install -r requirements.txt
     build:
       commands:
-        - python app.py
+        - mkdir -p app/static
+        - python -c "from app import create_app; app = create_app(); app.static_folder"
   artifacts:
     baseDirectory: app/static
     files:
