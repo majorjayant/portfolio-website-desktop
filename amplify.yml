@@ -1,32 +1,38 @@
 version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - pip install --upgrade pip
-        - pip install -r requirements.txt
-    build:
-      commands:
-        - mkdir -p app/static
-        - python -c "from app import create_app; app = create_app(); app.static_folder"
-  artifacts:
-    baseDirectory: app/static
-    files:
-      - '**/*'
-  cache:
-    paths: []
-  customHeaders:
-    - pattern: '**/*'
-      headers:
-        - key: 'Cache-Control'
-          value: 'no-store, no-cache, must-revalidate'
-  redirects:
-    - source: '/admin'
-      target: '/admin/login'
-      status: '200'
-    - source: '/admin/*'
-      target: '/index.html'
-      status: '200'
-    - source: '/*'
-      target: '/index.html'
-      status: '200'
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - pip install -r requirements.txt
+        build:
+          commands:
+            - echo "Starting Flask application build"
+      artifacts:
+        baseDirectory: /
+        files:
+          - '**/*'
+      cache:
+        paths: []
+    appRoot: /
+    customHeaders:
+      - pattern: '**/*'
+        headers:
+          - key: 'Cache-Control'
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+    rewrites:
+      - source: '/admin'
+        target: '/admin/login'
+        status: '200'
+      - source: '/admin/login'
+        target: '/admin/login'
+        status: '200'
+      - source: '/admin/dashboard'
+        target: '/admin/dashboard'
+        status: '200'
+      - source: '/admin/update-config'
+        target: '/admin/update-config'
+        status: '200'
+      - source: '/<*>'
+        target: '/index.html'
+        status: '200'

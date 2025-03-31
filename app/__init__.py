@@ -42,18 +42,23 @@ def create_app(test_config=None):
     
     # Configure the app
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///portfolio.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
     csrf.init_app(app)
-    
-    # Configure Flask-Login
     login_manager.init_app(app)
     login_manager.login_view = 'admin.login'
-    login_manager.login_message = 'Please log in to access this page.'
+    
+    # Create a temporary directory for file uploads
+    try:
+        temp_dir = os.path.join(app.static_folder, 'temp')
+        os.makedirs(temp_dir, exist_ok=True)
+        print(f"Created temp directory in static folder")
+    except Exception as e:
+        print(f"Error creating temp directory: {e}")
     
     # Import models
     from app.models import Admin
@@ -66,16 +71,16 @@ def create_app(test_config=None):
     with app.app_context():
         db.create_all()
         
-        # Create default admin user if none exists
+        # Create admin user if it doesn't exist
         if not Admin.query.first():
             admin = Admin(username='admin')
-            admin.set_password('admin')
+            admin.set_password('admin')  # Change this password in production!
             db.session.add(admin)
             db.session.commit()
     
     # Register blueprints
     from app.routes.admin import admin_bp
-    app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(admin_bp)
     
     return app
 

@@ -33,10 +33,6 @@ def logout():
 def dashboard():
     """Admin dashboard route"""
     config = SiteConfig.query.first()
-    if not config:
-        config = SiteConfig()
-        db.session.add(config)
-        db.session.commit()
     form = SiteConfigForm(obj=config)
     return render_template('admin/dashboard.html', form=form, config=config)
 
