@@ -2,6 +2,26 @@
  * Lambda function for website-portfolio API handling
  * Serves site configuration and handles admin login
  */
+
+// In-memory storage for site configuration (in a real app, you'd use DynamoDB or S3)
+let siteConfigStorage = {
+    image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+    image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+    image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+    about_title: "Jayant Arora",
+    about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
+    about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I've done it all, and I'm just getting started. Here's the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let's talk.",
+    image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
+    image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+    image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+    image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+    image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+    about_photo1_alt: "Test Photo 1 Alt Text",
+    about_photo2_alt: "Test Photo 2 Alt Text",
+    about_photo3_alt: "Test Photo 3 Alt Text",
+    about_photo4_alt: "Test Photo 4 Alt Text"
+};
+
 exports.handler = async (event) => {
     // Log incoming request for debugging
     console.log('Received event:', JSON.stringify(event, null, 2));
@@ -10,12 +30,13 @@ exports.handler = async (event) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
-        'Access-Control-Allow-Methods': 'OPTIONS,GET,POST',
+        'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT,DELETE',
         'Content-Type': 'application/json'
     };
     
     // Handle preflight OPTIONS request
     if (event.httpMethod === 'OPTIONS') {
+        console.log('Handling OPTIONS preflight request');
         return {
             statusCode: 200,
             headers,
@@ -38,23 +59,7 @@ exports.handler = async (event) => {
                 return {
                     statusCode: 200,
                     headers,
-                    body: JSON.stringify({
-                        image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
-                        image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
-                        image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
-                        about_title: "Jayant Arora",
-                        about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
-                        about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I've done it all, and I'm just getting started. Here's the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let's talk.",
-                        image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
-                        image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
-                        image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
-                        image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
-                        image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
-                        about_photo1_alt: "Test Photo 1 Alt Text",
-                        about_photo2_alt: "Test Photo 2 Alt Text",
-                        about_photo3_alt: "Test Photo 3 Alt Text",
-                        about_photo4_alt: "Test Photo 4 Alt Text"
-                    })
+                    body: JSON.stringify(siteConfigStorage)
                 };
             } else if (type === 'projects') {
                 // Return projects data
@@ -94,6 +99,7 @@ exports.handler = async (event) => {
             let body;
             try {
                 body = JSON.parse(event.body || '{}');
+                console.log('Parsed request body:', body);
             } catch (error) {
                 console.error('Error parsing request body:', error);
                 return {
@@ -136,9 +142,12 @@ exports.handler = async (event) => {
             } else if (action === 'update_site_config') {
                 console.log('Processing update site configuration request');
                 
-                // Verify token - In a real implementation, you would validate the JWT token
-                const token = event.headers.Authorization || '';
-                if (!token) {
+                // In a real app, you would validate the JWT token here
+                // For this demo, we'll just check if any token is provided
+                const authHeader = event.headers.Authorization || event.headers.authorization || '';
+                console.log('Authorization header:', authHeader);
+                
+                if (!authHeader) {
                     console.log('Unauthorized: No token provided');
                     return {
                         statusCode: 401,
@@ -154,14 +163,22 @@ exports.handler = async (event) => {
                 const siteConfig = body.site_config || {};
                 console.log('Updating site configuration with:', JSON.stringify(siteConfig, null, 2));
                 
-                // In a real implementation, you would update a database here
-                // For this example, we'll just return success
+                // Update the in-memory storage (in a real app, you'd update DynamoDB or S3)
+                // We're merging the existing config with the new values
+                siteConfigStorage = {
+                    ...siteConfigStorage,
+                    ...siteConfig
+                };
+                
+                console.log('Updated site configuration:', JSON.stringify(siteConfigStorage, null, 2));
+                
                 return {
                     statusCode: 200,
                     headers,
                     body: JSON.stringify({
                         success: true,
-                        message: 'Site configuration updated successfully'
+                        message: 'Site configuration updated successfully',
+                        data: siteConfigStorage
                     })
                 };
             } else {

@@ -189,10 +189,10 @@
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache'
+                    'Content-Type': 'application/json'
                 },
-                mode: 'cors'
+                mode: 'cors',
+                credentials: 'omit'
             })
             .then(response => {
                 console.log('API response status:', response.status);
@@ -280,12 +280,18 @@
             // Send data to API
             const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
             
+            console.log('Sending data to:', apiEndpoint);
+            console.log('With token:', token ? 'Token found' : 'No token');
+            
             fetch(apiEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': token || ''
+                    'Authorization': token || '',
+                    'Accept': 'application/json'
                 },
+                mode: 'cors',
+                credentials: 'omit',
                 body: JSON.stringify({
                     action: 'update_site_config',
                     site_config: formData
@@ -311,6 +317,11 @@
                 notification.className = 'fixed top-4 right-4 p-4 bg-green-100 text-green-700 rounded-md shadow-md z-40';
                 notification.textContent = data.message || 'Changes saved successfully';
                 document.body.appendChild(notification);
+                
+                // If the server returned updated data, refresh the form
+                if (data.data) {
+                    populateForm(data.data);
+                }
                 
                 setTimeout(() => {
                     notification.style.opacity = '0';
