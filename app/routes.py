@@ -29,47 +29,7 @@ def register_routes(app):
     @app.route('/')
     def home():
         """Render the home page"""
-        # Get dummy data if database operations fail
-        try:
-            projects = get_projects()
-            experience = get_experience()
-            education = get_education()
-            certifications = get_certifications()
-        except Exception as e:
-            app.logger.error(f"Error getting content data: {str(e)}")
-            projects = []
-            experience = []
-            education = []
-            certifications = []
-        
-        # Get about section content from the database with fallback
-        try:
-            about_content = SiteConfig.get_about_content()
-        except Exception as e:
-            app.logger.error(f"Error getting about content: {str(e)}")
-            about_content = None
-            
-        # Fallback content if database fails
-        if not about_content:
-            about_content = {
-                'title': 'about.',
-                'subtitle': "I'm a product designer based in sunny Sydney, Australia.",
-                'description': "Since 2005, I've enjoyed turning complex problems into simple, beautiful and intuitive designs. When I'm not pushing pixels, you'll find me cooking, gardening or working out in the park.",
-                'profile_image': '/static/img/profile.jpg',
-                'photos': [
-                    {'url': '/static/img/about_photo1.jpg', 'alt': 'Mini me'},
-                    {'url': '/static/img/about_photo2.jpg', 'alt': 'Sunny Sydney'},
-                    {'url': '/static/img/about_photo3.jpg', 'alt': 'Home sweet home'},
-                    {'url': '/static/img/about_photo4.jpg', 'alt': 'My workspace'}
-                ]
-            }
-        
-        return render_template('index.html', 
-                              projects=projects, 
-                              experience=experience,
-                              education=education,
-                              certifications=certifications,
-                              about_content=about_content)
+        return render_template('index.html')
 
     @app.route('/projects')
     def projects():
@@ -89,63 +49,51 @@ def register_routes(app):
     @app.route('/admin/site-config', methods=['GET', 'POST'])
     def admin_site_config():
         """Admin page for managing site configuration"""
-        if not app.config.get('STATIC_DEPLOYMENT', False):
+        try:
+            if request.method == 'POST':
+                # Get form data
+                key = request.form.get('key')
+                value = request.form.get('value')
+                description = request.form.get('description')
+                
+                # Update or create config entry
+                config = SiteConfig.set_value(key, value, description)
+                if config:
+                    flash('Config updated successfully', 'success')
+                else:
+                    flash('Error updating config', 'error')
+            
+            # Get all config entries
             try:
-                if request.method == 'POST':
-                    # Get form data
-                    key = request.form.get('key')
-                    value = request.form.get('value')
-                    description = request.form.get('description')
-                    
-                    # Update or create config entry
-                    config = SiteConfig.set_value(key, value, description)
-                    if config:
-                        flash('Config updated successfully', 'success')
-                    else:
-                        flash('Error updating config', 'error')
-                
-                # Get all config entries
-                try:
-                    configs = SiteConfig.query.all()
-                except:
-                    configs = []
-                
-                # Prepare image URLs for display
-                image_urls = {
-                    'favicon': SiteConfig.get_image_url('favicon'),
-                    'logo': SiteConfig.get_image_url('logo'),
-                    'banner': SiteConfig.get_image_url('banner'),
-                    'about_profile': SiteConfig.get_image_url('about_profile'),
-                    'about_photo1': SiteConfig.get_image_url('about_photo1'),
-                    'about_photo2': SiteConfig.get_image_url('about_photo2'),
-                    'about_photo3': SiteConfig.get_image_url('about_photo3'),
-                    'about_photo4': SiteConfig.get_image_url('about_photo4')
-                }
-                
-                return render_template('admin/site-config.html', configs=configs, image_urls=image_urls)
-            except Exception as e:
-                app.logger.error(f"Error in admin_site_config: {str(e)}")
-                return render_template('admin/site-config.html', configs=[], image_urls={})
-        else:
-            # In static mode, show a message that admin is not available
-            return render_template('admin/site-config.html', configs=[], image_urls={}, static_mode=True)
+                configs = SiteConfig.query.all()
+            except:
+                configs = []
+            
+            # Prepare image URLs for display
+            image_urls = {
+                'favicon': SiteConfig.get_image_url('favicon'),
+                'logo': SiteConfig.get_image_url('logo'),
+                'banner': SiteConfig.get_image_url('banner'),
+                'about_profile': SiteConfig.get_image_url('about_profile'),
+                'about_photo1': SiteConfig.get_image_url('about_photo1'),
+                'about_photo2': SiteConfig.get_image_url('about_photo2'),
+                'about_photo3': SiteConfig.get_image_url('about_photo3'),
+                'about_photo4': SiteConfig.get_image_url('about_photo4')
+            }
+            
+            return render_template('admin/site-config.html', configs=configs, image_urls=image_urls)
+        except Exception as e:
+            logger.error(f"Error in admin_site_config: {str(e)}")
+            return render_template('admin/site-config.html', configs=[], image_urls={})
 
     @app.route('/health')
     def health_check():
         """Health check endpoint for monitoring"""
-        app_info = {
+        return jsonify({
             'status': 'healthy',
             'timestamp': datetime.utcnow().isoformat(),
             'version': os.environ.get('APP_VERSION', 'development')
-        }
-        
-        # Check if this is being called during static site generation
-        if app.config.get('STATIC_DEPLOYMENT', False):
-            # Return HTML for static site generation
-            return render_template('404.html', message="Health check endpoint")
-            
-        # Regular JSON response for API calls
-        return jsonify(app_info)
+        })
 
     @app.errorhandler(404)
     def page_not_found(e):
