@@ -3,28 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Jayant Arora - Product Manager & Developer{% endblock %}</title>
+    <title>{% block title %}Portfolio | majorjayant{% endblock %}</title>
+    
+    <!-- Critical CSS - Fallback styles in case external CSS fails -->
+    <style>
+        /* Fallback critical styles */
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background-color: rgba(0, 0, 0, 0.6); }
+        .logo { display: block; padding: 5px 15px; position: relative; }
+        .logo img { height: 70px; width: auto; display: block; }
+        .nav-links { flex-grow: 1; margin-left: auto; text-align: right; }
+        .nav-links ul { display: flex; list-style: none; justify-content: flex-end; margin: 0; padding: 0; }
+        .nav-links li { margin: 0 1.5rem; }
+        .nav-links a { color: #e6e0d4; text-decoration: none; font-weight: 600; }
+        .banner { margin-top: 80px; width: 100%; overflow: hidden; }
+        .banner-image { width: 100%; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat; }
+        footer { background-color: #0d141a; color: white; padding: 3rem 0 1rem; }
+        .footer-container { display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
+        .footer-logo img { max-width: 100px; max-height: 60px; }
+    </style>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" id="favicon" href="">
+    <link rel="icon" type="image/png" href="{{ site_config.get_image_url('favicon') }}">
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Google Fonts - Nexa Light -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
     {% block extra_css %}{% endblock %}
+    
+    <!-- Netlify deployment fix -->
+    <script>
+        // Handle case when SiteConfig not available (static sites)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if any of the image elements failed to load
+            const fixBrokenImages = function() {
+                // S3 fallback URLs
+                const fallbacks = {
+                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
+                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'
+                };
+                
+                // Fix header logo
+                const headerLogo = document.querySelector('.navbar .logo img');
+                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
+                    headerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix footer logo 
+                const footerLogo = document.querySelector('.footer-logo img');
+                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
+                    footerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix favicon
+                const favicon = document.querySelector('link[rel="icon"]');
+                if (favicon) {
+                    favicon.href = fallbacks.favicon;
+                }
+                
+                // Fix styles if needed
+                const fixStyles = function() {
+                    // Fix header styles
+                    const navbar = document.querySelector('.navbar');
+                    if (navbar) {
+                        navbar.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                        navbar.style.backdropFilter = 'blur(8px)';
+                    }
+                    
+                    // Fix logo styles
+                    if (headerLogo) {
+                        headerLogo.style.height = '70px';
+                        headerLogo.style.width = 'auto';
+                        headerLogo.style.display = 'block';
+                    }
+                    
+                    // Fix navigation
+                    const navLinks = document.querySelector('.nav-links');
+                    if (navLinks) {
+                        navLinks.style.marginLeft = 'auto';
+                        navLinks.style.textAlign = 'right';
+                    }
+                    
+                    const navLinksList = document.querySelector('.nav-links ul');
+                    if (navLinksList) {
+                        navLinksList.style.display = 'flex';
+                        navLinksList.style.justifyContent = 'flex-end';
+                        navLinksList.style.padding = '0';
+                        navLinksList.style.margin = '0';
+                    }
+                    
+                    // Fix banner
+                    const bannerImage = document.getElementById('banner-image');
+                    if (bannerImage) {
+                        bannerImage.style.backgroundSize = 'contain';
+                        bannerImage.style.backgroundPosition = 'center';
+                        bannerImage.style.backgroundRepeat = 'no-repeat';
+                    }
+                    
+                    // Fix footer logo
+                    if (footerLogo) {
+                        footerLogo.style.maxWidth = '100px';
+                        footerLogo.style.maxHeight = '60px';
+                    }
+                };
+                
+                fixStyles();
+            };
+            
+            // Run immediately and also after a short delay to catch slow-loading elements
+            fixBrokenImages();
+            setTimeout(fixBrokenImages, 1000);
+        });
+    </script>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="logo">
-            <a href="/"><img src="" alt="Logo" id="logo-img"></a>
-        </div>
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/projects">Projects</a></li>
-            <li><a href="/solutions">Solutions</a></li>
-            <li><a href="/contact">Contact</a></li>
-        </ul>
-    </nav>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="logo" style="display: block !important; padding: 5px 15px !important; position: relative !important;">
+                <img src="{{ site_config.get_image_url('logo') }}" alt="Logo" style="height: 70px !important; width: auto !important; display: block !important; max-width: none !important; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));">
+            </a>
+            <div class="nav-links" style="flex-grow: 1 !important; margin-left: auto !important; text-align: right !important;">
+                <ul style="display: flex !important; list-style: none !important; justify-content: flex-end !important; margin: 0 !important; padding: 0 !important;">
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="{{ url_for('home') }}" {% if request.endpoint == 'home' %}class="active"{% endif %} style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="{{ url_for('projects') }}" {% if request.endpoint == 'projects' %}class="active"{% endif %} style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="{{ url_for('solutions') }}" {% if request.endpoint == 'solutions' %}class="active"{% endif %} style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Solutions</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="{{ url_for('contact') }}" {% if request.endpoint == 'contact' %}class="active"{% endif %} style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
+                </ul>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <!-- Main Content -->
     <main>
@@ -32,43 +167,66 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-logo">
-            <img src="" alt="Logo" id="footer-logo-img">
+    <footer style="padding: 2rem 0 0.5rem;">
+        <div class="footer-container">
+            <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
+                <div class="footer-logo" style="margin-bottom: 0.5rem;">
+                    <img src="{{ site_config.get_image_url('logo') }}" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
+                </div>
+                <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
+                <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
+                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Contact Info</h3>
+                <p style="margin-bottom: 0.5rem;"><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
+                <p style="margin-bottom: 0.5rem;"><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                <p style="margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
+            </div>
+            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Quick Links</h3>
+                <ul style="margin: 0; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;"><a href="{{ url_for('home') }}">Home</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="{{ url_for('projects') }}">Projects</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="{{ url_for('solutions') }}">Solutions</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="{{ url_for('contact') }}">Contact</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="footer-content">
-            <p>&copy; 2024 Jayant Arora. All rights reserved.</p>
+        <div class="copyright" style="margin-top: 1rem; padding-top: 0.8rem;">
+            <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
         </div>
     </footer>
 
     <!-- JavaScript -->
-    <script src="/static/js/api.js"></script>
-    <script>
-        // Load site configuration on page load
-        document.addEventListener('DOMContentLoaded', async function() {
-            try {
-                const config = await API.getSiteConfig();
-                if (config) {
-                    // Update favicon
-                    const favicon = document.getElementById('favicon');
-                    if (favicon && config.image_favicon_url) {
-                        favicon.href = config.image_favicon_url.value;
-                    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block extra_js %}{% endblock %}
 
-                    // Update logos
-                    const logoImg = document.getElementById('logo-img');
-                    const footerLogoImg = document.getElementById('footer-logo-img');
-                    if (config.image_logo_url) {
-                        const logoUrl = config.image_logo_url.value;
-                        if (logoImg) logoImg.src = logoUrl;
-                        if (footerLogoImg) footerLogoImg.src = logoUrl;
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading site configuration:', error);
+    <!-- Add script for logo background that can't be done with inline styles -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add the pseudo-element effect that can't be done with inline styles
+            const logoElement = document.querySelector('.logo');
+            if (logoElement) {
+                // Create a div that will act as our :before pseudo-element
+                const beforeElement = document.createElement('div');
+                beforeElement.style.position = 'absolute';
+                beforeElement.style.top = '-6px';
+                beforeElement.style.left = '-3px';
+                beforeElement.style.right = '-3px';
+                beforeElement.style.bottom = '-6px';
+                beforeElement.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                beforeElement.style.borderRadius = '8px';
+                beforeElement.style.zIndex = '-1';
+                
+                // Insert as first child to be below the logo
+                logoElement.insertBefore(beforeElement, logoElement.firstChild);
             }
         });
     </script>
-    {% block extra_js %}{% endblock %}
 </body>
 </html> 

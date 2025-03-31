@@ -18,7 +18,7 @@ frontend:
         - "pwd"
         - "ls -la"
         - "echo \"Setting AWS credentials for build...\""
-        - "export REGION=eu-north-1"
+        - "export AWS_REGION=eu-north-1"
         - "export STATIC_DEPLOYMENT=true"
         - "echo \"Building static site...\""
         - "python build_static_site.py || echo \"Main build failed, using fallback...\""
@@ -46,4 +46,4 @@ frontend:
     - pattern: 'index.html'
       headers:
         - key: 'Cache-Control'
-          value: 'public, max-age=0, must-revalidate'
+          value: 'public, max-age=0, must-revalidate' 

@@ -28,13 +28,8 @@ def format_date(date_obj, format_str='%B %d, %Y'):
     return date_obj.strftime(format_str)
 
 def get_static_url(filepath):
-    """Get the URL for a static file, handling both development and production environments"""
-    # In development, use the Flask static route
-    if os.environ.get('FLASK_ENV', 'production') == 'development':
-        return f'/static/{filepath}'
-    
-    # In production (Netlify), use the root path
-    return f'/{filepath}'
+    """Get the URL for a static file"""
+    return f'/static/{filepath}'
 
 def truncate_text(text, max_length=100):
     """Truncate text to a maximum length, adding ellipsis if needed"""
