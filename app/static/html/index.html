@@ -645,31 +645,31 @@
         const aboutSubtitle = document.getElementById('about-subtitle');
         const aboutDescription = document.getElementById('about-description');
         const profileImage = document.getElementById('profile-image');
-        
-        if (aboutTitle) {
+                    
+                    if (aboutTitle) {
             aboutTitle.textContent = config.about_title || '';
-        }
-        
-        if (aboutSubtitle) {
+                    }
+                    
+                    if (aboutSubtitle) {
             aboutSubtitle.textContent = config.about_subtitle || '';
-        }
-        
-        if (aboutDescription) {
+                    }
+                    
+                    if (aboutDescription) {
             aboutDescription.textContent = config.about_description || '';
-            aboutDescription.style.textAlign = 'left';
-        }
-        
+                        aboutDescription.style.textAlign = 'left';
+                    }
+                    
         if (profileImage) {
             profileImage.src = config.image_about_profile_url || '';
             profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
-        }
-        
+                    }
+                    
         // Update photos in the "snaps" section
-        const snapsContainer = document.getElementById('snaps');
+                    const snapsContainer = document.getElementById('snaps');
         if (snapsContainer) {
-            // Clear existing content
-            snapsContainer.innerHTML = '';
-            
+                        // Clear existing content
+                        snapsContainer.innerHTML = '';
+                        
             // Create photos array from config
             const photos = [
                 { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
@@ -681,22 +681,22 @@
             // Add photos to container if they have URLs
             photos.forEach(photo => {
                 if (photo.url) {
-                    const container = document.createElement('a');
-                    container.href = '#';
-                    container.className = 'snap-container';
-                    container.setAttribute('data-photo', photo.url);
-                    
-                    const img = document.createElement('img');
-                    img.src = photo.url;
+                            const container = document.createElement('a');
+                            container.href = '#';
+                            container.className = 'snap-container';
+                            container.setAttribute('data-photo', photo.url);
+                            
+                            const img = document.createElement('img');
+                            img.src = photo.url;
                     img.alt = photo.alt || 'Photo';
-                    
-                    container.appendChild(img);
-                    snapsContainer.appendChild(container);
+                            
+                            container.appendChild(img);
+                            snapsContainer.appendChild(container);
                 }
-            });
-            
-            // Reinitialize the modal functionality
-            initializeModalFunctionality();
+                        });
+                        
+                        // Reinitialize the modal functionality
+                        initializeModalFunctionality();
         }
         
         // Show content once loaded

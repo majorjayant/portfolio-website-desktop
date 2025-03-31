@@ -74,35 +74,116 @@
                             </div>
                             <div id="form-container" class="hidden mt-4">
                                 <form id="site-config-form" class="space-y-6">
-                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                        <!-- Site Title -->
-                                        <div>
-                                            <label for="about_title" class="block text-sm font-medium text-gray-700">Site Title</label>
-                                            <input type="text" id="about_title" name="about_title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <div>
+                                        <h3 class="text-md font-medium text-gray-700 border-b pb-2 mb-4">General Website Information</h3>
+                                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                            <!-- Site Title -->
+                                            <div>
+                                                <label for="about_title" class="block text-sm font-medium text-gray-700">Site Title</label>
+                                                <input type="text" id="about_title" name="about_title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            </div>
+                                            
+                                            <!-- Subtitle -->
+                                            <div>
+                                                <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
+                                                <input type="text" id="about_subtitle" name="about_subtitle" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            </div>
+                                            
+                                            <!-- Description -->
+                                            <div class="sm:col-span-2">
+                                                <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
+                                                <textarea id="about_description" name="about_description" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                                            </div>
                                         </div>
-                                        
-                                        <!-- Subtitle -->
-                                        <div>
-                                            <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
-                                            <input type="text" id="about_subtitle" name="about_subtitle" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    </div>
+                                    
+                                    <div>
+                                        <h3 class="text-md font-medium text-gray-700 border-b pb-2 mb-4">Website Images</h3>
+                                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                            <!-- Favicon URL -->
+                                            <div>
+                                                <label for="image_favicon_url" class="block text-sm font-medium text-gray-700">Favicon URL</label>
+                                                <input type="text" id="image_favicon_url" name="image_favicon_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">URL for the website favicon (browser tab icon)</p>
+                                            </div>
+                                            
+                                            <!-- Logo URL -->
+                                            <div>
+                                                <label for="image_logo_url" class="block text-sm font-medium text-gray-700">Logo URL</label>
+                                                <input type="text" id="image_logo_url" name="image_logo_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">URL for the website logo</p>
+                                            </div>
+                                            
+                                            <!-- Banner URL -->
+                                            <div>
+                                                <label for="image_banner_url" class="block text-sm font-medium text-gray-700">Banner URL</label>
+                                                <input type="text" id="image_banner_url" name="image_banner_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">URL for the website banner image</p>
+                                            </div>
+                                            
+                                            <!-- Profile Image URL -->
+                                            <div>
+                                                <label for="image_about_profile_url" class="block text-sm font-medium text-gray-700">Profile Image URL</label>
+                                                <input type="text" id="image_about_profile_url" name="image_about_profile_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">URL for your main profile photo</p>
+                                            </div>
                                         </div>
-                                        
-                                        <!-- Description -->
-                                        <div class="sm:col-span-2">
-                                            <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
-                                            <textarea id="about_description" name="about_description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-                                        </div>
-                                        
-                                        <!-- Logo URL -->
-                                        <div>
-                                            <label for="image_logo_url" class="block text-sm font-medium text-gray-700">Logo URL</label>
-                                            <input type="text" id="image_logo_url" name="image_logo_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                        </div>
-                                        
-                                        <!-- Banner URL -->
-                                        <div>
-                                            <label for="image_banner_url" class="block text-sm font-medium text-gray-700">Banner URL</label>
-                                            <input type="text" id="image_banner_url" name="image_banner_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    </div>
+
+                                    <div>
+                                        <h3 class="text-md font-medium text-gray-700 border-b pb-2 mb-4">Gallery Photos</h3>
+                                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                            <!-- Photo 1 URL -->
+                                            <div>
+                                                <label for="image_about_photo1_url" class="block text-sm font-medium text-gray-700">Photo 1 URL</label>
+                                                <input type="text" id="image_about_photo1_url" name="image_about_photo1_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            </div>
+                                            
+                                            <!-- Photo 1 Alt Text -->
+                                            <div>
+                                                <label for="about_photo1_alt" class="block text-sm font-medium text-gray-700">Photo 1 Alt Text</label>
+                                                <input type="text" id="about_photo1_alt" name="about_photo1_alt" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">Alternative text for accessibility</p>
+                                            </div>
+                                            
+                                            <!-- Photo 2 URL -->
+                                            <div>
+                                                <label for="image_about_photo2_url" class="block text-sm font-medium text-gray-700">Photo 2 URL</label>
+                                                <input type="text" id="image_about_photo2_url" name="image_about_photo2_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            </div>
+                                            
+                                            <!-- Photo 2 Alt Text -->
+                                            <div>
+                                                <label for="about_photo2_alt" class="block text-sm font-medium text-gray-700">Photo 2 Alt Text</label>
+                                                <input type="text" id="about_photo2_alt" name="about_photo2_alt" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">Alternative text for accessibility</p>
+                                            </div>
+                                            
+                                            <!-- Photo 3 URL -->
+                                            <div>
+                                                <label for="image_about_photo3_url" class="block text-sm font-medium text-gray-700">Photo 3 URL</label>
+                                                <input type="text" id="image_about_photo3_url" name="image_about_photo3_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            </div>
+                                            
+                                            <!-- Photo 3 Alt Text -->
+                                            <div>
+                                                <label for="about_photo3_alt" class="block text-sm font-medium text-gray-700">Photo 3 Alt Text</label>
+                                                <input type="text" id="about_photo3_alt" name="about_photo3_alt" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">Alternative text for accessibility</p>
+                                            </div>
+                                            
+                                            <!-- Photo 4 URL -->
+                                            <div>
+                                                <label for="image_about_photo4_url" class="block text-sm font-medium text-gray-700">Photo 4 URL</label>
+                                                <input type="text" id="image_about_photo4_url" name="image_about_photo4_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            </div>
+                                            
+                                            <!-- Photo 4 Alt Text -->
+                                            <div>
+                                                <label for="about_photo4_alt" class="block text-sm font-medium text-gray-700">Photo 4 Alt Text</label>
+                                                <input type="text" id="about_photo4_alt" name="about_photo4_alt" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">Alternative text for accessibility</p>
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -247,11 +328,26 @@
         
         // Populate form with site config data
         function populateForm(config) {
+            // General information
             document.getElementById('about_title').value = config.about_title || '';
             document.getElementById('about_subtitle').value = config.about_subtitle || '';
             document.getElementById('about_description').value = config.about_description || '';
+            
+            // Website images
+            document.getElementById('image_favicon_url').value = config.image_favicon_url || '';
             document.getElementById('image_logo_url').value = config.image_logo_url || '';
             document.getElementById('image_banner_url').value = config.image_banner_url || '';
+            document.getElementById('image_about_profile_url').value = config.image_about_profile_url || '';
+            
+            // Gallery photos
+            document.getElementById('image_about_photo1_url').value = config.image_about_photo1_url || '';
+            document.getElementById('about_photo1_alt').value = config.about_photo1_alt || '';
+            document.getElementById('image_about_photo2_url').value = config.image_about_photo2_url || '';
+            document.getElementById('about_photo2_alt').value = config.about_photo2_alt || '';
+            document.getElementById('image_about_photo3_url').value = config.image_about_photo3_url || '';
+            document.getElementById('about_photo3_alt').value = config.about_photo3_alt || '';
+            document.getElementById('image_about_photo4_url').value = config.image_about_photo4_url || '';
+            document.getElementById('about_photo4_alt').value = config.about_photo4_alt || '';
         }
         
         // Form submission handler
@@ -265,11 +361,26 @@
             saveButton.classList.add('opacity-75');
             
             const formData = {
+                // General information
                 about_title: document.getElementById('about_title').value,
                 about_subtitle: document.getElementById('about_subtitle').value,
                 about_description: document.getElementById('about_description').value,
+                
+                // Website images
+                image_favicon_url: document.getElementById('image_favicon_url').value,
                 image_logo_url: document.getElementById('image_logo_url').value,
-                image_banner_url: document.getElementById('image_banner_url').value
+                image_banner_url: document.getElementById('image_banner_url').value,
+                image_about_profile_url: document.getElementById('image_about_profile_url').value,
+                
+                // Gallery photos
+                image_about_photo1_url: document.getElementById('image_about_photo1_url').value,
+                about_photo1_alt: document.getElementById('about_photo1_alt').value,
+                image_about_photo2_url: document.getElementById('image_about_photo2_url').value,
+                about_photo2_alt: document.getElementById('about_photo2_alt').value,
+                image_about_photo3_url: document.getElementById('image_about_photo3_url').value,
+                about_photo3_alt: document.getElementById('about_photo3_alt').value,
+                image_about_photo4_url: document.getElementById('image_about_photo4_url').value,
+                about_photo4_alt: document.getElementById('about_photo4_alt').value
             };
             
             console.log('Form data to save:', formData);

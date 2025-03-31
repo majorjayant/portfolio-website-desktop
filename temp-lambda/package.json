@@ -1,0 +1,14 @@
+{
+  "name": "portfolio-website-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function for portfolio website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "mysql2": "^2.3.3"
+  },
+  "author": "Jayant Arora",
+  "license": "ISC"
+} 
