@@ -4,10 +4,10 @@ frontend:
     build:
       commands:
         - mkdir -p app/static/admin
-        - cp app/templates/admin/index.html app/static/admin/index.html
-        - cp app/templates/admin/login.html app/static/admin/login.html
-        - cp app/templates/admin/dashboard.html app/static/admin/dashboard.html
-        - cp -r app/static/* app/static/
+        - cp -f app/templates/admin/index.html app/static/admin/index.html
+        - cp -f app/templates/admin/login.html app/static/admin/login.html
+        - cp -f app/templates/admin/dashboard.html app/static/admin/dashboard.html
+        - rm -f app/static/test.html
   artifacts:
     baseDirectory: app/static
     files:
