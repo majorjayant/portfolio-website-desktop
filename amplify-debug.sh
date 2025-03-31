@@ -57,7 +57,7 @@ fi
 
 # Environment variables
 echo -e "\n--- ENVIRONMENT VARIABLES ---"
-echo "AWS_REGION: $AWS_REGION"
+echo "REGION: $REGION"
 echo "STATIC_DEPLOYMENT: $STATIC_DEPLOYMENT"
 
 # Generate summary of findings

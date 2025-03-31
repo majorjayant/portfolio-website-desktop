@@ -71,7 +71,7 @@ for file_path in critical_files:
 print("\nChecking environment variables:")
 important_env_vars = [
     "STATIC_DEPLOYMENT",
-    "AWS_REGION",
+    "REGION",
     "IMAGE_FAVICON_URL",
     "IMAGE_LOGO_URL",
     "IMAGE_BANNER_URL",

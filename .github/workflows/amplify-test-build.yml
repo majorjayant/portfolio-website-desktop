@@ -31,7 +31,7 @@ jobs:
     - name: Build static site
       env:
         STATIC_DEPLOYMENT: true
-        AWS_REGION: eu-north-1
+        REGION: eu-north-1
         IMAGE_FAVICON_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon
         IMAGE_LOGO_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo
         IMAGE_BANNER_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner
