@@ -3,12 +3,15 @@ frontend:
   phases:
     build:
       commands:
+        - echo "Building portfolio website with admin section"
         - mkdir -p app/static/admin
         - mkdir -p app/static/data
         - mkdir -p app/static/api
-        - cp -f app/templates/admin/index.html app/static/admin/index.html
-        - cp -f app/templates/admin/login.html app/static/admin/login.html
-        - cp -f app/templates/admin/dashboard.html app/static/admin/dashboard.html
+        - echo "Copying admin files..."
+        - cp -f app/templates/admin/index.html app/static/admin/index.html || echo "Failed to copy index.html"
+        - cp -f app/templates/admin/login.html app/static/admin/login.html || echo "Failed to copy login.html"
+        - cp -f app/templates/admin/dashboard.html app/static/admin/dashboard.html || echo "Failed to copy dashboard.html"
+        - echo "Admin files in static directory:" && ls -la app/static/admin/
         - if [ ! -f app/static/data/site_config.json ]; then echo '{"site_configs":{}}' > app/static/data/site_config.json; fi
         - cp -f app/static/api/admin-login.js app/static/api/admin-login.js || echo "admin-login.js not found"
         - rm -f app/static/test.html
@@ -36,6 +39,10 @@ frontend:
           value: 'application/javascript'
         - key: 'Access-Control-Allow-Origin'
           value: '*'
+    - pattern: 'admin/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'no-cache, no-store, must-revalidate'
   rewrites:
     - source: '/admin'
       target: '/admin/index.html'

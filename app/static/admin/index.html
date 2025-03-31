@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-indigo-600 px-6 py-4">
+                <h1 class="text-white text-center text-2xl font-bold">Admin Portal</h1>
+            </div>
+            <div class="px-6 py-8 text-center">
+                <div id="loading" class="mb-4">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Checking authentication...</p>
+                </div>
+                
+                <div id="content" class="hidden">
+                    <p class="text-lg text-gray-700 mb-6">Welcome to the admin portal</p>
+                    <div class="space-y-4">
+                        <a href="/admin/dashboard" class="block w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-center">Go to Dashboard</a>
+                        <button id="logout-button" class="block w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Admin index page loaded');
+        
+        const loading = document.getElementById('loading');
+        const content = document.getElementById('content');
+        const logoutButton = document.getElementById('logout-button');
+        
+        // Check if user is logged in
+        const token = localStorage.getItem('admin_token');
+        
+        if (!token) {
+            console.log('No token found, redirecting to login');
+            window.location.href = '/admin/login';
+            return;
+        }
+        
+        // User is logged in, show content
+        console.log('User is logged in, showing content');
+        loading.classList.add('hidden');
+        content.classList.remove('hidden');
+        
+        // Logout handler
+        logoutButton.addEventListener('click', function() {
+            console.log('Logging out');
+            localStorage.removeItem('admin_token');
+            window.location.href = '/admin/login';
+        });
+    });
+    </script>
+</body>
+</html> 

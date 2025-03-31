@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen bg-gray-100">
+        <!-- Authentication check -->
+        <div id="auth-loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-lg text-gray-600">Verifying authentication...</p>
+            </div>
+        </div>
+        
+        <!-- API Error Message -->
+        <div id="api-error" class="hidden fixed top-4 right-4 p-4 bg-red-100 text-red-700 rounded-md shadow-md z-40">
+            Error loading data. Please try again later.
+        </div>
+        
+        <!-- Dashboard Content (hidden until authenticated) -->
+        <div id="dashboard-content" class="hidden">
+            <!-- Navigation -->
+            <nav class="bg-indigo-600 shadow">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between h-16">
+                        <div class="flex">
+                            <div class="flex-shrink-0 flex items-center">
+                                <span class="text-white text-xl font-bold">Admin Dashboard</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <button id="logout-button" class="ml-4 px-3 py-2 rounded-md text-sm font-medium text-white bg-indigo-700 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Main Content -->
+            <main class="py-6">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <h2 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                Site Configuration
+                            </h2>
+                            <div id="loading-indicator" class="text-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
+                                <p class="text-gray-500">Loading configuration...</p>
+                            </div>
+                            <div id="form-container" class="hidden mt-4">
+                                <form id="site-config-form" class="space-y-6">
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <!-- Site Title -->
+                                        <div>
+                                            <label for="about_title" class="block text-sm font-medium text-gray-700">Site Title</label>
+                                            <input type="text" id="about_title" name="about_title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        </div>
+                                        
+                                        <!-- Subtitle -->
+                                        <div>
+                                            <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
+                                            <input type="text" id="about_subtitle" name="about_subtitle" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        </div>
+                                        
+                                        <!-- Description -->
+                                        <div class="sm:col-span-2">
+                                            <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
+                                            <textarea id="about_description" name="about_description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                                        </div>
+                                        
+                                        <!-- Logo URL -->
+                                        <div>
+                                            <label for="image_logo_url" class="block text-sm font-medium text-gray-700">Logo URL</label>
+                                            <input type="text" id="image_logo_url" name="image_logo_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        </div>
+                                        
+                                        <!-- Banner URL -->
+                                        <div>
+                                            <label for="image_banner_url" class="block text-sm font-medium text-gray-700">Banner URL</label>
+                                            <input type="text" id="image_banner_url" name="image_banner_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-end">
+                                        <button type="submit" id="save-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Admin dashboard loaded');
+        
+        const authLoading = document.getElementById('auth-loading');
+        const dashboardContent = document.getElementById('dashboard-content');
+        const logoutButton = document.getElementById('logout-button');
+        const siteConfigForm = document.getElementById('site-config-form');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const formContainer = document.getElementById('form-container');
+        const apiError = document.getElementById('api-error');
+        const saveButton = document.getElementById('save-button');
+        
+        // Check authentication
+        checkAuth();
+        
+        function checkAuth() {
+            console.log('Checking authentication');
+            
+            const token = localStorage.getItem('admin_token');
+            
+            if (!token) {
+                console.log('No token found, redirecting to login');
+                redirectToLogin();
+                return;
+            }
+            
+            // Token found, show dashboard
+            console.log('Token found, showing dashboard');
+            showDashboard();
+            loadSiteConfig();
+        }
+        
+        function showDashboard() {
+            authLoading.classList.add('hidden');
+            dashboardContent.classList.remove('hidden');
+        }
+        
+        function redirectToLogin() {
+            window.location.href = '/admin/login';
+        }
+        
+        // Logout handler
+        logoutButton.addEventListener('click', function() {
+            console.log('Logging out');
+            localStorage.removeItem('admin_token');
+            redirectToLogin();
+        });
+        
+        // Load site configuration
+        function loadSiteConfig() {
+            console.log('Loading site configuration');
+            
+            // Show loading indicator
+            loadingIndicator.classList.remove('hidden');
+            formContainer.classList.add('hidden');
+            
+            // Use the confirmed working API endpoint
+            const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config';
+            
+            console.log('Fetching from API endpoint:', apiEndpoint);
+            
+            fetch(apiEndpoint, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            })
+            .then(response => {
+                console.log('API response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`API response not OK: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Successfully loaded site config from API:', data);
+                
+                // Hide loading indicator and show form
+                loadingIndicator.classList.add('hidden');
+                formContainer.classList.remove('hidden');
+                
+                // Process data
+                let configData = data;
+                if (data.site_configs) {
+                    configData = data.site_configs;
+                }
+                populateForm(configData);
+            })
+            .catch(error => {
+                console.error('Error loading from API:', error);
+                
+                // Hide loading indicator
+                loadingIndicator.classList.add('hidden');
+                
+                // Show error message
+                apiError.classList.remove('hidden');
+                setTimeout(() => {
+                    apiError.classList.add('hidden');
+                }, 5000);
+                
+                // Show form anyway in case user wants to input data manually
+                formContainer.classList.remove('hidden');
+            });
+        }
+        
+        // Populate form with site config data
+        function populateForm(config) {
+            document.getElementById('about_title').value = config.about_title || '';
+            document.getElementById('about_subtitle').value = config.about_subtitle || '';
+            document.getElementById('about_description').value = config.about_description || '';
+            document.getElementById('image_logo_url').value = config.image_logo_url || '';
+            document.getElementById('image_banner_url').value = config.image_banner_url || '';
+        }
+        
+        // Form submission handler
+        siteConfigForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            console.log('Form submitted');
+            
+            // Disable save button during submission
+            saveButton.disabled = true;
+            saveButton.textContent = 'Saving...';
+            saveButton.classList.add('opacity-75');
+            
+            const formData = {
+                about_title: document.getElementById('about_title').value,
+                about_subtitle: document.getElementById('about_subtitle').value,
+                about_description: document.getElementById('about_description').value,
+                image_logo_url: document.getElementById('image_logo_url').value,
+                image_banner_url: document.getElementById('image_banner_url').value
+            };
+            
+            console.log('Form data to save:', formData);
+            
+            // This is a simulation - in a real implementation you would send this to your API
+            setTimeout(() => {
+                // Re-enable button
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save Changes';
+                saveButton.classList.remove('opacity-75');
+                
+                // Show success notification
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 p-4 bg-green-100 text-green-700 rounded-md shadow-md z-40';
+                notification.textContent = 'Changes saved successfully (simulation)';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.5s';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 500);
+                }, 3000);
+            }, 1000);
+        });
+    });
+    </script>
+</body>
+</html> 
