@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadSiteConfig() {
         console.log('Loading site configuration');
         
-        // Try API first, then fall back to local file
+        // Use the confirmed working API endpoint
         fetch('https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config', {
             method: 'GET',
             headers: {

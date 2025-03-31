@@ -216,14 +216,10 @@ function filterProjects(category) {
 function loadSiteConfig() {
     console.log('Starting to load site configuration');
     
-    // Define all possible API endpoints to try
+    // Define all possible API endpoints to try - simplify to the working one
     const apiEndpoints = [
-        // Primary endpoint
-        'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config',
-        // Secondary endpoint without resource path
-        'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging?type=site_config',
-        // Root endpoint
-        'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com?type=site_config'
+        // Primary endpoint - now confirmed working
+        'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config'
     ];
     
     // Local fallback path
@@ -234,8 +230,8 @@ function loadSiteConfig() {
     
     function tryNextEndpoint(index) {
         if (index >= apiEndpoints.length) {
-            console.log('All API endpoints failed, trying local fallback');
-            // All API endpoints failed, try local file
+            console.log('API endpoint failed, trying local fallback');
+            // API endpoint failed, try local file
             fetch(localFallbackPath)
                 .then(response => {
                     console.log('Local fallback response status:', response.status);
