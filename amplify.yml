@@ -7,17 +7,17 @@ frontend:
     build:
       commands:
         - echo "Setting up static files..."
-        - mkdir -p app/static
-        - cp -r app/templates/* app/static/
-        - cp -r app/static/css app/static/
-        - cp -r app/static/js app/static/
-        - cp -r app/static/img app/static/
-        - cp app/static/_redirects app/static/
-        - cp app/static/robots.txt app/static/
-        - cp app/static/favicon.ico app/static/
+        - mkdir -p build/static
+        - cp -r app/templates/* build/static/
+        - cp -r app/static/css build/static/
+        - cp -r app/static/js build/static/
+        - cp -r app/static/img build/static/
+        - cp app/static/_redirects build/static/
+        - cp app/static/robots.txt build/static/
+        - cp app/static/favicon.ico build/static/
         - echo "Build complete!"
   artifacts:
-    baseDirectory: app/static
+    baseDirectory: build/static
     files:
       - '**/*'
   cache:
