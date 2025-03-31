@@ -215,7 +215,8 @@ function filterProjects(category) {
 async function loadSiteConfig() {
     try {
         // The API Gateway endpoint URL - replace with your actual API Gateway URL
-        const API_ENDPOINT = 'https://YOUR_API_GATEWAY_ID.execute-api.YOUR_REGION.amazonaws.com/prod/get-content';
+        const API_ENDPOINT = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging
+.eu-north-1.amazonaws.com/prod/get-content';
         
         // Try to load from the API endpoint
         let response = await fetch(`${API_ENDPOINT}?type=site_config`, {
