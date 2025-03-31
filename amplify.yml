@@ -9,6 +9,7 @@ frontend:
         - mkdir -p app/static/api
         - echo "Admin files in static directory:" && ls -la app/static/admin/
         - if [ ! -f app/static/data/site_config.json ]; then echo '{"site_configs":{"about_title":"Portfolio Website","about_subtitle":"My Projects","about_description":"This is a portfolio website showcasing my projects","image_logo_url":"https://example.com/logo.png","image_banner_url":"https://example.com/banner.png"}}' > app/static/data/site_config.json; fi
+        - cp -f app/static/data/site_config.json app/static/site_config.json || echo "Failed to copy site_config.json to root"
         - rm -f app/static/test.html
   artifacts:
     baseDirectory: app/static
@@ -40,8 +41,10 @@ frontend:
           value: 'max-age=0, no-cache, no-store, must-revalidate'
         - key: 'Content-Type'
           value: 'text/html; charset=utf-8'
+        - key: 'Access-Control-Allow-Origin'
+          value: '*'
   rewrites:
-    # Admin Routes - Order is important - These MUST be first
+    # Admin Routes - Exact matches MUST be first
     - source: '/admin/login'
       target: '/admin/login.html'
       status: '200'
@@ -60,7 +63,14 @@ frontend:
     - source: '/admin/'
       target: '/admin/index.html'
       status: '200'
-    # API Redirects
+    # Site Config Endpoint
+    - source: '/site_config.json'
+      target: '/site_config.json'
+      status: '200'
+    - source: '/data/site_config.json'
+      target: '/data/site_config.json'
+      status: '200'
+    # API Proxy Redirects
     - source: '/api/site-config'
       target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config'
       status: '200'
@@ -69,10 +79,6 @@ frontend:
       status: '200'
     - source: '/api/get-content/'
       target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio'
-      status: '200'
-    # Fallback for 404 on data files
-    - source: '/data/site_config.json'
-      target: '/data/site_config.json'
       status: '200'
     # Catch-all route for SPA - this MUST be last
     - source: '/<*>'
