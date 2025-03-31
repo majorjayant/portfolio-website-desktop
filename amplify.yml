@@ -3,13 +3,10 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "Setting up Python environment..."
-        - python --version
-        - python -m pip install --upgrade pip
-        - pip install Flask==2.3.3 Jinja2==3.1.2 python-dotenv==1.0.0
+        - echo "Starting build process..."
     build:
       commands:
-        - echo "Building static files..."
+        - echo "Copying static files..."
         - mkdir -p app/static
         - cp -r app/static/css app/static/
         - cp -r app/static/js app/static/
@@ -20,6 +17,7 @@ frontend:
         - cp app/static/_redirects app/static/
         - cp app/static/robots.txt app/static/
         - cp app/static/favicon.ico app/static/
+        - cp app/static/*.html app/static/
         - echo "Build complete!"
   artifacts:
     baseDirectory: app/static
@@ -28,7 +26,6 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-      - .pip-cache/**/*
   customHeaders:
     - pattern: '**/*'
       headers:
