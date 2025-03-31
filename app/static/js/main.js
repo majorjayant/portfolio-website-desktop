@@ -211,68 +211,39 @@ function filterProjects(category) {
 }
 
 /**
- * Load site configuration from API or fallback to static file
+ * Load site configuration from API
  */
 function loadSiteConfig() {
     console.log('Starting to load site configuration');
     
-    // Define all possible API endpoints to try - simplify to the working one
-    const apiEndpoints = [
-        // Primary endpoint - now confirmed working
-        'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config'
-    ];
+    // Use the confirmed working API endpoint
+    const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config';
     
-    // Local fallback path
-    const localFallbackPath = '/data/site_config.json';
+    console.log('Fetching from API endpoint:', apiEndpoint);
     
-    // Try API endpoints in sequence
-    tryNextEndpoint(0);
-    
-    function tryNextEndpoint(index) {
-        if (index >= apiEndpoints.length) {
-            console.log('API endpoint failed, trying local fallback');
-            // API endpoint failed, try local file
-            fetch(localFallbackPath)
-                .then(response => {
-                    console.log('Local fallback response status:', response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Successfully loaded from local file:', data);
-                    processConfigData(data);
-                })
-                .catch(error => {
-                    console.error('Error loading from local file:', error);
-                    useHardcodedDefaults();
-                });
-            return;
+    fetch(apiEndpoint, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache'
         }
-        
-        console.log('Trying API endpoint:', apiEndpoints[index]);
-        
-        fetch(apiEndpoints[index], {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            console.log('API response status:', response.status);
-            if (!response.ok) {
-                throw new Error(`API response not OK: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Successfully loaded from API:', data);
-            processConfigData(data);
-        })
-        .catch(error => {
-            console.error(`Error loading from endpoint ${apiEndpoints[index]}:`, error);
-            // Try next endpoint
-            tryNextEndpoint(index + 1);
-        });
-    }
+    })
+    .then(response => {
+        console.log('API response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`API response not OK: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Successfully loaded from API:', data);
+        processConfigData(data);
+    })
+    .catch(error => {
+        console.error('Failed to load from API:', error);
+        // Show error notification on the page
+        showErrorNotification('Failed to load configuration. Please refresh the page or contact support.');
+    });
     
     function processConfigData(data) {
         console.log('Processing configuration data');
@@ -289,32 +260,34 @@ function loadSiteConfig() {
         // Apply configuration to the website
         updateWebsiteElements(configData);
     }
+}
+
+/**
+ * Show error notification on the page
+ */
+function showErrorNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'error-notification';
+    notification.style.position = 'fixed';
+    notification.style.top = '1rem';
+    notification.style.right = '1rem';
+    notification.style.backgroundColor = '#f44336';
+    notification.style.color = 'white';
+    notification.style.padding = '1rem';
+    notification.style.borderRadius = '4px';
+    notification.style.zIndex = '9999';
+    notification.style.maxWidth = '300px';
+    notification.textContent = message;
     
-    function useHardcodedDefaults() {
-        console.log('Using hardcoded defaults');
-        
-        // Hardcoded default configuration
-        const defaultConfig = {
-            image_favicon_url: "/favicon.ico",
-            image_logo_url: "/img/logo.png",
-            image_banner_url: "/img/banner.jpg",
-            about_title: "Portfolio",
-            about_subtitle: "Web Developer",
-            about_description: "Welcome to my portfolio website.",
-            image_about_profile_url: "/img/profile.jpg",
-            image_about_photo1_url: "/img/photo1.jpg",
-            image_about_photo2_url: "/img/photo2.jpg",
-            image_about_photo3_url: "/img/photo3.jpg",
-            image_about_photo4_url: "/img/photo4.jpg",
-            about_photo1_alt: "Photo 1",
-            about_photo2_alt: "Photo 2",
-            about_photo3_alt: "Photo 3",
-            about_photo4_alt: "Photo 4"
-        };
-        
-        // Apply defaults to the website
-        updateWebsiteElements(defaultConfig);
-    }
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 500);
+    }, 5000);
 }
 
 /**

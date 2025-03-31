@@ -5,11 +5,13 @@ frontend:
       commands:
         - mkdir -p app/static/admin
         - mkdir -p app/static/data
+        - mkdir -p app/static/api
         - cp -f app/templates/admin/index.html app/static/admin/index.html
         - cp -f app/templates/admin/login.html app/static/admin/login.html
         - cp -f app/templates/admin/dashboard.html app/static/admin/dashboard.html
         - cp -f app/static/data/site_config.json app/static/data/site_config.json || echo "site_config.json not found, will be created"
         - if [ ! -f app/static/data/site_config.json ]; then echo '{"site_configs":{"image_favicon_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon","image_logo_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo","image_banner_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner","about_title":"J A","about_subtitle":"Curious Mind. Data Geek. Product Whisperer.","about_description":"Ever since I was a kid, I have been that person - the one who asks why, what, and so what? on repeat.","image_about_profile_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg","image_about_photo1_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg","image_about_photo2_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg","image_about_photo3_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg","image_about_photo4_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg","about_photo1_alt":"Test Photo 1 Alt Text","about_photo2_alt":"Test Photo 2 Alt Text","about_photo3_alt":"Test Photo 3 Alt Text","about_photo4_alt":"Test Photo 4 Alt Text"}}' > app/static/data/site_config.json; fi
+        - cp -f app/static/api/admin-login.js app/static/api/admin-login.js || echo "admin-login.js not found"
         - rm -f app/static/test.html
   artifacts:
     baseDirectory: app/static
@@ -22,15 +24,24 @@ frontend:
     - pattern: '**/*'
       headers:
         - key: 'Cache-Control'
-          value: 'no-store'
-    - pattern: '/data/site_config.json'
+          value: 'no-cache, no-store, must-revalidate'
+    - pattern: '*.json'
       headers:
         - key: 'Content-Type'
           value: 'application/json'
         - key: 'Access-Control-Allow-Origin'
           value: '*'
+    - pattern: '*.js'
+      headers:
+        - key: 'Content-Type'
+          value: 'application/javascript'
+        - key: 'Access-Control-Allow-Origin'
+          value: '*'
   rewrites:
     - source: '/admin'
+      target: '/admin/index.html'
+      status: '200'
+    - source: '/admin/'
       target: '/admin/index.html'
       status: '200'
     - source: '/admin/login'
@@ -45,15 +56,17 @@ frontend:
     - source: '/admin/dashboard/'
       target: '/admin/dashboard.html'
       status: '200'
+    # API Redirects
     - source: '/api/admin/login'
+      target: '/api/admin-login.js'
+      status: '200'
+    - source: '/api/admin/login/'
       target: '/api/admin-login.js'
       status: '200'
     - source: '/api/site-config'
       target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config'
       status: '200'
-    - source: '/data/site_config.json'
-      target: '/data/site_config.json'
-      status: '200'
+    # Catch-all route for SPA
     - source: '/<*>'
       target: '/index.html'
       status: '200'

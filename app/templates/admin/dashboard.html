@@ -12,6 +12,11 @@
         </div>
     </div>
     
+    <!-- API Error Message -->
+    <div id="api-error" class="hidden fixed top-4 right-4 p-4 bg-red-100 text-red-700 rounded-md shadow-md z-40">
+        Error loading data. Please try again later.
+    </div>
+    
     <!-- Dashboard Content (hidden until authenticated) -->
     <div id="dashboard-content" class="hidden">
         <!-- Navigation -->
@@ -40,7 +45,11 @@
                         <h2 class="text-lg leading-6 font-medium text-gray-900 mb-4">
                             Site Configuration
                         </h2>
-                        <div class="mt-4">
+                        <div id="loading-indicator" class="text-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
+                            <p class="text-gray-500">Loading configuration...</p>
+                        </div>
+                        <div id="form-container" class="hidden mt-4">
                             <form id="site-config-form" class="space-y-6">
                                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                     <!-- Site Title -->
@@ -75,7 +84,7 @@
                                 </div>
                                 
                                 <div class="flex justify-end">
-                                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <button type="submit" id="save-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                         Save Changes
                                     </button>
                                 </div>
@@ -96,6 +105,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const dashboardContent = document.getElementById('dashboard-content');
     const logoutButton = document.getElementById('logout-button');
     const siteConfigForm = document.getElementById('site-config-form');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const formContainer = document.getElementById('form-container');
+    const apiError = document.getElementById('api-error');
+    const saveButton = document.getElementById('save-button');
     
     // Check authentication
     checkAuth();
@@ -111,8 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // For a complete implementation, you would validate the token with the API
-        // For now, we'll just accept any token as valid
+        // Token found, show dashboard
         console.log('Token found, showing dashboard');
         showDashboard();
         loadSiteConfig();
@@ -138,35 +150,57 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadSiteConfig() {
         console.log('Loading site configuration');
         
+        // Show loading indicator
+        loadingIndicator.classList.remove('hidden');
+        formContainer.classList.add('hidden');
+        
         // Use the confirmed working API endpoint
-        fetch('https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config', {
+        const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config';
+        
+        console.log('Fetching from API endpoint:', apiEndpoint);
+        
+        fetch(apiEndpoint, {
             method: 'GET',
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
             }
         })
         .then(response => {
+            console.log('API response status:', response.status);
             if (!response.ok) {
-                throw new Error('API response not OK');
+                throw new Error(`API response not OK: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            console.log('Loaded site config from API:', data);
-            populateForm(data);
+            console.log('Successfully loaded site config from API:', data);
+            
+            // Hide loading indicator and show form
+            loadingIndicator.classList.add('hidden');
+            formContainer.classList.remove('hidden');
+            
+            // Process data
+            let configData = data;
+            if (data.site_configs) {
+                configData = data.site_configs;
+            }
+            populateForm(configData);
         })
         .catch(error => {
             console.error('Error loading from API:', error);
-            // Fallback to local file
-            fetch('/data/site_config.json')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Loaded site config from local file:', data);
-                    populateForm(data.site_configs || data);
-                })
-                .catch(error => {
-                    console.error('Error loading from local file:', error);
-                });
+            
+            // Hide loading indicator
+            loadingIndicator.classList.add('hidden');
+            
+            // Show error message
+            apiError.classList.remove('hidden');
+            setTimeout(() => {
+                apiError.classList.add('hidden');
+            }, 5000);
+            
+            // Show form anyway in case user wants to input data manually
+            formContainer.classList.remove('hidden');
         });
     }
     
@@ -182,7 +216,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission handler
     siteConfigForm.addEventListener('submit', function(event) {
         event.preventDefault();
-        console.log('Form submitted - in a full implementation, this would save the configuration');
+        console.log('Form submitted');
+        
+        // Disable save button during submission
+        saveButton.disabled = true;
+        saveButton.textContent = 'Saving...';
+        saveButton.classList.add('opacity-75');
         
         const formData = {
             about_title: document.getElementById('about_title').value,
@@ -194,8 +233,27 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Form data to save:', formData);
         
-        // Here you would send the data to your API
-        alert('Changes saved successfully (simulation)');
+        // This is a simulation - in a real implementation you would send this to your API
+        setTimeout(() => {
+            // Re-enable button
+            saveButton.disabled = false;
+            saveButton.textContent = 'Save Changes';
+            saveButton.classList.remove('opacity-75');
+            
+            // Show success notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 p-4 bg-green-100 text-green-700 rounded-md shadow-md z-40';
+            notification.textContent = 'Changes saved successfully (simulation)';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }, 1000);
     });
 });
 </script>

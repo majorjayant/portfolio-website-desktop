@@ -24,7 +24,7 @@
                 </div>
                 
                 <div>
-                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <button type="submit" id="submit-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Sign in
                     </button>
                 </div>
@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('login-form');
     const errorDiv = document.getElementById('login-error');
     const successDiv = document.getElementById('login-success');
+    const submitButton = document.getElementById('submit-button');
     
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -65,18 +66,21 @@ document.addEventListener('DOMContentLoaded', function() {
         successDiv.classList.add('hidden');
         
         // Disable form during submission
-        const submitButton = loginForm.querySelector('button[type="submit"]');
         submitButton.disabled = true;
         submitButton.textContent = 'Signing in...';
+        submitButton.classList.add('opacity-75');
         
-        // API endpoints to try - simplified to just the working endpoint
+        // API endpoint
         const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
+        
+        console.log('Sending login request to:', apiEndpoint);
         
         fetch(apiEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
             },
             body: JSON.stringify({
                 action: 'login',
@@ -85,49 +89,31 @@ document.addEventListener('DOMContentLoaded', function() {
             })
         })
         .then(response => {
-            console.log(`Response status: ${response.status}`);
+            console.log('Login response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
             return response.json();
         })
         .then(data => {
-            console.log('Login response:', data);
+            console.log('Login response data:', data);
             
             if (data.success) {
                 handleSuccessfulLogin(data);
             } else {
-                // If the API fails but credentials match hardcoded fallback
-                if (username === 'admin' && password === 'admin123') {
-                    console.log('Using hardcoded credential fallback');
-                    handleSuccessfulLogin({
-                        success: true,
-                        message: 'Login successful (using fallback)',
-                        token: 'hardcoded-fallback-token'
-                    });
-                } else {
-                    showError(data.error || data.message || 'Login failed');
-                    resetForm();
-                }
+                showError(data.error || data.message || 'Login failed. Please check your credentials.');
+                resetForm();
             }
         })
         .catch(error => {
-            console.error(`Error with endpoint ${apiEndpoint}:`, error);
-            
-            // Fallback to hardcoded credentials if API fails completely
-            if (username === 'admin' && password === 'admin123') {
-                console.log('API failed, using hardcoded credentials');
-                handleSuccessfulLogin({
-                    success: true,
-                    message: 'Login successful (using hardcoded fallback)',
-                    token: 'hardcoded-fallback-token'
-                });
-            } else {
-                showError('Login failed. Please try again.');
-                resetForm();
-            }
+            console.error('Login request error:', error);
+            showError('Error connecting to authentication service. Please try again later.');
+            resetForm();
         });
         
         function handleSuccessfulLogin(data) {
             // Store token in localStorage
-            localStorage.setItem('admin_token', data.token);
+            localStorage.setItem('admin_token', data.token || 'admin-session-token');
             
             // Show success message
             successDiv.textContent = data.message || 'Login successful';
@@ -147,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function resetForm() {
             submitButton.disabled = false;
             submitButton.textContent = 'Sign in';
+            submitButton.classList.remove('opacity-75');
         }
     });
 });
