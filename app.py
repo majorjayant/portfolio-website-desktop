@@ -41,12 +41,15 @@ def build_static():
             output_dir = f'app/static{route}'
             os.makedirs(output_dir, exist_ok=True)
             
-            content = render_template(template)
-            output_path = os.path.join(output_dir, 'index.html')
-            
-            with open(output_path, 'w', encoding='utf-8') as f:
-                f.write(content)
-                click.echo(f"Generated {output_path}")
+            try:
+                content = render_template(template)
+                output_path = os.path.join(output_dir, 'index.html')
+                
+                with open(output_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                    click.echo(f"Generated {output_path}")
+            except Exception as e:
+                click.echo(f"Error generating {template}: {str(e)}", err=True)
     
     click.echo("Static site build complete!")
 
