@@ -199,21 +199,17 @@
         <div class="container">
             <div class="about-container">
                 <div id="text-main" class="text-main">
-                    <h1>{{ about_content.title }}</h1>
-                    <p class="intro">{{ about_content.subtitle }}</p>
-                    <p class="description">{{ about_content.description }}</p>
+                    <h1 id="about-title"></h1>
+                    <p id="about-subtitle" class="intro"></p>
+                    <p id="about-description" class="description"></p>
                 </div>
                 <div id="img-main" class="img-main">
-                    <img class="profile-image" src="{{ about_content.profile_image }}" alt="Jayant's Profile" onerror="this.onerror=null; this.src='/static/img/profile-photo.png';">
+                    <img id="profile-image" class="profile-image" src="" alt="Profile Photo">
                 </div>
             </div>
             
             <div id="snaps" class="snaps">
-                {% for photo in about_content.photos %}
-                <a href="#" class="snap-container" data-photo="{{ photo.url }}">
-                    <img src="{{ photo.url }}" alt="{{ photo.alt }}" onerror="this.onerror=null; this.src='/static/img/placeholder.png'; this.alt='{{ photo.alt }}';">
-                </a>
-                {% endfor %}
+                <!-- Photo containers will be dynamically added here -->
             </div>
         </div>
     </section>
