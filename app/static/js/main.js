@@ -214,20 +214,48 @@ function filterProjects(category) {
 // Function to load site configuration
 async function loadSiteConfig() {
     try {
-        // The API Gateway endpoint URL - replace with your actual API Gateway URL
-        const API_ENDPOINT = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/get-content';
+        // Try different API endpoints
+        const endpoints = [
+            // Original endpoint
+            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/get-content?type=site_config',
+            // Try without resource path
+            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging?type=site_config',
+            // Try with different resource name
+            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/site-config',
+            // Try root path
+            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/'
+        ];
         
-        // Try to load from the API endpoint
-        let response = await fetch(`${API_ENDPOINT}?type=site_config`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
+        let response = null;
+        let successEndpoint = null;
+        
+        // Try each endpoint
+        for (const endpoint of endpoints) {
+            console.log(`Trying API endpoint: ${endpoint}`);
+            try {
+                const tempResponse = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (tempResponse.ok) {
+                    response = tempResponse;
+                    successEndpoint = endpoint;
+                    console.log(`Success with endpoint: ${endpoint}`);
+                    break;
+                } else {
+                    console.log(`Failed with endpoint: ${endpoint}, status: ${tempResponse.status}`);
+                }
+            } catch (error) {
+                console.log(`Error with endpoint: ${endpoint}`, error);
             }
-        });
+        }
         
         // If API call fails, try the static JSON file
-        if (!response.ok) {
-            console.log('API endpoint not available, falling back to static file');
+        if (!response || !response.ok) {
+            console.log('All API endpoints failed, falling back to static file');
             response = await fetch('/data/site_config.json');
             
             if (!response.ok) {
