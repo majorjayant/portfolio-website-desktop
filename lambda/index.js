@@ -1,21 +1,10 @@
 /**
- * Lambda function for website-portfolio API handling with RDS database
+ * Lambda function for website-portfolio API handling
  * Serves site configuration and handles admin login
  */
-const mysql = require('mysql2/promise');
 
-// Database configuration from environment variables
-const dbConfig = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 3306,
-    connectionLimit: 10
-};
-
-// Default site configuration (used if database is empty)
-const defaultSiteConfig = {
+// In-memory storage for site configuration (in a real app, you'd use DynamoDB or S3)
+let siteConfigStorage = {
     image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
     image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
     image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
@@ -33,134 +22,6 @@ const defaultSiteConfig = {
     about_photo4_alt: "Test Photo 4 Alt Text"
 };
 
-/**
- * Initialize the database connection and create tables if needed
- */
-async function initializeDatabase() {
-    let connection;
-    
-    try {
-        // Create database connection
-        connection = await mysql.createConnection({
-            host: dbConfig.host,
-            user: dbConfig.user,
-            password: dbConfig.password,
-            database: dbConfig.database,
-            port: dbConfig.port
-        });
-        
-        console.log('Connected to database successfully');
-        
-        // Check if site_config table exists, create it if not
-        const [tables] = await connection.execute(
-            "SELECT table_name FROM information_schema.tables WHERE table_schema = ? AND table_name = 'site_config'", 
-            [dbConfig.database]
-        );
-        
-        if (tables.length === 0) {
-            console.log('Creating site_config table...');
-            
-            // Create the site_config table
-            await connection.execute(`
-                CREATE TABLE site_config (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    config_key VARCHAR(255) NOT NULL,
-                    config_value TEXT,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                )
-            `);
-            
-            // Insert default configuration
-            await insertDefaultConfig(connection);
-        } else {
-            console.log('site_config table already exists');
-        }
-        
-        return connection;
-    } catch (error) {
-        console.error('Database initialization error:', error);
-        if (connection) {
-            connection.end();
-        }
-        throw error;
-    }
-}
-
-/**
- * Insert default configuration into the database
- */
-async function insertDefaultConfig(connection) {
-    console.log('Inserting default site configuration...');
-    
-    // Insert each key-value pair from the default config
-    const insertPromises = Object.entries(defaultSiteConfig).map(([key, value]) => {
-        return connection.execute(
-            'INSERT INTO site_config (config_key, config_value) VALUES (?, ?)',
-            [key, value]
-        );
-    });
-    
-    await Promise.all(insertPromises);
-    console.log('Default configuration inserted successfully');
-}
-
-/**
- * Get site configuration from the database
- */
-async function getSiteConfig(connection) {
-    console.log('Fetching site configuration from database...');
-    
-    const [rows] = await connection.execute('SELECT config_key, config_value FROM site_config');
-    
-    // Convert rows to an object
-    const config = {};
-    rows.forEach(row => {
-        config[row.config_key] = row.config_value;
-    });
-    
-    console.log('Site configuration fetched successfully');
-    return config;
-}
-
-/**
- * Update site configuration in the database
- */
-async function updateSiteConfig(connection, configUpdates) {
-    console.log('Updating site configuration in database...');
-    
-    // Update each key-value pair
-    const updatePromises = Object.entries(configUpdates).map(async ([key, value]) => {
-        // Check if the key exists
-        const [existingRows] = await connection.execute(
-            'SELECT COUNT(*) as count FROM site_config WHERE config_key = ?',
-            [key]
-        );
-        
-        if (existingRows[0].count > 0) {
-            // Update existing key
-            return connection.execute(
-                'UPDATE site_config SET config_value = ? WHERE config_key = ?',
-                [value, key]
-            );
-        } else {
-            // Insert new key
-            return connection.execute(
-                'INSERT INTO site_config (config_key, config_value) VALUES (?, ?)',
-                [key, value]
-            );
-        }
-    });
-    
-    await Promise.all(updatePromises);
-    console.log('Site configuration updated successfully');
-    
-    // Return the updated configuration
-    return getSiteConfig(connection);
-}
-
-/**
- * Main Lambda handler function
- */
 exports.handler = async (event) => {
     // Log incoming request for debugging
     console.log('Received event:', JSON.stringify(event, null, 2));
@@ -183,12 +44,7 @@ exports.handler = async (event) => {
         };
     }
     
-    let connection;
-    
     try {
-        // Initialize database connection
-        connection = await initializeDatabase();
-        
         // Extract query parameters
         const queryParams = event.queryStringParameters || {};
         const type = queryParams.type || '';
@@ -198,18 +54,16 @@ exports.handler = async (event) => {
             console.log('Processing GET request for type:', type);
             
             if (type === 'site_config') {
-                // Return site configuration data from database
-                const siteConfig = await getSiteConfig(connection);
-                
+                // Return site configuration data
+                console.log('Returning site configuration data');
                 return {
                     statusCode: 200,
                     headers,
-                    body: JSON.stringify(siteConfig)
+                    body: JSON.stringify(siteConfigStorage)
                 };
             } else if (type === 'projects') {
                 // Return projects data
-                // Note: You can implement a similar database approach for projects
-                console.log('Returning projects data (hardcoded for now)');
+                console.log('Returning projects data');
                 return {
                     statusCode: 200,
                     headers,
@@ -237,7 +91,7 @@ exports.handler = async (event) => {
             }
         }
         
-        // Handle POST requests for login and site config updates
+        // Handle POST requests for login
         if (event.httpMethod === 'POST') {
             console.log('Processing POST request');
             
@@ -260,9 +114,9 @@ exports.handler = async (event) => {
             if (action === 'login') {
                 console.log('Processing login request');
                 
-                // Here you could check credentials against the database
-                // For now, we'll use hardcoded values for simplicity
+                // Check credentials
                 if (username === 'admin' && password === 'admin123') {
+                    // Return successful login response
                     console.log('Login successful for user:', username);
                     return {
                         statusCode: 200,
@@ -274,6 +128,7 @@ exports.handler = async (event) => {
                         })
                     };
                 } else {
+                    // Return failed login response
                     console.log('Login failed for user:', username);
                     return {
                         statusCode: 401,
@@ -287,7 +142,8 @@ exports.handler = async (event) => {
             } else if (action === 'update_site_config') {
                 console.log('Processing update site configuration request');
                 
-                // Check for authorization
+                // In a real app, you would validate the JWT token here
+                // For this demo, we'll just check if any token is provided
                 const authHeader = event.headers.Authorization || event.headers.authorization || '';
                 console.log('Authorization header:', authHeader);
                 
@@ -307,8 +163,14 @@ exports.handler = async (event) => {
                 const siteConfig = body.site_config || {};
                 console.log('Updating site configuration with:', JSON.stringify(siteConfig, null, 2));
                 
-                // Update the site configuration in the database
-                const updatedConfig = await updateSiteConfig(connection, siteConfig);
+                // Update the in-memory storage (in a real app, you'd update DynamoDB or S3)
+                // We're merging the existing config with the new values
+                siteConfigStorage = {
+                    ...siteConfigStorage,
+                    ...siteConfig
+                };
+                
+                console.log('Updated site configuration:', JSON.stringify(siteConfigStorage, null, 2));
                 
                 return {
                     statusCode: 200,
@@ -316,7 +178,7 @@ exports.handler = async (event) => {
                     body: JSON.stringify({
                         success: true,
                         message: 'Site configuration updated successfully',
-                        data: updatedConfig
+                        data: siteConfigStorage
                     })
                 };
             } else {
@@ -345,11 +207,6 @@ exports.handler = async (event) => {
             headers,
             body: JSON.stringify({ error: 'Internal server error', details: error.message })
         };
-    } finally {
-        // Close database connection
-        if (connection) {
-            console.log('Closing database connection');
-            await connection.end();
-        }
     }
+}; 
 }; 
