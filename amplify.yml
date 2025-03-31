@@ -4,9 +4,12 @@ frontend:
     build:
       commands:
         - mkdir -p app/static/admin
+        - mkdir -p app/static/data
         - cp -f app/templates/admin/index.html app/static/admin/index.html
         - cp -f app/templates/admin/login.html app/static/admin/login.html
         - cp -f app/templates/admin/dashboard.html app/static/admin/dashboard.html
+        - cp -f app/static/data/site_config.json app/static/data/site_config.json || echo "site_config.json not found, will be created"
+        - if [ ! -f app/static/data/site_config.json ]; then echo '{"image_favicon_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon","image_logo_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo","image_banner_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner","about_title":"J A","about_subtitle":"Curious Mind. Data Geek. Product Whisperer.","about_description":"Ever since I was a kid, I have been that person - the one who asks why, what, and so what? on repeat.","image_about_profile_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg","image_about_photo1_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg","image_about_photo2_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg","image_about_photo3_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg","image_about_photo4_url":"https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg","about_photo1_alt":"Test Photo 1 Alt Text","about_photo2_alt":"Test Photo 2 Alt Text","about_photo3_alt":"Test Photo 3 Alt Text","about_photo4_alt":"Test Photo 4 Alt Text"}' > app/static/data/site_config.json; fi
         - rm -f app/static/test.html
   artifacts:
     baseDirectory: app/static
@@ -33,13 +36,22 @@ frontend:
     - source: '/admin/login'
       target: '/admin/login.html'
       status: '200'
+    - source: '/admin/login/'
+      target: '/admin/login.html'
+      status: '200'
     - source: '/admin/dashboard'
+      target: '/admin/dashboard.html'
+      status: '200'
+    - source: '/admin/dashboard/'
       target: '/admin/dashboard.html'
       status: '200'
     - source: '/api/admin/login'
       target: '/api/admin-login.js'
       status: '200'
     - source: '/api/site-config'
+      target: '/data/site_config.json'
+      status: '200'
+    - source: '/data/site_config.json'
       target: '/data/site_config.json'
       status: '200'
     - source: '/<*>'

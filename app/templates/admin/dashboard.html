@@ -7,7 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen">
+    <div id="auth-check" class="fixed inset-0 bg-gray-100 flex items-center justify-center">
+        <p class="text-xl">Checking authentication...</p>
+    </div>
+
+    <div id="dashboard-content" class="hidden min-h-screen">
         <nav class="bg-white shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
@@ -36,9 +40,24 @@
     </div>
 
     <script>
+        // Check for authentication
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+            
+            if (!isLoggedIn) {
+                window.location.href = '/admin/login';
+            } else {
+                document.getElementById('auth-check').classList.add('hidden');
+                document.getElementById('dashboard-content').classList.remove('hidden');
+            }
+        }
+        
+        // Run auth check when page loads
+        document.addEventListener('DOMContentLoaded', checkAuth);
+        
         function logout() {
-            // Clear any stored session data
-            localStorage.removeItem('adminToken');
+            // Clear authentication
+            localStorage.removeItem('adminLoggedIn');
             // Redirect to login page
             window.location.href = '/admin/login';
         }

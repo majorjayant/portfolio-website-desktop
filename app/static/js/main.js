@@ -215,8 +215,7 @@ function filterProjects(category) {
 async function loadSiteConfig() {
     try {
         // The API Gateway endpoint URL - replace with your actual API Gateway URL
-        const API_ENDPOINT = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging
-.eu-north-1.amazonaws.com/prod/get-content';
+        const API_ENDPOINT = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/get-content';
         
         // Try to load from the API endpoint
         let response = await fetch(`${API_ENDPOINT}?type=site_config`, {
@@ -232,70 +231,112 @@ async function loadSiteConfig() {
             response = await fetch('/data/site_config.json');
             
             if (!response.ok) {
-                throw new Error('Failed to load site configuration from both API and static file');
+                console.log('Static file not available, using hardcoded defaults');
+                // Return hardcoded defaults if both API and static file fail
+                return {
+                    image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+                    image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+                    image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+                    about_title: "J A",
+                    about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
+                    about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter.",
+                    image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
+                    image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+                    image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+                    image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+                    image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+                    about_photo1_alt: "Test Photo 1 Alt Text",
+                    about_photo2_alt: "Test Photo 2 Alt Text",
+                    about_photo3_alt: "Test Photo 3 Alt Text",
+                    about_photo4_alt: "Test Photo 4 Alt Text"
+                };
             }
         }
         
         const siteConfig = await response.json();
         console.log('Site config loaded:', siteConfig);
         
-        // Update page title
-        document.title = siteConfig.about_title || 'Portfolio Website';
-        
-        // Update favicon
-        const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
-        favicon.rel = 'icon';
-        favicon.href = siteConfig.image_favicon_url;
-        if (!document.querySelector('link[rel="icon"]')) {
-            document.head.appendChild(favicon);
-        }
-        
-        // Update logo
-        const logo = document.querySelector('.logo img');
-        if (logo) {
-            logo.src = siteConfig.image_logo_url;
-        }
-        
-        // Update banner image
-        const banner = document.querySelector('.banner-image');
-        if (banner) {
-            banner.src = siteConfig.image_banner_url;
-        }
-        
-        // Update about section
-        const aboutTitle = document.querySelector('.about-title');
-        if (aboutTitle) {
-            aboutTitle.textContent = siteConfig.about_title;
-        }
-        
-        const aboutSubtitle = document.querySelector('.about-subtitle');
-        if (aboutSubtitle) {
-            aboutSubtitle.textContent = siteConfig.about_subtitle;
-        }
-        
-        const aboutDescription = document.querySelector('.about-description');
-        if (aboutDescription) {
-            aboutDescription.textContent = siteConfig.about_description;
-        }
-        
-        // Update profile image
-        const profileImage = document.querySelector('.profile-image');
-        if (profileImage) {
-            profileImage.src = siteConfig.image_about_profile_url;
-        }
-        
-        // Update about photos
-        const aboutPhotos = document.querySelectorAll('.about-photo');
-        aboutPhotos.forEach((photo, index) => {
-            const photoNumber = index + 1;
-            photo.src = siteConfig[`image_about_photo${photoNumber}_url`];
-            photo.alt = siteConfig[`about_photo${photoNumber}_alt`];
-        });
-        
+        return siteConfig;
     } catch (error) {
         console.error('Error loading site configuration:', error);
+        // Return hardcoded defaults if everything fails
+        return {
+            image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+            image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+            image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+            about_title: "J A",
+            about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
+            about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter.",
+            image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
+            image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
+            image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
+            image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
+            image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+            about_photo1_alt: "Test Photo 1 Alt Text",
+            about_photo2_alt: "Test Photo 2 Alt Text",
+            about_photo3_alt: "Test Photo 3 Alt Text",
+            about_photo4_alt: "Test Photo 4 Alt Text"
+        };
     }
 }
 
+// Function to update UI with site config
+async function updateUIWithSiteConfig() {
+    const siteConfig = await loadSiteConfig();
+    
+    // Update page title
+    document.title = siteConfig.about_title || 'Portfolio Website';
+    
+    // Update favicon
+    const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.href = siteConfig.image_favicon_url;
+    if (!document.querySelector('link[rel="icon"]')) {
+        document.head.appendChild(favicon);
+    }
+    
+    // Update logo
+    const logo = document.querySelector('.logo img');
+    if (logo) {
+        logo.src = siteConfig.image_logo_url;
+    }
+    
+    // Update banner image
+    const banner = document.querySelector('.banner-image');
+    if (banner) {
+        banner.src = siteConfig.image_banner_url;
+    }
+    
+    // Update about section
+    const aboutTitle = document.querySelector('.about-title');
+    if (aboutTitle) {
+        aboutTitle.textContent = siteConfig.about_title;
+    }
+    
+    const aboutSubtitle = document.querySelector('.about-subtitle');
+    if (aboutSubtitle) {
+        aboutSubtitle.textContent = siteConfig.about_subtitle;
+    }
+    
+    const aboutDescription = document.querySelector('.about-description');
+    if (aboutDescription) {
+        aboutDescription.textContent = siteConfig.about_description;
+    }
+    
+    // Update profile image
+    const profileImage = document.querySelector('.profile-image');
+    if (profileImage) {
+        profileImage.src = siteConfig.image_about_profile_url;
+    }
+    
+    // Update about photos
+    const aboutPhotos = document.querySelectorAll('.about-photo');
+    aboutPhotos.forEach((photo, index) => {
+        const photoNumber = index + 1;
+        photo.src = siteConfig[`image_about_photo${photoNumber}_url`];
+        photo.alt = siteConfig[`about_photo${photoNumber}_alt`];
+    });
+}
+
 // Load site configuration when the page loads
-document.addEventListener('DOMContentLoaded', loadSiteConfig); 
+document.addEventListener('DOMContentLoaded', updateUIWithSiteConfig); 
