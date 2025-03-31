@@ -1,6 +1,10 @@
 // Main JavaScript for Portfolio Website
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing application');
+    // Load the site configuration
+    loadSiteConfig();
+
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', function() {
@@ -206,197 +210,205 @@ function filterProjects(category) {
     });
 }
 
-// Find and update any profile image URL references
-// Example:
-// From: profileImage.src = "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg";
-// To: profileImage.src = "/static/img/profile-photo.svg";
-
-// Function to load site configuration
-async function loadSiteConfig() {
-    try {
-        // Try different API endpoints
-        const endpoints = [
-            // Primary endpoint - direct Lambda proxy
-            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config',
-            // Staging endpoint without resource path
-            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging?type=site_config',
-            // Root endpoint 
-            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com?type=site_config'
-        ];
-        
-        let response = null;
-        let successEndpoint = null;
-        
-        // Try each endpoint
-        for (const endpoint of endpoints) {
-            console.log(`Trying API endpoint: ${endpoint}`);
-            try {
-                const tempResponse = await fetch(endpoint, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+/**
+ * Load site configuration from API or fallback to static file
+ */
+function loadSiteConfig() {
+    console.log('Starting to load site configuration');
+    
+    // Define all possible API endpoints to try
+    const apiEndpoints = [
+        // Primary endpoint
+        'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config',
+        // Secondary endpoint without resource path
+        'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging?type=site_config',
+        // Root endpoint
+        'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com?type=site_config'
+    ];
+    
+    // Local fallback path
+    const localFallbackPath = '/data/site_config.json';
+    
+    // Try API endpoints in sequence
+    tryNextEndpoint(0);
+    
+    function tryNextEndpoint(index) {
+        if (index >= apiEndpoints.length) {
+            console.log('All API endpoints failed, trying local fallback');
+            // All API endpoints failed, try local file
+            fetch(localFallbackPath)
+                .then(response => {
+                    console.log('Local fallback response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Successfully loaded from local file:', data);
+                    processConfigData(data);
+                })
+                .catch(error => {
+                    console.error('Error loading from local file:', error);
+                    useHardcodedDefaults();
                 });
-                
-                if (tempResponse.ok) {
-                    response = tempResponse;
-                    successEndpoint = endpoint;
-                    console.log(`Success with endpoint: ${endpoint}`);
-                    break;
-                } else {
-                    console.log(`Failed with endpoint: ${endpoint}, status: ${tempResponse.status}`);
-                }
-            } catch (error) {
-                console.log(`Error with endpoint: ${endpoint}`, error);
-            }
+            return;
         }
         
-        // If API call fails, try the static JSON file
-        if (!response || !response.ok) {
-            console.log('All API endpoints failed, falling back to static file');
-            response = await fetch('/data/site_config.json');
-            
+        console.log('Trying API endpoint:', apiEndpoints[index]);
+        
+        fetch(apiEndpoints[index], {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            console.log('API response status:', response.status);
             if (!response.ok) {
-                console.log('Static file not available, using hardcoded defaults');
-                // Return hardcoded defaults if both API and static file fail
-                return {
-                    image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
-                    image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
-                    image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
-                    about_title: "J A",
-                    about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
-                    about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter.",
-                    image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
-                    image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
-                    image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
-                    image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
-                    image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
-                    about_photo1_alt: "Test Photo 1 Alt Text",
-                    about_photo2_alt: "Test Photo 2 Alt Text",
-                    about_photo3_alt: "Test Photo 3 Alt Text",
-                    about_photo4_alt: "Test Photo 4 Alt Text"
-                };
+                throw new Error(`API response not OK: ${response.status}`);
             }
-        }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Successfully loaded from API:', data);
+            processConfigData(data);
+        })
+        .catch(error => {
+            console.error(`Error loading from endpoint ${apiEndpoints[index]}:`, error);
+            // Try next endpoint
+            tryNextEndpoint(index + 1);
+        });
+    }
+    
+    function processConfigData(data) {
+        console.log('Processing configuration data');
         
-        const data = await response.json();
-        console.log('Raw data loaded:', data);
-        
-        // Handle different possible structures of the JSON response
-        let siteConfig;
-        
+        // Handle nested data structure if present
+        let configData = data;
         if (data.site_configs) {
-            // If data is nested under site_configs key
-            siteConfig = data.site_configs;
-            console.log('Using nested site_configs data');
-        } else if (data.image_favicon_url) {
-            // If data is at the root level
-            siteConfig = data;
-            console.log('Using root level data');
-        } else {
-            console.log('Unexpected data structure, using defaults');
-            // Default values if structure is unexpected
-            siteConfig = {
-                image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
-                image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
-                image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
-                about_title: "J A",
-                about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
-                about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter.",
-                image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
-                image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
-                image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
-                image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
-                image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
-                about_photo1_alt: "Test Photo 1 Alt Text",
-                about_photo2_alt: "Test Photo 2 Alt Text",
-                about_photo3_alt: "Test Photo 3 Alt Text",
-                about_photo4_alt: "Test Photo 4 Alt Text"
-            };
+            console.log('Detected nested site_configs structure');
+            configData = data.site_configs;
         }
         
-        console.log('Processed site config:', siteConfig);
-        return siteConfig;
-    } catch (error) {
-        console.error('Error loading site configuration:', error);
-        // Return hardcoded defaults if everything fails
-        return {
-            image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
-            image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
-            image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
-            about_title: "J A",
-            about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
-            about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter.",
-            image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
-            image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
-            image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
-            image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
-            image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
-            about_photo1_alt: "Test Photo 1 Alt Text",
-            about_photo2_alt: "Test Photo 2 Alt Text",
-            about_photo3_alt: "Test Photo 3 Alt Text",
-            about_photo4_alt: "Test Photo 4 Alt Text"
+        console.log('Final config data to apply:', configData);
+        
+        // Apply configuration to the website
+        updateWebsiteElements(configData);
+    }
+    
+    function useHardcodedDefaults() {
+        console.log('Using hardcoded defaults');
+        
+        // Hardcoded default configuration
+        const defaultConfig = {
+            image_favicon_url: "/favicon.ico",
+            image_logo_url: "/img/logo.png",
+            image_banner_url: "/img/banner.jpg",
+            about_title: "Portfolio",
+            about_subtitle: "Web Developer",
+            about_description: "Welcome to my portfolio website.",
+            image_about_profile_url: "/img/profile.jpg",
+            image_about_photo1_url: "/img/photo1.jpg",
+            image_about_photo2_url: "/img/photo2.jpg",
+            image_about_photo3_url: "/img/photo3.jpg",
+            image_about_photo4_url: "/img/photo4.jpg",
+            about_photo1_alt: "Photo 1",
+            about_photo2_alt: "Photo 2",
+            about_photo3_alt: "Photo 3",
+            about_photo4_alt: "Photo 4"
         };
+        
+        // Apply defaults to the website
+        updateWebsiteElements(defaultConfig);
     }
 }
 
-// Function to update UI with site config
-async function updateUIWithSiteConfig() {
-    const siteConfig = await loadSiteConfig();
-    
-    // Update page title
-    document.title = siteConfig.about_title || 'Portfolio Website';
+/**
+ * Update website elements with configuration data
+ */
+function updateWebsiteElements(config) {
+    console.log('Updating website elements with config data');
     
     // Update favicon
-    const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
-    favicon.rel = 'icon';
-    favicon.href = siteConfig.image_favicon_url;
-    if (!document.querySelector('link[rel="icon"]')) {
-        document.head.appendChild(favicon);
+    if (config.image_favicon_url) {
+        const favicon = document.querySelector('link[rel="icon"]');
+        if (favicon) {
+            favicon.href = config.image_favicon_url;
+            console.log('Updated favicon:', config.image_favicon_url);
+        }
     }
     
     // Update logo
-    const logo = document.querySelector('.logo img');
-    if (logo) {
-        logo.src = siteConfig.image_logo_url;
+    if (config.image_logo_url) {
+        const logoImg = document.querySelector('.logo img');
+        if (logoImg) {
+            logoImg.src = config.image_logo_url;
+            console.log('Updated logo:', config.image_logo_url);
+        }
     }
     
-    // Update banner image
-    const banner = document.querySelector('.banner-image');
-    if (banner) {
-        banner.src = siteConfig.image_banner_url;
+    // Update banner
+    if (config.image_banner_url) {
+        const banner = document.querySelector('.banner-image');
+        if (banner) {
+            banner.style.backgroundImage = `url('${config.image_banner_url}')`;
+            console.log('Updated banner:', config.image_banner_url);
+        }
     }
     
     // Update about section
-    const aboutTitle = document.querySelector('.about-title');
-    if (aboutTitle) {
-        aboutTitle.textContent = siteConfig.about_title;
+    if (config.about_title) {
+        const aboutTitle = document.querySelector('.about-title');
+        if (aboutTitle) {
+            aboutTitle.textContent = config.about_title;
+            console.log('Updated about title:', config.about_title);
+        }
     }
     
-    const aboutSubtitle = document.querySelector('.about-subtitle');
-    if (aboutSubtitle) {
-        aboutSubtitle.textContent = siteConfig.about_subtitle;
+    if (config.about_subtitle) {
+        const aboutSubtitle = document.querySelector('.about-subtitle');
+        if (aboutSubtitle) {
+            aboutSubtitle.textContent = config.about_subtitle;
+            console.log('Updated about subtitle:', config.about_subtitle);
+        }
     }
     
-    const aboutDescription = document.querySelector('.about-description');
-    if (aboutDescription) {
-        aboutDescription.textContent = siteConfig.about_description;
+    if (config.about_description) {
+        const aboutDescription = document.querySelector('.about-description');
+        if (aboutDescription) {
+            aboutDescription.textContent = config.about_description;
+            console.log('Updated about description');
+        }
     }
     
-    // Update profile image
-    const profileImage = document.querySelector('.profile-image');
-    if (profileImage) {
-        profileImage.src = siteConfig.image_about_profile_url;
+    // Update profile photo
+    if (config.image_about_profile_url) {
+        const profilePhoto = document.querySelector('.profile-photo img');
+        if (profilePhoto) {
+            profilePhoto.src = config.image_about_profile_url;
+            console.log('Updated profile photo:', config.image_about_profile_url);
+        }
     }
     
-    // Update about photos
-    const aboutPhotos = document.querySelectorAll('.about-photo');
-    aboutPhotos.forEach((photo, index) => {
-        const photoNumber = index + 1;
-        photo.src = siteConfig[`image_about_photo${photoNumber}_url`];
-        photo.alt = siteConfig[`about_photo${photoNumber}_alt`];
-    });
+    // Update gallery photos
+    updateGalleryPhoto('.gallery-photo-1', config.image_about_photo1_url, config.about_photo1_alt);
+    updateGalleryPhoto('.gallery-photo-2', config.image_about_photo2_url, config.about_photo2_alt);
+    updateGalleryPhoto('.gallery-photo-3', config.image_about_photo3_url, config.about_photo3_alt);
+    updateGalleryPhoto('.gallery-photo-4', config.image_about_photo4_url, config.about_photo4_alt);
+    
+    console.log('Website elements updated successfully');
 }
 
-// Load site configuration when the page loads
-document.addEventListener('DOMContentLoaded', updateUIWithSiteConfig); 
+/**
+ * Update a gallery photo with the given URL and alt text
+ */
+function updateGalleryPhoto(selector, photoUrl, altText) {
+    if (photoUrl) {
+        const photo = document.querySelector(`${selector} img`);
+        if (photo) {
+            photo.src = photoUrl;
+            if (altText) {
+                photo.alt = altText;
+            }
+            console.log(`Updated ${selector}:`, photoUrl);
+        }
+    }
+} 

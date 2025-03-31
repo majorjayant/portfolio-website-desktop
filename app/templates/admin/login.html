@@ -1,114 +1,161 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Admin Login
-                </h2>
-            </div>
-            <form id="login-form" class="mt-8 space-y-6">
-                <input type="hidden" name="remember" value="true">
-                <div class="rounded-md shadow-sm -space-y-px">
-                    <div>
-                        <label for="username" class="sr-only">Username</label>
-                        <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Username">
-                    </div>
-                    <div>
-                        <label for="password" class="sr-only">Password</label>
-                        <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password">
-                    </div>
-                </div>
+{% extends 'base.html' %}
 
-                <div id="error-message" class="text-red-600 hidden"></div>
+{% block title %}Admin Login{% endblock %}
 
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-indigo-600 px-6 py-4">
+            <h1 class="text-white text-center text-2xl font-bold">Admin Login</h1>
+        </div>
+        <div class="px-6 py-8">
+            <div id="login-error" class="hidden mb-4 p-3 rounded bg-red-100 text-red-700"></div>
+            <div id="login-success" class="hidden mb-4 p-3 rounded bg-green-100 text-green-700"></div>
+            
+            <form id="login-form" class="space-y-6">
                 <div>
-                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" name="username" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Sign in
                     </button>
                 </div>
             </form>
+            
+            <div class="mt-4 text-center">
+                <a href="/" class="text-sm text-indigo-600 hover:text-indigo-500">Back to home</a>
+            </div>
         </div>
     </div>
+</div>
 
-    <script>
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('error-message');
-            
-            // Clear previous errors
-            errorMessage.classList.add('hidden');
-            
-            try {
-                // First try the API Gateway endpoint
-                let response;
-                try {
-                    // Try AWS API Gateway endpoint
-                    const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
-                    response = await fetch(apiEndpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ 
-                            action: 'login',
-                            username, 
-                            password 
-                        })
-                    });
-                } catch (apiError) {
-                    console.log('API Gateway endpoint not available, trying fallback');
-                    // Try local API endpoint if API Gateway fails
-                    response = await fetch('/api/admin/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ username, password })
-                    });
-                }
-                
-                // Simple fallback if both APIs fail
-                if (!response.ok && (username === 'admin' && password === 'admin123')) {
-                    console.log('Using hardcoded fallback');
-                    localStorage.setItem('adminLoggedIn', 'true');
-                    window.location.href = '/admin/dashboard';
-                    return;
-                }
-                
-                const data = await response.json();
-                
-                if (data.success || response.ok) {
-                    console.log('Login successful');
-                    localStorage.setItem('adminLoggedIn', 'true');
-                    window.location.href = '/admin/dashboard';
-                } else {
-                    errorMessage.textContent = data.message || 'Invalid username or password';
-                    errorMessage.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                
-                // Fallback for development/testing
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Admin login page loaded');
+    
+    // Check if user is already logged in
+    const token = localStorage.getItem('admin_token');
+    if (token) {
+        console.log('User is already logged in, redirecting to dashboard');
+        window.location.href = '/admin/dashboard';
+        return;
+    }
+    
+    const loginForm = document.getElementById('login-form');
+    const errorDiv = document.getElementById('login-error');
+    const successDiv = document.getElementById('login-success');
+    
+    loginForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        console.log('Login form submitted');
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        // Hide any previous messages
+        errorDiv.classList.add('hidden');
+        successDiv.classList.add('hidden');
+        
+        // Disable form during submission
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Signing in...';
+        
+        // API endpoints to try
+        const apiEndpoints = [
+            // AWS Lambda endpoint
+            'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio',
+            // Local fallback
+            '/api/admin/login'
+        ];
+        
+        // Try API endpoints in sequence
+        tryLoginEndpoint(0);
+        
+        function tryLoginEndpoint(index) {
+            if (index >= apiEndpoints.length) {
+                console.log('All API endpoints failed, trying hardcoded credentials');
+                // Check hardcoded credentials as last resort
                 if (username === 'admin' && password === 'admin123') {
-                    localStorage.setItem('adminLoggedIn', 'true');
-                    window.location.href = '/admin/dashboard';
+                    handleSuccessfulLogin({
+                        success: true,
+                        message: 'Login successful (using fallback)',
+                        token: 'hardcoded-fallback-token'
+                    });
                 } else {
-                    errorMessage.textContent = 'An error occurred. Please try again.';
-                    errorMessage.classList.remove('hidden');
+                    showError('Invalid username or password (using hardcoded validation)');
+                    resetForm();
                 }
+                return;
             }
-        });
-    </script>
-</body>
-</html> 
+            
+            console.log(`Trying login with endpoint: ${apiEndpoints[index]}`);
+            
+            fetch(apiEndpoints[index], {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'login',
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => {
+                console.log(`Response status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Login response:', data);
+                
+                if (data.success) {
+                    handleSuccessfulLogin(data);
+                } else {
+                    showError(data.error || data.message || 'Login failed');
+                    resetForm();
+                }
+            })
+            .catch(error => {
+                console.error(`Error with endpoint ${apiEndpoints[index]}:`, error);
+                // Try next endpoint
+                tryLoginEndpoint(index + 1);
+            });
+        }
+        
+        function handleSuccessfulLogin(data) {
+            // Store token in localStorage
+            localStorage.setItem('admin_token', data.token);
+            
+            // Show success message
+            successDiv.textContent = data.message || 'Login successful';
+            successDiv.classList.remove('hidden');
+            
+            // Redirect to dashboard after short delay
+            setTimeout(() => {
+                window.location.href = '/admin/dashboard';
+            }, 1000);
+        }
+        
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+        
+        function resetForm() {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Sign in';
+        }
+    });
+});
+</script>
+{% endblock %} 
