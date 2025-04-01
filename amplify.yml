@@ -12,6 +12,11 @@ frontend:
         - cp -f app/static/admin/login.html app/static/admin/login.html || echo "login.html already exists"
         - cp -f app/static/admin/dashboard.html app/static/admin/dashboard.html || echo "dashboard.html already exists"
         - echo "Admin files in static directory:" && ls -la app/static/admin/
+        - echo "Copying admin-direct and admin-login directories..."
+        - mkdir -p app/static/admin-direct
+        - mkdir -p app/static/admin-login
+        - cp -f app/admin-direct/index.html app/static/admin-direct/index.html || echo "admin-direct/index.html not found"
+        - cp -f app/admin-login/index.html app/static/admin-login/index.html || echo "admin-login/index.html not found"
         - if [ ! -f app/static/data/site_config.json ]; then echo '{"site_configs":{}}' > app/static/data/site_config.json; fi
         - cp -f app/static/api/admin-login.js app/static/api/admin-login.js || echo "admin-login.js not found"
         - rm -f app/static/test.html
