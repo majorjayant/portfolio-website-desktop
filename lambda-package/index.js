@@ -14,22 +14,21 @@ const defaultSiteConfig = {
   image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
   image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
   image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
-  about_title: "Jayant Arora",
-  about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
-  about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter. At AtliQ Technologies, I juggle 10+ projects at once (because why settle for one challenge when you can have ten?), aligning stakeholders, streamlining workflows, and integrating AI to make things smarter, not harder. Before this, I optimized product roadmaps at Unifyed and took a product from 5 users to 10K+ at sGate Tech Solutions. From pre-sales to GTM strategy, AI integration to competitor research - I've done it all, and I'm just getting started. Here's the deal: I obsess over execution, geek out over data, and believe in questioning everything. My approach? Think big, start small, and move fast. If you're looking for someone who can decode business problems, simplify the complex, and actually get things done - let's talk.",
+  about_title: "Portfolio",
+  about_subtitle: "Welcome to my portfolio",
+  about_description: "A professional portfolio showcasing my work and skills",
   image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
   image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
   image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
   image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
   image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
-  about_photo1_alt: "Test Photo 1 Alt Text",
-  about_photo2_alt: "Test Photo 2 Alt Text",
-  about_photo3_alt: "Test Photo 3 Alt Text",
-  about_photo4_alt: "Test Photo 4 Alt Text"
+  about_photo1_alt: "Photo 1",
+  about_photo2_alt: "Photo 2",
+  about_photo3_alt: "Photo 3",
+  about_photo4_alt: "Photo 4"
 };
 
-// Admin credentials - hardcoded for simplicity
-// In a production environment, these should be in a database with proper hashing
+// Admin credentials from environment variables
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
@@ -336,7 +335,7 @@ async function handleLogin(username, password) {
     return {
       success: true,
       message: "Login successful",
-      token: "sample-jwt-token-would-be-here", // In production, generate a proper JWT token
+      token: "admin-token-" + Date.now(), // Basic token with timestamp
       user: {
         username: username,
         role: "admin"
@@ -353,7 +352,7 @@ async function handleLogin(username, password) {
 
 // Lambda handler
 exports.handler = async (event) => {
-  console.log('MySQL2 Lambda Function - Version 1.3.0');
+  console.log('MySQL2 Lambda Function - Version 1.4.0');
   console.log('Received event:', JSON.stringify(event, null, 2));
   
   try {
