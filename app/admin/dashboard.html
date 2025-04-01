@@ -13,7 +13,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                 <h1 class="text-2xl font-bold">Admin Dashboard</h1>
                 <div class="flex items-center">
-                    <span id="user-info" class="mr-4 text-sm"></span>
+                    <a href="/admin/" class="mr-4 text-sm text-white hover:text-gray-200">Admin Home</a>
                     <button id="logout-button" class="bg-white text-indigo-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">
                         Logout
                     </button>
@@ -23,45 +23,147 @@
 
         <!-- Main content -->
         <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                <div class="px-4 py-5 sm:px-6">
-                    <h2 class="text-lg leading-6 font-medium text-gray-900">Portfolio Admin Panel</h2>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500">You are logged in successfully</p>
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+                <div class="px-4 py-5 sm:px-6 bg-indigo-50">
+                    <h2 class="text-lg leading-6 font-medium text-indigo-900">Site Configuration</h2>
+                    <p class="mt-1 max-w-2xl text-sm text-indigo-500">Edit your website's configuration settings</p>
                 </div>
-                <div class="border-t border-gray-200">
-                    <div class="px-4 py-5 sm:p-6">
-                        <div id="auth-details" class="mb-6 p-4 bg-blue-50 rounded-md">
-                            <h3 class="text-md font-medium text-blue-700 mb-2">Authentication Information</h3>
-                            <div id="auth-info" class="text-sm text-blue-500">Loading authentication details...</div>
-                        </div>
+                
+                <div id="save-message" class="hidden px-4 py-3 text-center border-t border-b"></div>
+                
+                <form id="site-config-form" class="p-6">
+                    <!-- General Website Information -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">General Website Information</h3>
                         
-                        <div class="mt-6 border-t border-gray-200 pt-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                <div class="bg-indigo-50 p-4 rounded-lg">
-                                    <h4 class="text-indigo-700 font-medium">Edit Profile</h4>
-                                    <p class="text-indigo-500 text-sm mt-1">Update your personal information</p>
+                        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                            <div class="sm:col-span-1">
+                                <label for="about_title" class="block text-sm font-medium text-gray-700">Site Title</label>
+                                <input type="text" name="about_title" id="about_title" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                            </div>
+                            
+                            <div class="sm:col-span-1">
+                                <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
+                                <input type="text" name="about_subtitle" id="about_subtitle" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                            </div>
+                            
+                            <div class="sm:col-span-2">
+                                <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea name="about_description" id="about_description" rows="4" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Website Images -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Website Images</h3>
+                        
+                        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                            <div class="sm:col-span-1">
+                                <label for="image_favicon_url" class="block text-sm font-medium text-gray-700">Favicon URL</label>
+                                <input type="url" name="image_favicon_url" id="image_favicon_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                <p class="mt-1 text-xs text-gray-500">URL for the website favicon (browser tab icon)</p>
+                            </div>
+                            
+                            <div class="sm:col-span-1">
+                                <label for="image_logo_url" class="block text-sm font-medium text-gray-700">Logo URL</label>
+                                <input type="url" name="image_logo_url" id="image_logo_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                <p class="mt-1 text-xs text-gray-500">URL for the website logo</p>
+                            </div>
+                            
+                            <div class="sm:col-span-2">
+                                <label for="image_banner_url" class="block text-sm font-medium text-gray-700">Banner URL</label>
+                                <input type="url" name="image_banner_url" id="image_banner_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                <p class="mt-1 text-xs text-gray-500">URL for the main banner image</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Image -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Profile Image</h3>
+                        
+                        <div class="sm:col-span-2">
+                            <label for="image_about_profile_url" class="block text-sm font-medium text-gray-700">Profile Image URL</label>
+                            <input type="url" name="image_about_profile_url" id="image_about_profile_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                            <p class="mt-1 text-xs text-gray-500">URL for your profile image</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Gallery Photos -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Gallery Photos</h3>
+                        
+                        <div class="mb-6 border-b border-gray-200 pb-6">
+                            <h4 class="text-sm font-medium text-gray-700 mb-4">Photo 1</h4>
+                            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                <div class="sm:col-span-1">
+                                    <label for="image_about_photo1_url" class="block text-sm font-medium text-gray-700">Photo 1 URL</label>
+                                    <input type="url" name="image_about_photo1_url" id="image_about_photo1_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
                                 </div>
-                                <div class="bg-blue-50 p-4 rounded-lg">
-                                    <h4 class="text-blue-700 font-medium">Site Configuration</h4>
-                                    <p class="text-blue-500 text-sm mt-1">Modify website settings</p>
-                                </div>
-                                <div class="bg-purple-50 p-4 rounded-lg">
-                                    <h4 class="text-purple-700 font-medium">Content Management</h4>
-                                    <p class="text-purple-500 text-sm mt-1">Add or edit website content</p>
+                                <div class="sm:col-span-1">
+                                    <label for="about_photo1_alt" class="block text-sm font-medium text-gray-700">Alt Text</label>
+                                    <input type="text" name="about_photo1_alt" id="about_photo1_alt" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" placeholder="Alternative text for accessibility">
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="mt-6 border-t border-gray-200 pt-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">API Test</h3>
-                            <button id="test-api-button" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                Test API Connection
-                            </button>
-                            <div id="api-result" class="mt-2 text-sm"></div>
+                        <div class="mb-6 border-b border-gray-200 pb-6">
+                            <h4 class="text-sm font-medium text-gray-700 mb-4">Photo 2</h4>
+                            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                <div class="sm:col-span-1">
+                                    <label for="image_about_photo2_url" class="block text-sm font-medium text-gray-700">Photo 2 URL</label>
+                                    <input type="url" name="image_about_photo2_url" id="image_about_photo2_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="about_photo2_alt" class="block text-sm font-medium text-gray-700">Alt Text</label>
+                                    <input type="text" name="about_photo2_alt" id="about_photo2_alt" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" placeholder="Alternative text for accessibility">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6 border-b border-gray-200 pb-6">
+                            <h4 class="text-sm font-medium text-gray-700 mb-4">Photo 3</h4>
+                            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                <div class="sm:col-span-1">
+                                    <label for="image_about_photo3_url" class="block text-sm font-medium text-gray-700">Photo 3 URL</label>
+                                    <input type="url" name="image_about_photo3_url" id="image_about_photo3_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="about_photo3_alt" class="block text-sm font-medium text-gray-700">Alt Text</label>
+                                    <input type="text" name="about_photo3_alt" id="about_photo3_alt" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" placeholder="Alternative text for accessibility">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="text-sm font-medium text-gray-700 mb-4">Photo 4</h4>
+                            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                <div class="sm:col-span-1">
+                                    <label for="image_about_photo4_url" class="block text-sm font-medium text-gray-700">Photo 4 URL</label>
+                                    <input type="url" name="image_about_photo4_url" id="image_about_photo4_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="about_photo4_alt" class="block text-sm font-medium text-gray-700">Alt Text</label>
+                                    <input type="text" name="about_photo4_alt" id="about_photo4_alt" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" placeholder="Alternative text for accessibility">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
+                    <div class="flex justify-between">
+                        <div>
+                            <button type="button" id="refresh-button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                                Refresh Data
+                            </button>
+                        </div>
+                        <div>
+                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </main>
 
@@ -69,7 +171,7 @@
         <footer class="bg-white shadow">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <p class="text-center text-sm text-gray-500">
-                    &copy; 2023 Portfolio Admin. All rights reserved.
+                    &copy; 2025 Portfolio Admin. All rights reserved.
                 </p>
             </div>
         </footer>
@@ -80,70 +182,23 @@
         console.log('Admin dashboard loaded');
         
         // Elements
-        const userInfoElement = document.getElementById('user-info');
         const logoutButton = document.getElementById('logout-button');
-        const authInfoElement = document.getElementById('auth-info');
-        const testApiButton = document.getElementById('test-api-button');
-        const apiResultElement = document.getElementById('api-result');
+        const configForm = document.getElementById('site-config-form');
+        const refreshButton = document.getElementById('refresh-button');
+        const saveMessage = document.getElementById('save-message');
         
         // API endpoint
         const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
         
-        let userAuthenticated = false;
-        let authMethod = 'none';
-        
-        // Check if user is authenticated
+        // Check authentication
         function checkAuthentication() {
             const token = localStorage.getItem('admin_token');
-            const user = localStorage.getItem('admin_user');
-            
-            if (token) {
-                console.log('Found token in localStorage');
-                authMethod = 'direct';
-                userAuthenticated = true;
-                
-                try {
-                    const userObj = user ? JSON.parse(user) : { username: 'admin' };
-                    displayUserInfo(userObj);
-                    displayAuthInfo();
-                } catch (e) {
-                    console.error('Error parsing user data:', e);
-                    displayUserInfo({ username: 'admin' });
-                    displayAuthInfo();
-                }
-                return true;
+            if (!token) {
+                console.log('User is not authenticated, redirecting to login');
+                window.location.href = '/admin/login.html';
+                return false;
             }
-            return false;
-        }
-        
-        // Display user information
-        function displayUserInfo(user) {
-            if (user) {
-                userInfoElement.textContent = `Hello, ${user.username || user.name || 'Admin'}`;
-            } else {
-                userInfoElement.textContent = 'Hello, Admin';
-            }
-        }
-        
-        // Display authentication information
-        function displayAuthInfo() {
-            let html = '';
-            
-            if (authMethod === 'direct') {
-                html = `
-                    <p><strong>Auth Method:</strong> Direct Login</p>
-                    <p><strong>Status:</strong> Authenticated</p>
-                    <p class="text-xs mt-2">Login managed by simplified authentication</p>
-                `;
-            } else {
-                html = `
-                    <p><strong>Auth Method:</strong> None</p>
-                    <p><strong>Status:</strong> Not Authenticated</p>
-                    <p class="text-xs mt-2 text-red-500">Warning: You are not properly authenticated</p>
-                `;
-            }
-            
-            authInfoElement.innerHTML = html;
+            return true;
         }
         
         // Log out function
@@ -154,37 +209,135 @@
             window.location.href = '/admin/login.html';
         }
         
-        // Test API connection
-        function testApiConnection() {
-            apiResultElement.textContent = 'Testing API connection...';
-            apiResultElement.className = 'mt-2 text-sm text-blue-500';
+        // Load site configuration
+        function loadSiteConfig() {
+            showSaveMessage('Loading configuration...', 'text-blue-500 bg-blue-50');
             
             fetch(apiEndpoint + '?type=site_config')
                 .then(response => {
-                    apiResultElement.textContent = `API response status: ${response.status}`;
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('API test response:', data);
-                    apiResultElement.textContent = 'API connection successful! Data received.';
-                    apiResultElement.className = 'mt-2 text-sm text-green-500';
+                    console.log('Config data received:', data);
+                    fillFormWithData(data);
+                    hideSaveMessage();
                 })
                 .catch(err => {
-                    console.error('API test error:', err);
-                    apiResultElement.textContent = `API test failed: ${err.message}`;
-                    apiResultElement.className = 'mt-2 text-sm text-red-500';
+                    console.error('Error loading configuration:', err);
+                    showSaveMessage('Error loading configuration: ' + err.message, 'text-red-500 bg-red-50');
                 });
         }
         
-        // Check if user is authenticated
-        if (!checkAuthentication()) {
-            console.log('User is not authenticated, redirecting to login');
-            window.location.href = '/admin/login.html';
+        // Fill form with configuration data
+        function fillFormWithData(data) {
+            // Helper function to set input values
+            function setInputValue(id, value) {
+                const input = document.getElementById(id);
+                if (input && value !== undefined) {
+                    input.value = value;
+                }
+            }
+            
+            // Set values for each form field
+            setInputValue('about_title', data.about_title);
+            setInputValue('about_subtitle', data.about_subtitle);
+            setInputValue('about_description', data.about_description);
+            setInputValue('image_favicon_url', data.image_favicon_url);
+            setInputValue('image_logo_url', data.image_logo_url);
+            setInputValue('image_banner_url', data.image_banner_url);
+            setInputValue('image_about_profile_url', data.image_about_profile_url);
+            setInputValue('image_about_photo1_url', data.image_about_photo1_url);
+            setInputValue('image_about_photo2_url', data.image_about_photo2_url);
+            setInputValue('image_about_photo3_url', data.image_about_photo3_url);
+            setInputValue('image_about_photo4_url', data.image_about_photo4_url);
+            setInputValue('about_photo1_alt', data.about_photo1_alt);
+            setInputValue('about_photo2_alt', data.about_photo2_alt);
+            setInputValue('about_photo3_alt', data.about_photo3_alt);
+            setInputValue('about_photo4_alt', data.about_photo4_alt);
         }
         
-        // Add event listeners
-        logoutButton.addEventListener('click', logout);
-        testApiButton.addEventListener('click', testApiConnection);
+        // Save site configuration
+        function saveSiteConfig(formData) {
+            showSaveMessage('Saving configuration...', 'text-blue-500 bg-blue-50');
+            
+            // Convert form data to object
+            const configData = {};
+            formData.forEach((value, key) => {
+                configData[key] = value;
+            });
+            
+            // Add action identifier
+            const requestData = {
+                action: 'update_site_config',
+                ...configData
+            };
+            
+            fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Save response:', data);
+                if (data.success) {
+                    showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
+                    // Hide message after 3 seconds
+                    setTimeout(hideSaveMessage, 3000);
+                } else {
+                    showSaveMessage('Error: ' + (data.message || 'Unknown error'), 'text-red-500 bg-red-50');
+                }
+            })
+            .catch(err => {
+                console.error('Error saving configuration:', err);
+                showSaveMessage('Error saving configuration: ' + err.message, 'text-red-500 bg-red-50');
+            });
+        }
+        
+        // Show save message with appropriate styling
+        function showSaveMessage(message, classNames) {
+            saveMessage.textContent = message;
+            saveMessage.className = 'px-4 py-3 text-center border-t border-b ' + classNames;
+            saveMessage.classList.remove('hidden');
+        }
+        
+        // Hide save message
+        function hideSaveMessage() {
+            saveMessage.classList.add('hidden');
+        }
+        
+        // Event listeners
+        if (logoutButton) {
+            logoutButton.addEventListener('click', logout);
+        }
+        
+        if (configForm) {
+            configForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(configForm);
+                saveSiteConfig(formData);
+            });
+        }
+        
+        if (refreshButton) {
+            refreshButton.addEventListener('click', loadSiteConfig);
+        }
+        
+        // Check if user is authenticated
+        if (checkAuthentication()) {
+            // Load site configuration
+            loadSiteConfig();
+        }
     });
     </script>
 </body>

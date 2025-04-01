@@ -33,7 +33,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 1.7.3 - Enhanced with real-time config updates');
+  console.log('Lambda Version: 1.8.0 - Added site config update functionality');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -87,46 +87,35 @@ function handleLogin(username, password) {
 }
 
 // Function to update site configuration
-function updateSiteConfig(newConfig) {
-  console.log('Updating site configuration');
-  
-  // Update only valid configuration keys
-  const validKeys = [
-    'image_favicon_url', 'image_logo_url', 'image_banner_url',
-    'about_title', 'about_subtitle', 'about_description',
-    'image_about_profile_url',
-    'image_about_photo1_url', 'image_about_photo2_url', 'image_about_photo3_url', 'image_about_photo4_url',
-    'about_photo1_alt', 'about_photo2_alt', 'about_photo3_alt', 'about_photo4_alt'
-  ];
-  
-  // Create a clean update object
-  const updates = {};
-  let updatedCount = 0;
-  
-  // Only accept known configuration keys
-  Object.keys(newConfig).forEach(key => {
-    if (validKeys.includes(key)) {
-      updates[key] = newConfig[key];
-      updatedCount++;
-    }
-  });
-  
-  // Update the main configuration
-  siteConfig = { ...siteConfig, ...updates };
-  
-  return {
-    success: true,
-    message: `Configuration updated successfully (${updatedCount} fields)`,
-    updated_fields: updatedCount,
-    timestamp: new Date().toISOString()
-  };
+function updateSiteConfig(configData) {
+  console.log('Updating site configuration with new data');
+  try {
+    // Update each field if provided in the request
+    Object.keys(configData).forEach(key => {
+      if (key in siteConfig) {
+        siteConfig[key] = configData[key];
+        console.log(`Updated ${key} to: ${configData[key]}`);
+      }
+    });
+    
+    return {
+      success: true,
+      message: "Configuration updated successfully"
+    };
+  } catch (error) {
+    console.error('Error updating configuration:', error);
+    return {
+      success: false,
+      message: "Failed to update configuration: " + error.message
+    };
+  }
 }
 
 // Lambda handler
 exports.handler = async (event, context) => {
   // Log detailed information about the request
   logRequestInfo(event, context);
-  console.log('Enhanced Lambda Function - Version 1.7.3');
+  console.log('Enhanced Lambda Function - Version 1.8.0');
   
   try {
     // Handle OPTIONS requests for CORS
@@ -154,7 +143,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '1.7.3',
+          lambda_version: '1.8.0',
           routing_hint: 'If you are experiencing admin access issues, use the direct_access credentials or access through /admin-login.html'
         })
       };
@@ -166,13 +155,12 @@ exports.handler = async (event, context) => {
     if (event.httpMethod === 'GET' && (requestType === 'site_config' || queryParams.type === 'site_config')) {
       console.log('Processing GET request for site_config');
       
-      // Return the current site configuration
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
           ...siteConfig,
-          _version: "1.7.3",
+          _version: "1.8.0",
           timestamp: new Date().toISOString()
         })
       };
@@ -244,7 +232,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '1.7.3'
+            lambda_version: '1.8.0'
           })
         };
       }
@@ -257,7 +245,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '1.7.3',
+            lambda_version: '1.8.0',
             timestamp: new Date().toISOString(),
             access_paths: {
               direct_access_url: 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin-login.html',
@@ -268,24 +256,13 @@ exports.handler = async (event, context) => {
       }
       
       // For site configuration updates
-      if (actionType === 'update_site_config' && parsedBody.site_config) {
-        console.log('Processing site config update request');
-        const updateResult = updateSiteConfig(parsedBody.site_config);
-        
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            ...updateResult,
-            lambda_version: '1.7.3'
-          })
-        };
-      }
-      
-      // For backward compatibility
       if (actionType.includes('site_config') || parsedBody.site_config || requestType === 'site_config') {
-        // For site configuration updates
-        const configData = parsedBody.site_config || parsedBody;
+        console.log('Processing site configuration update request');
+        
+        // Extract configuration data
+        const configData = parsedBody.site_config || parsedBody.config || parsedBody;
+        
+        // Update the site configuration
         const updateResult = updateSiteConfig(configData);
         
         return {
@@ -293,29 +270,29 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             ...updateResult,
-            lambda_version: '1.7.3'
+            timestamp: new Date().toISOString(),
+            lambda_version: '1.8.0'
           })
         };
       }
       
-      // Unknown action type
+      // Default response for unknown POST action
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           success: false,
-          message: 'Unknown request type. Valid types: site_config, login, admin_access_check',
+          message: 'Unknown action. Valid actions: login, site_config, admin_access_check',
           timestamp: new Date().toISOString()
         })
       };
     }
     
-    // Default response for unknown routes
-    console.log('Unknown request type or missing parameters');
+    // Default response for unknown request types
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         success: false,
         message: 'Unknown request type. Valid types: site_config, login, admin_access_check',
         help: 'To check admin access, use ?admin_check=true as a query parameter',
@@ -334,7 +311,7 @@ exports.handler = async (event, context) => {
         success: false,
         message: 'An unexpected error occurred',
         error: error.message || 'Unknown error',
-        lambda_version: '1.7.3',
+        lambda_version: '1.8.0',
         timestamp: new Date().toISOString(),
         fallback_config: event.httpMethod === 'GET' ? siteConfig : undefined
       })
