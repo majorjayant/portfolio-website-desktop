@@ -188,7 +188,8 @@
         const saveMessage = document.getElementById('save-message');
         
         // API endpoint
-        const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
+        const API_BASE_URL = 'https://jayant.tech/api';
+        const CONFIG_ENDPOINT = `${API_BASE_URL}/site-config`;
         
         // Check authentication
         function checkAuthentication() {
@@ -210,29 +211,28 @@
         }
         
         // Load site configuration
-        function loadSiteConfig() {
-            showSaveMessage('Loading configuration...', 'text-blue-500 bg-blue-50');
-            
-            fetch(apiEndpoint + '?type=site_config')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+        async function fetchConfiguration() {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(CONFIG_ENDPOINT, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
                     }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Config data received:', data);
-                    fillFormWithData(data);
-                    hideSaveMessage();
-                })
-                .catch(err => {
-                    console.error('Error loading configuration:', err);
-                    showSaveMessage('Error loading configuration: ' + err.message, 'text-red-500 bg-red-50');
                 });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load configuration');
+                }
+                
+                const config = await response.json();
+                populateForm(config);
+            } catch (error) {
+                showError('Error loading configuration: ' + error.message);
+            }
         }
         
         // Fill form with configuration data
-        function fillFormWithData(data) {
+        function populateForm(config) {
             // Helper function to set input values
             function setInputValue(id, value) {
                 const input = document.getElementById(id);
@@ -242,21 +242,21 @@
             }
             
             // Set values for each form field
-            setInputValue('about_title', data.about_title);
-            setInputValue('about_subtitle', data.about_subtitle);
-            setInputValue('about_description', data.about_description);
-            setInputValue('image_favicon_url', data.image_favicon_url);
-            setInputValue('image_logo_url', data.image_logo_url);
-            setInputValue('image_banner_url', data.image_banner_url);
-            setInputValue('image_about_profile_url', data.image_about_profile_url);
-            setInputValue('image_about_photo1_url', data.image_about_photo1_url);
-            setInputValue('image_about_photo2_url', data.image_about_photo2_url);
-            setInputValue('image_about_photo3_url', data.image_about_photo3_url);
-            setInputValue('image_about_photo4_url', data.image_about_photo4_url);
-            setInputValue('about_photo1_alt', data.about_photo1_alt);
-            setInputValue('about_photo2_alt', data.about_photo2_alt);
-            setInputValue('about_photo3_alt', data.about_photo3_alt);
-            setInputValue('about_photo4_alt', data.about_photo4_alt);
+            setInputValue('about_title', config.about_title);
+            setInputValue('about_subtitle', config.about_subtitle);
+            setInputValue('about_description', config.about_description);
+            setInputValue('image_favicon_url', config.image_favicon_url);
+            setInputValue('image_logo_url', config.image_logo_url);
+            setInputValue('image_banner_url', config.image_banner_url);
+            setInputValue('image_about_profile_url', config.image_about_profile_url);
+            setInputValue('image_about_photo1_url', config.image_about_photo1_url);
+            setInputValue('image_about_photo2_url', config.image_about_photo2_url);
+            setInputValue('image_about_photo3_url', config.image_about_photo3_url);
+            setInputValue('image_about_photo4_url', config.image_about_photo4_url);
+            setInputValue('about_photo1_alt', config.about_photo1_alt);
+            setInputValue('about_photo2_alt', config.about_photo2_alt);
+            setInputValue('about_photo3_alt', config.about_photo3_alt);
+            setInputValue('about_photo4_alt', config.about_photo4_alt);
         }
         
         // Save site configuration
@@ -275,7 +275,7 @@
                 ...configData
             };
             
-            fetch(apiEndpoint, {
+            fetch(CONFIG_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -330,13 +330,13 @@
         }
         
         if (refreshButton) {
-            refreshButton.addEventListener('click', loadSiteConfig);
+            refreshButton.addEventListener('click', fetchConfiguration);
         }
         
         // Check if user is authenticated
         if (checkAuthentication()) {
             // Load site configuration
-            loadSiteConfig();
+            fetchConfiguration();
         }
     });
     </script>
