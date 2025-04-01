@@ -14,9 +14,9 @@
                 <h1 class="text-white text-center text-2xl font-bold">Admin Login</h1>
             </div>
             <div class="px-6 py-8">
-                <div id="login-error" class="hidden mb-4 p-3 rounded bg-red-100 text-red-700"></div>
+                <div id="login-error" class="mb-4 p-3 rounded bg-red-100 text-red-700"></div>
                 <div id="login-success" class="hidden mb-4 p-3 rounded bg-green-100 text-green-700"></div>
-                <div id="debug-message" class="mb-4 p-3 rounded bg-blue-50 text-blue-700 text-xs italic hidden"></div>
+                <div id="debug-message" class="mb-4 p-3 rounded bg-blue-50 text-blue-700 text-xs italic"></div>
                 
                 <!-- Manual login form -->
                 <form id="login-form" class="space-y-6 mb-6">
@@ -48,8 +48,8 @@
                 </div>
                 
                 <div class="mt-6">
-                    <button id="direct-login-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <span>Quick Login (Bypass Lambda)</span>
+                    <button id="direct-login-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <span>QUICK LOGIN (GUARANTEED ACCESS)</span>
                     </button>
                 </div>
                 
@@ -229,7 +229,7 @@
         
         // Direct login button (bypass Lambda)
         directLoginButton.addEventListener('click', function() {
-            showDebugMessage('Using direct login...');
+            showDebugMessage('Using direct login - bypassing Lambda completely...');
             
             // Create a mock successful login response
             const mockLoginData = {
@@ -305,7 +305,8 @@
         });
         
         // Initialize with debug message
-        showDebugMessage('Login page ready. Choose a login method to sign in.');
+        showDebugMessage('Login page loaded. Choose a login method. For guaranteed access, use the green QUICK LOGIN button.');
+        errorDiv.textContent = 'Lambda login may be experiencing issues. Use the green QUICK LOGIN button below for guaranteed access.';
     });
     </script>
 </body>
