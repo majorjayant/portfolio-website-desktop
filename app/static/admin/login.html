@@ -50,7 +50,7 @@
         const token = localStorage.getItem('admin_token');
         if (token) {
             console.log('User is already logged in, redirecting to dashboard');
-            window.location.href = '/admin/dashboard';
+            window.location.href = '/static/admin/dashboard.html';
             return;
         }
         
@@ -126,39 +126,7 @@
                 
                 // Redirect to dashboard after short delay
                 setTimeout(() => {
-                    window.location.href = '/admin/dashboard';
-                }, 1000);
-            }
-            
-            function showError(message) {
-                errorDiv.textContent = message;
-                errorDiv.classList.remove('hidden');
-            }
-            
-            function resetForm() {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Sign in';
-                submitButton.classList.remove('opacity-75');
-            }
-        });
-    });
-    </script>
-</body>
-</html> 
-                resetForm();
-            });
-            
-            function handleSuccessfulLogin(data) {
-                // Store token in localStorage
-                localStorage.setItem('admin_token', data.token || 'admin-session-token');
-                
-                // Show success message
-                successDiv.textContent = data.message || 'Login successful';
-                successDiv.classList.remove('hidden');
-                
-                // Redirect to dashboard after short delay
-                setTimeout(() => {
-                    window.location.href = '/admin/dashboard';
+                    window.location.href = '/static/admin/dashboard.html';
                 }, 1000);
             }
             
