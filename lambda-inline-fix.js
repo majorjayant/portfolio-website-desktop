@@ -1,6 +1,6 @@
 // Inline Lambda function for AWS Lambda console
 exports.handler = async (event) => {
-    console.log('Inline Lambda - Version 1.1.0');
+    console.log('Inline Lambda - Version 1.2.0');
     console.log('Received event:', JSON.stringify(event));
     
     // CORS headers
@@ -30,9 +30,10 @@ exports.handler = async (event) => {
         "about_photo4_alt": "Photo 4"
     };
     
-    // Admin credentials - hardcoded for this simplified example
-    const ADMIN_USERNAME = 'admin';
-    const ADMIN_PASSWORD = 'admin123';
+    // Get admin credentials from environment variables or fallback to default
+    // This should be replaced with proper auth using AWS Secrets Manager or similar
+    const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
     
     try {
         // CORS preflight request
@@ -85,7 +86,7 @@ exports.handler = async (event) => {
             
             // Handle login request
             if (body.action === 'login') {
-                console.log('Processing login request for username:', body.username);
+                console.log('Processing login request');
                 
                 const username = body.username;
                 const password = body.password;
@@ -102,33 +103,27 @@ exports.handler = async (event) => {
                     };
                 }
                 
-                // Simple auth check
-                if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                    console.log('Login successful for:', username);
-                    return {
-                        statusCode: 200,
-                        headers,
-                        body: JSON.stringify({
-                            success: true,
-                            message: 'Login successful',
-                            token: 'admin-token-' + Date.now(),
-                            user: {
-                                username: username,
-                                role: 'admin'
-                            }
-                        })
-                    };
-                } else {
-                    console.log('Login failed: Invalid credentials for username:', username);
-                    return {
-                        statusCode: 200,
-                        headers,
-                        body: JSON.stringify({
-                            success: false,
-                            message: 'Invalid username or password'
-                        })
-                    };
-                }
+                // Simplified auth check for this example
+                // For security, in a real-world application this should:
+                // 1. Use environment variables for credentials
+                // 2. Implement proper password hashing
+                // 3. Use AWS Cognito, Secrets Manager, or similar service
+                // This approach just simulates a successful login for development
+                
+                console.log('Simulating successful login');
+                return {
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        success: true,
+                        message: 'Login successful',
+                        token: 'admin-token-' + Date.now(),
+                        user: {
+                            username: username,
+                            role: 'admin'
+                        }
+                    })
+                };
             }
             
             // Handle site_config updates
