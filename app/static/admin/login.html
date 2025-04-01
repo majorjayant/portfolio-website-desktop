@@ -59,12 +59,19 @@
         const successDiv = document.getElementById('login-success');
         const submitButton = document.getElementById('submit-button');
         
+        // Debug info
+        console.log('Debug Info:');
+        console.log('Current URL:', window.location.href);
+        console.log('Browser:', navigator.userAgent);
+        
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
             console.log('Login form submitted');
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            
+            console.log('Login attempt with username:', username);
             
             // Hide any previous messages
             errorDiv.classList.add('hidden');
@@ -79,6 +86,9 @@
             const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
             
             console.log('Sending login request to:', apiEndpoint);
+            
+            // Show detailed debug messages in the UI for easier troubleshooting
+            showDebugMessage('Connecting to authentication service...');
             
             fetch(apiEndpoint, {
                 method: 'POST',
@@ -95,9 +105,14 @@
             })
             .then(response => {
                 console.log('Login response status:', response.status);
+                console.log('Login response headers:', response.headers);
+                
                 if (!response.ok && response.status !== 200) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+                
+                showDebugMessage('Response received, processing...');
+                
                 return response.json().catch(err => {
                     console.error('Error parsing JSON response:', err);
                     throw new Error('Invalid response from server');
@@ -143,12 +158,56 @@
                 errorDiv.classList.remove('hidden');
             }
             
+            function showDebugMessage(message) {
+                // Create an element for temporary debug messages
+                let debugMsg = document.getElementById('debug-message');
+                if (!debugMsg) {
+                    debugMsg = document.createElement('div');
+                    debugMsg.id = 'debug-message';
+                    debugMsg.style.marginBottom = '10px';
+                    debugMsg.style.padding = '5px';
+                    debugMsg.style.color = '#666';
+                    debugMsg.style.fontSize = '12px';
+                    debugMsg.style.fontStyle = 'italic';
+                    loginForm.parentNode.insertBefore(debugMsg, loginForm);
+                }
+                
+                debugMsg.textContent = message;
+            }
+            
             function resetForm() {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Sign in';
                 submitButton.classList.remove('opacity-75');
             }
         });
+        
+        // Add test login button for debugging
+        const testLoginButton = document.createElement('button');
+        testLoginButton.textContent = 'Test Login Service';
+        testLoginButton.className = 'mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700';
+        testLoginButton.type = 'button';
+        
+        testLoginButton.addEventListener('click', function() {
+            // Test the API endpoint
+            fetch('https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config')
+                .then(response => {
+                    alert(`API Test: Response status ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    alert('API response received successfully!');
+                    console.log('API test data:', data);
+                })
+                .catch(err => {
+                    alert(`API Test Error: ${err.message}`);
+                    console.error('API test error:', err);
+                });
+        });
+        
+        // Add the test button to the form
+        const formActions = document.querySelector('#login-form');
+        formActions.appendChild(document.createElement('div')).appendChild(testLoginButton);
     });
     </script>
 </body>
