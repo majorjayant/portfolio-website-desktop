@@ -4,115 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
+    <meta http-equiv="refresh" content="0;url=https://staging.d200zhb2va2zdo.amplifyapp.com/admin-direct.html">
+    <script>
+        // Using absolute URL to avoid routing issues with Amplify
+        window.location.href = "https://staging.d200zhb2va2zdo.amplifyapp.com/admin-direct.html";
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-        }
-        .container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            overflow: hidden;
-        }
-        .header {
-            background-color: #4f46e5;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        .header h1 {
             margin: 0;
-            font-size: 24px;
-        }
-        .content {
-            padding: 20px;
+            background-color: #f5f5f5;
         }
         .message {
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            background-color: #e0f2fe;
-            color: #0369a1;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
-            margin-top: 20px;
-            background-color: #10b981;
-            color: white;
-            text-decoration: none;
         }
-        .btn:hover {
-            background-color: #059669;
-        }
-        a.home-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
+        a {
             color: #4f46e5;
             text-decoration: none;
+            font-weight: bold;
         }
-        a.home-link:hover {
+        a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Admin Dashboard Access</h1>
-        </div>
-        <div class="content">
-            <div class="message">
-                <p><strong>Direct Dashboard Access</strong><br>Click the button below to access the admin dashboard.</p>
-            </div>
-            
-            <button id="direct-login" class="btn">ACCESS DASHBOARD</button>
-            
-            <a href="/" class="home-link">Back to Home</a>
-        </div>
+    <div class="message">
+        <h2>Redirecting to Admin Access</h2>
+        <p>If you are not redirected automatically, <a href="https://staging.d200zhb2va2zdo.amplifyapp.com/admin-direct.html">click here</a>.</p>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const directLoginButton = document.getElementById('direct-login');
-            
-            directLoginButton.addEventListener('click', function() {
-                // Create mock login data
-                const mockLoginData = {
-                    success: true,
-                    message: 'Login successful',
-                    token: 'admin-session-token-' + Date.now(),
-                    user: {
-                        username: 'admin',
-                        role: 'admin'
-                    }
-                };
-                
-                // Store auth data in local storage
-                localStorage.setItem('admin_token', mockLoginData.token);
-                localStorage.setItem('admin_user', JSON.stringify(mockLoginData.user));
-                
-                // Redirect to the dashboard
-                window.location.href = 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin/simple-dashboard.html';
-            });
-        });
-    </script>
 </body>
 </html> 
