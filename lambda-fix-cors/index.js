@@ -28,17 +28,32 @@ const defaultSiteConfig = {
   about_photo4_alt: "Photo 4"
 };
 
+// Check if we're in a production environment
+const isProduction = process.env.NODE_ENV === 'production';
+
 // Admin credentials from environment variables
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
-// Environment variables for database
-const DB_HOST = process.env.DB_HOST;
-const DB_USER = process.env.DB_USER;
-const DB_PASSWORD = process.env.DB_PASSWORD;
-const DB_NAME = process.env.DB_NAME;
+// Environment variables for database - with safe defaults for non-production
+const DB_HOST = process.env.DB_HOST || '';
+const DB_USER = process.env.DB_USER || '';
+const DB_PASSWORD = process.env.DB_PASSWORD || '';
+const DB_NAME = process.env.DB_NAME || '';
 const DB_PORT = parseInt(process.env.DB_PORT || '3306');
 const AWS_REGION = process.env.AWS_REGION || 'eu-north-1';
+
+// Log environment status but not actual values
+console.log('Environment configuration:');
+console.log(`NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+console.log(`DB_HOST configured: ${DB_HOST ? 'Yes' : 'No'}`);
+console.log(`DB_USER configured: ${DB_USER ? 'Yes' : 'No'}`);
+console.log(`DB_PASSWORD configured: ${DB_PASSWORD ? 'Yes' : 'No'}`);
+console.log(`DB_NAME configured: ${DB_NAME ? 'Yes' : 'No'}`);
+console.log(`DB_PORT: ${DB_PORT}`);
+console.log(`AWS_REGION: ${AWS_REGION}`);
+console.log(`ADMIN_USERNAME configured: ${ADMIN_USERNAME ? 'Yes' : 'No'}`);
+console.log(`ADMIN_PASSWORD configured: ${ADMIN_PASSWORD ? 'Yes (hidden)' : 'No'}`);
 
 // Database connection with retry logic
 let connectionAttempts = 0;
@@ -46,26 +61,21 @@ const MAX_CONNECTION_ATTEMPTS = 3;
 
 // Function to initialize database connection with retry logic
 async function initializeDatabase() {
+  // If any required environment variables are missing, return null immediately
+  if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
+    console.log('Missing required database environment variables, returning null connection');
+    console.log(`DB_HOST configured: ${DB_HOST ? 'Yes' : 'No'}`);
+    console.log(`DB_USER configured: ${DB_USER ? 'Yes' : 'No'}`);
+    console.log(`DB_PASSWORD configured: ${DB_PASSWORD ? 'Yes' : 'No'}`);
+    console.log(`DB_NAME configured: ${DB_NAME ? 'Yes' : 'No'}`);
+    return null;
+  }
+
   connectionAttempts++;
   try {
-    // Validate environment variables
-    if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
-      console.log('Missing required database environment variables, returning null connection');
-      console.log(`DB_HOST: ${DB_HOST ? 'Set' : 'Missing'}`);
-      console.log(`DB_USER: ${DB_USER ? 'Set' : 'Missing'}`);
-      console.log(`DB_PASSWORD: ${DB_PASSWORD ? 'Set' : 'Missing'}`);
-      console.log(`DB_NAME: ${DB_NAME ? 'Set' : 'Missing'}`);
-      return null;
-    }
-    
-    // Log connection information (for debugging)
+    // Log connection attempt (for debugging)
     console.log(`Connection attempt: ${connectionAttempts} of ${MAX_CONNECTION_ATTEMPTS}`);
-    console.log(`DB_HOST: ${DB_HOST}`);
-    console.log(`DB_USER: ${DB_USER}`);
-    console.log(`DB_PASSWORD: ********`);
-    console.log(`DB_NAME: ${DB_NAME}`);
-    console.log(`DB_PORT: ${DB_PORT}`);
-    console.log(`AWS_REGION: ${AWS_REGION}`);
+    console.log(`Connecting to database at ${DB_HOST}:${DB_PORT}`);
     
     // Create connection with timeout
     const connection = await mysql.createConnection({
@@ -374,7 +384,7 @@ async function handleLogin(username, password) {
 
 // Lambda handler
 exports.handler = async (event) => {
-  console.log('MySQL2 Lambda Function - Version 1.5.0');
+  console.log('MySQL2 Lambda Function - Version 1.6.0');
   console.log('Received event:', JSON.stringify(event, null, 2));
   
   try {
@@ -401,21 +411,40 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'GET' && (requestType === 'site_config' || queryParams.type === 'site_config')) {
       console.log('Processing GET request for site_config');
       
-      // Always return default config for better reliability
-      const config = await getSiteConfig().catch(error => {
-        console.error('Error in getSiteConfig:', error);
+      try {
+        // Get the site configuration with a short timeout
+        const config = await Promise.race([
+          getSiteConfig(),
+          new Promise((resolve) => {
+            setTimeout(() => {
+              console.log('Site config request timed out, using fallback config');
+              resolve({
+                ...defaultSiteConfig,
+                _fallback: true,
+                _timeout: true
+              });
+            }, 2000); // 2 second timeout for faster response
+          })
+        ]);
+        
         return {
-          ...defaultSiteConfig,
-          _error: error.message,
-          _fallback: true
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(config)
         };
-      });
-      
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(config)
-      };
+      } catch (configError) {
+        console.error('Error retrieving site configuration:', configError);
+        // Always return a 200 with default config on error
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            ...defaultSiteConfig,
+            _fallback: true,
+            _error: configError.message || 'Unknown error'
+          })
+        };
+      }
     }
     
     // Handle POST request to save site configuration
@@ -549,15 +578,15 @@ exports.handler = async (event) => {
   } catch (error) {
     console.error('Unhandled error in Lambda function:', error);
     
-    // Always return 200 to prevent API Gateway 502 errors
+    // Always return 200 with a valid response to prevent API Gateway 502 errors
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({ 
         success: false,
         message: 'An unexpected error occurred',
-        error: error.message,
-        _fallback: event.httpMethod === 'GET' ? defaultSiteConfig : undefined
+        error: error.message || 'Unknown error',
+        fallback_config: event.httpMethod === 'GET' ? defaultSiteConfig : undefined
       })
     };
   }
