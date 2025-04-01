@@ -50,7 +50,7 @@
         const token = localStorage.getItem('admin_token');
         if (token) {
             console.log('User is already logged in, redirecting to dashboard');
-            window.location.href = '/static/admin/dashboard.html';
+            window.location.href = '/admin/dashboard.html';
             return;
         }
         
@@ -75,7 +75,7 @@
             submitButton.textContent = 'Signing in...';
             submitButton.classList.add('opacity-75');
             
-            // API endpoint
+            // Use the direct API endpoint to avoid CORS issues
             const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
             
             console.log('Sending login request to:', apiEndpoint);
@@ -95,10 +95,13 @@
             })
             .then(response => {
                 console.log('Login response status:', response.status);
-                if (!response.ok) {
+                if (!response.ok && response.status !== 200) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                return response.json();
+                return response.json().catch(err => {
+                    console.error('Error parsing JSON response:', err);
+                    throw new Error('Invalid response from server');
+                });
             })
             .then(data => {
                 console.log('Login response data:', data);
@@ -120,13 +123,18 @@
                 // Store token in localStorage
                 localStorage.setItem('admin_token', data.token || 'admin-session-token');
                 
+                // Store user info if available
+                if (data.user) {
+                    localStorage.setItem('admin_user', JSON.stringify(data.user));
+                }
+                
                 // Show success message
                 successDiv.textContent = data.message || 'Login successful';
                 successDiv.classList.remove('hidden');
                 
                 // Redirect to dashboard after short delay
                 setTimeout(() => {
-                    window.location.href = '/static/admin/dashboard.html';
+                    window.location.href = '/admin/dashboard.html';
                 }, 1000);
             }
             
