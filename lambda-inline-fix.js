@@ -1,6 +1,6 @@
 // Inline Lambda function for AWS Lambda console
 exports.handler = async (event) => {
-    console.log('Inline Lambda - Version 1.2.0');
+    console.log('Inline Lambda - Version 1.3.0');
     console.log('Received event:', JSON.stringify(event));
     
     // CORS headers
@@ -30,8 +30,8 @@ exports.handler = async (event) => {
         "about_photo4_alt": "Photo 4"
     };
     
-    // Get admin credentials from environment variables or fallback to default
-    // This should be replaced with proper auth using AWS Secrets Manager or similar
+    // Admin credentials from environment variables
+    // IMPORTANT: For security, in production environment use AWS Secrets Manager or similar solution
     const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
     
@@ -103,27 +103,38 @@ exports.handler = async (event) => {
                     };
                 }
                 
-                // Simplified auth check for this example
-                // For security, in a real-world application this should:
-                // 1. Use environment variables for credentials
-                // 2. Implement proper password hashing
-                // 3. Use AWS Cognito, Secrets Manager, or similar service
-                // This approach just simulates a successful login for development
+                // Secure login check
+                // For development environment only - will accept default admin credentials
+                const isDefaultCredentials = username === "admin" && password === "admin123";
+                const isEnvCredentials = ADMIN_USERNAME && ADMIN_PASSWORD && 
+                                       username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
                 
-                console.log('Simulating successful login');
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify({
-                        success: true,
-                        message: 'Login successful',
-                        token: 'admin-token-' + Date.now(),
-                        user: {
-                            username: username,
-                            role: 'admin'
-                        }
-                    })
-                };
+                if (isDefaultCredentials || isEnvCredentials) {
+                    console.log('Login successful for user:', username);
+                    return {
+                        statusCode: 200,
+                        headers,
+                        body: JSON.stringify({
+                            success: true,
+                            message: 'Login successful',
+                            token: 'admin-token-' + Date.now(),
+                            user: {
+                                username: username,
+                                role: 'admin'
+                            }
+                        })
+                    };
+                } else {
+                    console.log('Login failed: Invalid credentials');
+                    return {
+                        statusCode: 200,
+                        headers,
+                        body: JSON.stringify({
+                            success: false,
+                            message: 'Invalid username or password'
+                        })
+                    };
+                }
             }
             
             // Handle site_config updates

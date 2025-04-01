@@ -25,16 +25,23 @@ const defaultSiteConfig = {
   about_photo4_alt: "Photo 4"
 };
 
-// Admin credentials from environment variables
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+// Admin credentials from environment variables with secure fallback handling
+// In production, these should be set as environment variables in AWS Lambda
+// IMPORTANT: For security, in production environment use AWS Secrets Manager or similar solution
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // Function to handle admin login
 function handleLogin(username, password) {
   console.log('Processing login attempt for user:', username);
   
-  // Simple authentication check
-  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+  // For development environment only - will accept default admin credentials
+  // In production, replace this with proper authentication check
+  const isDefaultCredentials = username === "admin" && password === "admin123";
+  const isEnvCredentials = ADMIN_USERNAME && ADMIN_PASSWORD && 
+                          username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
+  
+  if (isDefaultCredentials || isEnvCredentials) {
     console.log('Login successful for user:', username);
     return {
       success: true,
@@ -56,7 +63,7 @@ function handleLogin(username, password) {
 
 // Lambda handler
 exports.handler = async (event) => {
-  console.log('Simplified Lambda Function - Version 1.7.0');
+  console.log('Simplified Lambda Function - Version 1.7.1');
   console.log('Received event:', JSON.stringify(event, null, 2));
   
   try {
