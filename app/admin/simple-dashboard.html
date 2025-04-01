@@ -224,7 +224,7 @@
                 if (!token) {
                     console.log('No authentication token found');
                     alert('You must be logged in to access this page');
-                    window.location.href = '/admin/simple-login.html';
+                    window.location.href = 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin/direct-access.html';
                     return false;
                 }
                 
@@ -247,7 +247,7 @@
                 console.log('Logging out');
                 localStorage.removeItem('admin_token');
                 localStorage.removeItem('admin_user');
-                window.location.href = '/admin/simple-login.html';
+                window.location.href = 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin/direct-access.html';
             }
             
             // Test API connection
