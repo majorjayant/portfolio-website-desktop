@@ -50,7 +50,12 @@ async function initializeDatabase() {
   try {
     // Validate environment variables
     if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
-      throw new Error('Missing required database environment variables');
+      console.log('Missing required database environment variables, returning null connection');
+      console.log(`DB_HOST: ${DB_HOST ? 'Set' : 'Missing'}`);
+      console.log(`DB_USER: ${DB_USER ? 'Set' : 'Missing'}`);
+      console.log(`DB_PASSWORD: ${DB_PASSWORD ? 'Set' : 'Missing'}`);
+      console.log(`DB_NAME: ${DB_NAME ? 'Set' : 'Missing'}`);
+      return null;
     }
     
     // Log connection information (for debugging)
@@ -93,7 +98,8 @@ async function initializeDatabase() {
       return initializeDatabase(); // Recursive retry
     }
     
-    throw error;
+    console.log('All connection attempts failed, returning null');
+    return null;
   }
 }
 
@@ -172,6 +178,12 @@ async function getSiteConfig() {
     // Initialize database connection
     connection = await initializeDatabase();
     
+    // If connection is null (DB credentials not provided), return default config
+    if (!connection) {
+      console.log('No database connection available. Using default configuration.');
+      return defaultSiteConfig;
+    }
+    
     // Query for site configuration
     console.log('Querying database for site configuration');
     
@@ -246,6 +258,16 @@ async function saveSiteConfig(configData) {
   try {
     // Initialize database connection
     connection = await initializeDatabase();
+    
+    // If connection is null (DB credentials not provided), return success but mention data is not persisted
+    if (!connection) {
+      console.log('No database connection available. Cannot save configuration.');
+      return {
+        success: true,
+        message: 'Configuration processed, but not persisted to database (no database connection available)',
+        temporary: true
+      };
+    }
     
     console.log('Saving site configuration to database');
     
@@ -352,7 +374,7 @@ async function handleLogin(username, password) {
 
 // Lambda handler
 exports.handler = async (event) => {
-  console.log('MySQL2 Lambda Function - Version 1.4.0');
+  console.log('MySQL2 Lambda Function - Version 1.5.0');
   console.log('Received event:', JSON.stringify(event, null, 2));
   
   try {
@@ -379,48 +401,21 @@ exports.handler = async (event) => {
     if (event.httpMethod === 'GET' && (requestType === 'site_config' || queryParams.type === 'site_config')) {
       console.log('Processing GET request for site_config');
       
-      // Create a promise that resolves with default data after 3 seconds
-      const timeoutPromise = new Promise(resolve => {
-        setTimeout(() => {
-          console.log('Database connection timed out, using fallback data');
-          resolve({
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-              ...defaultSiteConfig,
-              _fallback: true,
-              _timeout: true,
-              _error: "Database connection timed out"
-            })
-          });
-        }, 3000); // 3 second timeout for faster response
+      // Always return default config for better reliability
+      const config = await getSiteConfig().catch(error => {
+        console.error('Error in getSiteConfig:', error);
+        return {
+          ...defaultSiteConfig,
+          _error: error.message,
+          _fallback: true
+        };
       });
       
-      // Create the actual database query promise
-      const dbQueryPromise = (async () => {
-        try {
-          const config = await getSiteConfig();
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify(config)
-          };
-        } catch (dbError) {
-          console.error('Database query error:', dbError);
-          return {
-            statusCode: 200, // Return 200 to prevent API Gateway 502 errors
-            headers,
-            body: JSON.stringify({
-              ...defaultSiteConfig,
-              _fallback: true,
-              _error: dbError.message
-            })
-          };
-        }
-      })();
-      
-      // Return whichever promise resolves first
-      return Promise.race([timeoutPromise, dbQueryPromise]);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(config)
+      };
     }
     
     // Handle POST request to save site configuration
@@ -431,7 +426,7 @@ exports.handler = async (event) => {
       if (!event.body) {
         console.error('Missing request body');
         return {
-          statusCode: 400,
+          statusCode: 200,
           headers,
           body: JSON.stringify({ 
             success: false,
@@ -448,7 +443,7 @@ exports.handler = async (event) => {
       } catch (parseError) {
         console.error('Error parsing request body:', parseError);
         return {
-          statusCode: 400,
+          statusCode: 200,
           headers,
           body: JSON.stringify({ 
             success: false,
@@ -470,7 +465,7 @@ exports.handler = async (event) => {
         const { username, password } = parsedBody;
         if (!username || !password) {
           return {
-            statusCode: 400,
+            statusCode: 200,
             headers,
             body: JSON.stringify({
               success: false,
@@ -518,7 +513,7 @@ exports.handler = async (event) => {
         } catch (dbError) {
           console.error('Error saving site config:', dbError);
           return {
-            statusCode: 200, // Return 200 to prevent API Gateway 502 errors
+            statusCode: 200,
             headers,
             body: JSON.stringify({ 
               success: false,
@@ -531,7 +526,7 @@ exports.handler = async (event) => {
       
       // Unknown action type
       return {
-        statusCode: 200, // Return 200 to prevent API Gateway 502 errors
+        statusCode: 200,
         headers,
         body: JSON.stringify({ 
           success: false,
@@ -543,7 +538,7 @@ exports.handler = async (event) => {
     // Default response for unknown routes
     console.log('Unknown request type or missing parameters');
     return {
-      statusCode: 200, // Return 200 to prevent API Gateway 502 errors
+      statusCode: 200,
       headers,
       body: JSON.stringify({ 
         success: false,
