@@ -1,6 +1,6 @@
 // Inline Lambda function for AWS Lambda console
 exports.handler = async (event) => {
-    console.log('Inline Lambda - Version 1.0.0');
+    console.log('Inline Lambda - Version 1.1.0');
     console.log('Received event:', JSON.stringify(event));
     
     // CORS headers
@@ -30,9 +30,14 @@ exports.handler = async (event) => {
         "about_photo4_alt": "Photo 4"
     };
     
+    // Admin credentials - hardcoded for this simplified example
+    const ADMIN_USERNAME = 'admin';
+    const ADMIN_PASSWORD = 'admin123';
+    
     try {
         // CORS preflight request
         if (event.httpMethod === 'OPTIONS') {
+            console.log('Handling OPTIONS request');
             return {
                 statusCode: 200,
                 headers,
@@ -42,10 +47,13 @@ exports.handler = async (event) => {
         
         // GET request handling
         if (event.httpMethod === 'GET') {
+            console.log('Handling GET request');
             const queryParams = event.queryStringParameters || {};
+            console.log('Query parameters:', queryParams);
             
             // Handle site_config request
             if (queryParams.type === 'site_config') {
+                console.log('Serving site configuration');
                 return {
                     statusCode: 200,
                     headers,
@@ -56,49 +64,15 @@ exports.handler = async (event) => {
         
         // POST request handling
         if (event.httpMethod === 'POST') {
+            console.log('Handling POST request');
+            
+            // Parse body
+            let body;
             try {
-                const body = JSON.parse(event.body || '{}');
-                
-                // Handle login request
-                if (body.action === 'login') {
-                    const username = body.username;
-                    const password = body.password;
-                    
-                    // Simple auth check
-                    if (username === 'admin' && password === 'admin123') {
-                        return {
-                            statusCode: 200,
-                            headers,
-                            body: JSON.stringify({
-                                success: true,
-                                message: 'Login successful',
-                                token: 'admin-token-' + Date.now()
-                            })
-                        };
-                    } else {
-                        return {
-                            statusCode: 200,
-                            headers,
-                            body: JSON.stringify({
-                                success: false,
-                                message: 'Invalid credentials'
-                            })
-                        };
-                    }
-                }
-                
-                // Handle site_config updates
-                if (body.action && body.action.includes('site_config')) {
-                    return {
-                        statusCode: 200,
-                        headers,
-                        body: JSON.stringify({
-                            success: true,
-                            message: 'Configuration processed'
-                        })
-                    };
-                }
+                body = JSON.parse(event.body || '{}');
+                console.log('Parsed body:', JSON.stringify(body, null, 2));
             } catch (parseError) {
+                console.error('Error parsing request body:', parseError);
                 return {
                     statusCode: 200,
                     headers,
@@ -108,9 +82,82 @@ exports.handler = async (event) => {
                     })
                 };
             }
+            
+            // Handle login request
+            if (body.action === 'login') {
+                console.log('Processing login request for username:', body.username);
+                
+                const username = body.username;
+                const password = body.password;
+                
+                if (!username || !password) {
+                    console.log('Login failed: Missing username or password');
+                    return {
+                        statusCode: 200,
+                        headers,
+                        body: JSON.stringify({
+                            success: false,
+                            message: 'Username and password are required'
+                        })
+                    };
+                }
+                
+                // Simple auth check
+                if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                    console.log('Login successful for:', username);
+                    return {
+                        statusCode: 200,
+                        headers,
+                        body: JSON.stringify({
+                            success: true,
+                            message: 'Login successful',
+                            token: 'admin-token-' + Date.now(),
+                            user: {
+                                username: username,
+                                role: 'admin'
+                            }
+                        })
+                    };
+                } else {
+                    console.log('Login failed: Invalid credentials for username:', username);
+                    return {
+                        statusCode: 200,
+                        headers,
+                        body: JSON.stringify({
+                            success: false,
+                            message: 'Invalid username or password'
+                        })
+                    };
+                }
+            }
+            
+            // Handle site_config updates
+            if (body.action && body.action.includes('site_config')) {
+                console.log('Processing site configuration update');
+                return {
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        success: true,
+                        message: 'Configuration processed'
+                    })
+                };
+            }
+            
+            // Unknown action
+            console.log('Unknown action requested:', body.action);
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    message: 'Unknown action. Valid actions: login, site_config'
+                })
+            };
         }
         
-        // Default response
+        // Default response for unhandled request types
+        console.log('Unhandled request type:', event.httpMethod);
         return {
             statusCode: 200,
             headers,
@@ -120,7 +167,7 @@ exports.handler = async (event) => {
             })
         };
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error in Lambda function:', error);
         
         // Always return 200 to prevent API Gateway 502 errors
         return {
@@ -129,6 +176,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 success: false,
                 message: 'An error occurred',
+                error: error.message || 'Unknown error',
                 fallback_config: event.httpMethod === 'GET' ? defaultConfig : undefined
             })
         };
