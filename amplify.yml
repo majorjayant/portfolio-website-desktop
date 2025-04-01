@@ -45,6 +45,18 @@ frontend:
           value: 'no-cache, no-store, must-revalidate'
   rewrites:
     # Admin Routes - Order is important
+    - source: '/admin-direct'
+      target: '/admin-direct/index.html'
+      status: '200'
+    - source: '/admin-direct/'
+      target: '/admin-direct/index.html'
+      status: '200'
+    - source: '/admin-login'
+      target: '/admin-login/index.html'
+      status: '200'
+    - source: '/admin-login/'
+      target: '/admin-login/index.html'
+      status: '200'
     - source: '/admin/login'
       target: '/admin/login.html'
       status: '200'
