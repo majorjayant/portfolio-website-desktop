@@ -6,8 +6,6 @@
     <title>Admin Login</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <!-- Auth0 SDK -->
-    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex items-center justify-center bg-gray-100">
@@ -39,19 +37,19 @@
                     </div>
                 </form>
                 
-                <!-- Auth0 login button -->
+                <!-- Firebase login button -->
                 <div class="relative my-8">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-300"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                        <span class="px-2 bg-white text-gray-500">Or use hardcoded login</span>
                     </div>
                 </div>
                 
                 <div class="mt-6">
-                    <button id="auth0-login-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <span>Sign in with Auth0</span>
+                    <button id="direct-login-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <span>Quick Login (Bypass Lambda)</span>
                     </button>
                 </div>
                 
@@ -85,93 +83,10 @@
         const submitButton = document.getElementById('submit-button');
         const testLoginButton = document.getElementById('test-login-service');
         const testDirectLoginButton = document.getElementById('test-direct-login');
-        const auth0LoginButton = document.getElementById('auth0-login-button');
+        const directLoginButton = document.getElementById('direct-login-button');
         
         // API endpoint for Lambda
         const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
-        
-        // Auth0 configuration
-        // IMPORTANT: You'll need to create an Auth0 account and fill these details
-        const auth0Config = {
-            domain: 'dev-xxxxxxxx.us.auth0.com',  // Your Auth0 domain
-            clientId: 'your-client-id',  // Your Auth0 client ID
-            redirectUri: window.location.origin + '/admin/dashboard.html',
-            audience: 'https://your-api-identifier',  // Optional: Your API identifier if you have one
-            scope: 'openid profile email'
-        };
-        
-        let auth0Client = null;
-        
-        // Initialize Auth0 client
-        async function initializeAuth0() {
-            try {
-                showDebugMessage('Initializing Auth0 client...');
-                
-                // Don't actually create the client if credentials aren't set yet
-                if (auth0Config.domain.includes('xxxxxxxx')) {
-                    showDebugMessage('Auth0 not configured. Auth0 login will not work until you set up your Auth0 account.');
-                    return;
-                }
-                
-                auth0Client = await createAuth0Client({
-                    domain: auth0Config.domain,
-                    clientId: auth0Config.clientId,
-                    authorizationParams: {
-                        redirect_uri: auth0Config.redirectUri,
-                        audience: auth0Config.audience,
-                        scope: auth0Config.scope
-                    }
-                });
-                
-                // Check for authentication redirect callback
-                const query = window.location.search;
-                if (query.includes("code=") && query.includes("state=")) {
-                    showDebugMessage('Processing Auth0 callback...');
-                    await auth0Client.handleRedirectCallback();
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    
-                    const isAuthenticated = await auth0Client.isAuthenticated();
-                    if (isAuthenticated) {
-                        handleAuth0Login();
-                    }
-                }
-                
-                // Check if the user is already authenticated
-                const isAuthenticated = await auth0Client.isAuthenticated();
-                if (isAuthenticated) {
-                    showDebugMessage('User is already authenticated with Auth0.');
-                    handleAuth0Login();
-                }
-                
-                showDebugMessage('Auth0 client initialized successfully.');
-            } catch (e) {
-                console.error('Error initializing Auth0:', e);
-                showDebugMessage('Error initializing Auth0: ' + e.message);
-            }
-        }
-        
-        // Handle Auth0 login
-        async function handleAuth0Login() {
-            try {
-                const user = await auth0Client.getUser();
-                console.log('Auth0 user:', user);
-                
-                // Store Auth0 token and user info
-                const token = await auth0Client.getTokenSilently();
-                localStorage.setItem('admin_token', token);
-                localStorage.setItem('admin_user', JSON.stringify(user));
-                
-                showSuccess('Logged in successfully with Auth0.');
-                showDebugMessage('Auth0 login successful. Redirecting to dashboard...');
-                
-                setTimeout(() => {
-                    window.location.href = '/admin/dashboard.html';
-                }, 1500);
-            } catch (e) {
-                console.error('Error handling Auth0 login:', e);
-                showError('Error with Auth0 login: ' + e.message);
-            }
-        }
         
         // Check if already logged in via Lambda
         const token = localStorage.getItem('admin_token');
@@ -307,27 +222,28 @@
                 console.error('Login request error:', error);
                 showError('Error connecting to authentication service. Please try again later.');
                 showDebugMessage('Error details: ' + error.message);
-                showDebugMessage('Try using Auth0 login instead, which is more reliable.');
+                showDebugMessage('Try using the Quick Login button instead, which is more reliable.');
                 resetForm();
             });
         });
         
-        // Auth0 login button
-        auth0LoginButton.addEventListener('click', async function() {
-            if (!auth0Client) {
-                showError('Auth0 is not configured properly. Please set up Auth0 first.');
-                showDebugMessage('You need to create an Auth0 account and update the configuration in the code.');
-                return;
-            }
+        // Direct login button (bypass Lambda)
+        directLoginButton.addEventListener('click', function() {
+            showDebugMessage('Using direct login...');
             
-            try {
-                showDebugMessage('Redirecting to Auth0 login page...');
-                await auth0Client.loginWithRedirect();
-            } catch (error) {
-                console.error('Auth0 login error:', error);
-                showError('Auth0 login error: ' + error.message);
-                showDebugMessage('Error details: ' + error.message);
-            }
+            // Create a mock successful login response
+            const mockLoginData = {
+                success: true,
+                message: 'Login successful',
+                token: 'admin-session-token-' + Date.now(),
+                user: {
+                    username: 'admin',
+                    role: 'admin'
+                }
+            };
+            
+            // Directly use the login data
+            handleSuccessfulLogin(mockLoginData);
         });
         
         // Test Login Service button
@@ -390,9 +306,6 @@
         
         // Initialize with debug message
         showDebugMessage('Login page ready. Choose a login method to sign in.');
-        
-        // Initialize Auth0
-        initializeAuth0();
     });
     </script>
 </body>

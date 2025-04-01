@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- Auth0 SDK -->
-    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex flex-col">
@@ -91,83 +89,27 @@
         // API endpoint
         const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
         
-        // Auth0 configuration
-        const auth0Config = {
-            domain: 'dev-xxxxxxxx.us.auth0.com',
-            clientId: 'your-client-id',
-            redirectUri: window.location.origin + '/admin/dashboard.html',
-            audience: 'https://your-api-identifier',
-            scope: 'openid profile email'
-        };
-        
-        let auth0Client = null;
         let userAuthenticated = false;
         let authMethod = 'none';
         
-        // Initialize Auth0 client
-        async function initializeAuth0() {
-            try {
-                // Don't actually create the client if credentials aren't set yet
-                if (auth0Config.domain.includes('xxxxxxxx')) {
-                    console.log('Auth0 not configured, skipping initialization');
-                    return;
-                }
-                
-                console.log('Initializing Auth0 client');
-                auth0Client = await createAuth0Client({
-                    domain: auth0Config.domain,
-                    clientId: auth0Config.clientId,
-                    authorizationParams: {
-                        redirect_uri: auth0Config.redirectUri,
-                        audience: auth0Config.audience,
-                        scope: auth0Config.scope
-                    }
-                });
-                
-                // Check for authentication redirect callback
-                const query = window.location.search;
-                if (query.includes("code=") && query.includes("state=")) {
-                    console.log('Processing Auth0 callback');
-                    await auth0Client.handleRedirectCallback();
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
-                
-                // Check if user is authenticated with Auth0
-                const isAuthenticated = await auth0Client.isAuthenticated();
-                if (isAuthenticated) {
-                    console.log('User is authenticated with Auth0');
-                    authMethod = 'auth0';
-                    userAuthenticated = true;
-                    const user = await auth0Client.getUser();
-                    displayUserInfo(user);
-                    displayAuthInfo();
-                }
-            } catch (e) {
-                console.error('Error initializing Auth0:', e);
-            }
-        }
-        
-        // Check if user is authenticated with Lambda
-        function checkLambdaAuth() {
+        // Check if user is authenticated
+        function checkAuthentication() {
             const token = localStorage.getItem('admin_token');
             const user = localStorage.getItem('admin_user');
             
             if (token) {
                 console.log('Found token in localStorage');
-                if (!userAuthenticated) {
-                    console.log('User is authenticated with Lambda');
-                    authMethod = 'lambda';
-                    userAuthenticated = true;
-                    
-                    try {
-                        const userObj = user ? JSON.parse(user) : { username: 'admin' };
-                        displayUserInfo(userObj);
-                        displayAuthInfo();
-                    } catch (e) {
-                        console.error('Error parsing user data:', e);
-                        displayUserInfo({ username: 'admin' });
-                        displayAuthInfo();
-                    }
+                authMethod = 'direct';
+                userAuthenticated = true;
+                
+                try {
+                    const userObj = user ? JSON.parse(user) : { username: 'admin' };
+                    displayUserInfo(userObj);
+                    displayAuthInfo();
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                    displayUserInfo({ username: 'admin' });
+                    displayAuthInfo();
                 }
                 return true;
             }
@@ -177,11 +119,7 @@
         // Display user information
         function displayUserInfo(user) {
             if (user) {
-                if (authMethod === 'auth0') {
-                    userInfoElement.textContent = `Hello, ${user.name || user.email || 'Admin'}`;
-                } else {
-                    userInfoElement.textContent = `Hello, ${user.username || user.name || 'Admin'}`;
-                }
+                userInfoElement.textContent = `Hello, ${user.username || user.name || 'Admin'}`;
             } else {
                 userInfoElement.textContent = 'Hello, Admin';
             }
@@ -191,17 +129,11 @@
         function displayAuthInfo() {
             let html = '';
             
-            if (authMethod === 'auth0') {
+            if (authMethod === 'direct') {
                 html = `
-                    <p><strong>Auth Method:</strong> Auth0</p>
+                    <p><strong>Auth Method:</strong> Direct Login</p>
                     <p><strong>Status:</strong> Authenticated</p>
-                    <p class="text-xs mt-2">Login managed by Auth0 authentication service</p>
-                `;
-            } else if (authMethod === 'lambda') {
-                html = `
-                    <p><strong>Auth Method:</strong> Lambda</p>
-                    <p><strong>Status:</strong> Authenticated</p>
-                    <p class="text-xs mt-2">Login managed by custom Lambda authentication</p>
+                    <p class="text-xs mt-2">Login managed by simplified authentication</p>
                 `;
             } else {
                 html = `
@@ -215,18 +147,11 @@
         }
         
         // Log out function
-        async function logout() {
-            if (authMethod === 'auth0' && auth0Client) {
-                console.log('Logging out from Auth0');
-                await auth0Client.logout({
-                    returnTo: window.location.origin + '/admin/login.html'
-                });
-            } else {
-                console.log('Logging out from Lambda auth');
-                localStorage.removeItem('admin_token');
-                localStorage.removeItem('admin_user');
-                window.location.href = '/admin/login.html';
-            }
+        function logout() {
+            console.log('Logging out');
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = '/admin/login.html';
         }
         
         // Test API connection
@@ -252,15 +177,9 @@
         }
         
         // Check if user is authenticated
-        if (!checkLambdaAuth()) {
-            // Initialize Auth0 to check for Auth0 authentication
-            initializeAuth0().then(() => {
-                // If still not authenticated with either method, redirect to login
-                if (!userAuthenticated) {
-                    console.log('User is not authenticated, redirecting to login');
-                    window.location.href = '/admin/login.html';
-                }
-            });
+        if (!checkAuthentication()) {
+            console.log('User is not authenticated, redirecting to login');
+            window.location.href = '/admin/login.html';
         }
         
         // Add event listeners
