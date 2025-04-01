@@ -7,7 +7,7 @@ const headers = {
 };
 
 // Default fallback configuration for when database is unavailable
-const defaultSiteConfig = {
+let siteConfig = {
   image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
   image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
   image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
@@ -33,7 +33,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 1.7.2 - Enhanced for debugging');
+  console.log('Lambda Version: 1.7.3 - Enhanced with real-time config updates');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -86,11 +86,47 @@ function handleLogin(username, password) {
   }
 }
 
+// Function to update site configuration
+function updateSiteConfig(newConfig) {
+  console.log('Updating site configuration');
+  
+  // Update only valid configuration keys
+  const validKeys = [
+    'image_favicon_url', 'image_logo_url', 'image_banner_url',
+    'about_title', 'about_subtitle', 'about_description',
+    'image_about_profile_url',
+    'image_about_photo1_url', 'image_about_photo2_url', 'image_about_photo3_url', 'image_about_photo4_url',
+    'about_photo1_alt', 'about_photo2_alt', 'about_photo3_alt', 'about_photo4_alt'
+  ];
+  
+  // Create a clean update object
+  const updates = {};
+  let updatedCount = 0;
+  
+  // Only accept known configuration keys
+  Object.keys(newConfig).forEach(key => {
+    if (validKeys.includes(key)) {
+      updates[key] = newConfig[key];
+      updatedCount++;
+    }
+  });
+  
+  // Update the main configuration
+  siteConfig = { ...siteConfig, ...updates };
+  
+  return {
+    success: true,
+    message: `Configuration updated successfully (${updatedCount} fields)`,
+    updated_fields: updatedCount,
+    timestamp: new Date().toISOString()
+  };
+}
+
 // Lambda handler
 exports.handler = async (event, context) => {
   // Log detailed information about the request
   logRequestInfo(event, context);
-  console.log('Simplified Lambda Function - Version 1.7.2');
+  console.log('Enhanced Lambda Function - Version 1.7.3');
   
   try {
     // Handle OPTIONS requests for CORS
@@ -118,7 +154,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '1.7.2',
+          lambda_version: '1.7.3',
           routing_hint: 'If you are experiencing admin access issues, use the direct_access credentials or access through /admin-login.html'
         })
       };
@@ -130,15 +166,13 @@ exports.handler = async (event, context) => {
     if (event.httpMethod === 'GET' && (requestType === 'site_config' || queryParams.type === 'site_config')) {
       console.log('Processing GET request for site_config');
       
-      // Since this is the simplified version without MySQL, always return the default config
+      // Return the current site configuration
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
-          ...defaultSiteConfig,
-          _static: true,
-          _info: "Using static configuration data",
-          _version: "1.7.2",
+          ...siteConfig,
+          _version: "1.7.3",
           timestamp: new Date().toISOString()
         })
       };
@@ -210,7 +244,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '1.7.2'
+            lambda_version: '1.7.3'
           })
         };
       }
@@ -223,7 +257,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '1.7.2',
+            lambda_version: '1.7.3',
             timestamp: new Date().toISOString(),
             access_paths: {
               direct_access_url: 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin-login.html',
@@ -233,18 +267,33 @@ exports.handler = async (event, context) => {
         };
       }
       
-      // For site configuration updates (simplified version without database storage)
-      if (actionType.includes('site_config') || parsedBody.site_config || requestType === 'site_config') {
-        // In the simplified version, we acknowledge the request but don't actually save anything
+      // For site configuration updates
+      if (actionType === 'update_site_config' && parsedBody.site_config) {
+        console.log('Processing site config update request');
+        const updateResult = updateSiteConfig(parsedBody.site_config);
+        
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
-            success: true,
-            message: 'Configuration processed (static version without storage)',
-            temporary: true,
-            timestamp: new Date().toISOString(),
-            lambda_version: '1.7.2'
+            ...updateResult,
+            lambda_version: '1.7.3'
+          })
+        };
+      }
+      
+      // For backward compatibility
+      if (actionType.includes('site_config') || parsedBody.site_config || requestType === 'site_config') {
+        // For site configuration updates
+        const configData = parsedBody.site_config || parsedBody;
+        const updateResult = updateSiteConfig(configData);
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            ...updateResult,
+            lambda_version: '1.7.3'
           })
         };
       }
@@ -285,9 +334,9 @@ exports.handler = async (event, context) => {
         success: false,
         message: 'An unexpected error occurred',
         error: error.message || 'Unknown error',
-        lambda_version: '1.7.2',
+        lambda_version: '1.7.3',
         timestamp: new Date().toISOString(),
-        fallback_config: event.httpMethod === 'GET' ? defaultSiteConfig : undefined
+        fallback_config: event.httpMethod === 'GET' ? siteConfig : undefined
       })
     };
   }
