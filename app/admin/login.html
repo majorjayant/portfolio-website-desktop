@@ -4,310 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen flex items-center justify-center bg-gray-100">
-        <div class="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="bg-indigo-600 px-6 py-4">
-                <h1 class="text-white text-center text-2xl font-bold">Admin Login</h1>
-            </div>
-            <div class="px-6 py-8">
-                <div id="login-error" class="mb-4 p-3 rounded bg-red-100 text-red-700"></div>
-                <div id="login-success" class="hidden mb-4 p-3 rounded bg-green-100 text-green-700"></div>
-                <div id="debug-message" class="mb-4 p-3 rounded bg-blue-50 text-blue-700 text-xs italic"></div>
-                
-                <!-- Manual login form -->
-                <form id="login-form" class="space-y-6 mb-6">
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                        <input type="text" id="username" name="username" value="admin" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                    
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" name="password" value="admin123" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                    
-                    <div>
-                        <button type="submit" id="submit-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Sign in with Lambda
-                        </button>
-                    </div>
-                </form>
-                
-                <!-- Firebase login button -->
-                <div class="relative my-8">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-gray-500">Or use hardcoded login</span>
-                    </div>
-                </div>
-                
-                <div class="mt-6">
-                    <button id="direct-login-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        <span>QUICK LOGIN (GUARANTEED ACCESS)</span>
-                    </button>
-                </div>
-                
-                <!-- Testing tools -->
-                <div class="flex justify-between mt-6">
-                    <button id="test-login-service" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        Test API
-                    </button>
-                    
-                    <button id="test-direct-login" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Test Lambda Login
-                    </button>
-                </div>
-                
-                <div class="mt-6 text-center">
-                    <a href="/" class="text-sm text-indigo-600 hover:text-indigo-500">Back to home</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <meta http-equiv="refresh" content="0;url=simple-login.html">
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Admin login page loaded');
-        
-        // Elements
-        const loginForm = document.getElementById('login-form');
-        const errorDiv = document.getElementById('login-error');
-        const successDiv = document.getElementById('login-success');
-        const debugDiv = document.getElementById('debug-message');
-        const submitButton = document.getElementById('submit-button');
-        const testLoginButton = document.getElementById('test-login-service');
-        const testDirectLoginButton = document.getElementById('test-direct-login');
-        const directLoginButton = document.getElementById('direct-login-button');
-        
-        // API endpoint for Lambda
-        const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
-        
-        // Check if already logged in via Lambda
-        const token = localStorage.getItem('admin_token');
-        if (token) {
-            console.log('User is already logged in, redirecting to dashboard');
-            showDebugMessage('Already logged in. Redirecting to dashboard...');
-            
-            setTimeout(() => {
-                window.location.href = '/admin/dashboard.html';
-            }, 1000);
-            return;
-        }
-        
-        // Debug info
-        console.log('Debug Info:');
-        console.log('Current URL:', window.location.href);
-        console.log('Browser:', navigator.userAgent);
-        
-        // Show debug messages in the UI
-        function showDebugMessage(message) {
-            debugDiv.textContent = message;
-            debugDiv.classList.remove('hidden');
-            console.log('Debug:', message);
-        }
-        
-        // Show error message
-        function showError(message) {
-            errorDiv.textContent = message;
-            errorDiv.classList.remove('hidden');
-            successDiv.classList.add('hidden');
-            console.error('Error:', message);
-        }
-        
-        // Show success message
-        function showSuccess(message) {
-            successDiv.textContent = message;
-            successDiv.classList.remove('hidden');
-            errorDiv.classList.add('hidden');
-            console.log('Success:', message);
-        }
-        
-        // Reset form state
-        function resetForm() {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Sign in with Lambda';
-            submitButton.classList.remove('opacity-75');
-        }
-        
-        // Handle successful login with Lambda
-        function handleSuccessfulLogin(data) {
-            // Store token in localStorage
-            localStorage.setItem('admin_token', data.token || 'admin-session-token');
-            
-            // Store user info if available
-            if (data.user) {
-                localStorage.setItem('admin_user', JSON.stringify(data.user));
-            }
-            
-            // Show success message
-            showSuccess(data.message || 'Login successful');
-            
-            // Redirect to dashboard after short delay
-            showDebugMessage('Login successful. Redirecting to dashboard...');
-            setTimeout(() => {
-                window.location.href = '/admin/dashboard.html';
-            }, 1500);
-        }
-        
-        // Login form submission (Lambda)
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // Reset UI state
-            errorDiv.classList.add('hidden');
-            successDiv.classList.add('hidden');
-            
-            // Update UI to show loading state
-            submitButton.disabled = true;
-            submitButton.textContent = 'Signing in...';
-            submitButton.classList.add('opacity-75');
-            
-            showDebugMessage('Connecting to Lambda authentication service...');
-            
-            // Log what we're sending
-            console.log('Sending login request to:', apiEndpoint);
-            console.log('With credentials:', { username, password: '********' });
-            
-            // Make the API call
-            fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                },
-                body: JSON.stringify({
-                    action: 'login',
-                    username: username,
-                    password: password
-                })
-            })
-            .then(response => {
-                console.log('Login response status:', response.status);
-                
-                showDebugMessage('Response received from server. Status: ' + response.status);
-                
-                // Check if the response is OK
-                if (!response.ok && response.status !== 200) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                // Try to parse the JSON
-                return response.json().catch(err => {
-                    console.error('Error parsing JSON response:', err);
-                    throw new Error('Invalid response from server');
-                });
-            })
-            .then(data => {
-                console.log('Login response data:', data);
-                
-                // Process the response data
-                if (data.success === true) {
-                    handleSuccessfulLogin(data);
-                } else {
-                    showError(data.message || 'Login failed. Please check your credentials.');
-                    resetForm();
-                }
-            })
-            .catch(error => {
-                console.error('Login request error:', error);
-                showError('Error connecting to authentication service. Please try again later.');
-                showDebugMessage('Error details: ' + error.message);
-                showDebugMessage('Try using the Quick Login button instead, which is more reliable.');
-                resetForm();
-            });
-        });
-        
-        // Direct login button (bypass Lambda)
-        directLoginButton.addEventListener('click', function() {
-            showDebugMessage('Using direct login - bypassing Lambda completely...');
-            
-            // Create a mock successful login response
-            const mockLoginData = {
-                success: true,
-                message: 'Login successful',
-                token: 'admin-session-token-' + Date.now(),
-                user: {
-                    username: 'admin',
-                    role: 'admin'
-                }
-            };
-            
-            // Directly use the login data
-            handleSuccessfulLogin(mockLoginData);
-        });
-        
-        // Test Login Service button
-        testLoginButton.addEventListener('click', function() {
-            showDebugMessage('Testing API connection...');
-            
-            fetch(apiEndpoint + '?type=site_config')
-                .then(response => {
-                    showDebugMessage('API response status: ' + response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('API test response:', data);
-                    showSuccess('API connection successful');
-                    showDebugMessage('API response received. Site configuration data available.');
-                })
-                .catch(err => {
-                    console.error('API test error:', err);
-                    showError('API test failed: ' + err.message);
-                    showDebugMessage('Check console for detailed error information.');
-                });
-        });
-        
-        // Test Direct Login button
-        testDirectLoginButton.addEventListener('click', function() {
-            showDebugMessage('Testing direct login with admin/admin123...');
-            
-            fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 'login',
-                    username: 'admin',
-                    password: 'admin123'
-                })
-            })
-            .then(response => {
-                showDebugMessage('Direct login response status: ' + response.status);
-                return response.json();
-            })
-            .then(data => {
-                console.log('Direct login test response:', data);
-                if (data.success === true) {
-                    showSuccess('Direct login test successful!');
-                    showDebugMessage('Login credentials accepted by server.');
-                } else {
-                    showError('Direct login test failed: ' + (data.message || 'Unknown error'));
-                    showDebugMessage('Server rejected the login credentials.');
-                }
-            })
-            .catch(err => {
-                console.error('Direct login test error:', err);
-                showError('Direct login test failed: ' + err.message);
-                showDebugMessage('Error communicating with the server. Check console for details.');
-            });
-        });
-        
-        // Initialize with debug message
-        showDebugMessage('Login page loaded. Choose a login method. For guaranteed access, use the green QUICK LOGIN button.');
-        errorDiv.textContent = 'Lambda login may be experiencing issues. Use the green QUICK LOGIN button below for guaranteed access.';
-    });
+        // Redirect to the simplified login page that works consistently
+        window.location.href = "simple-login.html";
     </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .message {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="message">
+        <h2>Redirecting to Admin Login</h2>
+        <p>If you are not redirected automatically, <a href="simple-login.html">click here</a>.</p>
+    </div>
 </body>
 </html> 
