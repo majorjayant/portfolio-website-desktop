@@ -246,5 +246,50 @@
         });
     </script>
     {% endif %}
+
+    <!-- Function to fetch the latest content from our API -->
+    <script>
+        function fetchLatestAboutContent() {
+            console.log('Checking for latest content from API');
+            
+            // Use the correct API endpoint
+            const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config';
+            
+            fetch(apiEndpoint)
+                .then(response => {
+                    console.log('API response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('API response not OK');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Successfully loaded site config from API:', data);
+                    // Process data - handle nested 'site_configs' if present
+                    const config = data.site_configs || data;
+                    updatePageWithConfig(config);
+                })
+                .catch(error => {
+                    console.error('Error loading from API:', error);
+                    // Try loading from S3 as fallback
+                    const s3Endpoint = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/site_config.json';
+                    return fetch(s3Endpoint)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Fallback load failed');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Loaded config from S3 fallback:', data);
+                            updatePageWithConfig(data);
+                        })
+                        .catch(fallbackError => {
+                            console.error('Fallback load failed:', fallbackError);
+                            showErrorMessage('Error loading configuration. Using default values.');
+                        });
+                });
+        }
+    </script>
 </body>
 </html> 

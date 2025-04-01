@@ -187,9 +187,9 @@
         const refreshButton = document.getElementById('refresh-button');
         const saveMessage = document.getElementById('save-message');
         
-        // API endpoint
-        const API_BASE_URL = 'https://jayant.tech/api';
-        const CONFIG_ENDPOINT = `${API_BASE_URL}/site-config`;
+        // API endpoints
+        const API_BASE_URL = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
+        const CONFIG_TYPE = '?type=site_config';
         
         // Check authentication
         function checkAuthentication() {
@@ -214,12 +214,7 @@
         async function fetchConfiguration() {
             showSaveMessage('Loading configuration...', 'text-blue-500 bg-blue-50');
             try {
-                const token = localStorage.getItem('admin_token');
-                const response = await fetch(CONFIG_ENDPOINT, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await fetch(API_BASE_URL + CONFIG_TYPE);
                 
                 if (!response.ok) {
                     throw new Error(`Failed to load configuration (Status: ${response.status})`);
@@ -239,6 +234,7 @@
             } catch (error) {
                 console.error('Error loading configuration:', error);
                 showSaveMessage('Error loading configuration: ' + error.message, 'text-red-500 bg-red-50');
+                
                 // Add retry button
                 const retryButton = document.createElement('button');
                 retryButton.textContent = 'Retry';
@@ -277,7 +273,7 @@
         }
         
         // Save site configuration
-        function saveSiteConfig(formData) {
+        async function saveSiteConfig(formData) {
             showSaveMessage('Saving configuration...', 'text-blue-500 bg-blue-50');
             
             // Convert form data to object
@@ -286,47 +282,46 @@
                 configData[key] = value;
             });
             
-            // Add action identifier
-            const requestData = {
-                action: 'update_site_config',
-                ...configData
-            };
-            
-            const token = localStorage.getItem('admin_token');
-            
-            fetch(CONFIG_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(requestData)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+            try {
+                // Save to API
+                const apiResponse = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+                    },
+                    body: JSON.stringify({
+                        action: 'update_site_config',
+                        ...configData
+                    })
+                });
+
+                if (!apiResponse.ok) {
+                    throw new Error(`API Error: ${apiResponse.status}`);
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Save response:', data);
-                if (data.success) {
-                    showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
-                    setTimeout(hideSaveMessage, 3000);
-                } else {
-                    throw new Error(data.message || 'Unknown error');
+
+                const apiData = await apiResponse.json();
+                
+                if (!apiData.success) {
+                    throw new Error(apiData.message || 'API save failed');
                 }
-            })
-            .catch(err => {
-                console.error('Error saving configuration:', err);
-                showSaveMessage('Error saving configuration: ' + err.message, 'text-red-500 bg-red-50');
+
+                showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
+                setTimeout(hideSaveMessage, 3000);
+
+                // Refresh the configuration after saving
+                await fetchConfiguration();
+            } catch (error) {
+                console.error('Error saving configuration:', error);
+                showSaveMessage('Error saving configuration: ' + error.message, 'text-red-500 bg-red-50');
+                
                 // Add retry button
                 const retryButton = document.createElement('button');
                 retryButton.textContent = 'Retry Save';
                 retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
                 retryButton.onclick = () => saveSiteConfig(formData);
                 saveMessage.appendChild(retryButton);
-            });
+            }
         }
         
         // Show save message with appropriate styling
