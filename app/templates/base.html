@@ -272,7 +272,7 @@
                 .catch(error => {
                     console.error('Error loading from API:', error);
                     // Try loading from S3 as fallback
-                    const s3Endpoint = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/site_config.json';
+                    const s3Endpoint = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/staging/site_config.json';
                     return fetch(s3Endpoint)
                         .then(response => {
                             if (!response.ok) {
