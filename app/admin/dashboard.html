@@ -196,7 +196,7 @@
             const token = localStorage.getItem('admin_token');
             if (!token) {
                 console.log('User is not authenticated, redirecting to login');
-                window.location.href = '/admin/login.html';
+                window.location.href = '/admin-direct/';
                 return false;
             }
             return true;
@@ -212,8 +212,9 @@
         
         // Load site configuration
         async function fetchConfiguration() {
+            showSaveMessage('Loading configuration...', 'text-blue-500 bg-blue-50');
             try {
-                const token = localStorage.getItem('adminToken');
+                const token = localStorage.getItem('admin_token');
                 const response = await fetch(CONFIG_ENDPOINT, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -221,13 +222,29 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error('Failed to load configuration');
+                    throw new Error(`Failed to load configuration (Status: ${response.status})`);
                 }
                 
-                const config = await response.json();
+                const data = await response.json();
+                console.log('Loaded configuration:', data);
+                
+                if (!data) {
+                    throw new Error('No configuration data received');
+                }
+                
+                // Handle both direct data and nested site_configs
+                const config = data.site_configs || data;
                 populateForm(config);
+                hideSaveMessage();
             } catch (error) {
-                showError('Error loading configuration: ' + error.message);
+                console.error('Error loading configuration:', error);
+                showSaveMessage('Error loading configuration: ' + error.message, 'text-red-500 bg-red-50');
+                // Add retry button
+                const retryButton = document.createElement('button');
+                retryButton.textContent = 'Retry';
+                retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
+                retryButton.onclick = fetchConfiguration;
+                saveMessage.appendChild(retryButton);
             }
         }
         
@@ -275,10 +292,13 @@
                 ...configData
             };
             
+            const token = localStorage.getItem('admin_token');
+            
             fetch(CONFIG_ENDPOINT, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(requestData)
             })
@@ -292,15 +312,20 @@
                 console.log('Save response:', data);
                 if (data.success) {
                     showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
-                    // Hide message after 3 seconds
                     setTimeout(hideSaveMessage, 3000);
                 } else {
-                    showSaveMessage('Error: ' + (data.message || 'Unknown error'), 'text-red-500 bg-red-50');
+                    throw new Error(data.message || 'Unknown error');
                 }
             })
             .catch(err => {
                 console.error('Error saving configuration:', err);
                 showSaveMessage('Error saving configuration: ' + err.message, 'text-red-500 bg-red-50');
+                // Add retry button
+                const retryButton = document.createElement('button');
+                retryButton.textContent = 'Retry Save';
+                retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
+                retryButton.onclick = () => saveSiteConfig(formData);
+                saveMessage.appendChild(retryButton);
             });
         }
         
