@@ -24,11 +24,13 @@ This AWS Lambda function is designed to handle database operations for a portfol
 
 Configure the following environment variables in the AWS Lambda console:
 
-- `DB_HOST` - MySQL database host (default: website.ct8aqqkk828w.eu-north-1.rds.amazonaws.com)
-- `DB_USER` - MySQL username (default: majorjayant)
-- `DB_PASSWORD` - MySQL password (default: seemaduhlani)
-- `DB_NAME` - MySQL database name (default: website)
+- `DB_HOST` - MySQL database host (your RDS endpoint)
+- `DB_USER` - MySQL username 
+- `DB_PASSWORD` - MySQL password
+- `DB_NAME` - MySQL database name
 - `DB_PORT` - MySQL port (default: 3306)
+
+**Note:** Never commit credentials to your repository. Use environment variables instead.
 
 ## API Usage
 

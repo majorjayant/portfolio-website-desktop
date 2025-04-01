@@ -28,11 +28,16 @@ const defaultSiteConfig = {
   about_photo4_alt: "Test Photo 4 Alt Text"
 };
 
-// Environment variables with updated password
-const DB_HOST = process.env.DB_HOST || 'website.ct8aqqkk828w.eu-north-1.rds.amazonaws.com';
-const DB_USER = process.env.DB_USER || 'majorjayant';
-const DB_PASSWORD = process.env.DB_PASSWORD || 'seemaduhlani'; // Updated password
-const DB_NAME = process.env.DB_NAME || 'website';
+// Admin credentials - hardcoded for simplicity
+// In a production environment, these should be in a database with proper hashing
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+
+// Environment variables for database
+const DB_HOST = process.env.DB_HOST;
+const DB_USER = process.env.DB_USER;
+const DB_PASSWORD = process.env.DB_PASSWORD;
+const DB_NAME = process.env.DB_NAME;
 const DB_PORT = parseInt(process.env.DB_PORT || '3306');
 const AWS_REGION = process.env.AWS_REGION || 'eu-north-1';
 
@@ -44,6 +49,11 @@ const MAX_CONNECTION_ATTEMPTS = 3;
 async function initializeDatabase() {
   connectionAttempts++;
   try {
+    // Validate environment variables
+    if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
+      throw new Error('Missing required database environment variables');
+    }
+    
     // Log connection information (for debugging)
     console.log(`Connection attempt: ${connectionAttempts} of ${MAX_CONNECTION_ATTEMPTS}`);
     console.log(`DB_HOST: ${DB_HOST}`);
@@ -316,9 +326,34 @@ async function saveSiteConfig(configData) {
   }
 }
 
+// Function to handle admin login
+async function handleLogin(username, password) {
+  console.log('Processing login attempt for user:', username);
+  
+  // Simple authentication check
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    console.log('Login successful for user:', username);
+    return {
+      success: true,
+      message: "Login successful",
+      token: "sample-jwt-token-would-be-here", // In production, generate a proper JWT token
+      user: {
+        username: username,
+        role: "admin"
+      }
+    };
+  } else {
+    console.log('Login failed for user:', username);
+    return {
+      success: false,
+      message: "Invalid username or password"
+    };
+  }
+}
+
 // Lambda handler
 exports.handler = async (event) => {
-  console.log('MySQL2 Lambda Function - Version 1.1.0');
+  console.log('MySQL2 Lambda Function - Version 1.3.0');
   console.log('Received event:', JSON.stringify(event, null, 2));
   
   try {
@@ -423,9 +458,35 @@ exports.handler = async (event) => {
         };
       }
       
-      // Check for different request formats
+      // Check for different request formats and determine action
       let configData;
-      let actionType = '';
+      let actionType = parsedBody.action || '';
+      
+      console.log('Action type detected in request:', actionType);
+      
+      // Handle login action
+      if (actionType === 'login') {
+        console.log('Processing login request');
+        
+        const { username, password } = parsedBody;
+        if (!username || !password) {
+          return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Username and password are required'
+            })
+          };
+        }
+        
+        const loginResult = await handleLogin(username, password);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(loginResult)
+        };
+      }
       
       // Format 1: Direct configuration object with type in query params
       if (requestType === 'site_config') {
@@ -433,22 +494,17 @@ exports.handler = async (event) => {
         actionType = 'site_config';
       } 
       // Format 2: Admin panel format with action and site_config fields
-      else if (parsedBody.action === 'update_site_config' && parsedBody.site_config) {
+      else if (actionType === 'update_site_config' && parsedBody.site_config) {
         configData = parsedBody.site_config;
         actionType = 'site_config';
       }
       // Format 3: Any other action in the body
-      else if (parsedBody.action) {
-        actionType = parsedBody.action;
-        
-        // If the action includes 'site_config', treat it as site_config
-        if (actionType.includes('site_config')) {
-          actionType = 'site_config';
-          configData = parsedBody.site_config || parsedBody;
-        }
+      else if (actionType.includes('site_config')) {
+        actionType = 'site_config';
+        configData = parsedBody.site_config || parsedBody;
       }
       
-      console.log('Action type determined:', actionType);
+      console.log('Final action type determined:', actionType);
       
       // Handle site configuration updates
       if (actionType === 'site_config') {
@@ -480,7 +536,7 @@ exports.handler = async (event) => {
         headers,
         body: JSON.stringify({ 
           success: false,
-          message: 'Unknown request type. Valid types: site_config'
+          message: 'Unknown request type. Valid types: site_config, login'
         })
       };
     }
@@ -492,7 +548,7 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({ 
         success: false,
-        message: 'Unknown request type. Valid types: site_config'
+        message: 'Unknown request type. Valid types: site_config, login'
       })
     };
     
