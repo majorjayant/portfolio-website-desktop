@@ -6,15 +6,19 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-// Import AWS SDK
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
+// Import required packages
+const mysql = require('mysql2/promise');
 
-// S3 configuration
-const BUCKET_NAME = 'website-majorjayant';
-const CONFIG_KEY = 'staging/site_config.json';
+// Database configuration
+const dbConfig = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 3306
+};
 
-// Default fallback configuration for when S3 is unavailable
+// Default fallback configuration for when database is unavailable
 const defaultSiteConfig = {
   image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
   image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
@@ -33,52 +37,103 @@ const defaultSiteConfig = {
   about_photo4_alt: "Photo 4"
 };
 
-// Function to get site configuration from S3
-async function getSiteConfig() {
+// Function to get database connection
+async function getConnection() {
   try {
-    const params = {
-      Bucket: BUCKET_NAME,
-      Key: CONFIG_KEY
-    };
-    
-    const data = await s3.getObject(params).promise();
-    return JSON.parse(data.Body.toString());
+    const connection = await mysql.createConnection(dbConfig);
+    return connection;
   } catch (error) {
-    console.error('Error reading from S3:', error);
-    // If file doesn't exist in S3, save the default config
-    if (error.code === 'NoSuchKey') {
+    console.error('Database connection error:', error);
+    throw error;
+  }
+}
+
+// Function to ensure table exists
+async function ensureTableExists(connection) {
+  try {
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS site_config (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        config_key VARCHAR(255) NOT NULL UNIQUE,
+        config_value TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Site config table ensured');
+  } catch (error) {
+    console.error('Error ensuring table exists:', error);
+    throw error;
+  }
+}
+
+// Function to get site configuration from database
+async function getSiteConfig() {
+  let connection;
+  try {
+    connection = await getConnection();
+    await ensureTableExists(connection);
+    
+    // Get all configuration values
+    const [rows] = await connection.execute('SELECT config_key, config_value FROM site_config');
+    
+    // Convert rows to config object
+    const config = {};
+    rows.forEach(row => {
+      config[row.config_key] = row.config_value;
+    });
+    
+    // If no config exists, initialize with default values
+    if (Object.keys(config).length === 0) {
       await saveSiteConfig(defaultSiteConfig);
       return defaultSiteConfig;
     }
-    throw error;
+    
+    return config;
+  } catch (error) {
+    console.error('Error reading from database:', error);
+    return defaultSiteConfig;
+  } finally {
+    if (connection) await connection.end();
   }
 }
 
-// Function to save site configuration to S3
+// Function to save site configuration to database
 async function saveSiteConfig(config) {
+  let connection;
   try {
-    const params = {
-      Bucket: BUCKET_NAME,
-      Key: CONFIG_KEY,
-      Body: JSON.stringify(config, null, 2),
-      ContentType: 'application/json'
-    };
+    connection = await getConnection();
+    await ensureTableExists(connection);
     
-    await s3.putObject(params).promise();
+    // Begin transaction
+    await connection.beginTransaction();
+    
+    // Update or insert each config value
+    for (const [key, value] of Object.entries(config)) {
+      await connection.execute(
+        'INSERT INTO site_config (config_key, config_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE config_value = ?',
+        [key, value, value]
+      );
+    }
+    
+    // Commit transaction
+    await connection.commit();
     return true;
   } catch (error) {
-    console.error('Error saving to S3:', error);
+    console.error('Error saving to database:', error);
+    if (connection) await connection.rollback();
     throw error;
+  } finally {
+    if (connection) await connection.end();
   }
 }
 
-// Admin credentials from environment variables with secure fallback handling
+// Admin credentials from environment variables
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.0.0 - Added S3 persistent storage');
+  console.log('Lambda Version: 2.1.0 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -130,7 +185,7 @@ function handleLogin(username, password) {
 async function updateSiteConfig(configData) {
   console.log('Updating site configuration with new data');
   try {
-    // Get current config from S3
+    // Get current config from database
     const currentConfig = await getSiteConfig();
     
     // Create a new config object with only the fields that exist in defaultSiteConfig
@@ -144,7 +199,7 @@ async function updateSiteConfig(configData) {
       }
     });
     
-    // Save updated config back to S3
+    // Save updated config to database
     await saveSiteConfig(updatedConfig);
     
     return {
@@ -164,7 +219,7 @@ async function updateSiteConfig(configData) {
 // Lambda handler
 exports.handler = async (event, context) => {
   logRequestInfo(event, context);
-  console.log('Enhanced Lambda Function - Version 2.0.0');
+  console.log('Enhanced Lambda Function - Version 2.1.0');
   
   try {
     if (event.httpMethod === 'OPTIONS') {
@@ -189,8 +244,8 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.0.0',
-          storage: 'Using S3 persistent storage',
+          lambda_version: '2.1.0',
+          storage: 'Using MySQL persistent storage',
           routing_hint: 'If you are experiencing admin access issues, use the direct_access credentials or access through /admin-login.html'
         })
       };
@@ -208,7 +263,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           ...config,
-          _version: "2.0.0",
+          _version: "2.1.0",
           timestamp: new Date().toISOString()
         })
       };
