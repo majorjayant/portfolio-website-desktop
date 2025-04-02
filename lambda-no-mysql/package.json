@@ -1,12 +1,14 @@
 {
-  "name": "website-portfolio-lambda-simple",
-  "version": "1.7.0",
-  "description": "Simplified Lambda function for portfolio website configuration",
+  "name": "lambda-no-mysql",
+  "version": "2.0.0",
+  "description": "Lambda function for site configuration management",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "aws-sdk": "^2.1531.0"
+  },
   "author": "",
   "license": "ISC"
 } 
