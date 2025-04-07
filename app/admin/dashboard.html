@@ -204,7 +204,8 @@
         
         // API endpoints
         const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
-        const DIRECT_INVOKE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
+        // Create a dedicated endpoint just for get_site_config
+        const SITE_CONFIG_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/get-site-config';
         
         // Check authentication
         function checkAuthentication() {
@@ -232,27 +233,20 @@
                 // Get authentication token
                 const token = localStorage.getItem('admin_token');
                 
-                // Try POST method with action=get_site_config as query parameter
-                const url = `${DIRECT_INVOKE_URL}?action=get_site_config&type=site_config`;
-                console.log('Fetching config using POST with action in URL:', url);
+                // Try a more direct approach - GET request
+                const url = `${API_BASE_URL}?action=get_site_config&type=site_config&t=${Date.now()}`;
+                console.log('Fetching config using GET with cache buster:', url);
                 
-                const requestBody = {
-                    action: 'get_site_config',
-                    type: 'site_config',
-                    debug: true
-                };
-                
-                console.log('Request body:', JSON.stringify(requestBody));
-                
-                // Use POST with JSON body + query params for redundancy
+                // Use simple GET request
                 const response = await fetch(url, {
-                    method: 'POST',
+                    method: 'GET',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                        'Authorization': token || ''
-                    },
-                    body: JSON.stringify(requestBody)
+                        'Authorization': token || '',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    }
                 });
                 
                 console.log('Response status:', response.status);

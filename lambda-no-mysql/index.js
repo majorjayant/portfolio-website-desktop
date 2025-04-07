@@ -76,10 +76,11 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.6 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.9 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
+  console.log('Path parameters:', JSON.stringify(event.pathParameters || {}));
   console.log('Query Parameters:', JSON.stringify(event.queryStringParameters || {}));
   console.log('Raw Query String:', event.rawQueryString || 'Not available');
   console.log('Headers:', JSON.stringify(event.headers || {}));
@@ -233,14 +234,33 @@ exports.handler = async (event, context) => {
       };
     }
     
-    // Extract query parameters and determine request type
+    // Extract and log query parameters
     const queryParams = event.queryStringParameters || {};
     const pathParams = event.pathParameters || {};
-    let requestType = queryParams.type || '';
-    let actionType = queryParams.action || '';
+    const requestType = queryParams.type || '';
+    const actionType = queryParams.action || '';
+    const path = event.path || '';
     
     console.log('Request type from query parameters:', requestType);
     console.log('Action type from query parameters:', actionType);
+    console.log('Path:', path);
+    
+    // Always check for site_config in GET request parameters
+    if (event.httpMethod === 'GET' && (requestType === 'site_config' || actionType === 'get_site_config')) {
+      console.log('GET request detected for site_config');
+      const siteConfig = await getSiteConfig();
+      
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          site_config: siteConfig,
+          _version: "2.1.9",
+          source: "GET with query params",
+          timestamp: new Date().toISOString()
+        })
+      };
+    }
     
     // Check for admin access query parameter - special backdoor for access issues
     if (queryParams.admin_check === 'true') {
