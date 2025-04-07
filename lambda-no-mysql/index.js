@@ -242,7 +242,9 @@ exports.handler = async (event, context) => {
     }
     
     // SPECIAL CASE: Check for custom headers as a method to bypass API Gateway issues
-    const customAction = event.headers['X-Custom-Action'] || event.headers['x-custom-action'];
+    // Safe check for headers existence before trying to access properties
+    const customAction = event.headers ? (event.headers['X-Custom-Action'] || event.headers['x-custom-action']) : undefined;
+    
     if (customAction === 'update_site_config') {
       console.log('Detected update_site_config action via custom header');
       
@@ -263,8 +265,8 @@ exports.handler = async (event, context) => {
         const parsedBody = JSON.parse(event.body);
         console.log('Custom header POST body parsed:', JSON.stringify(parsedBody));
         
-        // Validate authorization token
-        const authHeader = event.headers.Authorization || event.headers.authorization;
+        // Validate authorization token - safely check headers
+        const authHeader = event.headers ? (event.headers.Authorization || event.headers.authorization) : undefined;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
           console.error('Missing or invalid Authorization header');
           return {
@@ -315,7 +317,7 @@ exports.handler = async (event, context) => {
             success: updateResult.success,
             message: updateResult.message,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.15',
+            lambda_version: '2.1.16',
             source: 'custom_header'
           })
         };
@@ -344,8 +346,8 @@ exports.handler = async (event, context) => {
         if (parsedBody.action === 'update_site_config') {
           console.log('UPDATE_SITE_CONFIG action detected in POST body');
           
-          // Validate authorization token (simplified for demo)
-          const authHeader = event.headers.Authorization || event.headers.authorization;
+          // Validate authorization token (simplified for demo) - safely check headers
+          const authHeader = event.headers ? (event.headers.Authorization || event.headers.authorization) : undefined;
           if (!authHeader || !authHeader.startsWith('Bearer ')) {
             console.error('Missing or invalid Authorization header');
             return {
@@ -388,7 +390,7 @@ exports.handler = async (event, context) => {
               success: updateResult.success,
               message: updateResult.message,
               timestamp: new Date().toISOString(),
-              lambda_version: '2.1.15'
+              lambda_version: '2.1.16'
             })
           };
         }
@@ -436,7 +438,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.15",
+            _version: "2.1.16",
             source: "GET handler with query params",
             timestamp: new Date().toISOString()
           })
@@ -452,7 +454,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           site_config: siteConfig,
-          _version: "2.1.15",
+          _version: "2.1.16",
           source: "GET general handler",
           timestamp: new Date().toISOString()
         })
@@ -468,7 +470,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.1.15',
+          lambda_version: '2.1.16',
           storage: 'Using MySQL persistent storage',
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
@@ -484,7 +486,7 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
                 site_config: siteConfig,
-                _version: "2.1.15",
+                _version: "2.1.16",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
                 storage: "Using MySQL persistent storage"
@@ -559,7 +561,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.15'
+            lambda_version: '2.1.16'
           })
         };
       }
@@ -572,7 +574,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '2.1.15',
+            lambda_version: '2.1.16',
             storage: 'Using MySQL persistent storage',
             timestamp: new Date().toISOString(),
             access_paths: {
@@ -588,8 +590,8 @@ exports.handler = async (event, context) => {
       if (actionType === 'update_site_config') {
         console.log('Processing site_config update request (fallback handler)');
         
-        // Validate authorization token (simplified for demo)
-        const authHeader = event.headers.Authorization || event.headers.authorization;
+        // Validate authorization token - safely check headers
+        const authHeader = event.headers ? (event.headers.Authorization || event.headers.authorization) : undefined;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
           console.error('Missing or invalid Authorization header');
           return {
@@ -629,7 +631,7 @@ exports.handler = async (event, context) => {
             success: updateResult.success,
             message: updateResult.message,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.15'
+            lambda_version: '2.1.16'
           })
         };
       }
@@ -646,7 +648,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.15",
+            _version: "2.1.16",
             from: "post_body",
             timestamp: new Date().toISOString(),
             storage: "Using MySQL persistent storage"
@@ -676,7 +678,7 @@ exports.handler = async (event, context) => {
         request_path: event.path,
         request_method: event.httpMethod,
         request_type: requestType,
-        _version: "2.1.15",
+        _version: "2.1.16",
         timestamp: new Date().toISOString()
       })
     };
