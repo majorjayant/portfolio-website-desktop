@@ -364,13 +364,13 @@
                 console.log('Sending API payload:', payload);
                 console.log('Send URL:', SAVE_CONFIG_URL);
                 
-                // Save to API - Use a different approach to bypass API Gateway issues
+                // Save to API without the custom header that was causing CORS issues
                 const apiResponse = await fetch(SAVE_CONFIG_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                        'X-Custom-Action': 'update_site_config' // Add custom header
+                        'Authorization': `Bearer ${token}`
+                        // Removed X-Custom-Action header
                     },
                     body: JSON.stringify(payload)
                 });

@@ -4,7 +4,7 @@ const mysql = require('mysql2/promise');
 // Define standard response headers
 const headers = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,Cache-Control,Pragma',
+  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,Cache-Control,Pragma,X-Custom-Action',
   'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT,DELETE',
   'Content-Type': 'application/json'
 };
