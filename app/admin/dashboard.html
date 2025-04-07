@@ -177,7 +177,7 @@
     // API endpoints
     const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
     const GET_CONFIG_URL = API_BASE_URL + '?action=get_site_config&type=site_config';
-    const SAVE_CONFIG_URL = API_BASE_URL;
+    const SAVE_CONFIG_URL = API_BASE_URL + '?action=update_site_config&type=site_config';
     
     // DOM elements
     document.addEventListener('DOMContentLoaded', function() {
@@ -364,13 +364,13 @@
                 console.log('Sending API payload:', payload);
                 console.log('Send URL:', SAVE_CONFIG_URL);
                 
+                // Add specific action in querystring in addition to the body
                 // Save to API without the custom header that was causing CORS issues
                 const apiResponse = await fetch(SAVE_CONFIG_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
-                        // Removed X-Custom-Action header
                     },
                     body: JSON.stringify(payload)
                 });

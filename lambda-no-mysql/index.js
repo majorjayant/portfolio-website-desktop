@@ -76,7 +76,7 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.18 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.19 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -241,6 +241,20 @@ exports.handler = async (event, context) => {
       };
     }
     
+    // Extract and log query parameters first (needed for both GET and POST)
+    const queryParams = event.queryStringParameters || {};
+    const pathParams = event.pathParameters || {};
+    let requestType = queryParams.type || '';
+    let actionType = queryParams.action || '';
+    const path = event.path || '';
+    
+    console.log('Request type from query parameters:', requestType);
+    console.log('Action type from query parameters:', actionType);
+    
+    // Check for update_site_config in query parameters
+    const isUpdateSiteConfig = actionType === 'update_site_config';
+    console.log('Is update_site_config from query parameters:', isUpdateSiteConfig);
+    
     // HIGHEST PRIORITY: Handle POST requests first
     if (event.httpMethod === 'POST') {
       console.log('✅ Processing POST request - highest priority');
@@ -265,9 +279,14 @@ exports.handler = async (event, context) => {
         parsedBody = JSON.parse(event.body);
         console.log('✅ Parsed body:', JSON.stringify(parsedBody));
         
-        // Directly check for action in parsed body
-        if (parsedBody.action === 'update_site_config' && parsedBody.site_config) {
-          console.log('✅ UPDATE_SITE_CONFIG action detected in POST body');
+        // CRITICAL UPDATE: Check for update_site_config in BOTH query params AND body
+        const bodyAction = parsedBody.action || '';
+        console.log('Action from body:', bodyAction);
+        console.log('Action from query:', actionType);
+        
+        // If we have update_site_config in either query or body, process it
+        if ((bodyAction === 'update_site_config' || actionType === 'update_site_config') && parsedBody.site_config) {
+          console.log('✅ UPDATE_SITE_CONFIG action detected in POST request (query or body)');
           
           // Extract config data
           const configData = parsedBody.site_config || {};
@@ -304,11 +323,11 @@ exports.handler = async (event, context) => {
               success: updateResult.success,
               message: updateResult.message,
               timestamp: new Date().toISOString(),
-              lambda_version: '2.1.18'
+              lambda_version: '2.1.19'
             })
           };
         } else {
-          console.log('❌ No update_site_config action detected in POST body. Found:', parsedBody.action);
+          console.log('❌ No update_site_config action detected in POST body or query. Body action:', parsedBody.action, 'Query action:', actionType);
         }
         
         // Check for different request formats and determine action
@@ -375,7 +394,7 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
               site_config: siteConfig,
-              _version: "2.1.18",
+              _version: "2.1.19",
               from: "post_body",
               timestamp: new Date().toISOString(),
               storage: "Using MySQL persistent storage"
@@ -408,13 +427,6 @@ exports.handler = async (event, context) => {
         };
       }
     }
-    
-    // Extract and log query parameters
-    const queryParams = event.queryStringParameters || {};
-    const pathParams = event.pathParameters || {};
-    let requestType = queryParams.type || '';
-    let actionType = queryParams.action || '';
-    const path = event.path || '';
     
     // Check if we have a raw query string that contains the parameters
     // This is a fallback for when API Gateway doesn't parse query params correctly
@@ -496,7 +508,7 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
                 site_config: siteConfig,
-                _version: "2.1.18",
+                _version: "2.1.19",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
                 storage: "Using MySQL persistent storage"
@@ -514,7 +526,7 @@ exports.handler = async (event, context) => {
         request_path: event.path,
         request_method: event.httpMethod,
         request_type: requestType,
-        _version: "2.1.18",
+        _version: "2.1.19",
         timestamp: new Date().toISOString()
       })
     };
