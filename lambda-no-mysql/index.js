@@ -225,7 +225,7 @@ async function saveSiteConfig(configData) {
 
 // Lambda handler
 exports.handler = async (event, context) => {
-  console.log('NEW VERSION 2.1.23 - DIRECT DATABASE UPDATE HANDLER');
+  console.log('Lambda Version 2.1.25 - Final version with API Gateway integration');
   console.log('Request method:', event.httpMethod);
   console.log('Request path:', event.path);
   console.log('Headers:', JSON.stringify(event.headers || {}));
@@ -241,7 +241,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ 
           message: 'CORS preflight request successful',
           timestamp: new Date().toISOString(),
-          version: '2.1.23'
+          version: '2.1.25'
         })
       };
     }
@@ -249,29 +249,21 @@ exports.handler = async (event, context) => {
     // Extract query parameters
     const queryParams = event.queryStringParameters || {};
     
-    // DIRECT DATABASE MODE - Check if this is a direct database request via GET
+    // DIRECT DATABASE MODE via GET - The fallback approach
     if (event.httpMethod === 'GET' && queryParams.direct_db === 'true') {
       console.log('🟨 DIRECT DATABASE MODE: Detected direct DB request via GET');
-      console.log('Query parameters count:', Object.keys(queryParams).length);
       
       try {
-        // Extract all configuration data from query parameters
+        // Extract config data from query parameters
         const configData = {};
-        
-        // Process each query parameter
         for (const [key, value] of Object.entries(queryParams)) {
-          // Skip special control parameters
           if (key !== 't' && key !== 'direct_db' && key !== 'action') {
             configData[key] = value;
           }
         }
         
         if (Object.keys(configData).length > 0) {
-          console.log('🟨 DIRECT DATABASE: Found config data in URL parameters');
-          console.log('Config fields:', Object.keys(configData).join(', '));
-          
-          // Update the database directly
-          console.log('🟨 DIRECT DATABASE: Performing direct database update');
+          console.log('🟨 DIRECT DATABASE: Performing direct database update via GET params');
           const result = await directDatabaseUpdate(configData);
           
           return {
@@ -282,13 +274,10 @@ exports.handler = async (event, context) => {
               message: "DIRECT DATABASE UPDATE COMPLETED SUCCESSFULLY",
               fields_updated: Object.keys(configData).length,
               result: result,
-              method: 'GET with URL parameters',
-              version: '2.1.23',
+              version: '2.1.25',
               timestamp: new Date().toISOString()
             })
           };
-        } else {
-          console.log('🟨 DIRECT DATABASE: No config data found in query parameters');
         }
       } catch (e) {
         console.error('🟨 DIRECT DATABASE ERROR:', e);
@@ -298,59 +287,80 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: false,
             message: "DIRECT DATABASE ERROR: " + e.message,
-            version: '2.1.23',
+            version: '2.1.25',
             timestamp: new Date().toISOString()
           })
         };
       }
     }
     
-    // Continue with other request types...
-    
-    // EMERGENCY MODE: IMMEDIATELY CHECK AND PROCESS BODY FOR SITE_CONFIG DATA
+    // PRIMARY METHOD: Handle POST for site_config updates
     if (event.httpMethod === 'POST' && event.body) {
-      console.log('⚠️ EMERGENCY MODE: POST REQUEST WITH BODY DETECTED');
+      console.log('✅ Handling POST request with body');
       
       try {
+        // Parse the request body
         const parsedBody = JSON.parse(event.body);
-        console.log('Parsed body summary:', 
-          Object.keys(parsedBody).join(', '), 
-          parsedBody.action || 'no-action'
-        );
         
-        // IF THERE'S A SITE_CONFIG, FORCE DATABASE UPDATE IMMEDIATELY
+        // Check for site_config data
         if (parsedBody.site_config && typeof parsedBody.site_config === 'object') {
-          console.log('⚠️ EMERGENCY MODE: SITE_CONFIG DETECTED IN POST BODY');
-          console.log('Config data keys:', Object.keys(parsedBody.site_config).join(', '));
-          console.log('First key value example:', parsedBody.site_config[Object.keys(parsedBody.site_config)[0]]);
+          console.log('✅ Found site_config in POST body');
+          console.log('Action:', parsedBody.action || 'none specified');
+          console.log('Config fields:', Object.keys(parsedBody.site_config).join(', '));
           
-          const configData = parsedBody.site_config;
-          console.log('⚠️ FORCING DATABASE UPDATE IMMEDIATELY');
+          // Update the database with the configuration
+          console.log('✅ Updating database with site_config data');
+          const result = await saveSiteConfig(parsedBody.site_config);
           
-          // Connect to MySQL and update each config value
-          const result = await emergencyDbUpdate(configData);
-          
+          // Return success response
           return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
               success: true,
-              message: "EMERGENCY DATABASE UPDATE COMPLETED",
+              message: "Configuration updated successfully",
               result: result,
-              updated_fields: Object.keys(configData).length,
-              version: '2.1.21',
+              version: '2.1.25',
               timestamp: new Date().toISOString()
             })
           };
+        } else {
+          console.log('⚠️ No site_config found in POST body, checking for other actions');
+          
+          // Check for login action
+          if (parsedBody.action === 'login' && parsedBody.username && parsedBody.password) {
+            console.log('✅ Processing login request for user:', parsedBody.username);
+            const loginResult = handleLogin(parsedBody.username, parsedBody.password);
+            
+            return {
+              statusCode: 200,
+              headers,
+              body: JSON.stringify({
+                ...loginResult,
+                version: '2.1.25',
+                timestamp: new Date().toISOString()
+              })
+            };
+          }
         }
       } catch (error) {
-        console.error('Error processing POST data:', error);
+        console.error('❌ Error processing POST request:', error);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: false,
+            message: "Error processing request: " + error.message,
+            version: '2.1.25',
+            timestamp: new Date().toISOString()
+          })
+        };
       }
     }
     
-    // For GET requests or any other request without site_config data
-    if (event.httpMethod === 'GET' || !event.body || event.body.indexOf('site_config') === -1) {
-      // Just return the current site config
+    // DEFAULT GET HANDLER: Return site configuration
+    if (event.httpMethod === 'GET') {
+      console.log('ℹ️ Handling GET request, returning site configuration');
       const siteConfig = await getSiteConfig();
       
       return {
@@ -359,32 +369,33 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           site_config: siteConfig,
           message: 'Site configuration retrieved successfully',
-          version: '2.1.21',
+          version: '2.1.25',
           timestamp: new Date().toISOString()
         })
       };
     }
     
-    // Fallback response
+    // Fallback response for any other requests
+    console.log('⚠️ Unhandled request type, returning fallback response');
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message: 'Request processed but no specific handler found',
+        message: 'Request processed but no specific handler matched',
         httpMethod: event.httpMethod,
-        version: '2.1.21',
+        version: '2.1.25',
         timestamp: new Date().toISOString()
       })
     };
   } catch (error) {
-    console.error('Unhandled error:', error);
+    console.error('❌ Unhandled error:', error);
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: false,
         message: 'Server error: ' + error.message,
-        version: '2.1.21',
+        version: '2.1.25',
         timestamp: new Date().toISOString()
       })
     };
