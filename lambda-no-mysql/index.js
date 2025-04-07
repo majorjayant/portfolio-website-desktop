@@ -76,7 +76,7 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.10 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.11 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -266,9 +266,29 @@ exports.handler = async (event, context) => {
     console.log('Action type from query parameters:', actionType);
     console.log('Path:', path);
     
-    // Always check for site_config in GET request parameters
-    if (event.httpMethod === 'GET' && (requestType === 'site_config' || actionType === 'get_site_config')) {
-      console.log('GET request detected for site_config');
+    // HIGHEST PRIORITY: Handle any GET request
+    if (event.httpMethod === 'GET') {
+      console.log('Processing GET request');
+      
+      // Prioritize site_config requests
+      if (requestType === 'site_config' || actionType === 'get_site_config') {
+        console.log('GET request for site_config detected');
+        const siteConfig = await getSiteConfig();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            site_config: siteConfig,
+            _version: "2.1.11",
+            source: "GET handler with query params",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // General GET request handling
+      console.log('Processing general GET request');
       const siteConfig = await getSiteConfig();
       
       return {
@@ -276,8 +296,8 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           site_config: siteConfig,
-          _version: "2.1.10",
-          source: "GET with query params",
+          _version: "2.1.11",
+          source: "GET general handler",
           timestamp: new Date().toISOString()
         })
       };
@@ -292,7 +312,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.1.6',
+          lambda_version: '2.1.11',
           storage: 'Using MySQL persistent storage',
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
@@ -308,35 +328,12 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
                 site_config: siteConfig,
-                _version: "2.1.8",
+                _version: "2.1.11",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
                 storage: "Using MySQL persistent storage"
             })
         };
-    }
-    
-    // Handle GET request for site configuration
-    if (event.httpMethod === 'GET') {
-      console.log('Processing GET request with queryStringParameters:', JSON.stringify(event.queryStringParameters));
-      
-      if (queryParams && queryParams.type === 'site_config') {
-        console.log('Processing GET request for site_config');
-        
-        // Get site configuration from the database
-        const siteConfig = await getSiteConfig();
-        
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            site_config: siteConfig,
-            _version: "2.1.6",
-            timestamp: new Date().toISOString(),
-            storage: "Using MySQL persistent storage"
-          })
-        };
-      }
     }
     
     // Handle POST request to save site configuration
@@ -406,7 +403,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.6'
+            lambda_version: '2.1.11'
           })
         };
       }
@@ -419,7 +416,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '2.1.6',
+            lambda_version: '2.1.11',
             storage: 'Using MySQL persistent storage',
             timestamp: new Date().toISOString(),
             access_paths: {
@@ -473,7 +470,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...updateResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.6'
+            lambda_version: '2.1.11'
           })
         };
       }
@@ -490,7 +487,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.8",
+            _version: "2.1.11",
             from: "post_body",
             timestamp: new Date().toISOString(),
             storage: "Using MySQL persistent storage"
@@ -515,10 +512,12 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message: 'Unknown request type',
+        site_config: await getSiteConfig(), // Always return site_config as fallback
+        message: 'Unknown request type but returning site_config',
         request_path: event.path,
         request_method: event.httpMethod,
         request_type: requestType,
+        _version: "2.1.11",
         timestamp: new Date().toISOString()
       })
     };
