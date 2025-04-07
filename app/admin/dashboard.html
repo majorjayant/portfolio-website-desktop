@@ -151,17 +151,13 @@
                         </div>
                     </div>
                     
-                    <div class="flex justify-between">
-                        <div>
-                            <button type="button" id="refresh-button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                                Refresh Data
-                            </button>
-                        </div>
-                        <div>
-                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Save Changes
-                            </button>
-                        </div>
+                    <div class="flex justify-end">
+                        <button type="button" id="refresh-button" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2">
+                            Refresh Data
+                        </button>
+                        <button type="submit" id="save-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Save Changes
+                        </button>
                     </div>
                 </form>
             </div>
@@ -181,15 +177,26 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Admin dashboard loaded');
         
-        // Elements
+        const authLoading = document.getElementById('auth-loading');
+        const notAuthenticated = document.getElementById('not-authenticated');
+        const dashboardContent = document.getElementById('dashboard-content');
         const logoutButton = document.getElementById('logout-button');
-        const configForm = document.getElementById('site-config-form');
-        const refreshButton = document.getElementById('refresh-button');
-        const saveMessage = document.getElementById('save-message');
+        const siteConfigForm = document.getElementById('site-config-form');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const formContainer = document.getElementById('form-container');
+        const apiError = document.getElementById('api-error');
+        const saveButton = document.getElementById('save-button');
+        
+        // Add a save message element for displaying status
+        const saveMessage = document.createElement('div');
+        saveMessage.className = 'px-4 py-3 text-center border-t border-b hidden';
+        saveMessage.id = 'save-message';
+        const formContainer2 = document.getElementById('form-container');
+        formContainer2.parentNode.insertBefore(saveMessage, formContainer2);
         
         // API endpoints
         const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
-        const DIRECT_INVOKE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging?type=site_config';
+        const DIRECT_INVOKE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
         
         // Check authentication
         function checkAuthentication() {
@@ -217,7 +224,19 @@
                 // Try direct invocation first (bypassing API Gateway path mapping)
                 const url = DIRECT_INVOKE_URL;
                 console.log('Fetching from direct invoke URL:', url);
-                const response = await fetch(url);
+                
+                // Get authentication token
+                const token = localStorage.getItem('admin_token');
+                
+                // Add token to request headers
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': token || ''
+                    }
+                });
                 
                 console.log('Response status:', response.status);
                 if (!response.ok) {
@@ -230,7 +249,7 @@
                 // Extract the site_config object from the response
                 let config;
                 if (rawData.site_config) {
-                    // Direct structure from Lambda (v2.1.4)
+                    // Direct structure from Lambda (v2.1.5)
                     config = rawData.site_config;
                 } else if (rawData.body && typeof rawData.body === 'string') {
                     // API Gateway might wrap the response in a body property
@@ -242,58 +261,42 @@
                         config = {};
                     }
                 } else {
-                    // Fallback - set default values
-                    config = {
-                        about_title: "My Portfolio",
-                        about_subtitle: "Welcome to my portfolio website",
-                        about_description: "A showcase of my projects and skills",
-                        image_favicon_url: "/static/img/favicon.png",
-                        image_logo_url: "/static/img/logo.png",
-                        image_banner_url: "/static/img/banner_latest.png",
-                        image_about_profile_url: "/static/img/profile.jpg",
-                        image_about_photo1_url: "/static/img/placeholder.png",
-                        image_about_photo2_url: "/static/img/placeholder.png",
-                        image_about_photo3_url: "/static/img/placeholder.png",
-                        image_about_photo4_url: "/static/img/placeholder.png",
-                        about_photo1_alt: "Photo 1",
-                        about_photo2_alt: "Photo 2",
-                        about_photo3_alt: "Photo 3",
-                        about_photo4_alt: "Photo 4"
-                    };
-                    console.warn('Using default configuration data');
+                    // Fallback - use empty object
+                    config = {};
                 }
                 
                 console.log('Extracted config for form:', config);
+                
+                // Apply default values for any missing fields
+                const defaultConfig = {
+                    about_title: "My Portfolio",
+                    about_subtitle: "Welcome to my portfolio website",
+                    about_description: "A showcase of my projects and skills",
+                    image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+                    image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+                    image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+                    image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profile.jpg",
+                    image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg",
+                    image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg",
+                    image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg",
+                    image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg",
+                    about_photo1_alt: "Photo 1",
+                    about_photo2_alt: "Photo 2",
+                    about_photo3_alt: "Photo 3",
+                    about_photo4_alt: "Photo 4"
+                };
+                
+                // Merge the actual config with defaults for any missing fields
+                const mergedConfig = {...defaultConfig, ...config};
+                
                 if (Object.keys(config).length === 0) {
-                    // Use default values if no config
                     showSaveMessage('Warning: No configuration data found, using defaults', 'text-yellow-500 bg-yellow-50');
-                    config = {
-                        about_title: "My Portfolio",
-                        about_subtitle: "Welcome to my portfolio website",
-                        about_description: "A showcase of my projects and skills",
-                        image_favicon_url: "/static/img/favicon.png",
-                        image_logo_url: "/static/img/logo.png",
-                        image_banner_url: "/static/img/banner_latest.png",
-                        image_about_profile_url: "/static/img/profile.jpg",
-                        image_about_photo1_url: "/static/img/placeholder.png",
-                        image_about_photo2_url: "/static/img/placeholder.png",
-                        image_about_photo3_url: "/static/img/placeholder.png",
-                        image_about_photo4_url: "/static/img/placeholder.png",
-                        about_photo1_alt: "Photo 1",
-                        about_photo2_alt: "Photo 2",
-                        about_photo3_alt: "Photo 3",
-                        about_photo4_alt: "Photo 4"
-                    };
                 } else {
-                    populateForm(config);
                     hideSaveMessage();
                 }
                 
-                // Always populate form whether with actual data or defaults
-                populateForm(config);
-                if (Object.keys(config).length > 0) {
-                    hideSaveMessage();
-                }
+                // Populate the form with the combined config
+                populateForm(mergedConfig);
             } catch (error) {
                 console.error('Error loading configuration:', error);
                 showSaveMessage('Error loading configuration: ' + error.message, 'text-red-500 bg-red-50');
@@ -358,6 +361,12 @@
             console.log('Saving config data:', configData);
             
             try {
+                // Get authentication token
+                const token = localStorage.getItem('admin_token');
+                if (!token) {
+                    throw new Error('Authentication token is missing');
+                }
+                
                 // Prepare payload in the format the Lambda function expects
                 const payload = {
                     action: 'update_site_config',
@@ -366,12 +375,12 @@
                 
                 console.log('Sending API payload:', payload);
                 
-                // Save to API - try direct endpoint
+                // Save to API
                 const apiResponse = await fetch(API_BASE_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+                        'Authorization': token
                     },
                     body: JSON.stringify(payload)
                 });
@@ -384,29 +393,18 @@
                 const apiData = await apiResponse.json();
                 console.log('API response data:', apiData);
                 
-                let success = false;
-                let message = '';
-                
                 if (apiData.body && typeof apiData.body === 'string') {
                     // Handle API Gateway response format
                     try {
                         const parsedBody = JSON.parse(apiData.body);
-                        success = parsedBody.success;
-                        message = parsedBody.message || '';
-                        if (!success) {
-                            throw new Error(message || 'API save failed');
+                        if (!parsedBody.success) {
+                            throw new Error(parsedBody.message || 'API save failed');
                         }
                     } catch (e) {
                         throw new Error('Invalid response from API');
                     }
-                } else if (apiData.success !== undefined) {
-                    success = apiData.success;
-                    message = apiData.message || '';
-                    if (!success) {
-                        throw new Error(message || 'API save failed');
-                    }
-                } else {
-                    throw new Error('Unexpected API response format');
+                } else if (!apiData.success) {
+                    throw new Error(apiData.message || 'API save failed');
                 }
 
                 showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
@@ -444,14 +442,16 @@
             logoutButton.addEventListener('click', logout);
         }
         
-        if (configForm) {
-            configForm.addEventListener('submit', function(e) {
+        if (siteConfigForm) {
+            siteConfigForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(configForm);
+                const formData = new FormData(siteConfigForm);
                 saveSiteConfig(formData);
             });
         }
         
+        // Add refresh button event listener
+        const refreshButton = document.getElementById('refresh-button');
         if (refreshButton) {
             refreshButton.addEventListener('click', fetchConfiguration);
         }
