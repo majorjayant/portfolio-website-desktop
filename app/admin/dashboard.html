@@ -204,7 +204,7 @@
         
         // API endpoints
         const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
-        const DIRECT_INVOKE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+        const DIRECT_INVOKE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
         
         // Check authentication
         function checkAuthentication() {
@@ -229,21 +229,25 @@
         async function fetchConfiguration() {
             showSaveMessage('Loading configuration...', 'text-blue-500 bg-blue-50');
             try {
-                // Try direct invocation first (bypassing API Gateway path mapping)
-                const url = DIRECT_INVOKE_URL;
-                console.log('Fetching from direct invoke URL:', url);
-                
                 // Get authentication token
                 const token = localStorage.getItem('admin_token');
                 
-                // Add token to request headers
+                // Add the type in the request body instead of as a query parameter
+                const url = DIRECT_INVOKE_URL;
+                console.log('Fetching config using POST with body:', url);
+                
+                // Use POST with JSON body to specify the type
                 const response = await fetch(url, {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                         'Authorization': token || ''
-                    }
+                    },
+                    body: JSON.stringify({
+                        action: 'get_site_config',
+                        type: 'site_config'
+                    })
                 });
                 
                 console.log('Response status:', response.status);
