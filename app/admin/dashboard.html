@@ -570,6 +570,66 @@
             };
             
             refreshButton.parentNode.appendChild(emergencySaveButton);
+            
+            // Add MYSQL BYPASS button - absolute last resort
+            const bypassButton = document.createElement('button');
+            bypassButton.textContent = 'MYSQL BYPASS';
+            bypassButton.className = 'ml-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500';
+            bypassButton.onclick = async function() {
+                try {
+                    // Collect all form data
+                    const formData = new FormData(siteConfigForm);
+                    const configData = {};
+                    formData.forEach((value, key) => {
+                        configData[key] = value;
+                    });
+                    
+                    // Try a completely different URL structure
+                    const bypassUrl = `${API_BASE_URL}?force_mysql=true&bypass_api_gateway=true&emergency=true&t=${new Date().getTime()}`;
+                    
+                    // Show in-progress message
+                    showSaveMessage('MYSQL BYPASS IN PROGRESS...', 'text-white bg-purple-600');
+                    
+                    console.log('MYSQL BYPASS: Sending data to URL:', bypassUrl);
+                    console.log('MYSQL BYPASS data:', configData);
+                    
+                    // Send direct update to the API with complete bypass
+                    const response = await fetch(bypassUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Emergency-Bypass': 'true',
+                            'X-Force-MySQL': 'true'
+                        },
+                        body: JSON.stringify({
+                            mysql_direct_update: true,
+                            site_config: configData,
+                            bypass: true,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                    
+                    console.log('MYSQL BYPASS response status:', response.status);
+                    const data = await response.json();
+                    console.log('MYSQL BYPASS response data:', data);
+                    
+                    if (response.ok) {
+                        showSaveMessage('MYSQL BYPASS SUCCESSFUL', 'text-white bg-green-600');
+                        
+                        // Refresh data after bypass save
+                        setTimeout(() => {
+                            fetchConfiguration();
+                        }, 2000);
+                    } else {
+                        showSaveMessage('MYSQL BYPASS FAILED: ' + (data.message || 'Unknown error'), 'text-white bg-purple-600');
+                    }
+                } catch (error) {
+                    console.error('MYSQL BYPASS error:', error);
+                    showSaveMessage('MYSQL BYPASS ERROR: ' + error.message, 'text-white bg-purple-600');
+                }
+            };
+            
+            refreshButton.parentNode.appendChild(bypassButton);
         }
         
         // Check if user is authenticated
