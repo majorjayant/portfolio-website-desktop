@@ -174,16 +174,17 @@
     </div>
 
     <script>
-    // API endpoints
-    const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
-    const GET_CONFIG_URL = API_BASE_URL + '?action=get_site_config&type=site_config';
-    const SAVE_CONFIG_URL = API_BASE_URL + '?action=update_site_config&type=site_config';
+    // API endpoints - Updated to directly call Lambda
+    const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging';
+    const GET_CONFIG_URL = API_BASE_URL; // Use the base URL directly
+    const SAVE_CONFIG_URL = API_BASE_URL; // Use the base URL directly
     
     // DOM elements
     document.addEventListener('DOMContentLoaded', function() {
         const siteConfigForm = document.getElementById('site-config-form');
         const logoutButton = document.getElementById('logout-button');
         const saveMessage = document.getElementById('save-message');
+        const refreshButton = document.getElementById('refresh-button');
         
         // Check if user is logged in
         function checkAuthentication() {
@@ -217,9 +218,8 @@
             try {
                 // Add cache buster to prevent caching
                 const cacheBuster = new Date().getTime();
-                const urlWithCacheBuster = `${GET_CONFIG_URL}&t=${cacheBuster}`;
                 
-                console.log('Fetching config using GET with cache buster:', urlWithCacheBuster);
+                console.log('Fetching config data from Lambda directly');
                 
                 const token = localStorage.getItem('admin_token');
                 if (!token) {
@@ -227,8 +227,8 @@
                     return;
                 }
                 
-                // Fetch configuration data
-                const response = await fetch(urlWithCacheBuster, {
+                // Fetch configuration data - using simple GET request 
+                const response = await fetch(`${GET_CONFIG_URL}?type=site_config&t=${cacheBuster}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -246,27 +246,25 @@
                 const data = await response.json();
                 console.log('Raw API response:', data);
                 
-                // Handle API Gateway response format
+                // Handle multiple response formats
                 let config = null;
                 
-                if (data.body && typeof data.body === 'string') {
-                    console.log('Attempting to parse body from API Gateway response');
+                if (data.site_config) {
+                    console.log('Found site_config directly in response');
+                    config = data.site_config;
+                } else if (data.body && typeof data.body === 'string') {
                     try {
                         const parsedBody = JSON.parse(data.body);
                         if (parsedBody.site_config) {
                             console.log('Found site_config in parsed body');
                             config = parsedBody.site_config;
-                        } else {
-                            console.log('No site_config found in parsed body:', parsedBody);
                         }
                     } catch (e) {
-                        console.error('Error parsing API response body:', e);
+                        console.error('Error parsing body:', e);
                     }
-                } else if (data.site_config) {
-                    console.log('Found site_config directly in response');
-                    config = data.site_config;
                 }
                 
+                // If no data found, use default values
                 if (!config) {
                     console.error('No configuration data found in API response');
                     clearForm();
@@ -361,11 +359,9 @@
                     site_config: configData
                 };
                 
-                console.log('Sending API payload:', payload);
-                console.log('Send URL:', SAVE_CONFIG_URL);
+                console.log('Sending POST to Lambda with payload:', payload);
                 
-                // Add specific action in querystring in addition to the body
-                // Save to API without the custom header that was causing CORS issues
+                // Send a simplified POST request matching what the Lambda test event expects
                 const apiResponse = await fetch(SAVE_CONFIG_URL, {
                     method: 'POST',
                     headers: {
@@ -383,54 +379,23 @@
                 const apiData = await apiResponse.json();
                 console.log('API response data:', apiData);
                 
-                // Extract the success status and message
+                // Check for success status in various formats
                 let success = false;
-                let message = 'Unknown response format';
+                if (apiData.success === true || 
+                    (apiData.body && typeof apiData.body === 'string' && apiData.body.includes('success":true')) ||
+                    (apiData.message && apiData.message.includes('success'))) {
+                    success = true;
+                }
                 
-                if (apiData.body && typeof apiData.body === 'string') {
-                    // Handle API Gateway response format
-                    try {
-                        const parsedBody = JSON.parse(apiData.body);
-                        console.log('Parsed API Gateway response body:', parsedBody);
-                        
-                        // Check if we have the expected success field
-                        if (parsedBody.success === true) {
-                            success = true;
-                            message = parsedBody.message || 'Configuration saved successfully';
-                        } else if (parsedBody.site_config) {
-                            // The Lambda returned site_config instead of success message
-                            // This is a special case for legacy support
-                            success = true;
-                            message = 'Configuration saved and retrieved successfully';
-                        } else {
-                            message = parsedBody.message || 'No message provided';
-                        }
-                    } catch (e) {
-                        console.error('Error parsing API Gateway response body:', e);
-                        throw new Error('Invalid response format from API Gateway');
-                    }
-                } else {
-                    // Direct Lambda response format
-                    success = apiData.success === true;
-                    message = apiData.message || 'No message provided';
+                if (success) {
+                    showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
+                    setTimeout(hideSaveMessage, 3000);
                     
-                    // Special case: API returned site_config directly
-                    if (apiData.site_config) {
-                        success = true;
-                        message = 'Configuration saved and data refreshed';
-                    }
+                    // Refresh data after saving
+                    await fetchConfiguration();
+                } else {
+                    throw new Error('Save operation did not return success confirmation');
                 }
-                
-                // Check if the save was successful
-                if (!success) {
-                    throw new Error(message || 'Save operation failed');
-                }
-
-                showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
-                setTimeout(hideSaveMessage, 3000);
-
-                // Refresh the configuration after saving
-                await fetchConfiguration();
             } catch (error) {
                 console.error('Error saving configuration:', error);
                 showSaveMessage('Error saving configuration: ' + error.message, 'text-red-500 bg-red-50');
@@ -438,7 +403,7 @@
                 // Add retry button
                 const retryButton = document.createElement('button');
                 retryButton.textContent = 'Retry Save';
-                retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
+                retryButton.className = 'ml-4 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700';
                 retryButton.onclick = () => saveSiteConfig(formData);
                 saveMessage.appendChild(retryButton);
             }
@@ -470,229 +435,8 @@
         }
         
         // Add refresh button event listener
-        const refreshButton = document.getElementById('refresh-button');
         if (refreshButton) {
             refreshButton.addEventListener('click', fetchConfiguration);
-        }
-        
-        // Add test button for direct API testing
-        const testButton = document.createElement('button');
-        testButton.textContent = 'Test Direct API';
-        testButton.className = 'ml-2 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500';
-        testButton.onclick = async function() {
-            try {
-                // Prepare a simple test payload
-                const testData = {
-                    test_field: "This is a test",
-                    timestamp: new Date().toISOString()
-                };
-                
-                console.log('Sending test API request with data:', testData);
-                
-                // Send test request directly to API
-                const response = await fetch(API_BASE_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(testData)
-                });
-                
-                console.log('Test API response status:', response.status);
-                const data = await response.json();
-                console.log('Test API response data:', data);
-                
-                // Show test results
-                alert(`API Test Result: ${response.status}\n${JSON.stringify(data, null, 2)}`);
-            } catch (error) {
-                console.error('Test API error:', error);
-                alert('Test API Error: ' + error.message);
-            }
-        };
-        
-        // Add the test button next to the refresh button
-        if (refreshButton && refreshButton.parentNode) {
-            refreshButton.parentNode.appendChild(testButton);
-            
-            // Add emergency save button
-            const emergencySaveButton = document.createElement('button');
-            emergencySaveButton.textContent = 'EMERGENCY SAVE';
-            emergencySaveButton.className = 'ml-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500';
-            emergencySaveButton.onclick = async function() {
-                try {
-                    // Collect all form data
-                    const formData = new FormData(siteConfigForm);
-                    const configData = {};
-                    formData.forEach((value, key) => {
-                        configData[key] = value;
-                    });
-                    
-                    // Create a simple payload with only site_config data
-                    const payload = {
-                        site_config: configData,
-                        emergency: true,
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                    console.log('EMERGENCY SAVE: Sending data directly to API');
-                    console.log('Payload:', payload);
-                    
-                    // Show in-progress message
-                    showSaveMessage('EMERGENCY SAVE IN PROGRESS...', 'text-white bg-red-600');
-                    
-                    // Send direct update to the API
-                    const response = await fetch(API_BASE_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    console.log('EMERGENCY SAVE response status:', response.status);
-                    const data = await response.json();
-                    console.log('EMERGENCY SAVE response data:', data);
-                    
-                    if (response.ok) {
-                        showSaveMessage('EMERGENCY SAVE SUCCESSFUL', 'text-white bg-green-600');
-                        
-                        // Refresh data after emergency save
-                        setTimeout(() => {
-                            fetchConfiguration();
-                        }, 2000);
-                    } else {
-                        showSaveMessage('EMERGENCY SAVE FAILED: ' + (data.message || 'Unknown error'), 'text-white bg-red-600');
-                    }
-                } catch (error) {
-                    console.error('EMERGENCY SAVE error:', error);
-                    showSaveMessage('EMERGENCY SAVE ERROR: ' + error.message, 'text-white bg-red-600');
-                }
-            };
-            
-            refreshButton.parentNode.appendChild(emergencySaveButton);
-            
-            // Add MYSQL BYPASS button - absolute last resort
-            const bypassButton = document.createElement('button');
-            bypassButton.textContent = 'MYSQL BYPASS';
-            bypassButton.className = 'ml-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500';
-            bypassButton.onclick = async function() {
-                try {
-                    // Collect all form data
-                    const formData = new FormData(siteConfigForm);
-                    const configData = {};
-                    formData.forEach((value, key) => {
-                        configData[key] = value;
-                    });
-                    
-                    // Create a completely different URL with all params in the URL
-                    // This avoids CORS issues with custom headers
-                    const timestamp = new Date().getTime();
-                    const bypassUrl = `${API_BASE_URL}?force_mysql=true&bypass=true&emergency=true&t=${timestamp}`;
-                    
-                    // Show in-progress message
-                    showSaveMessage('MYSQL BYPASS IN PROGRESS...', 'text-white bg-purple-600');
-                    
-                    console.log('MYSQL BYPASS: Sending data to URL:', bypassUrl);
-                    console.log('MYSQL BYPASS data:', configData);
-                    
-                    // Send direct update without custom headers
-                    const response = await fetch(bypassUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            site_config: configData,
-                            force_mysql: true,
-                            timestamp: timestamp
-                        })
-                    });
-                    
-                    console.log('MYSQL BYPASS response status:', response.status);
-                    const data = await response.json();
-                    console.log('MYSQL BYPASS response data:', data);
-                    
-                    if (response.ok) {
-                        showSaveMessage('MYSQL BYPASS SUCCESSFUL', 'text-white bg-green-600');
-                        
-                        // Refresh data after bypass save
-                        setTimeout(() => {
-                            fetchConfiguration();
-                        }, 2000);
-                    } else {
-                        showSaveMessage('MYSQL BYPASS FAILED: ' + (data.message || 'Unknown error'), 'text-white bg-purple-600');
-                    }
-                } catch (error) {
-                    console.error('MYSQL BYPASS error:', error);
-                    showSaveMessage('MYSQL BYPASS ERROR: ' + error.message, 'text-white bg-purple-600');
-                }
-            };
-            
-            refreshButton.parentNode.appendChild(bypassButton);
-            
-            // Add a direct database bypass button that uses a completely different Lambda
-            const directDbButton = document.createElement('button');
-            directDbButton.textContent = 'DIRECT DATABASE';
-            directDbButton.className = 'ml-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500';
-            directDbButton.onclick = async function() {
-                try {
-                    // Collect form data
-                    const formData = new FormData(siteConfigForm);
-                    const configData = {};
-                    formData.forEach((value, key) => {
-                        configData[key] = value;
-                    });
-                    
-                    // Show progress message
-                    showSaveMessage('DIRECT DATABASE SAVE IN PROGRESS...', 'text-white bg-yellow-600');
-                    
-                    // Create query string parameters directly for all fields
-                    // This bypasses the need for a POST body entirely
-                    let queryParams = [];
-                    for (const [key, value] of Object.entries(configData)) {
-                        queryParams.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
-                    }
-                    
-                    // Add timestamp and action
-                    queryParams.push(`t=${new Date().getTime()}`);
-                    queryParams.push('direct_db=true');
-                    queryParams.push('action=save_direct');
-                    
-                    // Construct the URL with all parameters in the querystring
-                    const directUrl = `${API_BASE_URL}?${queryParams.join('&')}`;
-                    
-                    console.log('DIRECT DATABASE: Using GET request with all parameters in URL');
-                    console.log('URL length:', directUrl.length);
-                    
-                    // Make GET request with all parameters in the URL
-                    // No POST data at all, avoiding all issues with JSON parsing
-                    const response = await fetch(directUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Cache-Control': 'no-cache, no-store'
-                        }
-                    });
-                    
-                    console.log('DIRECT DATABASE response status:', response.status);
-                    const data = await response.json();
-                    console.log('DIRECT DATABASE response:', data);
-                    
-                    if (response.ok) {
-                        showSaveMessage('DIRECT DATABASE SAVE SUCCESSFUL', 'text-white bg-green-600');
-                        setTimeout(() => {
-                            fetchConfiguration();
-                        }, 2000);
-                    } else {
-                        showSaveMessage('DIRECT DATABASE SAVE FAILED', 'text-white bg-yellow-600');
-                    }
-                } catch (error) {
-                    console.error('DIRECT DATABASE error:', error);
-                    showSaveMessage('DIRECT DATABASE ERROR: ' + error.message, 'text-white bg-yellow-600');
-                }
-            };
-            
-            // Add direct database button
-            refreshButton.parentNode.appendChild(directDbButton);
         }
         
         // Check if user is authenticated
