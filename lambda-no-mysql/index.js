@@ -236,9 +236,11 @@ exports.handler = async (event, context) => {
     // Extract query parameters and determine request type
     const queryParams = event.queryStringParameters || {};
     const pathParams = event.pathParameters || {};
-    const requestType = queryParams.type || '';
+    let requestType = queryParams.type || '';
+    let actionType = queryParams.action || '';
     
-    console.log('Request type determined from query parameters:', requestType);
+    console.log('Request type from query parameters:', requestType);
+    console.log('Action type from query parameters:', actionType);
     
     // Check for admin access query parameter - special backdoor for access issues
     if (queryParams.admin_check === 'true') {
@@ -254,6 +256,23 @@ exports.handler = async (event, context) => {
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
       };
+    }
+    
+    // If we have an action in the query params, handle it accordingly
+    if (actionType === 'get_site_config' || requestType === 'site_config') {
+        console.log('Processing site_config request from query parameters');
+        const siteConfig = await getSiteConfig();
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                site_config: siteConfig,
+                _version: "2.1.8",
+                from: "query_parameters",
+                timestamp: new Date().toISOString(),
+                storage: "Using MySQL persistent storage"
+            })
+        };
     }
     
     // Handle GET request for site configuration
@@ -301,6 +320,7 @@ exports.handler = async (event, context) => {
       let parsedBody;
       try {
         parsedBody = JSON.parse(event.body);
+        console.log('Parsed body:', JSON.stringify(parsedBody));
         console.log('Parsed body action:', parsedBody.action);
       } catch (parseError) {
         console.error('Error parsing request body:', parseError);
@@ -317,7 +337,7 @@ exports.handler = async (event, context) => {
       }
       
       // Check for different request formats and determine action
-      let actionType = parsedBody.action || '';
+      actionType = parsedBody.action || actionType || '';
       
       console.log('Action type detected in request:', actionType);
       
@@ -429,7 +449,8 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.6",
+            _version: "2.1.8",
+            from: "post_body",
             timestamp: new Date().toISOString(),
             storage: "Using MySQL persistent storage"
           })

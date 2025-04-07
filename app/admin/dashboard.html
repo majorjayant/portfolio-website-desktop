@@ -232,11 +232,19 @@
                 // Get authentication token
                 const token = localStorage.getItem('admin_token');
                 
-                // Use POST method with action parameter - this works with our Lambda
-                const url = DIRECT_INVOKE_URL;
-                console.log('Fetching config using POST with action parameter:', url);
+                // Try POST method with action=get_site_config as query parameter
+                const url = `${DIRECT_INVOKE_URL}?action=get_site_config&type=site_config`;
+                console.log('Fetching config using POST with action in URL:', url);
                 
-                // Use POST with JSON body to specify the action
+                const requestBody = {
+                    action: 'get_site_config',
+                    type: 'site_config',
+                    debug: true
+                };
+                
+                console.log('Request body:', JSON.stringify(requestBody));
+                
+                // Use POST with JSON body + query params for redundancy
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -244,10 +252,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': token || ''
                     },
-                    body: JSON.stringify({
-                        action: 'get_site_config',
-                        type: 'site_config'
-                    })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 console.log('Response status:', response.status);
