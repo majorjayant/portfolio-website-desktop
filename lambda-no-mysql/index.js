@@ -76,7 +76,7 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.11 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.12 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -280,7 +280,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.11",
+            _version: "2.1.12",
             source: "GET handler with query params",
             timestamp: new Date().toISOString()
           })
@@ -296,7 +296,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           site_config: siteConfig,
-          _version: "2.1.11",
+          _version: "2.1.12",
           source: "GET general handler",
           timestamp: new Date().toISOString()
         })
@@ -312,7 +312,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.1.11',
+          lambda_version: '2.1.12',
           storage: 'Using MySQL persistent storage',
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
@@ -328,7 +328,7 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
                 site_config: siteConfig,
-                _version: "2.1.11",
+                _version: "2.1.12",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
                 storage: "Using MySQL persistent storage"
@@ -403,7 +403,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.11'
+            lambda_version: '2.1.12'
           })
         };
       }
@@ -416,7 +416,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '2.1.11',
+            lambda_version: '2.1.12',
             storage: 'Using MySQL persistent storage',
             timestamp: new Date().toISOString(),
             access_paths: {
@@ -464,13 +464,15 @@ exports.handler = async (event, context) => {
         // Save the configuration data
         const updateResult = await saveSiteConfig(configData);
         
+        // IMPORTANT: Return the direct update result, not wrapped in API Gateway format
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
-            ...updateResult,
+            success: updateResult.success,
+            message: updateResult.message,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.11'
+            lambda_version: '2.1.12'
           })
         };
       }
@@ -487,7 +489,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.11",
+            _version: "2.1.12",
             from: "post_body",
             timestamp: new Date().toISOString(),
             storage: "Using MySQL persistent storage"
@@ -517,7 +519,7 @@ exports.handler = async (event, context) => {
         request_path: event.path,
         request_method: event.httpMethod,
         request_type: requestType,
-        _version: "2.1.11",
+        _version: "2.1.12",
         timestamp: new Date().toISOString()
       })
     };

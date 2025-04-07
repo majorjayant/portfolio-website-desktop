@@ -385,7 +385,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': token
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(payload)
                 });
@@ -398,18 +398,30 @@
                 const apiData = await apiResponse.json();
                 console.log('API response data:', apiData);
                 
+                // Extract the success status and message
+                let success = false;
+                let message = 'Unknown response format';
+                
                 if (apiData.body && typeof apiData.body === 'string') {
                     // Handle API Gateway response format
                     try {
                         const parsedBody = JSON.parse(apiData.body);
-                        if (!parsedBody.success) {
-                            throw new Error(parsedBody.message || 'API save failed');
-                        }
+                        console.log('Parsed API Gateway response body:', parsedBody);
+                        success = parsedBody.success === true;
+                        message = parsedBody.message || 'No message provided';
                     } catch (e) {
-                        throw new Error('Invalid response from API');
+                        console.error('Error parsing API Gateway response body:', e);
+                        throw new Error('Invalid response format from API Gateway');
                     }
-                } else if (!apiData.success) {
-                    throw new Error(apiData.message || 'API save failed');
+                } else {
+                    // Direct Lambda response format
+                    success = apiData.success === true;
+                    message = apiData.message || 'No message provided';
+                }
+                
+                // Check if the save was successful
+                if (!success) {
+                    throw new Error(message || 'Save operation failed');
                 }
 
                 showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
