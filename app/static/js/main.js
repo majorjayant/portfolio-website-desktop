@@ -217,7 +217,7 @@ function loadSiteConfig() {
     console.log('Starting to load site configuration');
     
     // Use the confirmed working API endpoint
-    const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config';
+    const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
     
     console.log('Fetching from API endpoint:', apiEndpoint);
     
