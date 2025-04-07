@@ -76,7 +76,7 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.3 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.4 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -236,6 +236,9 @@ exports.handler = async (event, context) => {
     // Extract query parameters and determine request type
     const queryParams = event.queryStringParameters || {};
     const pathParams = event.pathParameters || {};
+    const requestType = queryParams.type || '';
+    
+    console.log('Request type determined from query parameters:', requestType);
     
     // Check for admin access query parameter - special backdoor for access issues
     if (queryParams.admin_check === 'true') {
@@ -252,8 +255,6 @@ exports.handler = async (event, context) => {
         })
       };
     }
-    
-    let requestType = queryParams.type || '';
     
     // Handle GET request for site configuration
     if (event.httpMethod === 'GET') {
