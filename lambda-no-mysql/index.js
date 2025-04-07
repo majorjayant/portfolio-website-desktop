@@ -76,7 +76,7 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.4 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.6 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -249,7 +249,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.1.3',
+          lambda_version: '2.1.6',
           storage: 'Using MySQL persistent storage',
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
@@ -271,7 +271,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.3",
+            _version: "2.1.6",
             timestamp: new Date().toISOString(),
             storage: "Using MySQL persistent storage"
           })
@@ -345,7 +345,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.3'
+            lambda_version: '2.1.6'
           })
         };
       }
@@ -358,7 +358,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '2.1.3',
+            lambda_version: '2.1.6',
             storage: 'Using MySQL persistent storage',
             timestamp: new Date().toISOString(),
             access_paths: {
@@ -412,7 +412,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...updateResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.3'
+            lambda_version: '2.1.6'
           })
         };
       }
@@ -429,7 +429,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.5",
+            _version: "2.1.6",
             timestamp: new Date().toISOString(),
             storage: "Using MySQL persistent storage"
           })

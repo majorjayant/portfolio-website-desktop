@@ -257,54 +257,48 @@
                 // Extract the site_config object from the response
                 let config;
                 if (rawData.site_config) {
-                    // Direct structure from Lambda (v2.1.5)
+                    // Direct structure from Lambda
+                    console.log('Found site_config in direct response');
                     config = rawData.site_config;
                 } else if (rawData.body && typeof rawData.body === 'string') {
                     // API Gateway might wrap the response in a body property
                     try {
+                        console.log('Attempting to parse body from API Gateway response');
                         const parsedBody = JSON.parse(rawData.body);
-                        config = parsedBody.site_config || {};
+                        if (parsedBody.site_config) {
+                            console.log('Found site_config in parsed body');
+                            config = parsedBody.site_config;
+                        } else {
+                            console.error('No site_config found in parsed body:', parsedBody);
+                            showSaveMessage('Error: Received response from server but no configuration data was found', 'text-red-500 bg-red-50');
+                            return;
+                        }
                     } catch (e) {
                         console.error('Error parsing body:', e);
-                        config = {};
+                        showSaveMessage('Error: Could not parse response from server', 'text-red-500 bg-red-50');
+                        return;
                     }
+                } else if (rawData.message && rawData.message.includes("Unknown request type")) {
+                    console.error('Server responded with "Unknown request type"');
+                    showSaveMessage('Error: Server does not recognize this request. The Lambda function may need to be updated.', 'text-red-500 bg-red-50');
+                    return;
                 } else {
-                    // Fallback - use empty object
-                    config = {};
+                    console.error('Unexpected API response format:', rawData);
+                    showSaveMessage('Error: Unexpected response format from server', 'text-red-500 bg-red-50');
+                    return;
                 }
                 
                 console.log('Extracted config for form:', config);
                 
-                // Apply default values for any missing fields
-                const defaultConfig = {
-                    about_title: "My Portfolio",
-                    about_subtitle: "Welcome to my portfolio website",
-                    about_description: "A showcase of my projects and skills",
-                    image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
-                    image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
-                    image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
-                    image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profile.jpg",
-                    image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg",
-                    image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg",
-                    image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg",
-                    image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg",
-                    about_photo1_alt: "Photo 1",
-                    about_photo2_alt: "Photo 2",
-                    about_photo3_alt: "Photo 3",
-                    about_photo4_alt: "Photo 4"
-                };
-                
-                // Merge the actual config with defaults for any missing fields
-                const mergedConfig = {...defaultConfig, ...config};
-                
-                if (Object.keys(config).length === 0) {
-                    showSaveMessage('Warning: No configuration data found, using defaults', 'text-yellow-500 bg-yellow-50');
-                } else {
-                    hideSaveMessage();
+                if (!config || Object.keys(config).length === 0) {
+                    console.error('No configuration data found in API response');
+                    showSaveMessage('Error: No configuration data found in API response', 'text-red-500 bg-red-50');
+                    return;
                 }
                 
-                // Populate the form with the combined config
-                populateForm(mergedConfig);
+                // Config data found, populate form
+                hideSaveMessage();
+                populateForm(config);
             } catch (error) {
                 console.error('Error loading configuration:', error);
                 showSaveMessage('Error loading configuration: ' + error.message, 'text-red-500 bg-red-50');
