@@ -225,7 +225,7 @@ async function saveSiteConfig(configData) {
 
 // Lambda handler
 exports.handler = async (event, context) => {
-  console.log('Lambda Version 2.1.25 - Final version with API Gateway integration');
+  console.log('Lambda Version 2.1.26 - Enhanced CORS and API Gateway integration');
   console.log('Request method:', event.httpMethod);
   console.log('Request path:', event.path);
   console.log('Headers:', JSON.stringify(event.headers || {}));
@@ -235,167 +235,134 @@ exports.handler = async (event, context) => {
   try {
     // Handle OPTIONS requests for CORS
     if (event.httpMethod === 'OPTIONS') {
+      console.log('Handling OPTIONS request for CORS preflight');
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({ 
           message: 'CORS preflight request successful',
           timestamp: new Date().toISOString(),
-          version: '2.1.25'
+          version: '2.1.26'
         })
       };
     }
     
     // Extract query parameters
     const queryParams = event.queryStringParameters || {};
+    const type = queryParams.type;
+    const action = queryParams.action;
     
-    // DIRECT DATABASE MODE via GET - The fallback approach
-    if (event.httpMethod === 'GET' && queryParams.direct_db === 'true') {
-      console.log('🟨 DIRECT DATABASE MODE: Detected direct DB request via GET');
-      
-      try {
-        // Extract config data from query parameters
-        const configData = {};
-        for (const [key, value] of Object.entries(queryParams)) {
-          if (key !== 't' && key !== 'direct_db' && key !== 'action') {
-            configData[key] = value;
-          }
-        }
-        
-        if (Object.keys(configData).length > 0) {
-          console.log('🟨 DIRECT DATABASE: Performing direct database update via GET params');
-          const result = await directDatabaseUpdate(configData);
-          
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-              success: true,
-              message: "DIRECT DATABASE UPDATE COMPLETED SUCCESSFULLY",
-              fields_updated: Object.keys(configData).length,
-              result: result,
-              version: '2.1.25',
-              timestamp: new Date().toISOString()
-            })
-          };
-        }
-      } catch (e) {
-        console.error('🟨 DIRECT DATABASE ERROR:', e);
-        return {
-          statusCode: 200,
-          headers, 
-          body: JSON.stringify({
-            success: false,
-            message: "DIRECT DATABASE ERROR: " + e.message,
-            version: '2.1.25',
-            timestamp: new Date().toISOString()
-          })
-        };
-      }
-    }
+    // Check API Gateway request context
+    console.log('Request context:', JSON.stringify(event.requestContext || {}));
     
-    // PRIMARY METHOD: Handle POST for site_config updates
-    if (event.httpMethod === 'POST' && event.body) {
-      console.log('✅ Handling POST request with body');
+    // GET method - primarily for retrieving site configuration
+    if (event.httpMethod === 'GET') {
+      console.log('ℹ️ Handling GET request with type:', type);
       
-      try {
-        // Parse the request body
-        const parsedBody = JSON.parse(event.body);
+      // Return site configuration
+      if (type === 'site_config') {
+        console.log('ℹ️ Fetching site configuration for GET request');
+        const siteConfig = await getSiteConfig();
         
-        // Check for site_config data
-        if (parsedBody.site_config && typeof parsedBody.site_config === 'object') {
-          console.log('✅ Found site_config in POST body');
-          console.log('Action:', parsedBody.action || 'none specified');
-          console.log('Config fields:', Object.keys(parsedBody.site_config).join(', '));
-          
-          // Update the database with the configuration
-          console.log('✅ Updating database with site_config data');
-          const result = await saveSiteConfig(parsedBody.site_config);
-          
-          // Return success response
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-              success: true,
-              message: "Configuration updated successfully",
-              result: result,
-              version: '2.1.25',
-              timestamp: new Date().toISOString()
-            })
-          };
-        } else {
-          console.log('⚠️ No site_config found in POST body, checking for other actions');
-          
-          // Check for login action
-          if (parsedBody.action === 'login' && parsedBody.username && parsedBody.password) {
-            console.log('✅ Processing login request for user:', parsedBody.username);
-            const loginResult = handleLogin(parsedBody.username, parsedBody.password);
-            
-            return {
-              statusCode: 200,
-              headers,
-              body: JSON.stringify({
-                ...loginResult,
-                version: '2.1.25',
-                timestamp: new Date().toISOString()
-              })
-            };
-          }
-        }
-      } catch (error) {
-        console.error('❌ Error processing POST request:', error);
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
-            success: false,
-            message: "Error processing request: " + error.message,
-            version: '2.1.25',
+            site_config: siteConfig,
+            message: "Site configuration retrieved successfully",
+            version: "2.1.26",
             timestamp: new Date().toISOString()
           })
         };
       }
     }
     
-    // DEFAULT GET HANDLER: Return site configuration
-    if (event.httpMethod === 'GET') {
-      console.log('ℹ️ Handling GET request, returning site configuration');
-      const siteConfig = await getSiteConfig();
+    // POST method - for various operations including updating site config
+    if (event.httpMethod === 'POST') {
+      console.log('✅ Handling POST request with body');
       
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          site_config: siteConfig,
-          message: 'Site configuration retrieved successfully',
-          version: '2.1.25',
-          timestamp: new Date().toISOString()
-        })
-      };
+      // Parse request body
+      let body = {};
+      if (event.body) {
+        try {
+          if (typeof event.body === 'string') {
+            body = JSON.parse(event.body);
+          } else {
+            body = event.body;
+          }
+          console.log('Parsed POST body action:', body.action);
+          console.log('Config fields:', body.site_config ? Object.keys(body.site_config).join(', ') : 'No site_config found');
+        } catch (error) {
+          console.error('Error parsing request body:', error);
+          return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: "Invalid request body: " + error.message,
+              version: "2.1.26",
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+      }
+      
+      // Handle site config update
+      if ((body.action === 'update_site_config' || action === 'update_site_config') && body.site_config) {
+        console.log('✅ Updating database with site_config data');
+        const result = await saveSiteConfig(body.site_config);
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: result.success,
+            message: result.message,
+            result: result,
+            version: "2.1.26",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // Handle login requests
+      if (body.action === 'login' && body.username && body.password) {
+        console.log('Processing login request for user:', body.username);
+        const loginResult = handleLogin(body.username, body.password);
+        
+        return {
+          statusCode: loginResult.success ? 200 : 401,
+          headers,
+          body: JSON.stringify({
+            ...loginResult,
+            version: "2.1.26",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
     }
     
-    // Fallback response for any other requests
-    console.log('⚠️ Unhandled request type, returning fallback response');
+    // If we get here, no specific handler matched
+    console.log('⚠️ No specific handler matched the request');
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message: 'Request processed but no specific handler matched',
-        httpMethod: event.httpMethod,
-        version: '2.1.25',
+        message: "Request processed but no specific handler matched",
+        version: "2.1.26",
         timestamp: new Date().toISOString()
       })
     };
+    
   } catch (error) {
-    console.error('❌ Unhandled error:', error);
+    console.error('Unhandled error in Lambda handler:', error);
     return {
-      statusCode: 200,
+      statusCode: 500,
       headers,
       body: JSON.stringify({
         success: false,
-        message: 'Server error: ' + error.message,
-        version: '2.1.25',
+        message: "Internal server error: " + error.message,
+        version: "2.1.26",
         timestamp: new Date().toISOString()
       })
     };
