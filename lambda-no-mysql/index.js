@@ -76,13 +76,20 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.9 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.10 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
   console.log('Path parameters:', JSON.stringify(event.pathParameters || {}));
   console.log('Query Parameters:', JSON.stringify(event.queryStringParameters || {}));
   console.log('Raw Query String:', event.rawQueryString || 'Not available');
+  
+  // Log the entire event for debugging
+  console.log('Full event object (sanitized):', JSON.stringify({
+    ...event,
+    body: event.body ? '(body content omitted)' : null
+  }));
+  
   console.log('Headers:', JSON.stringify(event.headers || {}));
   
   // Don't log sensitive body content like passwords
@@ -237,9 +244,23 @@ exports.handler = async (event, context) => {
     // Extract and log query parameters
     const queryParams = event.queryStringParameters || {};
     const pathParams = event.pathParameters || {};
-    const requestType = queryParams.type || '';
-    const actionType = queryParams.action || '';
+    let requestType = queryParams.type || '';
+    let actionType = queryParams.action || '';
     const path = event.path || '';
+    
+    // Check if we have a raw query string that contains the parameters
+    // This is a fallback for when API Gateway doesn't parse query params correctly
+    if (event.rawQueryString) {
+      console.log('Checking raw query string:', event.rawQueryString);
+      if (event.rawQueryString.includes('type=site_config')) {
+        requestType = 'site_config';
+        console.log('Found site_config in raw query string');
+      }
+      if (event.rawQueryString.includes('action=get_site_config')) {
+        actionType = 'get_site_config';
+        console.log('Found get_site_config in raw query string');
+      }
+    }
     
     console.log('Request type from query parameters:', requestType);
     console.log('Action type from query parameters:', actionType);
@@ -255,7 +276,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           site_config: siteConfig,
-          _version: "2.1.9",
+          _version: "2.1.10",
           source: "GET with query params",
           timestamp: new Date().toISOString()
         })
