@@ -225,11 +225,12 @@ async function saveSiteConfig(configData) {
 
 // Lambda handler
 exports.handler = async (event, context) => {
-  console.log('NEW VERSION 2.1.21 - EMERGENCY DB UPDATE HANDLER');
+  console.log('NEW VERSION 2.1.22 - DIRECT MYSQL UPDATE HANDLER');
   console.log('Request method:', event.httpMethod);
   console.log('Request path:', event.path);
   console.log('Headers:', JSON.stringify(event.headers || {}));
   console.log('Query params:', JSON.stringify(event.queryStringParameters || {}));
+  console.log('Raw query string:', event.rawQueryString || '');
   
   try {
     // Handle OPTIONS requests for CORS
@@ -240,10 +241,70 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ 
           message: 'CORS preflight request successful',
           timestamp: new Date().toISOString(),
-          version: '2.1.21'
+          version: '2.1.22'
         })
       };
     }
+    
+    // Extract query parameters - crucial for bypass mode
+    const queryParams = event.queryStringParameters || {};
+    
+    // DIRECT MYSQL MODE - Check for the special URL parameters
+    if (queryParams.force_mysql === 'true') {
+      console.log('⚠️ DIRECT MYSQL MODE ACTIVATED via URL parameter');
+      console.log('URL parameters:', JSON.stringify(queryParams));
+      
+      if (event.httpMethod === 'POST' && event.body) {
+        try {
+          // Parse the request body
+          const parsedBody = JSON.parse(event.body);
+          console.log('DIRECT MYSQL: parsed body:', JSON.stringify(parsedBody, null, 2));
+          
+          // Extract the site_config data
+          if (parsedBody.site_config && typeof parsedBody.site_config === 'object') {
+            console.log('DIRECT MYSQL: Found site_config data, preparing for database update');
+            
+            // Get the site config data
+            const configData = parsedBody.site_config;
+            console.log('DIRECT MYSQL: Config data keys:', Object.keys(configData).join(', '));
+            
+            // Directly update the database
+            console.log('DIRECT MYSQL: Initiating database update...');
+            const result = await emergencyDbUpdate(configData);
+            
+            // Return detailed success info
+            return {
+              statusCode: 200,
+              headers,
+              body: JSON.stringify({
+                success: true,
+                message: "DIRECT MYSQL UPDATE COMPLETE",
+                result: result,
+                updated_fields: Object.keys(configData).length,
+                version: '2.1.22',
+                timestamp: new Date().toISOString()
+              })
+            };
+          } else {
+            console.log('DIRECT MYSQL: No site_config data found in request body');
+          }
+        } catch (e) {
+          console.error('DIRECT MYSQL: Error processing request:', e);
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: "DIRECT MYSQL ERROR: " + e.message,
+              version: '2.1.22',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+      }
+    }
+    
+    // Regular processing continues for non-bypass requests...
     
     // EMERGENCY MODE: IMMEDIATELY CHECK AND PROCESS BODY FOR SITE_CONFIG DATA
     if (event.httpMethod === 'POST' && event.body) {

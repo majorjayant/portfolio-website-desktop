@@ -584,8 +584,10 @@
                         configData[key] = value;
                     });
                     
-                    // Try a completely different URL structure
-                    const bypassUrl = `${API_BASE_URL}?force_mysql=true&bypass_api_gateway=true&emergency=true&t=${new Date().getTime()}`;
+                    // Create a completely different URL with all params in the URL
+                    // This avoids CORS issues with custom headers
+                    const timestamp = new Date().getTime();
+                    const bypassUrl = `${API_BASE_URL}?force_mysql=true&bypass=true&emergency=true&t=${timestamp}`;
                     
                     // Show in-progress message
                     showSaveMessage('MYSQL BYPASS IN PROGRESS...', 'text-white bg-purple-600');
@@ -593,19 +595,16 @@
                     console.log('MYSQL BYPASS: Sending data to URL:', bypassUrl);
                     console.log('MYSQL BYPASS data:', configData);
                     
-                    // Send direct update to the API with complete bypass
+                    // Send direct update without custom headers
                     const response = await fetch(bypassUrl, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-Emergency-Bypass': 'true',
-                            'X-Force-MySQL': 'true'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            mysql_direct_update: true,
                             site_config: configData,
-                            bypass: true,
-                            timestamp: new Date().toISOString()
+                            force_mysql: true,
+                            timestamp: timestamp
                         })
                     });
                     
