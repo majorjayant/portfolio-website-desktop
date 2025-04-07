@@ -241,6 +241,46 @@ exports.handler = async (event, context) => {
       };
     }
     
+    // CRITICAL CHANGE: First check if this is a POST request with body
+    if (event.httpMethod === 'POST' && event.body) {
+      console.log('✅ CRITICAL UPDATE: Processing POST request with body');
+      
+      try {
+        // Parse the body with extra error handling
+        const parsedBody = JSON.parse(event.body);
+        console.log('✅ POST Body parsed:', JSON.stringify(parsedBody, null, 2));
+        
+        // FORCE DATABASE UPDATE: If there's site_config data in the body, save it
+        // regardless of action or other validation
+        if (parsedBody.site_config && typeof parsedBody.site_config === 'object') {
+          console.log('✅ CRITICAL UPDATE: Found site_config in POST body - FORCING DATABASE UPDATE');
+          console.log('✅ Config data keys:', Object.keys(parsedBody.site_config));
+          
+          // Force save the configuration data
+          console.log('🔄 FORCING SAVE of site config with data:', JSON.stringify(parsedBody.site_config));
+          const updateResult = await saveSiteConfig(parsedBody.site_config);
+          
+          console.log('✅ FORCED SAVE result:', JSON.stringify(updateResult));
+          
+          // Return success response
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: "Configuration updated successfully with forced update",
+              from: "direct_database_update",
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.20'
+            })
+          };
+        }
+      } catch (e) {
+        console.error('❌ Error processing POST body:', e);
+        // Continue to other handlers instead of failing
+      }
+    }
+    
     // Extract and log query parameters first (needed for both GET and POST)
     const queryParams = event.queryStringParameters || {};
     const pathParams = event.pathParameters || {};
