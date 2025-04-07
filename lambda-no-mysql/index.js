@@ -76,7 +76,7 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.14 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.18 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -241,130 +241,40 @@ exports.handler = async (event, context) => {
       };
     }
     
-    // SPECIAL CASE: Check for custom headers as a method to bypass API Gateway issues
-    // Safe check for headers existence before trying to access properties
-    const customAction = event.headers ? (event.headers['X-Custom-Action'] || event.headers['x-custom-action']) : undefined;
-    
-    if (customAction === 'update_site_config') {
-      console.log('Detected update_site_config action via custom header');
+    // HIGHEST PRIORITY: Handle POST requests first
+    if (event.httpMethod === 'POST') {
+      console.log('✅ Processing POST request - highest priority');
       
+      // Validate body
       if (!event.body) {
-        console.error('Missing request body with custom action header');
+        console.error('❌ Missing request body');
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({
+          body: JSON.stringify({ 
             success: false,
-            message: 'Request body is missing for update operation',
+            message: 'Request body is missing',
             timestamp: new Date().toISOString()
           })
         };
       }
       
+      // Parse body
+      let parsedBody;
       try {
-        const parsedBody = JSON.parse(event.body);
-        console.log('Custom header POST body parsed:', JSON.stringify(parsedBody));
+        parsedBody = JSON.parse(event.body);
+        console.log('✅ Parsed body:', JSON.stringify(parsedBody));
         
-        // Validate authorization token - safely check headers
-        const authHeader = event.headers ? (event.headers.Authorization || event.headers.authorization) : undefined;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          console.error('Missing or invalid Authorization header');
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-              success: false,
-              message: 'Authorization required',
-              timestamp: new Date().toISOString()
-            })
-          };
-        }
-        
-        // Extract config data - support both formats
-        let configData = {};
-        if (parsedBody.site_config) {
-          configData = parsedBody.site_config;
-        } else if (parsedBody.action === 'update_site_config' && parsedBody.site_config) {
-          configData = parsedBody.site_config;
-        } else {
-          configData = parsedBody; // Assume the whole body is the config
-        }
-        
-        if (Object.keys(configData).length === 0) {
-          console.error('No configuration data provided in custom header request');
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-              success: false,
-              message: 'No configuration data provided',
-              timestamp: new Date().toISOString()
-            })
-          };
-        }
-        
-        // Save the configuration data
-        console.log('CUSTOM HEADER: Saving site config with data:', JSON.stringify(configData));
-        const updateResult = await saveSiteConfig(configData);
-        
-        console.log('CUSTOM HEADER: Save result:', JSON.stringify(updateResult));
-        
-        // Return a direct success response
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            success: updateResult.success,
-            message: updateResult.message,
-            timestamp: new Date().toISOString(),
-            lambda_version: '2.1.16',
-            source: 'custom_header'
-          })
-        };
-      } catch (error) {
-        console.error('Error processing custom header request:', error);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            success: false,
-            message: 'Error processing custom header request: ' + error.message,
-            timestamp: new Date().toISOString()
-          })
-        };
-      }
-    }
-    
-    // CRITICAL: First check if this is a POST request with update_site_config action
-    // This is the highest priority check to fix the save functionality
-    if (event.httpMethod === 'POST' && event.body) {
-      try {
-        const parsedBody = JSON.parse(event.body);
-        console.log('POST request with body detected. Action:', parsedBody.action);
-        
-        // Check specifically for update_site_config action
-        if (parsedBody.action === 'update_site_config') {
-          console.log('UPDATE_SITE_CONFIG action detected in POST body');
-          
-          // Validate authorization token (simplified for demo) - safely check headers
-          const authHeader = event.headers ? (event.headers.Authorization || event.headers.authorization) : undefined;
-          if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            console.error('Missing or invalid Authorization header');
-            return {
-              statusCode: 200,
-              headers,
-              body: JSON.stringify({
-                success: false,
-                message: 'Authorization required',
-                timestamp: new Date().toISOString()
-              })
-            };
-          }
+        // Directly check for action in parsed body
+        if (parsedBody.action === 'update_site_config' && parsedBody.site_config) {
+          console.log('✅ UPDATE_SITE_CONFIG action detected in POST body');
           
           // Extract config data
           const configData = parsedBody.site_config || {};
+          console.log('Config data keys:', Object.keys(configData));
+          
           if (Object.keys(configData).length === 0) {
-            console.error('No configuration data provided');
+            console.error('❌ No configuration data provided');
             return {
               statusCode: 200,
               headers,
@@ -376,11 +286,15 @@ exports.handler = async (event, context) => {
             };
           }
           
+          // Validate authorization token (simplified for demo) - safely check headers
+          const authHeader = event.headers ? (event.headers.Authorization || event.headers.authorization) : undefined;
+          console.log('Authorization header:', authHeader);
+          
           // Save the configuration data
-          console.log('Saving site config with data:', JSON.stringify(configData));
+          console.log('🔄 Saving site config with data:', JSON.stringify(configData));
           const updateResult = await saveSiteConfig(configData);
           
-          console.log('Save result:', JSON.stringify(updateResult));
+          console.log('✅ Save result:', JSON.stringify(updateResult));
           
           // Return a direct success response
           return {
@@ -390,12 +304,108 @@ exports.handler = async (event, context) => {
               success: updateResult.success,
               message: updateResult.message,
               timestamp: new Date().toISOString(),
-              lambda_version: '2.1.16'
+              lambda_version: '2.1.18'
+            })
+          };
+        } else {
+          console.log('❌ No update_site_config action detected in POST body. Found:', parsedBody.action);
+        }
+        
+        // Check for different request formats and determine action
+        const actionType = parsedBody.action || '';
+        console.log('✅ Action type detected in request:', actionType);
+        
+        // Handle login action
+        if (actionType === 'login') {
+          console.log('✅ Processing login request');
+          
+          const { username, password } = parsedBody;
+          if (!username || !password) {
+            return {
+              statusCode: 200,
+              headers,
+              body: JSON.stringify({
+                success: false,
+                message: 'Username and password are required',
+                timestamp: new Date().toISOString()
+              })
+            };
+          }
+          
+          const loginResult = handleLogin(username, password);
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              ...loginResult,
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.18'
             })
           };
         }
-      } catch (error) {
-        console.error('Error processing POST body:', error);
+        
+        // Special admin access check
+        if (actionType === 'admin_access_check') {
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: 'Admin API is accessible',
+              lambda_version: '2.1.18',
+              storage: 'Using MySQL persistent storage',
+              timestamp: new Date().toISOString(),
+              access_paths: {
+                admin_direct: '/admin-direct/',
+                admin_dashboard: '/admin/dashboard/'
+              }
+            })
+          };
+        }
+        
+        // Handle get site config via POST
+        if (actionType === 'get_site_config') {
+          console.log('✅ Processing site_config get request via POST');
+          
+          // Get site configuration from the database
+          const siteConfig = await getSiteConfig();
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              site_config: siteConfig,
+              _version: "2.1.18",
+              from: "post_body",
+              timestamp: new Date().toISOString(),
+              storage: "Using MySQL persistent storage"
+            })
+          };
+        }
+        
+        // Handle unknown action type
+        console.log('❌ Unknown POST action type:', actionType);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: false,
+            message: `Unknown action type: ${actionType}`,
+            timestamp: new Date().toISOString()
+          })
+        };
+      } catch (parseError) {
+        console.error('❌ Error parsing request body:', parseError);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ 
+            success: false,
+            message: 'Invalid JSON in request body',
+            error: parseError.message,
+            timestamp: new Date().toISOString()
+          })
+        };
       }
     }
     
@@ -438,7 +448,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.16",
+            _version: "2.1.18",
             source: "GET handler with query params",
             timestamp: new Date().toISOString()
           })
@@ -454,7 +464,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           site_config: siteConfig,
-          _version: "2.1.16",
+          _version: "2.1.18",
           source: "GET general handler",
           timestamp: new Date().toISOString()
         })
@@ -470,7 +480,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.1.16',
+          lambda_version: '2.1.18',
           storage: 'Using MySQL persistent storage',
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
@@ -486,186 +496,12 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
                 site_config: siteConfig,
-                _version: "2.1.16",
+                _version: "2.1.18",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
                 storage: "Using MySQL persistent storage"
             })
         };
-    }
-    
-    // Handle POST request to save site configuration
-    if (event.httpMethod === 'POST') {
-      console.log('Processing POST request');
-      
-      // Validate body
-      if (!event.body) {
-        console.error('Missing request body');
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({ 
-            success: false,
-            message: 'Request body is missing',
-            timestamp: new Date().toISOString()
-          })
-        };
-      }
-      
-      // Parse body
-      let parsedBody;
-      try {
-        parsedBody = JSON.parse(event.body);
-        console.log('Parsed body:', JSON.stringify(parsedBody));
-        console.log('Parsed body action:', parsedBody.action);
-      } catch (parseError) {
-        console.error('Error parsing request body:', parseError);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({ 
-            success: false,
-            message: 'Invalid JSON in request body',
-            error: parseError.message,
-            timestamp: new Date().toISOString()
-          })
-        };
-      }
-      
-      // Check for different request formats and determine action
-      actionType = parsedBody.action || actionType || '';
-      
-      console.log('Action type detected in request:', actionType);
-      
-      // Handle login action
-      if (actionType === 'login') {
-        console.log('Processing login request');
-        
-        const { username, password } = parsedBody;
-        if (!username || !password) {
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-              success: false,
-              message: 'Username and password are required',
-              timestamp: new Date().toISOString()
-            })
-          };
-        }
-        
-        const loginResult = handleLogin(username, password);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            ...loginResult,
-            timestamp: new Date().toISOString(),
-            lambda_version: '2.1.16'
-          })
-        };
-      }
-      
-      // Special admin access check
-      if (actionType === 'admin_access_check') {
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            success: true,
-            message: 'Admin API is accessible',
-            lambda_version: '2.1.16',
-            storage: 'Using MySQL persistent storage',
-            timestamp: new Date().toISOString(),
-            access_paths: {
-              admin_direct: '/admin-direct/',
-              admin_dashboard: '/admin/dashboard/'
-            }
-          })
-        };
-      }
-      
-      // Handle update site config - this is now handled at the top of the function
-      // but we keep this as a fallback
-      if (actionType === 'update_site_config') {
-        console.log('Processing site_config update request (fallback handler)');
-        
-        // Validate authorization token - safely check headers
-        const authHeader = event.headers ? (event.headers.Authorization || event.headers.authorization) : undefined;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          console.error('Missing or invalid Authorization header');
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-              success: false,
-              message: 'Authorization required',
-              timestamp: new Date().toISOString()
-            })
-          };
-        }
-        
-        // Extract config data
-        const configData = parsedBody.site_config || {};
-        if (Object.keys(configData).length === 0) {
-          console.error('No configuration data provided');
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-              success: false,
-              message: 'No configuration data provided',
-              timestamp: new Date().toISOString()
-            })
-          };
-        }
-        
-        // Save the configuration data
-        const updateResult = await saveSiteConfig(configData);
-        
-        // IMPORTANT: Return the direct update result, not wrapped in API Gateway format
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            success: updateResult.success,
-            message: updateResult.message,
-            timestamp: new Date().toISOString(),
-            lambda_version: '2.1.16'
-          })
-        };
-      }
-      
-      // Handle get site config via POST (for dashboard)
-      if (actionType === 'get_site_config') {
-        console.log('Processing site_config get request via POST');
-        
-        // Get site configuration from the database
-        const siteConfig = await getSiteConfig();
-        
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            site_config: siteConfig,
-            _version: "2.1.16",
-            from: "post_body",
-            timestamp: new Date().toISOString(),
-            storage: "Using MySQL persistent storage"
-          })
-        };
-      }
-      
-      // Handle unknown action type
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          success: false,
-          message: `Unknown action type: ${actionType}`,
-          timestamp: new Date().toISOString()
-        })
-      };
     }
     
     // Handle unknown request type
@@ -678,7 +514,7 @@ exports.handler = async (event, context) => {
         request_path: event.path,
         request_method: event.httpMethod,
         request_type: requestType,
-        _version: "2.1.16",
+        _version: "2.1.18",
         timestamp: new Date().toISOString()
       })
     };
