@@ -174,8 +174,8 @@
     </div>
 
     <script>
-    // API endpoints - Updated to directly call Lambda
-    const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging';
+    // API endpoints - Updated to match API Gateway's existing path
+    const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
     const GET_CONFIG_URL = API_BASE_URL; // Use the base URL directly
     const SAVE_CONFIG_URL = API_BASE_URL; // Use the base URL directly
     
@@ -219,7 +219,7 @@
                 // Add cache buster to prevent caching
                 const cacheBuster = new Date().getTime();
                 
-                console.log('Fetching config data from Lambda directly');
+                console.log('Fetching config from API Gateway with website-portfolio path');
                 
                 const token = localStorage.getItem('admin_token');
                 if (!token) {
@@ -359,7 +359,7 @@
                     site_config: configData
                 };
                 
-                console.log('Sending POST to Lambda with payload:', payload);
+                console.log('Sending POST to Lambda with website-portfolio path');
                 
                 // Send a simplified POST request matching what the Lambda test event expects
                 const apiResponse = await fetch(SAVE_CONFIG_URL, {
