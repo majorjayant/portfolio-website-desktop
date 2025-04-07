@@ -187,12 +187,20 @@
         const apiError = document.getElementById('api-error');
         const saveButton = document.getElementById('save-button');
         
-        // Add a save message element for displaying status
-        const saveMessage = document.createElement('div');
-        saveMessage.className = 'px-4 py-3 text-center border-t border-b hidden';
-        saveMessage.id = 'save-message';
-        const formContainer2 = document.getElementById('form-container');
-        formContainer2.parentNode.insertBefore(saveMessage, formContainer2);
+        // Get or create the save message element
+        let saveMessage = document.getElementById('save-message');
+        if (!saveMessage) {
+            console.log('Creating new save message element');
+            saveMessage = document.createElement('div');
+            saveMessage.className = 'px-4 py-3 text-center border-t border-b hidden';
+            saveMessage.id = 'save-message';
+            
+            // Insert before the form if possible
+            const form = document.getElementById('site-config-form');
+            if (form && form.parentNode) {
+                form.parentNode.insertBefore(saveMessage, form);
+            }
+        }
         
         // API endpoints
         const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
