@@ -629,6 +629,70 @@
             };
             
             refreshButton.parentNode.appendChild(bypassButton);
+            
+            // Add a direct database bypass button that uses a completely different Lambda
+            const directDbButton = document.createElement('button');
+            directDbButton.textContent = 'DIRECT DATABASE';
+            directDbButton.className = 'ml-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500';
+            directDbButton.onclick = async function() {
+                try {
+                    // Collect form data
+                    const formData = new FormData(siteConfigForm);
+                    const configData = {};
+                    formData.forEach((value, key) => {
+                        configData[key] = value;
+                    });
+                    
+                    // Show progress message
+                    showSaveMessage('DIRECT DATABASE SAVE IN PROGRESS...', 'text-white bg-yellow-600');
+                    
+                    // Create query string parameters directly for all fields
+                    // This bypasses the need for a POST body entirely
+                    let queryParams = [];
+                    for (const [key, value] of Object.entries(configData)) {
+                        queryParams.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+                    }
+                    
+                    // Add timestamp and action
+                    queryParams.push(`t=${new Date().getTime()}`);
+                    queryParams.push('direct_db=true');
+                    queryParams.push('action=save_direct');
+                    
+                    // Construct the URL with all parameters in the querystring
+                    const directUrl = `${API_BASE_URL}?${queryParams.join('&')}`;
+                    
+                    console.log('DIRECT DATABASE: Using GET request with all parameters in URL');
+                    console.log('URL length:', directUrl.length);
+                    
+                    // Make GET request with all parameters in the URL
+                    // No POST data at all, avoiding all issues with JSON parsing
+                    const response = await fetch(directUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Cache-Control': 'no-cache, no-store'
+                        }
+                    });
+                    
+                    console.log('DIRECT DATABASE response status:', response.status);
+                    const data = await response.json();
+                    console.log('DIRECT DATABASE response:', data);
+                    
+                    if (response.ok) {
+                        showSaveMessage('DIRECT DATABASE SAVE SUCCESSFUL', 'text-white bg-green-600');
+                        setTimeout(() => {
+                            fetchConfiguration();
+                        }, 2000);
+                    } else {
+                        showSaveMessage('DIRECT DATABASE SAVE FAILED', 'text-white bg-yellow-600');
+                    }
+                } catch (error) {
+                    console.error('DIRECT DATABASE error:', error);
+                    showSaveMessage('DIRECT DATABASE ERROR: ' + error.message, 'text-white bg-yellow-600');
+                }
+            };
+            
+            // Add direct database button
+            refreshButton.parentNode.appendChild(directDbButton);
         }
         
         // Check if user is authenticated

@@ -225,7 +225,7 @@ async function saveSiteConfig(configData) {
 
 // Lambda handler
 exports.handler = async (event, context) => {
-  console.log('NEW VERSION 2.1.22 - DIRECT MYSQL UPDATE HANDLER');
+  console.log('NEW VERSION 2.1.23 - DIRECT DATABASE UPDATE HANDLER');
   console.log('Request method:', event.httpMethod);
   console.log('Request path:', event.path);
   console.log('Headers:', JSON.stringify(event.headers || {}));
@@ -241,70 +241,71 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ 
           message: 'CORS preflight request successful',
           timestamp: new Date().toISOString(),
-          version: '2.1.22'
+          version: '2.1.23'
         })
       };
     }
     
-    // Extract query parameters - crucial for bypass mode
+    // Extract query parameters
     const queryParams = event.queryStringParameters || {};
     
-    // DIRECT MYSQL MODE - Check for the special URL parameters
-    if (queryParams.force_mysql === 'true') {
-      console.log('⚠️ DIRECT MYSQL MODE ACTIVATED via URL parameter');
-      console.log('URL parameters:', JSON.stringify(queryParams));
+    // DIRECT DATABASE MODE - Check if this is a direct database request via GET
+    if (event.httpMethod === 'GET' && queryParams.direct_db === 'true') {
+      console.log('🟨 DIRECT DATABASE MODE: Detected direct DB request via GET');
+      console.log('Query parameters count:', Object.keys(queryParams).length);
       
-      if (event.httpMethod === 'POST' && event.body) {
-        try {
-          // Parse the request body
-          const parsedBody = JSON.parse(event.body);
-          console.log('DIRECT MYSQL: parsed body:', JSON.stringify(parsedBody, null, 2));
-          
-          // Extract the site_config data
-          if (parsedBody.site_config && typeof parsedBody.site_config === 'object') {
-            console.log('DIRECT MYSQL: Found site_config data, preparing for database update');
-            
-            // Get the site config data
-            const configData = parsedBody.site_config;
-            console.log('DIRECT MYSQL: Config data keys:', Object.keys(configData).join(', '));
-            
-            // Directly update the database
-            console.log('DIRECT MYSQL: Initiating database update...');
-            const result = await emergencyDbUpdate(configData);
-            
-            // Return detailed success info
-            return {
-              statusCode: 200,
-              headers,
-              body: JSON.stringify({
-                success: true,
-                message: "DIRECT MYSQL UPDATE COMPLETE",
-                result: result,
-                updated_fields: Object.keys(configData).length,
-                version: '2.1.22',
-                timestamp: new Date().toISOString()
-              })
-            };
-          } else {
-            console.log('DIRECT MYSQL: No site_config data found in request body');
+      try {
+        // Extract all configuration data from query parameters
+        const configData = {};
+        
+        // Process each query parameter
+        for (const [key, value] of Object.entries(queryParams)) {
+          // Skip special control parameters
+          if (key !== 't' && key !== 'direct_db' && key !== 'action') {
+            configData[key] = value;
           }
-        } catch (e) {
-          console.error('DIRECT MYSQL: Error processing request:', e);
+        }
+        
+        if (Object.keys(configData).length > 0) {
+          console.log('🟨 DIRECT DATABASE: Found config data in URL parameters');
+          console.log('Config fields:', Object.keys(configData).join(', '));
+          
+          // Update the database directly
+          console.log('🟨 DIRECT DATABASE: Performing direct database update');
+          const result = await directDatabaseUpdate(configData);
+          
           return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
-              success: false,
-              message: "DIRECT MYSQL ERROR: " + e.message,
-              version: '2.1.22',
+              success: true,
+              message: "DIRECT DATABASE UPDATE COMPLETED SUCCESSFULLY",
+              fields_updated: Object.keys(configData).length,
+              result: result,
+              method: 'GET with URL parameters',
+              version: '2.1.23',
               timestamp: new Date().toISOString()
             })
           };
+        } else {
+          console.log('🟨 DIRECT DATABASE: No config data found in query parameters');
         }
+      } catch (e) {
+        console.error('🟨 DIRECT DATABASE ERROR:', e);
+        return {
+          statusCode: 200,
+          headers, 
+          body: JSON.stringify({
+            success: false,
+            message: "DIRECT DATABASE ERROR: " + e.message,
+            version: '2.1.23',
+            timestamp: new Date().toISOString()
+          })
+        };
       }
     }
     
-    // Regular processing continues for non-bypass requests...
+    // Continue with other request types...
     
     // EMERGENCY MODE: IMMEDIATELY CHECK AND PROCESS BODY FOR SITE_CONFIG DATA
     if (event.httpMethod === 'POST' && event.body) {
@@ -467,6 +468,99 @@ async function emergencyDbUpdate(configData) {
         console.log('Database connection closed');
       } catch (closeError) {
         console.error('Error closing database connection:', closeError);
+      }
+    }
+  }
+}
+
+// New function for direct database updates (completely bypasses all other logic)
+async function directDatabaseUpdate(configData) {
+  let connection;
+  try {
+    console.log('🟨 DIRECT DATABASE: Opening database connection');
+    connection = await mysql.createConnection(dbConfig);
+    
+    // Create table if not exists
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS site_config (
+        config_key VARCHAR(100) PRIMARY KEY,
+        config_value TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Begin transaction
+    await connection.beginTransaction();
+    console.log('🟨 DIRECT DATABASE: Transaction started');
+    
+    // Update each config value
+    const updates = [];
+    for (const [key, value] of Object.entries(configData)) {
+      // Only process non-empty keys
+      if (key && key.trim() !== '') {
+        console.log(`🟨 DIRECT DATABASE: Processing field "${key}" = "${value}"`);
+        
+        try {
+          // Try to update existing row
+          const [updateResult] = await connection.execute(
+            'UPDATE site_config SET config_value = ? WHERE config_key = ?',
+            [value, key]
+          );
+          
+          // If no update, insert new row
+          if (updateResult.affectedRows === 0) {
+            console.log(`🟨 DIRECT DATABASE: Inserting new record for "${key}"`);
+            const [insertResult] = await connection.execute(
+              'INSERT INTO site_config (config_key, config_value) VALUES (?, ?)',
+              [key, value]
+            );
+            updates.push({ key, action: 'insert', result: 'success' });
+          } else {
+            console.log(`🟨 DIRECT DATABASE: Updated existing record for "${key}"`);
+            updates.push({ key, action: 'update', result: 'success' });
+          }
+        } catch (fieldError) {
+          console.error(`🟨 DIRECT DATABASE: Error updating field "${key}":`, fieldError);
+          updates.push({ key, action: 'error', result: fieldError.message });
+        }
+      }
+    }
+    
+    // Commit transaction
+    await connection.commit();
+    console.log('🟨 DIRECT DATABASE: Transaction committed successfully');
+    
+    return {
+      success: true,
+      updates: updates,
+      fields_processed: updates.length
+    };
+  } catch (error) {
+    console.error('🟨 DIRECT DATABASE: Error during database update:', error);
+    
+    // Rollback if transaction active
+    if (connection) {
+      try {
+        await connection.rollback();
+        console.log('🟨 DIRECT DATABASE: Transaction rolled back');
+      } catch (rollbackError) {
+        console.error('🟨 DIRECT DATABASE: Error rolling back transaction:', rollbackError);
+      }
+    }
+    
+    return {
+      success: false,
+      error: error.message,
+      message: 'Failed to update database'
+    };
+  } finally {
+    // Close connection
+    if (connection) {
+      try {
+        await connection.end();
+        console.log('🟨 DIRECT DATABASE: Database connection closed');
+      } catch (closeError) {
+        console.error('🟨 DIRECT DATABASE: Error closing database connection:', closeError);
       }
     }
   }
