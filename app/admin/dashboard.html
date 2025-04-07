@@ -475,6 +475,103 @@
             refreshButton.addEventListener('click', fetchConfiguration);
         }
         
+        // Add test button for direct API testing
+        const testButton = document.createElement('button');
+        testButton.textContent = 'Test Direct API';
+        testButton.className = 'ml-2 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500';
+        testButton.onclick = async function() {
+            try {
+                // Prepare a simple test payload
+                const testData = {
+                    test_field: "This is a test",
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.log('Sending test API request with data:', testData);
+                
+                // Send test request directly to API
+                const response = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                console.log('Test API response status:', response.status);
+                const data = await response.json();
+                console.log('Test API response data:', data);
+                
+                // Show test results
+                alert(`API Test Result: ${response.status}\n${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                console.error('Test API error:', error);
+                alert('Test API Error: ' + error.message);
+            }
+        };
+        
+        // Add the test button next to the refresh button
+        if (refreshButton && refreshButton.parentNode) {
+            refreshButton.parentNode.appendChild(testButton);
+            
+            // Add emergency save button
+            const emergencySaveButton = document.createElement('button');
+            emergencySaveButton.textContent = 'EMERGENCY SAVE';
+            emergencySaveButton.className = 'ml-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500';
+            emergencySaveButton.onclick = async function() {
+                try {
+                    // Collect all form data
+                    const formData = new FormData(siteConfigForm);
+                    const configData = {};
+                    formData.forEach((value, key) => {
+                        configData[key] = value;
+                    });
+                    
+                    // Create a simple payload with only site_config data
+                    const payload = {
+                        site_config: configData,
+                        emergency: true,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    console.log('EMERGENCY SAVE: Sending data directly to API');
+                    console.log('Payload:', payload);
+                    
+                    // Show in-progress message
+                    showSaveMessage('EMERGENCY SAVE IN PROGRESS...', 'text-white bg-red-600');
+                    
+                    // Send direct update to the API
+                    const response = await fetch(API_BASE_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    console.log('EMERGENCY SAVE response status:', response.status);
+                    const data = await response.json();
+                    console.log('EMERGENCY SAVE response data:', data);
+                    
+                    if (response.ok) {
+                        showSaveMessage('EMERGENCY SAVE SUCCESSFUL', 'text-white bg-green-600');
+                        
+                        // Refresh data after emergency save
+                        setTimeout(() => {
+                            fetchConfiguration();
+                        }, 2000);
+                    } else {
+                        showSaveMessage('EMERGENCY SAVE FAILED: ' + (data.message || 'Unknown error'), 'text-white bg-red-600');
+                    }
+                } catch (error) {
+                    console.error('EMERGENCY SAVE error:', error);
+                    showSaveMessage('EMERGENCY SAVE ERROR: ' + error.message, 'text-white bg-red-600');
+                }
+            };
+            
+            refreshButton.parentNode.appendChild(emergencySaveButton);
+        }
+        
         // Check if user is authenticated
         if (checkAuthentication()) {
             // Load site configuration
