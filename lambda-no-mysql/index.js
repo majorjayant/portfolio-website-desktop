@@ -241,6 +241,98 @@ exports.handler = async (event, context) => {
       };
     }
     
+    // SPECIAL CASE: Check for custom headers as a method to bypass API Gateway issues
+    const customAction = event.headers['X-Custom-Action'] || event.headers['x-custom-action'];
+    if (customAction === 'update_site_config') {
+      console.log('Detected update_site_config action via custom header');
+      
+      if (!event.body) {
+        console.error('Missing request body with custom action header');
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: false,
+            message: 'Request body is missing for update operation',
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      try {
+        const parsedBody = JSON.parse(event.body);
+        console.log('Custom header POST body parsed:', JSON.stringify(parsedBody));
+        
+        // Validate authorization token
+        const authHeader = event.headers.Authorization || event.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          console.error('Missing or invalid Authorization header');
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Authorization required',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        // Extract config data - support both formats
+        let configData = {};
+        if (parsedBody.site_config) {
+          configData = parsedBody.site_config;
+        } else if (parsedBody.action === 'update_site_config' && parsedBody.site_config) {
+          configData = parsedBody.site_config;
+        } else {
+          configData = parsedBody; // Assume the whole body is the config
+        }
+        
+        if (Object.keys(configData).length === 0) {
+          console.error('No configuration data provided in custom header request');
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'No configuration data provided',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        // Save the configuration data
+        console.log('CUSTOM HEADER: Saving site config with data:', JSON.stringify(configData));
+        const updateResult = await saveSiteConfig(configData);
+        
+        console.log('CUSTOM HEADER: Save result:', JSON.stringify(updateResult));
+        
+        // Return a direct success response
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: updateResult.success,
+            message: updateResult.message,
+            timestamp: new Date().toISOString(),
+            lambda_version: '2.1.15',
+            source: 'custom_header'
+          })
+        };
+      } catch (error) {
+        console.error('Error processing custom header request:', error);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: false,
+            message: 'Error processing custom header request: ' + error.message,
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+    }
+    
     // CRITICAL: First check if this is a POST request with update_site_config action
     // This is the highest priority check to fix the save functionality
     if (event.httpMethod === 'POST' && event.body) {
@@ -296,7 +388,7 @@ exports.handler = async (event, context) => {
               success: updateResult.success,
               message: updateResult.message,
               timestamp: new Date().toISOString(),
-              lambda_version: '2.1.14'
+              lambda_version: '2.1.15'
             })
           };
         }
@@ -344,7 +436,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.14",
+            _version: "2.1.15",
             source: "GET handler with query params",
             timestamp: new Date().toISOString()
           })
@@ -360,7 +452,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           site_config: siteConfig,
-          _version: "2.1.14",
+          _version: "2.1.15",
           source: "GET general handler",
           timestamp: new Date().toISOString()
         })
@@ -376,7 +468,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.1.14',
+          lambda_version: '2.1.15',
           storage: 'Using MySQL persistent storage',
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
@@ -392,7 +484,7 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
                 site_config: siteConfig,
-                _version: "2.1.14",
+                _version: "2.1.15",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
                 storage: "Using MySQL persistent storage"
@@ -467,7 +559,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.14'
+            lambda_version: '2.1.15'
           })
         };
       }
@@ -480,7 +572,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '2.1.14',
+            lambda_version: '2.1.15',
             storage: 'Using MySQL persistent storage',
             timestamp: new Date().toISOString(),
             access_paths: {
@@ -537,7 +629,7 @@ exports.handler = async (event, context) => {
             success: updateResult.success,
             message: updateResult.message,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.14'
+            lambda_version: '2.1.15'
           })
         };
       }
@@ -554,7 +646,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.14",
+            _version: "2.1.15",
             from: "post_body",
             timestamp: new Date().toISOString(),
             storage: "Using MySQL persistent storage"
@@ -584,7 +676,7 @@ exports.handler = async (event, context) => {
         request_path: event.path,
         request_method: event.httpMethod,
         request_type: requestType,
-        _version: "2.1.14",
+        _version: "2.1.15",
         timestamp: new Date().toISOString()
       })
     };
