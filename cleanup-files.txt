@@ -1,0 +1,64 @@
+# Files and directories to clean up
+
+# Python backend files
+app/__init__.py
+app/forms.py
+app/helpers.py
+app/models.py
+app/models/
+app/routes.py
+app/routes/
+app/templates/
+app/utils/
+app.py
+application.py
+flask_session/
+venv-amplify/
+
+# Deployment files no longer needed
+.serverless/
+build.sh
+build_static_site.py
+check-build-requirements.py
+deploying-to-amplify.md
+Procfile
+requirements-dev.txt
+requirements.txt
+runtime.txt
+serverless.yml
+setup.py
+
+# Old Lambda files that are no longer needed
+lambda/
+lambda-fix/
+lambda-fix-cors/
+lambda-package/
+lambda-inline-fix.js
+temp-lambda/
+
+# Keep only the latest versions
+lambda-no-mysql-v1.7.0.zip
+lambda-no-mysql-v1.7.1.zip
+lambda-no-mysql-v1.7.2.zip
+lambda-deploy-v2.1.zip
+lambda-deploy-v2.2.zip
+lambda-deploy-v2.3.zip
+lambda-deploy-v2.zip
+lambda-fix-cors-v1.6.0.zip
+lambda-fix-cors.zip
+lambda-inline-fix-v1.3.0.zip
+lambda-login-fix-secure.zip
+lambda-login-fix.zip
+
+# Documentation to keep only one version
+AMPLIFY-DEPLOYMENT.md
+AMPLIFY-README.md
+DEPLOYMENT.md
+
+# Deployment scripts no longer needed
+deploy-all.bat
+deploy-all.ps1
+deploy-lambda.bat
+deploy-lambda.ps1
+deploy.bat
+deploy.ps1 
