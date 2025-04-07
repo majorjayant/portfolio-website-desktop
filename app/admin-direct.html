@@ -87,26 +87,6 @@
         .btn:hover {
             opacity: 0.9;
         }
-        .debug-section {
-            margin-top: 30px;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 20px;
-        }
-        .debug-section h3 {
-            margin-top: 0;
-            color: #4b5563;
-        }
-        #api-result {
-            background-color: #f3f4f6;
-            padding: 15px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            white-space: pre-wrap;
-            overflow-x: auto;
-            margin-top: 10px;
-            display: none;
-        }
         .credentials {
             background-color: #fef3c7;
             color: #92400e;
@@ -124,14 +104,14 @@
         <div class="content">
             <div id="info-message" class="message info">
                 <p><strong>Direct Dashboard Access</strong></p>
-                <p>This page provides direct access to your admin dashboard, bypassing any routing issues. Choose one of the methods below:</p>
+                <p>This page provides direct access to your admin dashboard. No API communication is needed.</p>
             </div>
             
             <div id="success-message" class="message success"></div>
             <div id="error-message" class="message error"></div>
             
             <div class="button-group">
-                <button id="direct-access-btn" class="btn btn-success">DIRECT ACCESS (NO API)</button>
+                <button id="direct-access-btn" class="btn btn-success">DIRECT ACCESS</button>
                 
                 <div class="credentials">
                     <p><strong>Special Access Credentials:</strong></p>
@@ -139,15 +119,7 @@
                     Password: <code>override_access_2024</code></p>
                 </div>
                 
-                <button id="api-login-btn" class="btn btn-primary">LOGIN VIA API</button>
                 <a href="/" class="btn btn-secondary">BACK TO HOME</a>
-            </div>
-            
-            <div class="debug-section">
-                <h3>Troubleshooting</h3>
-                <p>If you're experiencing issues, the tools below can help diagnose the problem:</p>
-                <button id="test-api-btn" class="btn btn-primary">TEST API CONNECTION</button>
-                <div id="api-result"></div>
             </div>
         </div>
     </div>
@@ -156,15 +128,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Elements
             const directAccessBtn = document.getElementById('direct-access-btn');
-            const apiLoginBtn = document.getElementById('api-login-btn');
-            const testApiBtn = document.getElementById('test-api-btn');
             const infoMessage = document.getElementById('info-message');
             const successMessage = document.getElementById('success-message');
             const errorMessage = document.getElementById('error-message');
-            const apiResult = document.getElementById('api-result');
-            
-            // API endpoint
-            const apiEndpoint = 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio';
             
             // Show a message
             function showMessage(element, message) {
@@ -200,97 +166,13 @@
                     
                     // Redirect to the dashboard
                     setTimeout(() => {
-                        window.location.href = 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin/simple-dashboard.html';
+                        window.location.href = '/admin/dashboard';
                     }, 1500);
                 } catch (error) {
                     showMessage(errorMessage, 'Error: ' + error.message);
                     console.error('Direct access error:', error);
                 }
             });
-            
-            // API login
-            apiLoginBtn.addEventListener('click', function() {
-                hideMessage(errorMessage);
-                hideMessage(successMessage);
-                showMessage(infoMessage, 'Connecting to authentication service...');
-                
-                // Make API call with special credentials
-                fetch(apiEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'login',
-                        username: 'direct_access',
-                        password: 'override_access_2024'
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('API Login Response:', data);
-                    
-                    if (data.success) {
-                        // Store authentication data
-                        localStorage.setItem('admin_token', data.token || 'admin-session-token');
-                        if (data.user) {
-                            localStorage.setItem('admin_user', JSON.stringify(data.user));
-                        }
-                        
-                        showMessage(successMessage, 'API login successful! Redirecting to dashboard...');
-                        hideMessage(infoMessage);
-                        
-                        setTimeout(() => {
-                            window.location.href = 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin/simple-dashboard.html';
-                        }, 1500);
-                    } else {
-                        showMessage(errorMessage, data.message || 'Login failed. Please try direct access instead.');
-                        hideMessage(infoMessage);
-                    }
-                })
-                .catch(error => {
-                    console.error('API Login Error:', error);
-                    showMessage(errorMessage, 'API Error: ' + error.message);
-                    hideMessage(infoMessage);
-                    showMessage(infoMessage, 'API connection failed. Please use the DIRECT ACCESS button instead.');
-                });
-            });
-            
-            // Test API connection
-            testApiBtn.addEventListener('click', function() {
-                apiResult.style.display = 'block';
-                apiResult.textContent = 'Testing API connection...';
-                
-                // Test with admin_check parameter
-                fetch(apiEndpoint + '?admin_check=true')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok: ' + response.status);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('API Test Response:', data);
-                        apiResult.textContent = 'API TEST SUCCESSFUL\n\n' + JSON.stringify(data, null, 2);
-                    })
-                    .catch(error => {
-                        console.error('API Test Error:', error);
-                        apiResult.textContent = 'API TEST FAILED\n\nError: ' + error.message;
-                    });
-            });
-            
-            // Check if already logged in
-            const token = localStorage.getItem('admin_token');
-            if (token) {
-                showMessage(successMessage, 'You are already logged in. You can proceed to the dashboard.');
-                directAccessBtn.textContent = 'GO TO DASHBOARD';
-            }
         });
     </script>
 </body>
