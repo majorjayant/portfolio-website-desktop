@@ -7,17 +7,15 @@ frontend:
         - mkdir -p app/static/admin
         - mkdir -p app/static/data
         - mkdir -p app/static/api
+        - mkdir -p app/static/admin-direct
         - echo "Copying admin files..."
-        - cp -f app/static/admin/index.html app/static/admin/index.html || echo "index.html already exists"
-        - cp -f app/static/admin/login.html app/static/admin/login.html || echo "login.html already exists"
-        - cp -f app/static/admin/dashboard.html app/static/admin/dashboard.html || echo "dashboard.html already exists"
+        - cp -f app/admin/dashboard.html app/static/admin/dashboard.html || echo "dashboard.html not found"
+        - cp -f app/admin/index.html app/static/admin/index.html || echo "admin index.html not found"
         - echo "Admin files in static directory:" && ls -la app/static/admin/
         - echo "Copying admin-direct directories..."
-        - mkdir -p app/static/admin-direct
         - cp -f app/admin-direct/index.html app/static/admin-direct/index.html || echo "admin-direct/index.html not found"
-        - cp -f app/static/api/admin-direct.js app/static/api/admin-direct.js || echo "admin-direct.js not found"
         - if [ ! -f app/static/data/site_config.json ]; then echo '{"site_configs":{}}' > app/static/data/site_config.json; fi
-        - cp -f app/index.html app/static/index.html
+        - echo "Static files ready for deployment"
   artifacts:
     baseDirectory: app/static
     files:
@@ -68,13 +66,13 @@ frontend:
       status: '200'
     # API Redirects
     - source: '/api/site-config'
-      target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio?type=site_config'
+      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config'
       status: '200'
     - source: '/api/get-content'
-      target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio'
+      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
       status: '200'
     - source: '/api/get-content/'
-      target: 'https://hoywk0os0c.execute-api.eu-north-1.amazonaws.com/staging/website-portfolio'
+      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
       status: '200'
     # Catch-all route for SPA - this needs to be last
     - source: '/<*>'
