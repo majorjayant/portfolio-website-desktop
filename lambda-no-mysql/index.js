@@ -1,3 +1,6 @@
+// Import mysql2/promise for async MySQL operations
+const mysql = require('mysql2/promise');
+
 // Define standard response headers
 const headers = {
   'Access-Control-Allow-Origin': '*',
@@ -6,19 +9,28 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
+// Database configuration
+const dbConfig = {
+  host: process.env.DB_HOST || 'portfolio-website.cgwaxzujx6dc.eu-north-1.rds.amazonaws.com',
+  user: process.env.DB_USER || 'admin',
+  password: process.env.DB_PASSWORD || 'portfolio-password-2024',
+  database: process.env.DB_NAME || 'website',
+  port: process.env.DB_PORT || 3306
+};
+
 // Default fallback configuration for when database is unavailable
-let siteConfig = {
-  image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
-  image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
-  image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner",
+const defaultSiteConfig = {
+  image_favicon_url: "/static/img/favicon.png",
+  image_logo_url: "/static/img/logo.png",
+  image_banner_url: "/static/img/banner_latest.png",
   about_title: "Portfolio",
   about_subtitle: "Welcome to my portfolio",
   about_description: "A professional portfolio showcasing my work and skills",
-  image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
-  image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
-  image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
-  image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
-  image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
+  image_about_profile_url: "/static/img/profile.jpg",
+  image_about_photo1_url: "/static/img/about_photo1.jpg",
+  image_about_photo2_url: "/static/img/about_photo2.jpg",
+  image_about_photo3_url: "/static/img/about_photo3.jpg",
+  image_about_photo4_url: "/static/img/about_photo4.jpg",
   about_photo1_alt: "Photo 1",
   about_photo2_alt: "Photo 2",
   about_photo3_alt: "Photo 3",
@@ -28,12 +40,43 @@ let siteConfig = {
 // Admin credentials from environment variables with secure fallback handling
 // In production, these should be set as environment variables in AWS Lambda
 // IMPORTANT: For security, in production environment use AWS Secrets Manager or similar solution
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+
+// Get a database connection
+async function getConnection() {
+  try {
+    return await mysql.createConnection(dbConfig);
+  } catch (error) {
+    console.error('Failed to create database connection:', error);
+    throw error;
+  }
+}
+
+// Ensure the site_config table exists
+async function ensureTableExists() {
+  let connection;
+  try {
+    connection = await getConnection();
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS site_config (
+        config_key VARCHAR(100) PRIMARY KEY,
+        config_value TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Verified site_config table exists');
+  } catch (error) {
+    console.error('Error ensuring table exists:', error);
+    throw error;
+  } finally {
+    if (connection) await connection.end();
+  }
+}
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 1.8.0 - Added site config update functionality');
+  console.log('Lambda Version: 2.1.3 - Using MySQL for persistent storage');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -86,28 +129,88 @@ function handleLogin(username, password) {
   }
 }
 
-// Function to update site configuration
-function updateSiteConfig(configData) {
-  console.log('Updating site configuration with new data');
+// Function to get site configuration from the database
+async function getSiteConfig() {
+  let connection;
   try {
-    // Update each field if provided in the request
-    Object.keys(configData).forEach(key => {
-      if (key in siteConfig) {
-        siteConfig[key] = configData[key];
-        console.log(`Updated ${key} to: ${configData[key]}`);
-      }
+    // Create a connection to the database
+    connection = await getConnection();
+    
+    // Query all configuration values
+    const [rows] = await connection.execute('SELECT config_key, config_value FROM site_config');
+    console.log(`Retrieved ${rows.length} config keys from the database`);
+    
+    // Convert array of rows to a config object
+    const siteConfig = { ...defaultSiteConfig };
+    rows.forEach(row => {
+      siteConfig[row.config_key] = row.config_value;
     });
     
+    return siteConfig;
+  } catch (error) {
+    console.error('Error retrieving site config from database:', error);
+    console.log('Returning default configuration');
+    return { ...defaultSiteConfig };
+  } finally {
+    if (connection) await connection.end();
+  }
+}
+
+// Function to save site configuration to the database
+async function saveSiteConfig(configData) {
+  let connection;
+  try {
+    // First ensure the table exists
+    await ensureTableExists();
+    
+    // Create a connection to the database
+    connection = await getConnection();
+    
+    // Start a transaction for atomicity
+    await connection.beginTransaction();
+    
+    // Prepare for batch operations
+    const updates = [];
+    
+    // Generate SQL for each config item
+    for (const [key, value] of Object.entries(configData)) {
+      console.log(`Updating ${key} to: ${value}`);
+      
+      // Try to update existing row
+      const [updateResult] = await connection.execute(
+        'UPDATE site_config SET config_value = ? WHERE config_key = ?',
+        [value, key]
+      );
+      
+      // If row doesn't exist, insert a new one
+      if (updateResult.affectedRows === 0) {
+        await connection.execute(
+          'INSERT INTO site_config (config_key, config_value) VALUES (?, ?)',
+          [key, value]
+        );
+      }
+    }
+    
+    // Commit the transaction
+    await connection.commit();
+    
+    console.log('Configuration saved to database successfully');
     return {
       success: true,
       message: "Configuration updated successfully"
     };
   } catch (error) {
-    console.error('Error updating configuration:', error);
+    console.error('Error saving configuration to database:', error);
+    
+    // Rollback in case of error
+    if (connection) await connection.rollback();
+    
     return {
       success: false,
       message: "Failed to update configuration: " + error.message
     };
+  } finally {
+    if (connection) await connection.end();
   }
 }
 
@@ -115,7 +218,6 @@ function updateSiteConfig(configData) {
 exports.handler = async (event, context) => {
   // Log detailed information about the request
   logRequestInfo(event, context);
-  console.log('Enhanced Lambda Function - Version 1.8.0');
   
   try {
     // Handle OPTIONS requests for CORS
@@ -143,7 +245,8 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '1.8.0',
+          lambda_version: '2.1.3',
+          storage: 'Using MySQL persistent storage',
           routing_hint: 'If you are experiencing admin access issues, use the direct_access credentials or access through /admin-login.html'
         })
       };
@@ -155,13 +258,17 @@ exports.handler = async (event, context) => {
     if (event.httpMethod === 'GET' && (requestType === 'site_config' || queryParams.type === 'site_config')) {
       console.log('Processing GET request for site_config');
       
+      // Get site configuration from the database
+      const siteConfig = await getSiteConfig();
+      
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
-          ...siteConfig,
-          _version: "1.8.0",
-          timestamp: new Date().toISOString()
+          site_config: siteConfig,
+          _version: "2.1.3",
+          timestamp: new Date().toISOString(),
+          storage: "Using MySQL persistent storage"
         })
       };
     }
@@ -232,7 +339,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '1.8.0'
+            lambda_version: '2.1.3'
           })
         };
       }
@@ -245,25 +352,53 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '1.8.0',
+            lambda_version: '2.1.3',
+            storage: 'Using MySQL persistent storage',
             timestamp: new Date().toISOString(),
             access_paths: {
-              direct_access_url: 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin-login.html',
-              dashboard_url: 'https://staging.d200zhb2va2zdo.amplifyapp.com/admin/simple-dashboard.html'
+              admin_direct: '/admin-direct/',
+              admin_dashboard: '/admin/dashboard/'
             }
           })
         };
       }
       
-      // For site configuration updates
-      if (actionType.includes('site_config') || parsedBody.site_config || requestType === 'site_config') {
-        console.log('Processing site configuration update request');
+      // Handle update site config
+      if (actionType === 'update_site_config') {
+        console.log('Processing site_config update request');
         
-        // Extract configuration data
-        const configData = parsedBody.site_config || parsedBody.config || parsedBody;
+        // Validate authorization token (simplified for demo)
+        const authHeader = event.headers.Authorization || event.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          console.error('Missing or invalid Authorization header');
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Authorization required',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
         
-        // Update the site configuration
-        const updateResult = updateSiteConfig(configData);
+        // Extract config data
+        const configData = parsedBody.site_config || {};
+        if (Object.keys(configData).length === 0) {
+          console.error('No configuration data provided');
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'No configuration data provided',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        // Save the configuration data
+        const updateResult = await saveSiteConfig(configData);
         
         return {
           statusCode: 200,
@@ -271,49 +406,46 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...updateResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '1.8.0'
+            lambda_version: '2.1.3'
           })
         };
       }
       
-      // Default response for unknown POST action
+      // Handle unknown action type
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
           success: false,
-          message: 'Unknown action. Valid actions: login, site_config, admin_access_check',
+          message: `Unknown action type: ${actionType}`,
           timestamp: new Date().toISOString()
         })
       };
     }
     
-    // Default response for unknown request types
+    // Handle unknown request type
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        success: false,
-        message: 'Unknown request type. Valid types: site_config, login, admin_access_check',
-        help: 'To check admin access, use ?admin_check=true as a query parameter',
+        message: 'Unknown request type',
+        request_path: event.path,
+        request_method: event.httpMethod,
+        request_type: requestType,
         timestamp: new Date().toISOString()
       })
     };
     
   } catch (error) {
-    console.error('Unhandled error in Lambda function:', error);
-    
-    // Always return 200 with a valid response to prevent API Gateway 502 errors
+    console.error('Unhandled error:', error);
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         success: false,
-        message: 'An unexpected error occurred',
-        error: error.message || 'Unknown error',
-        lambda_version: '1.8.0',
-        timestamp: new Date().toISOString(),
-        fallback_config: event.httpMethod === 'GET' ? siteConfig : undefined
+        message: 'Internal server error: ' + error.message,
+        error_type: error.name,
+        timestamp: new Date().toISOString()
       })
     };
   }
