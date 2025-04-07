@@ -417,6 +417,25 @@ exports.handler = async (event, context) => {
         };
       }
       
+      // Handle get site config via POST (for dashboard)
+      if (actionType === 'get_site_config') {
+        console.log('Processing site_config get request via POST');
+        
+        // Get site configuration from the database
+        const siteConfig = await getSiteConfig();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            site_config: siteConfig,
+            _version: "2.1.5",
+            timestamp: new Date().toISOString(),
+            storage: "Using MySQL persistent storage"
+          })
+        };
+      }
+      
       // Handle unknown action type
       return {
         statusCode: 200,
