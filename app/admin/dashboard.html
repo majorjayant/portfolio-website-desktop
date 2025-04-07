@@ -219,7 +219,7 @@
                 // Add cache buster to prevent caching
                 const cacheBuster = new Date().getTime();
                 
-                console.log('Fetching config from API Gateway with website-portfolio path');
+                console.log('Fetching config with explicit action parameter');
                 
                 const token = localStorage.getItem('admin_token');
                 if (!token) {
@@ -227,8 +227,9 @@
                     return;
                 }
                 
-                // Fetch configuration data - using simple GET request 
-                const response = await fetch(`${GET_CONFIG_URL}?type=site_config&t=${cacheBuster}`, {
+                // Fetch configuration data with explicit action=get_site_config parameter
+                // This matches the exact format used in the successful Lambda test
+                const response = await fetch(`${GET_CONFIG_URL}?action=get_site_config&type=site_config&t=${cacheBuster}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

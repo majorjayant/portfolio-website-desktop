@@ -1,6 +1,6 @@
 {
   "name": "portfolio-lambda-function",
-  "version": "2.1.26",
+  "version": "2.1.27",
   "description": "Lambda function to handle portfolio website backend operations",
   "main": "index.js",
   "scripts": {

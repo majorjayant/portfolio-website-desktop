@@ -225,7 +225,7 @@ async function saveSiteConfig(configData) {
 
 // Lambda handler
 exports.handler = async (event, context) => {
-  console.log('Lambda Version 2.1.26 - Enhanced CORS and API Gateway integration');
+  console.log('Lambda Version 2.1.27 - Fixed GET and POST handling');
   console.log('Request method:', event.httpMethod);
   console.log('Request path:', event.path);
   console.log('Headers:', JSON.stringify(event.headers || {}));
@@ -242,7 +242,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ 
           message: 'CORS preflight request successful',
           timestamp: new Date().toISOString(),
-          version: '2.1.26'
+          version: '2.1.27'
         })
       };
     }
@@ -252,15 +252,15 @@ exports.handler = async (event, context) => {
     const type = queryParams.type;
     const action = queryParams.action;
     
-    // Check API Gateway request context
-    console.log('Request context:', JSON.stringify(event.requestContext || {}));
+    console.log('Request action:', action);
+    console.log('Request type:', type);
     
-    // GET method - primarily for retrieving site configuration
+    // GET method - for retrieving site configuration
     if (event.httpMethod === 'GET') {
-      console.log('ℹ️ Handling GET request with type:', type);
+      console.log('ℹ️ Handling GET request with action:', action, 'and type:', type);
       
-      // Return site configuration
-      if (type === 'site_config') {
+      // Return site configuration - check for both 'get_site_config' action and 'site_config' type
+      if ((action === 'get_site_config' || type === 'site_config')) {
         console.log('ℹ️ Fetching site configuration for GET request');
         const siteConfig = await getSiteConfig();
         
@@ -270,7 +270,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             site_config: siteConfig,
             message: "Site configuration retrieved successfully",
-            version: "2.1.26",
+            version: "2.1.27",
             timestamp: new Date().toISOString()
           })
         };
@@ -300,14 +300,14 @@ exports.handler = async (event, context) => {
             body: JSON.stringify({
               success: false,
               message: "Invalid request body: " + error.message,
-              version: "2.1.26",
+              version: "2.1.27",
               timestamp: new Date().toISOString()
             })
           };
         }
       }
       
-      // Handle site config update
+      // Handle site config update - check if action is in body or query params
       if ((body.action === 'update_site_config' || action === 'update_site_config') && body.site_config) {
         console.log('✅ Updating database with site_config data');
         const result = await saveSiteConfig(body.site_config);
@@ -319,7 +319,7 @@ exports.handler = async (event, context) => {
             success: result.success,
             message: result.message,
             result: result,
-            version: "2.1.26",
+            version: "2.1.27",
             timestamp: new Date().toISOString()
           })
         };
@@ -335,7 +335,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             ...loginResult,
-            version: "2.1.26",
+            version: "2.1.27",
             timestamp: new Date().toISOString()
           })
         };
@@ -349,7 +349,7 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         message: "Request processed but no specific handler matched",
-        version: "2.1.26",
+        version: "2.1.27",
         timestamp: new Date().toISOString()
       })
     };
@@ -362,7 +362,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         success: false,
         message: "Internal server error: " + error.message,
-        version: "2.1.26",
+        version: "2.1.27",
         timestamp: new Date().toISOString()
       })
     };
