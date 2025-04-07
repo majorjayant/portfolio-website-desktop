@@ -247,7 +247,7 @@ exports.handler = async (event, context) => {
           timestamp: new Date().toISOString(),
           lambda_version: '2.1.3',
           storage: 'Using MySQL persistent storage',
-          routing_hint: 'If you are experiencing admin access issues, use the direct_access credentials or access through /admin-login.html'
+          routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
       };
     }
