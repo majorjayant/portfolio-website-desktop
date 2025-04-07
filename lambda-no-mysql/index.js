@@ -81,6 +81,7 @@ function logRequestInfo(event, context) {
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
   console.log('Query Parameters:', JSON.stringify(event.queryStringParameters || {}));
+  console.log('Raw Query String:', event.rawQueryString || 'Not available');
   console.log('Headers:', JSON.stringify(event.headers || {}));
   
   // Don't log sensitive body content like passwords
@@ -255,22 +256,26 @@ exports.handler = async (event, context) => {
     let requestType = queryParams.type || '';
     
     // Handle GET request for site configuration
-    if (event.httpMethod === 'GET' && (requestType === 'site_config' || queryParams.type === 'site_config')) {
-      console.log('Processing GET request for site_config');
+    if (event.httpMethod === 'GET') {
+      console.log('Processing GET request with queryStringParameters:', JSON.stringify(event.queryStringParameters));
       
-      // Get site configuration from the database
-      const siteConfig = await getSiteConfig();
-      
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          site_config: siteConfig,
-          _version: "2.1.3",
-          timestamp: new Date().toISOString(),
-          storage: "Using MySQL persistent storage"
-        })
-      };
+      if (queryParams && queryParams.type === 'site_config') {
+        console.log('Processing GET request for site_config');
+        
+        // Get site configuration from the database
+        const siteConfig = await getSiteConfig();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            site_config: siteConfig,
+            _version: "2.1.3",
+            timestamp: new Date().toISOString(),
+            storage: "Using MySQL persistent storage"
+          })
+        };
+      }
     }
     
     // Handle POST request to save site configuration

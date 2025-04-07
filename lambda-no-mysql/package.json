@@ -1,6 +1,6 @@
 {
   "name": "website-portfolio-lambda-mysql",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Lambda function for portfolio website configuration using MySQL",
   "main": "index.js",
   "scripts": {
