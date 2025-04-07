@@ -189,7 +189,7 @@
         
         // API endpoints
         const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
-        const CONFIG_TYPE = 'type=site_config';
+        const DIRECT_INVOKE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging?type=site_config';
         
         // Check authentication
         function checkAuthentication() {
@@ -214,8 +214,9 @@
         async function fetchConfiguration() {
             showSaveMessage('Loading configuration...', 'text-blue-500 bg-blue-50');
             try {
-                const url = `${API_BASE_URL}?${CONFIG_TYPE}`;
-                console.log('Fetching from:', url);
+                // Try direct invocation first (bypassing API Gateway path mapping)
+                const url = DIRECT_INVOKE_URL;
+                console.log('Fetching from direct invoke URL:', url);
                 const response = await fetch(url);
                 
                 console.log('Response status:', response.status);
@@ -229,7 +230,7 @@
                 // Extract the site_config object from the response
                 let config;
                 if (rawData.site_config) {
-                    // Direct structure from Lambda (v2.1.3)
+                    // Direct structure from Lambda (v2.1.4)
                     config = rawData.site_config;
                 } else if (rawData.body && typeof rawData.body === 'string') {
                     // API Gateway might wrap the response in a body property
@@ -241,15 +242,56 @@
                         config = {};
                     }
                 } else {
-                    // Fallback
-                    config = {};
+                    // Fallback - set default values
+                    config = {
+                        about_title: "My Portfolio",
+                        about_subtitle: "Welcome to my portfolio website",
+                        about_description: "A showcase of my projects and skills",
+                        image_favicon_url: "/static/img/favicon.png",
+                        image_logo_url: "/static/img/logo.png",
+                        image_banner_url: "/static/img/banner_latest.png",
+                        image_about_profile_url: "/static/img/profile.jpg",
+                        image_about_photo1_url: "/static/img/placeholder.png",
+                        image_about_photo2_url: "/static/img/placeholder.png",
+                        image_about_photo3_url: "/static/img/placeholder.png",
+                        image_about_photo4_url: "/static/img/placeholder.png",
+                        about_photo1_alt: "Photo 1",
+                        about_photo2_alt: "Photo 2",
+                        about_photo3_alt: "Photo 3",
+                        about_photo4_alt: "Photo 4"
+                    };
+                    console.warn('Using default configuration data');
                 }
                 
                 console.log('Extracted config for form:', config);
                 if (Object.keys(config).length === 0) {
-                    showSaveMessage('Warning: No configuration data found', 'text-yellow-500 bg-yellow-50');
+                    // Use default values if no config
+                    showSaveMessage('Warning: No configuration data found, using defaults', 'text-yellow-500 bg-yellow-50');
+                    config = {
+                        about_title: "My Portfolio",
+                        about_subtitle: "Welcome to my portfolio website",
+                        about_description: "A showcase of my projects and skills",
+                        image_favicon_url: "/static/img/favicon.png",
+                        image_logo_url: "/static/img/logo.png",
+                        image_banner_url: "/static/img/banner_latest.png",
+                        image_about_profile_url: "/static/img/profile.jpg",
+                        image_about_photo1_url: "/static/img/placeholder.png",
+                        image_about_photo2_url: "/static/img/placeholder.png",
+                        image_about_photo3_url: "/static/img/placeholder.png",
+                        image_about_photo4_url: "/static/img/placeholder.png",
+                        about_photo1_alt: "Photo 1",
+                        about_photo2_alt: "Photo 2",
+                        about_photo3_alt: "Photo 3",
+                        about_photo4_alt: "Photo 4"
+                    };
                 } else {
                     populateForm(config);
+                    hideSaveMessage();
+                }
+                
+                // Always populate form whether with actual data or defaults
+                populateForm(config);
+                if (Object.keys(config).length > 0) {
                     hideSaveMessage();
                 }
             } catch (error) {
@@ -324,7 +366,7 @@
                 
                 console.log('Sending API payload:', payload);
                 
-                // Save to API
+                // Save to API - try direct endpoint
                 const apiResponse = await fetch(API_BASE_URL, {
                     method: 'POST',
                     headers: {
@@ -342,18 +384,29 @@
                 const apiData = await apiResponse.json();
                 console.log('API response data:', apiData);
                 
+                let success = false;
+                let message = '';
+                
                 if (apiData.body && typeof apiData.body === 'string') {
                     // Handle API Gateway response format
                     try {
                         const parsedBody = JSON.parse(apiData.body);
-                        if (!parsedBody.success) {
-                            throw new Error(parsedBody.message || 'API save failed');
+                        success = parsedBody.success;
+                        message = parsedBody.message || '';
+                        if (!success) {
+                            throw new Error(message || 'API save failed');
                         }
                     } catch (e) {
                         throw new Error('Invalid response from API');
                     }
-                } else if (!apiData.success) {
-                    throw new Error(apiData.message || 'API save failed');
+                } else if (apiData.success !== undefined) {
+                    success = apiData.success;
+                    message = apiData.message || '';
+                    if (!success) {
+                        throw new Error(message || 'API save failed');
+                    }
+                } else {
+                    throw new Error('Unexpected API response format');
                 }
 
                 showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
