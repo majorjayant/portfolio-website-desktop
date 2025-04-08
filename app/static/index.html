@@ -469,6 +469,155 @@
             transform-origin: center center -200px;
         }
     }
+
+    /* 3D Carousel Styles */
+    :root {
+        --crsl-bg: transparent;
+        --box-bg: #1e272e;
+        --box-shadow: #0000001c;
+        --box-shadow-border: #0000000f;
+        --box-border: #fff;
+    }
+
+    .carousel {
+        position: relative;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding-top: 125px;
+    }
+
+    .carousel__prev, .carousel__next {
+        position: absolute;
+        bottom: -15%;
+        transition: transform 0.25s ease;
+        z-index: 10;
+    }
+
+    .carousel__prev i, .carousel__next i {
+        font-size: 60px;
+        color: var(--box-border);
+        cursor: pointer;
+    }
+
+    .carousel__prev:hover, .carousel__next:hover { 
+        transform: scale(1.25); 
+    }  
+
+    .carousel__prev { left: 40%; }
+    .carousel__next { right: 40%; }  
+
+    .carousel__body {
+        width: 100%;
+        padding: 20px 0 50px 0;
+        overflow: hidden;
+    }
+
+    .carousel__slider {
+        position: relative;
+        transition: transform 1s ease-in-out;
+        background: var(--crsl-bg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .carousel__slider__item {
+        position: relative;
+        display: block;
+        float: left;
+        box-sizing: border-box;
+        margin-left: 20px;
+        margin-right: 20px;
+        width: 300px;
+        height: 400px;
+    }
+
+    .item__3d-frame {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 1s ease-in-out;
+        transform-style: preserve-3d;
+    }
+
+    .item__3d-frame:after {
+        content: '';
+        position: absolute;
+        bottom: -15%;
+        width: 100%;
+        height: 40px;
+        background: var(--box-shadow);
+        box-shadow: 0px 0px 5px 5px var(--box-shadow);
+        transform: rotateX(90deg) translate3d(0px, -20px, 0px);
+        opacity: 0.85;
+    }
+
+    .item__3d-frame__box {
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        text-align: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        border-color: var(--box-border);
+        background: var(--box-bg);
+        border-width: 3px;
+        border-style: solid;
+        overflow: hidden;
+    }
+
+    .item__3d-frame__box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .item__3d-frame__box--right, .item__3d-frame__box--left {
+        top: 0;
+        width: 40px;
+        backface-visibility: hidden;
+    }
+
+    .item__3d-frame__box--left {
+        left: 0;
+        border-left-width: 5px;
+        transform: translate3d(1px, 0, -40px) rotateY(-90deg);
+        transform-origin: 0%;
+    }
+
+    .item__3d-frame__box--right {
+        right: 0;
+        border-right-width: 5px;
+        transform: translate3d(-1px, 0, -40px) rotateY(90deg);
+        transform-origin: 100%;
+    }
+
+    .carousel__slider__item--active .item__3d-frame {
+        transform: perspective(1200px);
+    }
+
+    @media (max-width: 768px) {
+        .carousel__slider__item {
+            width: 250px;
+            height: 350px;
+        }
+
+        .carousel__prev { left: 30%; }
+        .carousel__next { right: 30%; }
+    }
+
+    @media (max-width: 480px) {
+        .carousel__slider__item {
+            width: 200px;
+            height: 300px;
+        }
+
+        .carousel__prev { left: 20%; }
+        .carousel__next { right: 20%; }
+    }
 </style>
 
     
@@ -1201,166 +1350,82 @@
         const nextBtn = document.getElementById('nextBtn');
         
         if (carousel && prevBtn && nextBtn) {
-            let currentRotation = 0;
-            let targetRotation = 0;
-            let isDragging = false;
-            let startX = 0;
-            let startRotation = 0;
-            let isAutoRotating = false;
-            let autoRotationSpeed = 0.5; // degrees per frame
+            let width, height, totalWidth, margin = 20;
+            let currIndex = 0;
+            let interval, intervalTime = 4000;
             
-            // Create progress bar
-            const progressContainer = document.createElement('div');
-            progressContainer.className = 'carousel-progress';
-            const progressBar = document.createElement('div');
-            progressBar.className = 'carousel-progress-bar';
-            progressContainer.appendChild(progressBar);
-            carousel.parentElement.appendChild(progressContainer);
-            
-            // Function to update progress bar
-            function updateProgressBar(rotation) {
-                const normalizedRotation = rotation % 360;
-                const percentage = (normalizedRotation < 0 ? 360 + normalizedRotation : normalizedRotation) / 360 * 100;
-                progressBar.style.width = `${percentage}%`;
+            function init() {
+                resize();
+                move(Math.floor(items.length / 2));
+                bindEvents();
+                timer();
             }
             
-            // Mouse movement handler
-            function handleMouseMove(e) {
-                if (!isDragging) return;
+            function resize() {
+                width = Math.max(window.innerWidth * .25, 275);
+                height = window.innerHeight * .5;
+                totalWidth = width * items.length;
                 
-                const rect = carousel.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const deltaX = e.clientX - startX;
-                const rotationSpeed = 0.5; // Adjust for sensitivity
+                carousel.style.width = totalWidth + "px";
                 
-                targetRotation = startRotation + deltaX * rotationSpeed;
-                currentRotation = targetRotation;
-                carousel.style.transform = `rotateY(${currentRotation}deg)`;
-                updateProgressBar(currentRotation);
-            }
-            
-            // Mouse down handler
-            function handleMouseDown(e) {
-                isDragging = true;
-                startX = e.clientX;
-                startRotation = currentRotation;
-                carousel.style.transition = 'none';
-            }
-            
-            // Mouse up handler
-            function handleMouseUp() {
-                isDragging = false;
-                carousel.style.transition = 'transform 0.3s ease-out';
-            }
-            
-            // Add mouse event listeners
-            carousel.addEventListener('mousedown', handleMouseDown);
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-            
-            // Touch event handlers
-            function handleTouchStart(e) {
-                isDragging = true;
-                startX = e.touches[0].clientX;
-                startRotation = currentRotation;
-                carousel.style.transition = 'none';
-            }
-            
-            function handleTouchMove(e) {
-                if (!isDragging) return;
-                
-                const rect = carousel.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const deltaX = e.touches[0].clientX - startX;
-                const rotationSpeed = 0.5;
-                
-                targetRotation = startRotation + deltaX * rotationSpeed;
-                currentRotation = targetRotation;
-                carousel.style.transform = `rotateY(${currentRotation}deg)`;
-                updateProgressBar(currentRotation);
-            }
-            
-            function handleTouchEnd() {
-                isDragging = false;
-                carousel.style.transition = 'transform 0.3s ease-out';
-            }
-            
-            // Add touch event listeners
-            carousel.addEventListener('touchstart', handleTouchStart);
-            document.addEventListener('touchmove', handleTouchMove);
-            document.addEventListener('touchend', handleTouchEnd);
-            
-            // Previous button click handler
-            prevBtn.addEventListener('click', function() {
-                targetRotation -= 90;
-                currentRotation = targetRotation;
-                carousel.style.transform = `rotateY(${currentRotation}deg)`;
-                updateProgressBar(currentRotation);
-            });
-            
-            // Next button click handler
-            nextBtn.addEventListener('click', function() {
-                targetRotation += 90;
-                currentRotation = targetRotation;
-                carousel.style.transform = `rotateY(${currentRotation}deg)`;
-                updateProgressBar(currentRotation);
-            });
-            
-            // Keyboard navigation
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowLeft') {
-                    targetRotation -= 90;
-                    currentRotation = targetRotation;
-                    carousel.style.transform = `rotateY(${currentRotation}deg)`;
-                    updateProgressBar(currentRotation);
-                } else if (e.key === 'ArrowRight') {
-                    targetRotation += 90;
-                    currentRotation = targetRotation;
-                    carousel.style.transform = `rotateY(${currentRotation}deg)`;
-                    updateProgressBar(currentRotation);
+                const items = carousel.querySelectorAll('.carousel__slider__item');
+                for(let i = 0; i < items.length; i++) {
+                    let item = items[i];
+                    item.style.width = (width - (margin * 2)) + "px";
+                    item.style.height = height + "px";
                 }
-            });
+            }
             
-            // Add enhanced interactivity for photo items
-            const photoItems = carousel.querySelectorAll('.photo-item');
-            photoItems.forEach(item => {
-                // Add hover effect
-                item.addEventListener('mouseenter', function() {
-                    // Slightly bring forward other items on hover
-                    photoItems.forEach(otherItem => {
-                        if (otherItem !== item) {
-                            otherItem.style.opacity = '0.7';
-                        }
-                    });
-                });
+            function move(index) {
+                const items = carousel.querySelectorAll('.carousel__slider__item');
                 
-                item.addEventListener('mouseleave', function() {
-                    // Restore other items
-                    photoItems.forEach(otherItem => {
-                        otherItem.style.opacity = '1';
-                    });
-                });
+                if(index < 1) index = items.length;
+                if(index > items.length) index = 1;
+                currIndex = index;
                 
-                // Add click effect to open modal
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const photoUrl = this.getAttribute('data-photo');
-                    const modal = document.getElementById('photoModal');
-                    const modalImg = document.getElementById('modalImage');
-                    
-                    if (modal && modalImg) {
-                        modal.style.display = 'block';
-                        modalImg.src = photoUrl;
+                for(let i = 0; i < items.length; i++) {
+                    let item = items[i];
+                    let box = item.querySelector('.item__3d-frame');
+                    if(i == (index - 1)) {
+                        item.classList.add('carousel__slider__item--active');
+                        box.style.transform = "perspective(1200px)"; 
+                    } else {
+                        item.classList.remove('carousel__slider__item--active');
+                        box.style.transform = "perspective(1200px) rotateY(" + (i < (index - 1) ? 40 : -40) + "deg)";
                     }
-                });
-            });
+                }
+                
+                carousel.style.transform = "translate3d(" + ((index * -width) + (width / 2) + window.innerWidth / 2) + "px, 0, 0)";
+            }
             
-            // Initialize progress bar
-            updateProgressBar(0);
+            function timer() {
+                clearInterval(interval);    
+                interval = setInterval(() => {
+                    move(++currIndex);
+                }, intervalTime);    
+            }
+            
+            function prev() {
+                move(--currIndex);
+                timer();
+            }
+            
+            function next() {
+                move(++currIndex);    
+                timer();
+            }
+            
+            function bindEvents() {
+                window.onresize = resize;
+                prevBtn.addEventListener('click', () => { prev(); });
+                nextBtn.addEventListener('click', () => { next(); });
+            }
+            
+            init();
         }
     }
     
-    // Function to update photos in the "snaps" section with ENHANCED carousel effect
+    // Function to update photos in the "snaps" section with 3D carousel effect
     function updateCarousel(photos) {
         const snapsContainer = document.getElementById('snaps');
         if (snapsContainer) {
@@ -1369,10 +1434,13 @@
             
             // Create the carousel container
             const carouselContainer = document.createElement('div');
-            carouselContainer.className = 'photo-carousel-container';
+            carouselContainer.className = 'carousel';
+            
+            const carouselBody = document.createElement('div');
+            carouselBody.className = 'carousel__body';
             
             const carousel = document.createElement('div');
-            carousel.className = 'photo-carousel';
+            carousel.className = 'carousel__slider';
             carousel.id = 'photoCarousel';
             
             // Filter out photos without URLs
@@ -1380,46 +1448,48 @@
             
             // Set up the carousel with photos
             validPhotos.forEach((photo, index) => {
-                const photoItem = document.createElement('div');
-                photoItem.className = 'photo-item';
+                const item = document.createElement('div');
+                item.className = 'carousel__slider__item';
                 
-                // Position photos in a circle for 3D rotation
-                const angle = (index / validPhotos.length) * 2 * Math.PI;
-                const radius = 300; // Increased radius for more space between photos
+                const frame = document.createElement('div');
+                frame.className = 'item__3d-frame';
                 
-                // Calculate position in 3D space
-                photoItem.style.transform = `translate(-50%, -50%) rotateY(${angle * (180/Math.PI)}deg) translateZ(${radius}px)`;
-                
-                // Add data attribute for modal functionality
-                photoItem.setAttribute('data-photo', photo.url);
-                photoItem.classList.add('snap-container');
+                const frontBox = document.createElement('div');
+                frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
                 
                 const img = document.createElement('img');
                 img.src = photo.url;
                 img.alt = photo.alt || 'Photo';
-                photoItem.appendChild(img);
+                frontBox.appendChild(img);
                 
-                carousel.appendChild(photoItem);
+                const leftBox = document.createElement('div');
+                leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+                
+                const rightBox = document.createElement('div');
+                rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
+                
+                frame.appendChild(frontBox);
+                frame.appendChild(leftBox);
+                frame.appendChild(rightBox);
+                item.appendChild(frame);
+                carousel.appendChild(item);
             });
             
-            carouselContainer.appendChild(carousel);
-            
-            // Add carousel controls
-            const controls = document.createElement('div');
-            controls.className = 'carousel-controls';
-            
-            const prevBtn = document.createElement('button');
+            // Add navigation controls
+            const prevBtn = document.createElement('div');
+            prevBtn.className = 'carousel__prev';
             prevBtn.id = 'prevBtn';
-            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.innerHTML = '<i class="fas fa-angle-left"></i>';
             
-            const nextBtn = document.createElement('button');
+            const nextBtn = document.createElement('div');
+            nextBtn.className = 'carousel__next';
             nextBtn.id = 'nextBtn';
-            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.innerHTML = '<i class="fas fa-angle-right"></i>';
             
-            controls.appendChild(prevBtn);
-            controls.appendChild(nextBtn);
-            carouselContainer.appendChild(controls);
-            
+            carouselBody.appendChild(carousel);
+            carouselContainer.appendChild(carouselBody);
+            carouselContainer.appendChild(prevBtn);
+            carouselContainer.appendChild(nextBtn);
             snapsContainer.appendChild(carouselContainer);
             
             // Initialize carousel controls
