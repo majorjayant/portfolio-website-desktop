@@ -1525,32 +1525,28 @@
     }
 
     function bindEvents() {
-        // This assumes prevBtn and nextBtn are valid elements (checked in initCarousel)
-        console.log("Binding button events directly using onclick...");
+        const prevBtn = document.querySelector('.carousel__prev');
+        const nextBtn = document.querySelector('.carousel__next');
         
-        // CRITICAL FIX: Directly assign click handlers to onclick property
-        prevBtn.onclick = function(e) {
-            e.preventDefault();
-            console.log("PREV button clicked");
-            prev();
-            return false; // Prevent event bubbling
-        };
+        if (prevBtn) {
+            prevBtn.onclick = function() {
+                prev();
+                return false;
+            };
+            prevBtn.onmousedown = function() {
+                return false;
+            };
+        }
         
-        nextBtn.onclick = function(e) {
-            e.preventDefault();
-            console.log("NEXT button clicked");
-            next();
-            return false; // Prevent event bubbling
-        };
-        
-        // Also bind the same handler to onmousedown for responsive feel
-        prevBtn.onmousedown = prevBtn.onclick;
-        nextBtn.onmousedown = nextBtn.onclick;
-        
-        console.log("Button click handlers attached successfully.");
-        
-        // Bind window resize separately
-        window.onresize = resize;
+        if (nextBtn) {
+            nextBtn.onclick = function() {
+                next();
+                return false;
+            };
+            nextBtn.onmousedown = function() {
+                return false;
+            };
+        }
     }
     
     // --- updateCarousel remains largely the same, but ensure initCarousel is called reliably --- 
