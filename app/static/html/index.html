@@ -482,173 +482,119 @@
 
     /* 3D Carousel Styles */
     :root {
-        --crsl-bg: transparent;
-        --box-bg: #1e272e;
-        --box-shadow: #0000001c;
-        --box-shadow-border: #0000000f;
-        --box-border: #e6e0d4; /* Updated border color */
+        --background: rgba(0, 0, 0, 0.7);
+        --box-border: #e6e0d4;
     }
-
+    
     .carousel {
         position: relative;
-        display: block;
         width: 100%;
-        box-sizing: border-box;
-        padding-top: 60px; /* Reduced from 125px to reduce gap */
-        margin-top: -40px; /* Added negative margin to reduce gap */
+        height: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        overflow: visible;
     }
-
-    .carousel__prev, .carousel__next {
-        position: absolute;
-        bottom: 45%; /* Position in the middle of the carousel */
-        transition: transform 0.25s ease;
-        z-index: 10;
-        background-color: rgba(230, 224, 212, 0.7); /* Semi-transparent theme color */
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-        cursor: pointer;
-    }
-
-    .carousel__prev i, .carousel__next i {
-        font-size: 30px; /* Reduced size for better appearance */
-        color: #1e272e; /* Dark color for contrast */
-    }
-
-    .carousel__prev:hover, .carousel__next:hover { 
-        transform: scale(1.1);
-        background-color: rgba(230, 224, 212, 0.9); /* Darken on hover */
-    }  
-
-    .carousel__prev { left: 15px; } /* Position at edges instead of center */
-    .carousel__next { right: 15px; }
-
+    
     .carousel__body {
-        width: 100%;
-        padding: 20px 0 50px 0;
         overflow: hidden;
+        position: relative;
+        width: 100%;
+        height: 100%;
     }
-
+    
     .carousel__slider {
         position: relative;
-        transition: transform 1s ease-in-out;
-        background: var(--crsl-bg);
         display: flex;
-        justify-content: center;
         align-items: center;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
     }
-
+    
     .carousel__slider__item {
-        position: relative;
-        display: block;
-        float: left;
-        box-sizing: border-box;
-        margin-left: 20px;
-        margin-right: 20px;
-        width: 300px;
+        position: absolute;
+        width: 200px;
         height: 320px;
+        opacity: 0;
+        overflow: hidden;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        cursor: pointer;
     }
-
+    
+    .carousel__slider__item.active {
+        opacity: 1;
+        z-index: 10;
+    }
+    
     .item__3d-frame {
         position: relative;
         width: 100%;
         height: 100%;
-        transition: transform 1s ease-in-out;
-        transform-style: preserve-3d;
+        transition: transform 0.5s ease;
     }
-
-    .item__3d-frame:after {
-        content: '';
-        position: absolute;
-        bottom: -15%;
-        width: 100%;
-        height: 40px;
-        background: var(--box-shadow);
-        box-shadow: 0px 0px 5px 5px var(--box-shadow);
-        transform: rotateX(90deg) translate3d(0px, -20px, 0px);
-        opacity: 0.85;
-    }
-
+    
     .item__3d-frame__box {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border: 4px solid var(--box-border);
+        border-radius: 10px;
+    }
+    
+    .item__3d-frame__box--front {
         display: flex;
         align-items: center;
-        vertical-align: middle;
-        text-align: center;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        border-color: var(--box-border);
-        background: var(--box-bg);
-        border-width: 3px;
-        border-style: solid;
-        overflow: hidden;
-        cursor: pointer;
+        justify-content: center;
     }
-
-    .item__3d-frame__box img {
-        width: 100%;
-        height: 100%;
+    
+    .item__3d-frame__box--front img {
         object-fit: cover;
-        transition: transform 0.3s ease;
+        width: 100%;
+        height: 100%;
     }
     
-    .item__3d-frame__box:hover img {
-        transform: scale(1.1);
-    }
-
-    .item__3d-frame__box--right, .item__3d-frame__box--left {
-        top: 0;
-        width: 40px;
-        backface-visibility: hidden;
-    }
-
     .item__3d-frame__box--left {
-        left: 0;
-        border-left-width: 5px;
-        transform: translate3d(1px, 0, -40px) rotateY(-90deg);
-        transform-origin: 0%;
-    }
-
-    .item__3d-frame__box--right {
-        right: 0;
-        border-right-width: 5px;
-        transform: translate3d(-1px, 0, -40px) rotateY(90deg);
-        transform-origin: 100%;
-    }
-
-    .carousel__slider__item--active .item__3d-frame {
-        transform: perspective(1200px);
-    }
-
-    @media (max-width: 768px) {
-        .carousel__slider__item {
-            width: 250px;
-            height: 270px;
-        }
-
-        .carousel__prev { left: 30%; }
-        .carousel__next { right: 30%; }
-    }
-
-    @media (max-width: 480px) {
-        .carousel__slider__item {
-            width: 200px;
-            height: 220px;
-        }
-
-        .carousel__prev { left: 20%; }
-        .carousel__next { right: 20%; }
+        background: var(--box-border);
+        transform: rotateY(-90deg) translateZ(100px);
     }
     
-    /* Auto-rotation animation for entire carousel (not used, we're using JS control) */
-    @keyframes carousel-rotate {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-100%); }
+    .item__3d-frame__box--right {
+        background: var(--box-border);
+        transform: rotateY(90deg) translateZ(100px);
+    }
+    
+    .carousel__prev,
+    .carousel__next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.3s ease;
+        pointer-events: auto;
+    }
+    
+    .carousel__prev:hover,
+    .carousel__next:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .carousel__prev {
+        left: 10px;
+    }
+    
+    .carousel__next {
+        right: 10px;
     }
 </style>
 
@@ -1324,6 +1270,7 @@
                 
                 const rightBox = document.createElement('div');
                 rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
+                rightBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
                 
                 frame.appendChild(frontBox);
                 frame.appendChild(leftBox);
@@ -1336,12 +1283,12 @@
             const prevBtn = document.createElement('div');
             prevBtn.className = 'carousel__prev';
             prevBtn.id = 'prevBtn';
-            prevBtn.innerHTML = '<i class="fas fa-angle-left"></i>';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
             
             const nextBtn = document.createElement('div');
             nextBtn.className = 'carousel__next';
             nextBtn.id = 'nextBtn';
-            nextBtn.innerHTML = '<i class="fas fa-angle-right"></i>';
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
             
             carouselBody.appendChild(carousel);
             carouselContainer.appendChild(carouselBody);
@@ -1416,12 +1363,14 @@
     }
     
     function prev() {
-        console.log("Prev button clicked"); // Debug log
+        console.log("Prev button clicked - function triggered");
+        clearInterval(interval); // Stop auto rotation temporarily
         move(--currIndex);
     }
     
     function next() {
-        console.log("Next button clicked"); // Debug log
+        console.log("Next button clicked - function triggered");
+        clearInterval(interval); // Stop auto rotation temporarily
         move(++currIndex);    
     }
     
@@ -1434,37 +1383,35 @@
         
         window.onresize = resize;
         
-        // Remove any existing event listeners first
-        prevBtn.removeEventListener('click', prev);
-        nextBtn.removeEventListener('click', next);
+        // Remove any existing event listeners for safety
+        prevBtn.replaceWith(prevBtn.cloneNode(true));
+        nextBtn.replaceWith(nextBtn.cloneNode(true));
         
-        // Add event listeners with explicit binding
+        // Get fresh references after replacing
+        prevBtn = document.getElementById('prevBtn');
+        nextBtn = document.getElementById('nextBtn');
+        
+        if (!prevBtn || !nextBtn) {
+            console.error("Navigation buttons lost after cloning!");
+            return;
+        }
+        
+        // Add click event listeners with direct function calls
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Prev button clicked via direct handler");
+            console.log("Prev button clicked via handler");
             prev();
+            return false;
         });
         
         nextBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Next button clicked via direct handler");
+            console.log("Next button clicked via handler");
             next();
+            return false;
         });
-        
-        // Also try adding as inline onclick for compatibility
-        prevBtn.onclick = function(e) {
-            e.preventDefault();
-            prev();
-            return false;
-        };
-        
-        nextBtn.onclick = function(e) {
-            e.preventDefault();
-            next();
-            return false;
-        };
     }
     
     function initializeCarouselControls() {
@@ -1493,7 +1440,8 @@
             return;
         }
         
-        // Clear existing content
+        // Clear existing content and any existing intervals
+        clearInterval(interval);
         snapsContainer.innerHTML = '';
         
         // Create carousel structure
@@ -1523,23 +1471,26 @@
             
             const frontBox = document.createElement('div');
             frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
-                
-                const img = document.createElement('img');
+            frontBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
+            
+            const img = document.createElement('img');
             img.src = photo.url;
             img.alt = photo.alt || 'Photo';
-                img.onerror = function() {
+            img.onerror = function() {
                 console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-                    this.onerror = null;
-                    this.src = '/static/img/placeholder.png';
-                };
-                
+                this.onerror = null;
+                this.src = '/static/img/placeholder.png';
+            };
+            
             frontBox.appendChild(img);
             
             const leftBox = document.createElement('div');
             leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+            leftBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
             
             const rightBox = document.createElement('div');
             rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
+            rightBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
             
             frame.appendChild(frontBox);
             frame.appendChild(leftBox);
@@ -1548,47 +1499,55 @@
             carouselSlider.appendChild(item);
         });
         
-        // Add navigation buttons with improved markup
-        const prevButton = document.createElement('div');
-        prevButton.className = 'carousel__prev';
-        prevButton.id = 'prevBtn';
-        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; // Use chevron for nicer appearance
-        prevButton.setAttribute('role', 'button');
-        prevButton.setAttribute('aria-label', 'Previous image');
-        
-        const nextButton = document.createElement('div');
-        nextButton.className = 'carousel__next';
-        nextButton.id = 'nextBtn';
-        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; // Use chevron for nicer appearance
-        nextButton.setAttribute('role', 'button');
-        nextButton.setAttribute('aria-label', 'Next image');
-        
         // Assemble carousel
         carouselBody.appendChild(carouselSlider);
         carouselContainer.appendChild(carouselBody);
-        carouselContainer.appendChild(prevButton);
-        carouselContainer.appendChild(nextButton);
+        
+        // Create and add navigation buttons with direct event binding
+        const { prevButton, nextButton } = createNavButtons(carouselContainer);
+        
+        // Add carousel to page
         snapsContainer.appendChild(carouselContainer);
         
-        // Initialize carousel controls
+        // Initialize carousel controls with a brief delay
         setTimeout(() => {
-            // Adding a small delay to ensure DOM is ready
-            initializeCarouselControls();
+            console.log("Setting up carousel functionality");
             
-            // Start carousel if we have items
-            if (items && items.length > 0) {
-                console.log("Starting carousel...");
-                resize();
-                move(Math.ceil(items.length / 2)); // Center on middle item
-                bindEvents();
-                timer(); // Start auto-rotation
+            // Get references to DOM elements
+            carousel = document.getElementById('photoCarousel');
+            prevBtn = document.getElementById('prevBtn');
+            nextBtn = document.getElementById('nextBtn');
+            
+            if (carousel) {
+                items = carousel.querySelectorAll('.carousel__slider__item');
+                console.log(`Found ${items.length} carousel items`);
+                
+                if (items && items.length > 0) {
+                    console.log("Starting carousel...");
+                    
+                    // Set initial dimensions
+                    resize();
+                    
+                    // Center on middle item
+                    move(Math.ceil(items.length / 2));
+                    
+                    // Bind navigation events
+                    bindEvents();
+                    
+                    // Start auto-rotation
+                    timer();
+                    
+                    console.log("Carousel initialized successfully");
+                } else {
+                    console.error("No carousel items found after setup!");
+                }
             } else {
-                console.error("No carousel items found after setup!");
+                console.error("Carousel element not found!");
             }
             
             // Initialize modal functionality
             initializeModalFunctionality();
-        }, 100);
+        }, 200); // Slightly longer timeout to ensure DOM is fully ready
     }
 
     // Function to close the modal

@@ -492,7 +492,7 @@
         position: absolute;
         bottom: 45%;
         transition: transform 0.25s ease;
-        z-index: 10;
+        z-index: 100;
         background-color: rgba(230, 224, 212, 0.7);
         width: 50px;
         height: 50px;
@@ -502,6 +502,7 @@
         justify-content: center;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         cursor: pointer;
+        pointer-events: auto;
     }
 
     .carousel__prev i, .carousel__next i {
@@ -530,6 +531,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        z-index: 1;
     }
 
     .carousel__slider__item {
@@ -572,7 +574,7 @@
         width: 100%;
         height: 100%;
         box-sizing: border-box;
-        border-color: var(--box-border);
+        border-color: #e6e0d4;
         background: var(--box-bg);
         border-width: 3px;
         border-style: solid;
@@ -595,6 +597,7 @@
         top: 0;
         width: 40px;
         backface-visibility: hidden;
+        border-color: #e6e0d4;
     }
 
     .item__3d-frame__box--left {
@@ -1421,12 +1424,14 @@
     }
     
     function prev() {
-        console.log("Prev button clicked"); // Debug log
+        console.log("Prev button clicked - function triggered");
+        clearInterval(interval); // Stop auto rotation temporarily
         move(--currIndex);
     }
     
     function next() {
-        console.log("Next button clicked"); // Debug log
+        console.log("Next button clicked - function triggered");
+        clearInterval(interval); // Stop auto rotation temporarily
         move(++currIndex);    
     }
     
@@ -1439,56 +1444,35 @@
         
         window.onresize = resize;
         
-        // Remove any existing event listeners first
-        prevBtn.removeEventListener('click', prev);
-        nextBtn.removeEventListener('click', next);
+        // Remove any existing event listeners for safety
+        prevBtn.replaceWith(prevBtn.cloneNode(true));
+        nextBtn.replaceWith(nextBtn.cloneNode(true));
         
-        // Add event listeners with explicit binding
+        // Get fresh references after replacing
+        prevBtn = document.getElementById('prevBtn');
+        nextBtn = document.getElementById('nextBtn');
+        
+        if (!prevBtn || !nextBtn) {
+            console.error("Navigation buttons lost after cloning!");
+            return;
+        }
+        
+        // Add click event listeners with direct function calls
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Prev button clicked via direct handler");
+            console.log("Prev button clicked via handler");
             prev();
+            return false;
         });
         
         nextBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Next button clicked via direct handler");
+            console.log("Next button clicked via handler");
             next();
+            return false;
         });
-        
-        // Also try adding as inline onclick for compatibility
-        prevBtn.onclick = function(e) {
-            e.preventDefault();
-            prev();
-            return false;
-        };
-        
-        nextBtn.onclick = function(e) {
-            e.preventDefault();
-            next();
-            return false;
-        };
-    }
-    
-    function initializeCarouselControls() {
-        console.log("Initializing carousel controls...");
-        carousel = document.getElementById('photoCarousel');
-        prevBtn = document.getElementById('prevBtn');
-        nextBtn = document.getElementById('nextBtn');
-        
-        if (carousel) {
-            items = carousel.querySelectorAll('.carousel__slider__item');
-            console.log(`Found ${items.length} carousel items`);
-        } else {
-            items = [];
-            console.error("Carousel element not found!");
-        }
-        
-        if (!prevBtn || !nextBtn) {
-            console.error("Carousel navigation buttons not found!");
-        }
     }
     
     function updateCarousel(photos) {
@@ -1498,7 +1482,8 @@
             return;
         }
         
-        // Clear existing content
+        // Clear existing content and any existing intervals
+        clearInterval(interval);
         snapsContainer.innerHTML = '';
         
         // Create carousel structure
@@ -1528,6 +1513,7 @@
             
             const frontBox = document.createElement('div');
             frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
+            frontBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
             
             const img = document.createElement('img');
             img.src = photo.url;
@@ -1542,9 +1528,11 @@
             
             const leftBox = document.createElement('div');
             leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+            leftBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
             
             const rightBox = document.createElement('div');
             rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
+            rightBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
             
             frame.appendChild(frontBox);
             frame.appendChild(leftBox);
@@ -1553,47 +1541,93 @@
             carouselSlider.appendChild(item);
         });
         
+        // Assemble carousel
+        carouselBody.appendChild(carouselSlider);
+        carouselContainer.appendChild(carouselBody);
+        
+        // Create and add navigation buttons with direct event binding
+        const { prevButton, nextButton } = createNavButtons(carouselContainer);
+        
+        // Add carousel to page
+        snapsContainer.appendChild(carouselContainer);
+        
+        // Initialize carousel controls with a brief delay
+        setTimeout(() => {
+            console.log("Setting up carousel functionality");
+            
+            // Get references to DOM elements
+            carousel = document.getElementById('photoCarousel');
+            prevBtn = document.getElementById('prevBtn');
+            nextBtn = document.getElementById('nextBtn');
+            
+            if (carousel) {
+                items = carousel.querySelectorAll('.carousel__slider__item');
+                console.log(`Found ${items.length} carousel items`);
+                
+                if (items && items.length > 0) {
+                    console.log("Starting carousel...");
+                    
+                    // Set initial dimensions
+                    resize();
+                    
+                    // Center on middle item
+                    move(Math.ceil(items.length / 2));
+                    
+                    // Bind navigation events
+                    bindEvents();
+                    
+                    // Start auto-rotation
+                    timer();
+                    
+                    console.log("Carousel initialized successfully");
+                } else {
+                    console.error("No carousel items found after setup!");
+                }
+            } else {
+                console.error("Carousel element not found!");
+            }
+            
+            // Initialize modal functionality
+            initializeModalFunctionality();
+        }, 200); // Slightly longer timeout to ensure DOM is fully ready
+    }
+
+    // Function to directly bind to arrow elements after creation
+    function createNavButtons(carouselContainer) {
         // Add navigation buttons with improved markup
         const prevButton = document.createElement('div');
         prevButton.className = 'carousel__prev';
         prevButton.id = 'prevBtn';
-        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; // Use chevron for nicer appearance
+        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
         prevButton.setAttribute('role', 'button');
         prevButton.setAttribute('aria-label', 'Previous image');
         
         const nextButton = document.createElement('div');
         nextButton.className = 'carousel__next';
         nextButton.id = 'nextBtn';
-        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; // Use chevron for nicer appearance
+        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
         nextButton.setAttribute('role', 'button');
         nextButton.setAttribute('aria-label', 'Next image');
         
-        // Assemble carousel
-        carouselBody.appendChild(carouselSlider);
-        carouselContainer.appendChild(carouselBody);
+        // Add direct event listeners immediately
+        prevButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Prev button clicked directly");
+            prev();
+        });
+        
+        nextButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Next button clicked directly");
+            next();
+        });
+        
         carouselContainer.appendChild(prevButton);
         carouselContainer.appendChild(nextButton);
-        snapsContainer.appendChild(carouselContainer);
         
-        // Initialize carousel controls
-        setTimeout(() => {
-            // Adding a small delay to ensure DOM is ready
-            initializeCarouselControls();
-            
-            // Start carousel if we have items
-            if (items && items.length > 0) {
-                console.log("Starting carousel...");
-                resize();
-                move(Math.ceil(items.length / 2)); // Center on middle item
-                bindEvents();
-                timer(); // Start auto-rotation
-            } else {
-                console.error("No carousel items found after setup!");
-            }
-            
-            // Initialize modal functionality
-            initializeModalFunctionality();
-        }, 100);
+        return { prevButton, nextButton };
     }
 </script>
 
