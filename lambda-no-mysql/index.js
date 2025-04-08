@@ -76,7 +76,7 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.13 - Using MySQL for persistent storage with Lambda Proxy Integration');
+  console.log('Lambda Version: 2.1.14 - Using MySQL for persistent storage with Lambda Proxy Integration');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -280,7 +280,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.13",
+            _version: "2.1.14",
             source: "GET handler with query params",
             timestamp: new Date().toISOString()
           })
@@ -296,7 +296,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           site_config: siteConfig,
-          _version: "2.1.13",
+          _version: "2.1.14",
           source: "GET general handler",
           timestamp: new Date().toISOString()
         })
@@ -312,7 +312,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.1.13',
+          lambda_version: '2.1.14',
           storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
@@ -328,7 +328,7 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
                 site_config: siteConfig,
-                _version: "2.1.13",
+                _version: "2.1.14",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
                 storage: "Using MySQL persistent storage with Lambda Proxy Integration"
@@ -403,7 +403,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.13'
+            lambda_version: '2.1.14'
           })
         };
       }
@@ -416,7 +416,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '2.1.13',
+            lambda_version: '2.1.14',
             storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
             timestamp: new Date().toISOString(),
             access_paths: {
@@ -431,8 +431,12 @@ exports.handler = async (event, context) => {
       if (actionType === 'update_site_config') {
         console.log('Processing site_config update request');
         
-        // Validate authorization token (simplified for demo)
+        // Log the received headers, specifically Authorization
+        console.log('Received headers for update:', JSON.stringify(event.headers || {}));
         const authHeader = event.headers.Authorization || event.headers.authorization;
+        console.log('Authorization header received:', authHeader ? authHeader.substring(0, 15) + '...' : 'MISSING'); // Log prefix or missing
+        
+        // Validate authorization token
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
           console.error('Missing or invalid Authorization header');
           return {
@@ -470,7 +474,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...updateResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.13'
+            lambda_version: '2.1.14'
           })
         };
       }
@@ -487,7 +491,7 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            _version: "2.1.13",
+            _version: "2.1.14",
             from: "post_body",
             timestamp: new Date().toISOString(),
             storage: "Using MySQL persistent storage with Lambda Proxy Integration"
@@ -517,7 +521,7 @@ exports.handler = async (event, context) => {
         request_path: event.path,
         request_method: event.httpMethod,
         request_type: requestType,
-        _version: "2.1.13",
+        _version: "2.1.14",
         timestamp: new Date().toISOString()
       })
     };
