@@ -512,13 +512,14 @@
     }
     
     .carousel__slider__item {
-        position: absolute;
-        width: 200px;
-        height: 320px;
-        opacity: 0;
-        overflow: hidden;
-        transition: transform 0.5s ease, opacity 0.5s ease;
-        cursor: pointer;
+        position: relative;
+        display: block;
+        float: left;
+        box-sizing: border-box;
+        margin-left: 10px;  /* Reduced from 20px */
+        margin-right: 10px; /* Reduced from 20px */
+        width: 360px;      /* Increased by 20% from 300px */
+        height: 384px;     /* Increased by 20% from 320px */
     }
     
     .carousel__slider__item.active {
@@ -542,9 +543,9 @@
         width: 100%;
         height: 100%;
         box-sizing: border-box;
-        border-color: #caa882;
+        border-color: #7a6b5f;
         background: var(--box-bg);
-        border-width: 3px;
+        border-width: 5px;  /* Increased from 3px */
         border-style: solid;
         overflow: hidden;
         cursor: pointer;
@@ -563,39 +564,42 @@
     }
     
     .item__3d-frame__box--left {
-        top: 0;
-        width: 40px;
-        backface-visibility: hidden;
-        border-color: #caa882;
+        left: 0;
+        border-left-width: 8px;  /* Increased from 5px */
+        transform: translate3d(1px, 0, -48px) rotateY(-90deg);  /* Adjusted for new width */
+        transform-origin: 0%;
     }
     
     .item__3d-frame__box--right {
-        top: 0;
-        width: 40px;
-        backface-visibility: hidden;
-        border-color: #caa882;
+        right: 0;
+        border-right-width: 8px;  /* Increased from 5px */
+        transform: translate3d(-1px, 0, -48px) rotateY(90deg);  /* Adjusted for new width */
+        transform-origin: 100%;
     }
     
-    .carousel__prev, .carousel__next {
+    .carousel__prev,
+    .carousel__next {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        width: 50px;
-        height: 50px;
-        background-color: rgba(202, 168, 130, 0.8);
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.5);
         display: flex;
-        align-items: center;
         justify-content: center;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        align-items: center;
+        color: white;
         cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.3s ease;
         pointer-events: auto;
-        z-index: 10;
     }
     
     .carousel__prev:hover,
     .carousel__next:hover {
-        background-color: rgba(202, 168, 130, 1);
+        background-color: rgba(0, 0, 0, 0.7);
     }
     
     .carousel__prev {
@@ -604,6 +608,20 @@
     
     .carousel__next {
         right: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .carousel__slider__item {
+            width: 300px;  /* Increased by 20% from 250px */
+            height: 324px; /* Increased by 20% from 270px */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .carousel__slider__item {
+            width: 240px;  /* Increased by 20% from 200px */
+            height: 264px; /* Increased by 20% from 220px */
+        }
     }
 </style>
 
@@ -1396,27 +1414,31 @@
         prevBtn.replaceWith(prevBtn.cloneNode(true));
         nextBtn.replaceWith(nextBtn.cloneNode(true));
         
-        // Get fresh references to the buttons
-        prevBtn = document.querySelector('.carousel__prev');
-        nextBtn = document.querySelector('.carousel__next');
+        // Get fresh references after replacing
+        prevBtn = document.getElementById('prevBtn');
+        nextBtn = document.getElementById('nextBtn');
         
-        // Add click event listeners
+        if (!prevBtn || !nextBtn) {
+            console.error("Navigation buttons lost after cloning!");
+            return;
+        }
+        
+        // Add click event listeners with direct function calls
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Prev button clicked");
+            console.log("Prev button clicked via handler");
             prev();
+            return false;
         });
         
         nextBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Next button clicked");
+            console.log("Next button clicked via handler");
             next();
+            return false;
         });
-        
-        // Start auto-rotation
-        timer();
     }
     
     function initializeCarouselControls() {

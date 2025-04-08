@@ -539,10 +539,10 @@
         display: block;
         float: left;
         box-sizing: border-box;
-        margin-left: 20px;
-        margin-right: 20px;
-        width: 300px;
-        height: 320px;
+        margin-left: 10px;
+        margin-right: 10px;
+        width: 360px;
+        height: 384px;
     }
 
     .item__3d-frame {
@@ -576,7 +576,7 @@
         box-sizing: border-box;
         border-color: #7a6b5f;
         background: var(--box-bg);
-        border-width: 3px;
+        border-width: 5px;
         border-style: solid;
         overflow: hidden;
         cursor: pointer;
@@ -595,22 +595,23 @@
 
     .item__3d-frame__box--right, .item__3d-frame__box--left {
         top: 0;
-        width: 40px;
+        width: 48px;
         backface-visibility: hidden;
         border-color: #7a6b5f;
+        border-width: 5px;
     }
 
     .item__3d-frame__box--left {
         left: 0;
-        border-left-width: 5px;
-        transform: translate3d(1px, 0, -40px) rotateY(-90deg);
+        border-left-width: 8px;
+        transform: translate3d(1px, 0, -48px) rotateY(-90deg);
         transform-origin: 0%;
     }
 
     .item__3d-frame__box--right {
         right: 0;
-        border-right-width: 5px;
-        transform: translate3d(-1px, 0, -40px) rotateY(90deg);
+        border-right-width: 8px;
+        transform: translate3d(-1px, 0, -48px) rotateY(90deg);
         transform-origin: 100%;
     }
 
@@ -620,8 +621,8 @@
 
     @media (max-width: 768px) {
         .carousel__slider__item {
-            width: 250px;
-            height: 270px;
+            width: 300px;
+            height: 324px;
         }
 
         .carousel__prev { left: 30%; }
@@ -630,8 +631,8 @@
 
     @media (max-width: 480px) {
         .carousel__slider__item {
-            width: 200px;
-            height: 220px;
+            width: 240px;
+            height: 264px;
         }
 
         .carousel__prev { left: 20%; }
@@ -1551,10 +1552,10 @@
                 const img = document.createElement('img');
             img.src = photo.url;
             img.alt = photo.alt || 'Photo';
-                img.onerror = function() {
+        img.onerror = function() {
                 console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-                    this.onerror = null;
-                    this.src = '/static/img/placeholder.png';
+            this.onerror = null;
+                this.src = '/static/img/placeholder.png';
                 };
                 
             frontBox.appendChild(img);
