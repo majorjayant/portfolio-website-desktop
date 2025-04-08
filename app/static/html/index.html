@@ -100,77 +100,36 @@
     }
     
     .snaps {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 40px;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
         margin-top: 4rem;
         width: 100%;
     }
     
-    .photo-stack {
-        position: relative;
-        width: 250px;
-        height: 250px;
-        margin: 0 auto;
+    .snaps a {
+        display: block;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         cursor: pointer;
-        perspective: 1000px;
-        transition: all 0.3s ease;
     }
     
-    .photo-stack img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 250px;
-        height: 250px;
+    .snaps a:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+    
+    .snaps img {
+        width: 100%;
+        height: 200px;
         object-fit: cover;
-        border: 5px solid #f3f3f3;
-        box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-        transition: all 0.3s ease-in-out;
-        transform-origin: center center;
+        transition: transform 0.5s ease;
     }
     
-    /* Apply different initial rotations and positions to create stacked look */
-    .photo-stack img:nth-child(1) {
-        transform: rotate(-5deg) translateX(-5px);
-        z-index: 3;
-    }
-    
-    .photo-stack img:nth-child(2) {
-        transform: rotate(0deg);
-        z-index: 2;
-    }
-    
-    .photo-stack img:nth-child(3) {
-        transform: rotate(5deg) translateX(5px);
-        z-index: 1;
-    }
-    
-    /* Hover effect - fan out */
-    .photo-stack:hover img:nth-child(1) {
-        transform: rotate(-15deg) translate(-80px, -5px) scale(1.1);
-    }
-    
-    .photo-stack:hover img:nth-child(2) {
-        transform: rotate(0deg) translateY(-5px) scale(1.1);
-    }
-    
-    .photo-stack:hover img:nth-child(3) {
-        transform: rotate(15deg) translate(80px, -5px) scale(1.1);
-    }
-    
-    .photo-stack:hover {
-        z-index: 10;
-    }
-    
-    /* For single image case */
-    .photo-stack.single-photo img {
-        transform: rotate(0deg);
-    }
-    
-    .photo-stack.single-photo:hover img {
-        transform: scale(1.1);
+    .snaps a:hover img {
+        transform: scale(1.05);
     }
     
     /* Modal styles */
@@ -255,16 +214,16 @@
     }
     
     .layer-bg {
-        transform: translateZ(-50px) scale(1.265);
+        transform: translateZ(-50px) scale(1.5);
     }
     
     .layer-1 {
-        background: rgba(0,0,0,0.25);
+        background: rgba(0,0,0,0.4);
         z-index: 2;
     }
     
     .layer-2 {
-        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
         z-index: 3;
     }
 
@@ -327,6 +286,50 @@
         .snaps {
             grid-template-columns: 1fr;
         }
+    }
+
+    /* Photo Stack Animation */
+    .photo-stack {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        perspective: 1000px;
+        margin: 50px 0;
+    }
+
+    .photo-stack img {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        transition: all 0.5s ease-out;
+        transform-origin: center center;
+        cursor: pointer;
+        left: 50%;
+        top: 50%;
+    }
+
+    .photo-stack img:nth-child(1) {
+        transform: translate(-50%, -50%) rotate(-5deg);
+        z-index: 3;
+    }
+
+    .photo-stack img:nth-child(2) {
+        transform: translate(-50%, -50%) rotate(5deg);
+        z-index: 2;
+    }
+
+    .photo-stack img:nth-child(3) {
+        transform: translate(-50%, -50%) rotate(-3deg);
+        z-index: 1;
+    }
+
+    .photo-stack img:hover {
+        transform: translate(-50%, -50%) scale(1.2) rotate(0deg);
+        z-index: 4;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
     }
 </style>
 
@@ -701,10 +704,10 @@
         });
         
         // Initialize image elements and fetch content
-        const bannerImage = document.getElementById('banner-image');
-        if (bannerImage) {
-            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-        }
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                    bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+            }
 
         // Try to fetch the latest content from our AWS Lambda endpoint
         fetchLatestAboutContent();
@@ -904,20 +907,20 @@
                     
                     if (aboutDescription) {
             aboutDescription.textContent = config.about_description || '';
-                        aboutDescription.style.textAlign = 'left';
-                    }
-                    
+            aboutDescription.style.textAlign = 'left';
+        }
+        
         if (profileImage) {
             profileImage.src = config.image_about_profile_url || '';
             profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
                     }
                     
-        // Update photos in the "snaps" section with photo stack effect
+        // Update photos in the "snaps" section
         const snapsContainer = document.getElementById('snaps');
         if (snapsContainer) {
-            // Clear existing content
-            snapsContainer.innerHTML = '';
-                
+                        // Clear existing content
+                        snapsContainer.innerHTML = '';
+                        
             // Create photos array from config
             const photos = [
                 { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
@@ -926,34 +929,25 @@
                 { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
             ];
             
-            // Filter out photos without URLs
-            const validPhotos = photos.filter(photo => photo.url);
-            
-            // Group photos into sets of 3 for stacking
-            for (let i = 0; i < validPhotos.length; i += 3) {
-                const stackContainer = document.createElement('div');
-                stackContainer.className = 'photo-stack';
-                if (validPhotos.length - i < 3) {
-                    stackContainer.className += ' single-photo';
+            // Add photos to container if they have URLs
+            photos.forEach(photo => {
+                if (photo.url) {
+                const container = document.createElement('a');
+                container.href = '#';
+                container.className = 'snap-container';
+                            container.setAttribute('data-photo', photo.url);
+                
+                const img = document.createElement('img');
+                            img.src = photo.url;
+                    img.alt = photo.alt || 'Photo';
+                
+                container.appendChild(img);
+                snapsContainer.appendChild(container);
                 }
-                
-                // Add data attribute for modal functionality
-                stackContainer.setAttribute('data-photo', validPhotos[i].url);
-                stackContainer.classList.add('snap-container');
-                
-                // Add up to 3 photos to this stack
-                for (let j = 0; j < 3 && i + j < validPhotos.length; j++) {
-                    const img = document.createElement('img');
-                    img.src = validPhotos[i + j].url;
-                    img.alt = validPhotos[i + j].alt || 'Photo';
-                    stackContainer.appendChild(img);
-                }
-                
-                snapsContainer.appendChild(stackContainer);
-            }
-            
-            // Initialize the modal functionality
-            initializeModalFunctionality();
+            });
+                        
+            // Initialize or reinitialize the modal functionality after photos are loaded
+                        initializeModalFunctionality();
         }
         
         // Show content once loaded
@@ -991,7 +985,7 @@
             }
         };
     });
-
+    
     // Banner parallax effect
     document.addEventListener('DOMContentLoaded', function() {
         const bannerSection = document.getElementById('banner-section');
@@ -1001,7 +995,7 @@
         
         // Set initial scale to ensure image covers the area even with movement
         if (bannerImage) {
-            bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
+            bannerImage.style.transform = 'translateZ(-50px) scale(1.6)';
         }
         
         if (bannerSection && bannerImage && layer1 && layer2) {
@@ -1012,14 +1006,14 @@
                 const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
                 
                 // Apply transformations with different intensities
-                bannerImage.style.transform = `translateZ(-50px) scale(1.265) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
+                bannerImage.style.transform = `translateZ(-50px) scale(1.6) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
                 layer1.style.transform = `translate(${mouseX * 15}px, ${mouseY * 15}px)`;
                 layer2.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
             });
             
             bannerSection.addEventListener('mouseleave', function() {
                 // Reset transformations smoothly
-                bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
+                bannerImage.style.transform = 'translateZ(-50px) scale(1.6)';
                 layer1.style.transform = 'translate(0, 0)';
                 layer2.style.transform = 'translate(0, 0)';
             });
