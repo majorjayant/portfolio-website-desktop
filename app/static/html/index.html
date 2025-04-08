@@ -498,47 +498,10 @@
         margin-top: -40px; /* Keep existing */
     }
 
-    .carousel__prev, .carousel__next {
-        position: absolute;
-        /* Position to vertical center edges */
-        top: 50%;
-        transform: translateY(-50%); /* Vertical centering */
-        bottom: auto; /* Remove bottom positioning */
-        transition: transform 0.25s ease, background-color 0.3s ease; /* Add background transition */
-        z-index: 1000; /* Increase z-index to ensure buttons are on top */
-        width: 50px; /* Give fixed size for better click area */
-        height: 50px;
-        background-color: rgba(230, 224, 212, 0.7); /* More opaque background */
-        box-shadow: 0 3px 6px rgba(0,0,0,0.3); /* Stronger shadow */
-        border-radius: 50%; /* Make them circles */
-        display: flex; /* Use flex to center icon */
-        align-items: center;
-        justify-content: center;
-        cursor: pointer; /* Ensure cursor indicates clickable */
-        color: #1e272e; /* Darker icon color */
-        pointer-events: auto !important; /* CRITICAL: Force pointer events */
-        -webkit-user-select: none; /* Prevent text selection */
-        user-select: none; /* Prevent text selection */
-    }
-
-    .carousel__prev i, .carousel__next i {
-        font-size: 30px; /* Adjust icon size */
-        color: inherit; /* Inherit color from parent */
-    }
-
-    .carousel__prev:hover, .carousel__next:hover {
-        transform: translateY(-50%) scale(1.1); /* Keep scale effect */
-        background-color: rgba(230, 224, 212, 0.8); /* Darken background on hover */
-    }
-
-    /* Positioning prev/next buttons horizontally to edges */
-    .carousel__prev { left: 15px; } /* Adjust pixel value as needed */
-    .carousel__next { right: 15px; }
-
     .carousel__body {
         width: 100%;
-        padding: 40px 0 70px 0; /* Increased vertical padding */
-        overflow: visible; /* Allow shadows/rotated items to show */
+        padding: 40px 0 40px 0; /* Adjust bottom padding now buttons are gone */
+        overflow: visible; 
     }
 
     .carousel__slider {
@@ -658,20 +621,15 @@
 
     /* Remove media query overrides for margins initially, let JS handle sizing */
     @media (max-width: 768px) {
-         .carousel__prev { left: 10px; } /* Closer to edge on smaller screens */
-         .carousel__next { right: 10px; }
+         /* .carousel__prev { left: 10px; } */
+         /* .carousel__next { right: 10px; } */
     }
 
     @media (max-width: 480px) {
-         .carousel__prev { left: 5px; } /* Even closer */
-         .carousel__next { right: 5px; }
-         .carousel__prev i, .carousel__next i {
-             font-size: 24px; /* Smaller icons on mobile */
-         }
-         .carousel__prev, .carousel__next {
-             width: 40px; /* Smaller buttons on mobile */
-             height: 40px;
-         }
+         /* .carousel__prev { left: 5px; } */
+         /* .carousel__next { right: 5px; } */
+         /* .carousel__prev i, .carousel__next i { ... } */
+         /* .carousel__prev, .carousel__next { ... } */
     }
 
     /* Ensure experience section margin is still applied */
@@ -681,46 +639,26 @@
         z-index: 1;
     }
 
-    /* Update menu bar and icon colors when transparent */
-    .transparent-header .navbar a {
-        color: #333333 !important;
+    /* Styles for Transparent Header Text/Icons */
+    header.transparent-header .nav-links a,
+    header.transparent-header .social-links a i {
+        color: #333333 !important; /* Dark grey for transparent header */
+        text-shadow: none; /* Remove text shadow for better readability on light banner */
     }
-
-    .transparent-header .social-links a {
-        color: #333333 !important;
+    
+    header.transparent-header .navbar .logo img {
+        filter: none; /* Remove drop shadow on logo when header is transparent */
     }
-
-    /* Remove carousel buttons and update styles */
-    .carousel__prev, .carousel__next {
-        display: none !important;
+    
+    /* Default Header Text/Icons (when header is NOT transparent) */
+    header:not(.transparent-header) .nav-links a,
+    header:not(.transparent-header) .social-links a i {
+        color: #e6e0d4; /* Original light color */
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Restore text shadow */
     }
-
-    /* Update carousel left box color */
-    .item__3d-frame__box--left {
-        background: #333333 !important;
-        border-color: #333333 !important;
-    }
-
-    /* Update carousel right box color to match */
-    .item__3d-frame__box--right {
-        background: #333333 !important;
-        border-color: #333333 !important;
-    }
-
-    /* Update carousel main box color */
-    .item__3d-frame__box {
-        background: #333333 !important;
-        border-color: #333333 !important;
-    }
-
-    /* Update navigation links color */
-    .nav-links a {
-        color: #333333 !important;
-    }
-
-    /* Update social links color */
-    .social-links a {
-        color: #333333 !important;
+    
+    header:not(.transparent-header) .navbar .logo img {
+         filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4)); /* Restore logo shadow */
     }
 </style>
 
@@ -1409,39 +1347,41 @@
             carouselContainer.appendChild(carouselBody);
             snapsContainer.appendChild(carouselContainer);
             
-            setTimeout(() => {
-                initCarousel();
-                initializeModalFunctionality();
-            }, 50);
-        }
+            // Initialize carousel controls
+            initCarousel();
+            
+            // Initialize the modal functionality
+                        initializeModalFunctionality();
+                    }
         
         // Show content once loaded
         document.body.classList.add('content-loaded');
     }
 
-    // Initialize carousel controls - Use reference logic
-    let carousel, slider, items, prevBtn, nextBtn, 
-        width, height, totalWidth, margin = 20, // Use reference margin
+    // Initialize carousel controls - Remove button related variables
+    let carousel, slider, items, 
+        width, height, totalWidth, margin = 20, 
         currIndex = 0,
         interval, intervalTime = 4000;
 
     function initCarousel() { 
-        console.log("Initializing carousel...");
+        console.log("Initializing carousel (no buttons)...");
         carousel = document.querySelector('.carousel'); 
         slider = document.querySelector('.carousel__slider');
         items = document.querySelectorAll('.carousel__slider__item'); 
         
         if (!carousel || !slider || items.length === 0) {
-            console.error("Carousel core elements not found for initialization.");
+            console.error("Carousel core elements not found.");
             return;
         }
         
         console.log(`Found ${items.length} items.`);
         
         resize();
-        move(Math.floor(items.length / 2), false);
-        timer();
-        console.log("Carousel initialized successfully.");
+        move(Math.floor(items.length / 2), false); 
+        bindEvents(); // Will now only bind resize
+        timer(); 
+        console.log("Carousel initialized successfully (no buttons).");
     }
 
     function resize() {
@@ -1512,16 +1452,36 @@
         }, intervalTime);
     }
 
-    function prev() {
-        console.log("Executing prev() function");
-        move(--currIndex, true); // Explicitly reset timer on manual navigation
+    function bindEvents() {
+        console.log("Binding window resize event...");
+        
+        window.onresize = resize;
+        
+        console.log("Window resize event bound.");
+    }
+    
+    function updateCarousel(photos) {
+        // ... existing code until button creation ...
+        
+        carouselBody.appendChild(sliderDiv);
+        
+        // ... REMOVED Button Appending ...
+        
+        snapsContainer.appendChild(carouselContainer);
+        
+        setTimeout(() => {
+            initCarousel(); 
+            initializeModalFunctionality(); 
+        }, 50); 
     }
 
-    function next() {
-        console.log("Executing next() function");
-        move(++currIndex, true); // Explicitly reset timer on manual navigation
+    // Function to close the modal
+    function closeModal() {
+        if (modal) {
+            modal.style.display = 'none';
+        }
     }
-
+    
     // Modal functionality for about photos
     function initializeModalFunctionality() {
         // Make sure modal elements are defined
