@@ -619,9 +619,195 @@
 
     /* Reduce space between carousel and work experience section */
     .experience-section {
-        margin-top: -100px;
+        padding: 70px 0;
+        background-color: var(--bg-light);
+    }
+
+    /* NEW Experience Drawer Styles */
+    .experience-drawer-container {
+        margin-top: 40px;
+        width: 100%;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .experience-item {
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        overflow: hidden;
+        background-color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
         position: relative;
+    }
+
+    .experience-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+    }
+
+    .experience-item.active {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .experience-header {
+        padding: 20px 25px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        position: relative;
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+
+    .experience-item.active .experience-header::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: currentColor;
+        opacity: 0.9;
+        z-index: -1;
+    }
+
+    .experience-item.active .experience-header {
+        color: white;
+        padding-bottom: 25px;
+    }
+
+    .experience-item.active .experience-header * {
+        color: white;
+    }
+
+    .experience-item.active .experience-header .expand-icon i {
+        transform: rotate(180deg);
+    }
+
+    .experience-date {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-right: 20px;
+        flex: 0 0 auto;
+    }
+
+    .experience-title {
+        font-size: 1.1rem;
+        margin: 0;
+        color: var(--text-primary);
+        font-weight: 600;
+        flex: 1;
+    }
+
+    .experience-city {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-left: auto;
+        margin-right: 20px;
+        text-align: right;
+        flex: 0 0 auto;
+    }
+
+    .experience-header .expand-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        flex: 0 0 auto;
+    }
+
+    .experience-details {
+        height: 0;
+        overflow: hidden;
+        padding: 0 25px;
+        transition: all 0.3s ease;
+        position: relative;
+        opacity: 0;
         z-index: 1;
+    }
+
+    .experience-details::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 5px;
+        height: 100%;
+        background-color: currentColor;
+        opacity: 0.7;
+    }
+
+    .experience-item.active .experience-details {
+        height: auto;
+        padding: 5px 25px 25px;
+        opacity: 1;
+    }
+
+    .experience-details p {
+        margin-top: 0;
+        line-height: 1.6;
+    }
+
+    .experience-details ul {
+        padding-left: 20px;
+    }
+
+    .experience-details li {
+        margin-bottom: 8px;
+    }
+
+    /* Responsive adjustments for drawer */
+    @media (max-width: 768px) {
+        .experience-drawer-container {
+            max-width: 100%;
+        }
+        
+        .experience-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .experience-header .experience-title {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        .experience-header .expand-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .experience-header .experience-date {
+            margin-right: 0;
+            font-size: 0.8rem;
+        }
+        
+        .experience-header .experience-city {
+            margin-left: 0;
+            margin-right: 0;
+            text-align: left;
+            font-size: 0.8rem;
+        }
+        
+        .experience-details {
+            padding: 0 20px;
+        }
+        
+        .experience-item.active .experience-details {
+            padding: 5px 20px 20px;
+        }
+        
+        .experience-details p {
+            font-size: 0.9rem;
+        }
     }
 
     /* Styles for Transparent Header Text/Icons */
@@ -810,40 +996,60 @@
         <div class="container">
             <h2 class="section-title">Career Journey</h2>
             
-            <div class="timeline-vertical">
-                
-                <!-- Timeline Item 1 (Most Recent) -->
-                <div class="timeline-item" data-aos="fade-left">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3 class="job-title">Senior Product Manager</h3>
-                        <h4 class="company-info">Tech Solutions Inc. | Jan 2020 - Present</h4>
-                        <p class="timeline-description">Leading product development for enterprise SaaS solutions. Managing cross-functional teams and driving roadmap execution.</p>
+            <div class="experience-drawer-container">
+                <!-- Experience Item 1 (Most Recent) -->
+                <div class="experience-item" data-color="#4285F4">
+                    <div class="experience-header">
+                        <span class="experience-date">Jan 2020 - Present</span>
+                        <h3 class="experience-title">Senior Product Manager</h3>
+                        <span class="experience-city">New York, NY</span>
+                        <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="experience-details">
+                        <p>Leading product development for enterprise SaaS solutions with a focus on scalability and user adoption. Driving innovation through strategic planning and cross-functional team leadership.</p>
+                        <ul>
+                            <li>Led the development and launch of 3 major product features, resulting in 40% increase in user engagement</li>
+                            <li>Managed a cross-functional team of 12 engineers, designers, and QA specialists</li>
+                            <li>Established product metrics and KPIs that improved decision-making and prioritization</li>
+                        </ul>
                     </div>
                 </div>
                 
-                <!-- Timeline Item 2 -->
-                <div class="timeline-item" data-aos="fade-right">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3 class="job-title">Product Manager</h3>
-                        <h4 class="company-info">Digital Innovations Co. | Mar 2017 - Dec 2019</h4>
-                        <p class="timeline-description">Managed the development lifecycle of mobile applications for key financial services clients, focusing on user experience and market fit.</p>
+                <!-- Experience Item 2 -->
+                <div class="experience-item" data-color="#34A853">
+                    <div class="experience-header">
+                        <span class="experience-date">Mar 2017 - Dec 2019</span>
+                        <h3 class="experience-title">Product Manager</h3>
+                        <span class="experience-city">Boston, MA</span>
+                        <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="experience-details">
+                        <p>Managed the development lifecycle of mobile applications for key financial services clients, focusing on user experience and market fit.</p>
+                        <ul>
+                            <li>Oversaw the successful launch of 5 mobile applications with 100,000+ downloads</li>
+                            <li>Implemented agile methodologies that reduced development time by 30%</li>
+                            <li>Conducted user research and competitive analysis to identify market opportunities</li>
+                        </ul>
                     </div>
                 </div>
-            
-                <!-- Timeline Item 3 (Oldest) -->
-                <div class="timeline-item" data-aos="fade-left">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3 class="job-title">Associate Product Manager</h3>
-                        <h4 class="company-info">StartupHub | Jun 2015 - Feb 2017</h4>
-                        <p class="timeline-description">Assisted in the ideation, development, and successful launch of three B2C web applications in the e-commerce space.</p>
-                    </div>
-                </div>
-                
-                <!-- Add more items here in reverse chronological order (most recent first) -->
 
+                <!-- Experience Item 3 (Oldest) -->
+                <div class="experience-item" data-color="#FBBC05">
+                    <div class="experience-header">
+                        <span class="experience-date">Jun 2015 - Feb 2017</span>
+                        <h3 class="experience-title">Associate Product Manager</h3>
+                        <span class="experience-city">San Francisco, CA</span>
+                        <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="experience-details">
+                        <p>Assisted in the ideation, development, and successful launch of three B2C web applications in the e-commerce space.</p>
+                        <ul>
+                            <li>Collaborated with designers to create intuitive user interfaces that increased conversion rates by 25%</li>
+                            <li>Gathered and analyzed customer feedback to identify pain points and improvement opportunities</li>
+                            <li>Participated in sprint planning and daily stand-ups to ensure project progress</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1563,6 +1769,45 @@
                 initializeModalFunctionality(); 
             }, 50); 
         }
+
+        // Initialize Experience Drawer
+        function initExperienceDrawer() {
+            const experienceItems = document.querySelectorAll('.experience-item');
+            
+            experienceItems.forEach(item => {
+                const color = item.getAttribute('data-color') || '#4285F4';
+                item.style.color = color;
+                
+                item.addEventListener('click', function() {
+                    const isActive = this.classList.contains('active');
+                    
+                    // Close all items first
+                    experienceItems.forEach(exp => {
+                        exp.classList.remove('active');
+                        const details = exp.querySelector('.experience-details');
+                        details.style.height = '0px';
+                    });
+                    
+                    // If the clicked item wasn't active, open it
+                    if (!isActive) {
+                        this.classList.add('active');
+                        const details = this.querySelector('.experience-details');
+                        details.style.height = details.scrollHeight + 'px';
+                    }
+                });
+            });
+            
+            // Open the first item by default
+            if (experienceItems.length > 0) {
+                experienceItems[0].click();
+            }
+        }
+
+        // Call init functions when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... existing init calls ...
+            initExperienceDrawer();
+        });
 </script>
 
 
