@@ -64,20 +64,116 @@
         // ... existing code ...
     }
 
+    // Function to update the page with dynamic content
+    function updatePageWithConfig(config) {
+        console.log('Updating page with config data:', config);
+        
+        // Update title & metadata
+        document.title = config.about_title || 'Portfolio';
+        const favicon = document.querySelector('link[rel="icon"]');
+        if (favicon && config.image_favicon_url) {
+            favicon.href = config.image_favicon_url;
+        }
+        
+        // Update header logo
+        const logoImg = document.querySelector('.logo img');
+        if (logoImg && config.image_logo_url) {
+            logoImg.src = config.image_logo_url;
+            logoImg.alt = config.about_title || 'Logo';
+        }
+        
+        // Update Banner
+        const bannerImage = document.getElementById('banner-image');
+        if (bannerImage && config.image_banner_url) {
+            bannerImage.style.backgroundImage = `url('${config.image_banner_url}')`;
+        }
+
+        // Update about section
+        const aboutTitle = document.getElementById('about-title');
+        const aboutSubtitle = document.getElementById('about-subtitle');
+        const aboutDescription = document.getElementById('about-description');
+        const profileImage = document.getElementById('profile-image');
+                    
+        if (aboutTitle) {
+            aboutTitle.textContent = config.about_title || '';
+        }
+                    
+        if (aboutSubtitle) {
+            aboutSubtitle.textContent = config.about_subtitle || '';
+        }
+                    
+        if (aboutDescription) {
+            aboutDescription.textContent = config.about_description || '';
+            aboutDescription.style.textAlign = 'left'; // Ensure alignment
+        }
+                    
+        if (profileImage) {
+            profileImage.src = config.image_about_profile_url || '';
+            profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
+        }
+                    
+        // Update photos in the "snaps" section
+        const snapsContainer = document.getElementById('snaps');
+        if (snapsContainer) {
+            // Clear existing content
+            snapsContainer.innerHTML = '';
+                        
+            // Create photos array from config
+            const photos = [
+                { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
+                { url: config.image_about_photo2_url, alt: config.about_photo2_alt },
+                { url: config.image_about_photo3_url, alt: config.about_photo3_alt },
+                { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
+            ];
+            
+            // Add photos to container if they have URLs
+            photos.forEach(photo => {
+                if (photo.url) {
+                    const container = document.createElement('a');
+                    container.href = '#'; // Prevent default link behavior
+                    container.className = 'snap-container';
+                    container.setAttribute('data-photo', photo.url);
+                            
+                    const img = document.createElement('img');
+                    img.src = photo.url;
+                    img.alt = photo.alt || 'Photo';
+                            
+                    container.appendChild(img);
+                    snapsContainer.appendChild(container);
+                }
+            });
+                        
+            // Modal functionality will be initialized after this function completes in the .then() block
+        }
+        
+        // Show content once loaded (consider moving this or making it more robust)
+        // document.body.classList.add('content-loaded'); // Maybe add this after fetch completes?
+    }
+
     // Modal functionality for about photos
     function initializeModalFunctionality() {
+        console.log('Initializing modal functionality...');
         const modal = document.getElementById('photoModal');
         const modalImg = document.getElementById('modalImage');
-        const closeModal = document.querySelector('.close-modal'); // Defined inside
-        const snapContainers = document.querySelectorAll('.snap-container');
+        const closeModalBtn = document.querySelector('.close-modal'); // Use specific name
         
-        // Check if modal elements exist before adding listeners
-        if (!modal || !modalImg || !closeModal) {
-            console.warn('Modal elements not found, skipping modal listener setup.');
+        // Check if modal elements exist before proceeding
+        if (!modal || !modalImg || !closeModalBtn) {
+            console.warn('Modal elements not found, cannot initialize functionality.');
             return; 
         }
         
-        // Clear previous listeners to avoid duplicates if called multiple times
+        const snapContainers = document.querySelectorAll('.snap-container');
+        
+        // --- Aggressive Listener Cleanup --- 
+        // Remove potentially lingering old listeners before adding new ones
+        // It's safer to define functions and remove *those specific* functions,
+        // but setting onclick/onkeydown to null is a blunt way to try and fix this.
+        closeModalBtn.onclick = null;
+        window.onclick = null; 
+        document.onkeydown = null;
+        
+        // Clear existing listeners on snap containers by cloning
         snapContainers.forEach(container => {
             const newContainer = container.cloneNode(true);
             container.parentNode.replaceChild(newContainer, container);
@@ -85,15 +181,20 @@
         
         // Re-select snap containers after replacing them
         const updatedSnapContainers = document.querySelectorAll('.snap-container');
+        console.log(`Found ${updatedSnapContainers.length} snap containers to attach listeners to.`);
+
+        // --- Attach New Listeners --- 
 
         // Open modal when clicking on a photo
         updatedSnapContainers.forEach(function(container) {
             container.addEventListener('click', function(e) {
                 e.preventDefault();
                 const photoUrl = this.getAttribute('data-photo');
+                console.log('Snap container clicked, photo URL:', photoUrl);
                 if (modal && modalImg) { 
                     modal.style.display = 'block';
                     modalImg.src = photoUrl;
+                    console.log('Modal opened.');
                 } else {
                     console.error("Cannot open modal - elements not found.");
                 }
@@ -101,26 +202,27 @@
         });
 
         // Close modal when clicking on close button
-        // **Moved inside the function**
-        closeModal.onclick = function() { 
+        closeModalBtn.onclick = function() { 
+            console.log('Close button clicked.');
             if (modal) modal.style.display = 'none';
         }
         
         // Close modal when clicking outside the image
-        // **Moved inside the function**
         window.onclick = function(e) {
             if (e.target === modal) {
+                console.log('Clicked outside modal image.');
                 if (modal) modal.style.display = 'none';
             }
         }
         
         // Close modal with Escape key
-        // **Moved inside the function**
         document.onkeydown = function(e) {
             if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+                console.log('Escape key pressed.');
                 if (modal) modal.style.display = 'none';
             }
         }
+        console.log('Modal functionality initialized.');
     }
 
     // ** Removed event listeners previously defined outside initializeModalFunctionality **
