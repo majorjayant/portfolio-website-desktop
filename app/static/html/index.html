@@ -534,12 +534,20 @@
     }
     
     .item__3d-frame__box {
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        text-align: center;
         position: absolute;
         width: 100%;
         height: 100%;
+        box-sizing: border-box;
+        border-color: #caa882;
+        background: var(--box-bg);
+        border-width: 3px;
+        border-style: solid;
         overflow: hidden;
-        border: 4px solid var(--box-border);
-        border-radius: 10px;
+        cursor: pointer;
     }
     
     .item__3d-frame__box--front {
@@ -555,38 +563,39 @@
     }
     
     .item__3d-frame__box--left {
-        background: var(--box-border);
-        transform: rotateY(-90deg) translateZ(100px);
+        top: 0;
+        width: 40px;
+        backface-visibility: hidden;
+        border-color: #caa882;
     }
     
     .item__3d-frame__box--right {
-        background: var(--box-border);
-        transform: rotateY(90deg) translateZ(100px);
+        top: 0;
+        width: 40px;
+        backface-visibility: hidden;
+        border-color: #caa882;
     }
     
-    .carousel__prev,
-    .carousel__next {
+    .carousel__prev, .carousel__next {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
+        background-color: rgba(202, 168, 130, 0.8);
         border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.5);
         display: flex;
-        justify-content: center;
         align-items: center;
-        color: white;
+        justify-content: center;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         cursor: pointer;
-        z-index: 100;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        transition: background-color 0.3s ease;
         pointer-events: auto;
+        z-index: 10;
     }
     
     .carousel__prev:hover,
     .carousel__next:hover {
-        background-color: rgba(0, 0, 0, 0.7);
+        background-color: rgba(202, 168, 130, 1);
     }
     
     .carousel__prev {
@@ -1387,31 +1396,27 @@
         prevBtn.replaceWith(prevBtn.cloneNode(true));
         nextBtn.replaceWith(nextBtn.cloneNode(true));
         
-        // Get fresh references after replacing
-        prevBtn = document.getElementById('prevBtn');
-        nextBtn = document.getElementById('nextBtn');
+        // Get fresh references to the buttons
+        prevBtn = document.querySelector('.carousel__prev');
+        nextBtn = document.querySelector('.carousel__next');
         
-        if (!prevBtn || !nextBtn) {
-            console.error("Navigation buttons lost after cloning!");
-            return;
-        }
-        
-        // Add click event listeners with direct function calls
+        // Add click event listeners
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Prev button clicked via handler");
+            console.log("Prev button clicked");
             prev();
-            return false;
         });
         
         nextBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Next button clicked via handler");
+            console.log("Next button clicked");
             next();
-            return false;
         });
+        
+        // Start auto-rotation
+        timer();
     }
     
     function initializeCarouselControls() {

@@ -490,12 +490,11 @@
 
     .carousel__prev, .carousel__next {
         position: absolute;
-        bottom: 45%;
-        transition: transform 0.25s ease;
-        z-index: 100;
-        background-color: rgba(230, 224, 212, 0.7);
+        top: 50%;
+        transform: translateY(-50%);
         width: 50px;
         height: 50px;
+        background-color: rgba(202, 168, 130, 0.8);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -503,6 +502,7 @@
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         cursor: pointer;
         pointer-events: auto;
+        z-index: 10;
     }
 
     .carousel__prev i, .carousel__next i {
@@ -574,7 +574,7 @@
         width: 100%;
         height: 100%;
         box-sizing: border-box;
-        border-color: #e6e0d4;
+        border-color: #caa882;
         background: var(--box-bg);
         border-width: 3px;
         border-style: solid;
@@ -597,7 +597,7 @@
         top: 0;
         width: 40px;
         backface-visibility: hidden;
-        border-color: #e6e0d4;
+        border-color: #caa882;
     }
 
     .item__3d-frame__box--left {
@@ -1448,31 +1448,27 @@
         prevBtn.replaceWith(prevBtn.cloneNode(true));
         nextBtn.replaceWith(nextBtn.cloneNode(true));
         
-        // Get fresh references after replacing
-        prevBtn = document.getElementById('prevBtn');
-        nextBtn = document.getElementById('nextBtn');
+        // Get fresh references to the buttons
+        prevBtn = document.querySelector('.carousel__prev');
+        nextBtn = document.querySelector('.carousel__next');
         
-        if (!prevBtn || !nextBtn) {
-            console.error("Navigation buttons lost after cloning!");
-            return;
-        }
-        
-        // Add click event listeners with direct function calls
+        // Add click event listeners
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Prev button clicked via handler");
+            console.log("Prev button clicked");
             prev();
-            return false;
         });
         
         nextBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Next button clicked via handler");
+            console.log("Next button clicked");
             next();
-            return false;
         });
+        
+        // Start auto-rotation
+        timer();
     }
     
     function updateCarousel(photos) {
@@ -1557,8 +1553,8 @@
             
             // Get references to DOM elements
             carousel = document.getElementById('photoCarousel');
-            prevBtn = document.getElementById('prevBtn');
-            nextBtn = document.getElementById('nextBtn');
+            prevBtn = document.querySelector('.carousel__prev');
+            nextBtn = document.querySelector('.carousel__next');
             
             if (carousel) {
                 items = carousel.querySelectorAll('.carousel__slider__item');
