@@ -1,0 +1,123 @@
+    // Set banner image as soon as DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        const bannerImage = document.getElementById('banner-image');
+        if (bannerImage) {
+            // Set the banner image - Use a default or placeholder initially
+            bannerImage.style.backgroundImage = "url('/static/img/banner_placeholder.png')"; // Placeholder
+            
+            // Ensure correct styling
+            bannerImage.style.backgroundSize = 'contain';
+            bannerImage.style.backgroundPosition = 'center';
+            bannerImage.style.backgroundRepeat = 'no-repeat';
+            bannerImage.style.width = '100%';
+            bannerImage.style.height = '0';
+            bannerImage.style.paddingBottom = '38.75%';
+        }
+
+        // Fetch the latest content from API
+        fetchLatestAboutContent();
+        
+        // Removed initial call to initializeModalFunctionality here
+    });
+
+    // Function to fetch the latest content from our API
+    function fetchLatestAboutContent() {
+        console.log('Checking for latest content from API');
+        
+        // For AWS API Gateway endpoint
+        const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+        
+        fetch(apiUrl)
+            .then(response => {
+                console.log('API response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`API response not OK (${response.status})`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Successfully loaded site config from API:', data);
+                // Process data - Use site_config and provide a default object
+                const config = data.site_config || {}; 
+                updatePageWithConfig(config);
+            })
+        }
+        
+        // Update header logo - Correct selector
+        const logoImg = document.querySelector('.logo img');
+        if (logoImg && config.image_logo_url) {
+            logoImg.src = config.image_logo_url;
+        }
+
+        // Reinitialize the modal functionality *after* snaps are added
+        initializeModalFunctionality();
+    }
+    
+    // Modal functionality for about photos
+    function initializeModalFunctionality() {
+        const modal = document.getElementById('photoModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeModal = document.querySelector('.close-modal'); // Defined inside
+        const snapContainers = document.querySelectorAll('.snap-container');
+        
+        // Check if modal elements exist before adding listeners
+        if (!modal || !modalImg || !closeModal) {
+            console.warn('Modal elements not found, skipping modal listener setup.');
+            return; 
+        }
+        
+        // Clear previous listeners to avoid duplicates if called multiple times
+        snapContainers.forEach(container => {
+            const newContainer = container.cloneNode(true);
+            container.parentNode.replaceChild(newContainer, container);
+        });
+        
+        // Re-select snap containers after replacing them
+        const updatedSnapContainers = document.querySelectorAll('.snap-container');
+
+        // Open modal when clicking on a photo
+        updatedSnapContainers.forEach(function(container) {
+            container.addEventListener('click', function(e) {
+                e.preventDefault();
+                const photoUrl = this.getAttribute('data-photo');
+                if (modal && modalImg) { 
+                    modal.style.display = 'block';
+                    modalImg.src = photoUrl;
+                } else {
+                    console.error("Cannot open modal - elements not found.");
+                }
+            });
+        });
+
+        // Close modal when clicking on close button
+        // **Moved inside the function**
+        closeModal.onclick = function() { 
+            if (modal) modal.style.display = 'none';
+        }
+        
+        // Close modal when clicking outside the image
+        // **Moved inside the function**
+        window.onclick = function(e) {
+            if (e.target === modal) {
+                if (modal) modal.style.display = 'none';
+            }
+        }
+        
+        // Close modal with Escape key
+        // **Moved inside the function**
+        document.onkeydown = function(e) {
+            if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+                if (modal) modal.style.display = 'none';
+            }
+        }
+    }
+
+    // ** Removed event listeners previously defined outside initializeModalFunctionality **
+
+</script>
+
+
+    <!-- Removed the script block for logo background effect as it might conflict -->
+
+</body>
+</html> 
