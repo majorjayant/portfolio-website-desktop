@@ -43,18 +43,19 @@
             left: 0;
             width: 100%;
             z-index: 1000;
-            background-color: rgba(127, 127, 127, 0.65);
+            background-color: rgba(100, 100, 100, 0.95);
             backdrop-filter: none;
-            transition: background-color 0.3s ease, padding 0.3s ease;
+            transition: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .header-container {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 0.75rem 2rem;
         }
 
         .logo-container {
@@ -72,7 +73,7 @@
         }
 
         .main-nav {
-            margin: 0 auto;
+            margin: 0;
         }
 
         .nav-menu {
@@ -80,7 +81,7 @@
             list-style: none;
             margin: 0;
             padding: 0;
-            gap: 2.5rem;
+            gap: 3rem;
         }
 
         .nav-item {
@@ -90,7 +91,7 @@
         .nav-link {
             color: #fff;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 400;
             font-size: 1rem;
             padding: 0.5rem 0;
             transition: color 0.3s ease;
@@ -100,11 +101,11 @@
         .nav-link:after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: -3px;
             left: 0;
             width: 0;
-            height: 2px;
-            background-color: #ebf0a2;
+            height: 1px;
+            background-color: #fff;
             transition: width 0.3s ease;
         }
 
@@ -114,9 +115,21 @@
         }
 
         .header-actions {
+            position: absolute;
+            right: 2rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
+        }
+
+        .social-icon {
+            color: #fff;
+            font-size: 1.2rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-icon:hover {
+            opacity: 0.8;
         }
 
         .lang-selector {
@@ -203,12 +216,7 @@
         }
 
         .animated-subtitle:after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 4px;
-            background-color: #ebf0a2;
-            margin-top: 15px;
+            content: none;
         }
 
         .banner-image-container {
@@ -632,33 +640,27 @@
     </script>
 </head>
 <body>
-    <!-- Navigation Bar - New Modern Design -->
+    <!-- Simple Header Layout - Based on Reference Image -->
     <header class="main-header">
         <div class="header-container">
-            <a href="/" class="logo-container">
-                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" class="main-logo">
-            </a>
-            
             <nav class="main-nav">
                 <ul class="nav-menu">
                     <li class="nav-item"><a href="/" class="nav-link active">Home</a></li>
                     <li class="nav-item"><a href="/projects" class="nav-link">Projects</a></li>
                     <li class="nav-item"><a href="/solutions" class="nav-link">Solutions</a></li>
-                    <li class="nav-item"><a href="/contact" class="nav-link">News</a></li>
+                    <li class="nav-item"><a href="/contact" class="nav-link">Contact</a></li>
                 </ul>
             </nav>
             
             <div class="header-actions">
-                <button class="lang-selector">
-                    <img src="https://cdn-icons-png.flaticon.com/512/323/323329.png" alt="English" width="20" height="20">
-                </button>
-                
-                <a href="/contact" class="contact-button">
-                    Contact
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
+                <a href="https://github.com/majorjayant" target="_blank" class="social-icon">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/majorjayant/" target="_blank" class="social-icon">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://twitter.com/majorjayant" target="_blank" class="social-icon">
+                    <i class="fab fa-twitter"></i>
                 </a>
             </div>
         </div>
@@ -683,13 +685,13 @@
         </div>
     </section>
 
-    <!-- About Me Section - New Design with Animation -->
+    <!-- About Me Section - Updated Design -->
     <section class="about-section" id="about">
         <div class="container">
             <div class="about-container">
                 <div id="text-main" class="text-main">
-                    <h1 id="about-title"></h1>
-                    <p id="about-subtitle" class="intro"></p>
+                    <h1 id="about-title-section">About</h1>
+                    <p id="about-subtitle-section" class="intro">Curious Mind, Data Geek, Product Whisperer</p>
                     <p id="about-description" class="description"></p>
                 </div>
                 <div id="img-main" class="img-main">
@@ -1095,11 +1097,11 @@
         const profileImage = document.getElementById('profile-image');
                     
         if (aboutTitle) {
-            aboutTitle.textContent = config.about_title || '';
+            aboutTitle.textContent = config.about_title || 'Jayant Arora';
         }
                     
         if (aboutSubtitle) {
-            aboutSubtitle.textContent = config.about_subtitle || '';
+            aboutSubtitle.textContent = config.about_subtitle || 'Curious Mind, Data Geek, Product Whisperer';
         }
                     
         if (aboutDescription) {
