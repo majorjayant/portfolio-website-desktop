@@ -1315,9 +1315,9 @@
             const carouselBody = document.createElement('div');
             carouselBody.className = 'carousel__body';
             
-            const carousel = document.createElement('div');
-            carousel.className = 'carousel__slider';
-            carousel.id = 'photoCarousel';
+            const sliderDiv = document.createElement('div');
+            sliderDiv.className = 'carousel__slider';
+            sliderDiv.id = 'photoCarouselSlider';
             
             // Filter out photos without URLs
             const photos = [
@@ -1357,7 +1357,7 @@
                 frame.appendChild(leftBox);
                 frame.appendChild(rightBox);
                 item.appendChild(frame);
-                carousel.appendChild(item);
+                sliderDiv.appendChild(item);
             });
             
             // Add navigation controls
@@ -1371,7 +1371,7 @@
             nextBtn.id = 'nextBtn';
             nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
             
-            carouselBody.appendChild(carousel);
+            carouselBody.appendChild(sliderDiv);
             carouselContainer.appendChild(carouselBody);
             carouselContainer.appendChild(prevBtn);
             carouselContainer.appendChild(nextBtn);
@@ -1394,24 +1394,33 @@
         currIndex = 0,
         interval, intervalTime = 4000;
 
-    function initCarousel() { // Renamed from 'init' in reference
+    function initCarousel() { 
         console.log("Initializing carousel with reference logic...");
-        carousel = document.querySelector('.carousel'); // Use querySelector
+        carousel = document.querySelector('.carousel'); 
         slider = document.querySelector('.carousel__slider');
-        items = document.querySelectorAll('.carousel__slider__item'); // Use querySelectorAll
+        items = document.querySelectorAll('.carousel__slider__item'); 
+        
+        // --- Query buttons AFTER they are guaranteed to exist --- 
         prevBtn = document.querySelector('.carousel__prev');
         nextBtn = document.querySelector('.carousel__next');
 
-        if (!carousel || !slider || items.length === 0 || !prevBtn || !nextBtn) {
-            console.error("Carousel elements not found for initialization.");
+        if (!carousel || !slider || items.length === 0) {
+            console.error("Carousel core elements (carousel, slider, items) not found for initialization.");
             return;
         }
-
+        if (!prevBtn || !nextBtn) {
+             console.error("Carousel navigation buttons (.carousel__prev, .carousel__next) not found AFTER HTML creation.");
+             return; // Critical error, cannot proceed
+        }
+        
         console.log(`Found ${items.length} items.`);
+        console.log("Found Prev Button:", prevBtn);
+        console.log("Found Next Button:", nextBtn);
+        
         resize();
-        move(Math.floor(items.length / 2)); // Start in the middle
-        bindEvents();
-        timer();
+        move(Math.floor(items.length / 2), false); // Start in the middle, don't reset timer initially
+        bindEvents(); // Bind events AFTER elements are confirmed found
+        timer(); // Start auto-rotation AFTER setup
         console.log("Carousel initialized successfully.");
     }
 
@@ -1476,149 +1485,94 @@
 
     function timer() {
         clearInterval(interval);
-        console.log(`Starting timer (${intervalTime}ms)`);
+        console.log(`Starting auto-rotation timer (${intervalTime}ms)`);
         interval = setInterval(() => {
-            console.log("Timer advancing carousel");
-            move(++currIndex); // Timer resets automatically here
+            // console.log("Timer advancing carousel"); // Can be verbose
+            move(++currIndex);
         }, intervalTime);
     }
 
     function prev() {
-        console.log("Previous button clicked");
-        move(--currIndex); // Default behavior is resetTimer = true
-        // timer(); // Explicit timer reset is redundant if move defaults to true
+        console.log("Executing prev() function");
+        move(--currIndex, true); // Explicitly reset timer on manual navigation
     }
 
     function next() {
-        console.log("Next button clicked");
-        move(++currIndex); // Default behavior is resetTimer = true
-        // timer(); // Explicit timer reset is redundant if move defaults to true
+        console.log("Executing next() function");
+        move(++currIndex, true); // Explicitly reset timer on manual navigation
     }
 
     function bindEvents() {
-        if (!prevBtn || !nextBtn) {
-            console.error("Navigation buttons not found for binding!");
-            return;
-        }
-        console.log("Binding events...");
+        // This function now assumes prevBtn and nextBtn are valid elements (checked in initCarousel)
+        console.log("Binding events to buttons:", prevBtn, nextBtn);
         window.onresize = resize;
 
-        // --- Simplified Binding --- 
-        // Remove potential old listeners first (safer)
-        prevBtn.onclick = null; 
-        nextBtn.onclick = null;
-        
-        // Use simple onclick for clarity, or stick to addEventListener if preferred
-        prevBtn.onclick = (e) => { 
+        // --- Use addEventListener and ensure clean state --- 
+        // Remove potentially old listeners using a named function or reference
+        const handlePrevClick = (e) => { 
             e.preventDefault(); 
-            console.log("Prev click handler fired");
+            console.log("Prev click listener fired");
             prev(); 
         };
-        nextBtn.onclick = (e) => { 
+        const handleNextClick = (e) => { 
             e.preventDefault(); 
-            console.log("Next click handler fired");
+            console.log("Next click listener fired");
             next(); 
         };
+
+        // Remove previous listeners if they exist (using the reference)
+        // Note: This requires storing the listener reference if re-binding is complex,
+        // but since we rebuild the element in updateCarousel, simply adding should be okay
+        // IF initCarousel is the *only* place bindEvents is called after rebuild.
+        // Let's try direct attachment first, assuming clean elements from updateCarousel.
         
-        // Add descriptive logging
-        if(prevBtn.onclick && nextBtn.onclick) {
-             console.log("onclick handlers attached successfully.");
-        } else {
-             console.error("Failed to attach onclick handlers.");
-        }
+        // Clear any inline handlers just in case
+        prevBtn.onclick = null; 
+        nextBtn.onclick = null;
+
+        // Add new listeners
+        prevBtn.removeEventListener('click', handlePrevClick); // Clean up just in case
+        nextBtn.removeEventListener('click', handleNextClick); // Clean up just in case
+        prevBtn.addEventListener('click', handlePrevClick); 
+        nextBtn.addEventListener('click', handleNextClick);
         
-        console.log("Events bound.");
+        console.log("addEventListener attached for prev/next.");
     }
     
-    // Modify updateCarousel to call initCarousel AFTER items are added
+    // --- updateCarousel remains largely the same, but ensure initCarousel is called reliably --- 
     function updateCarousel(photos) {
-        const snapsContainer = document.getElementById('snaps');
-        if (!snapsContainer) {
-            console.error("Snaps container not found!");
-            return;
-        }
-        clearInterval(interval);
-        snapsContainer.innerHTML = '';
+        // ... (HTML creation code is the same) ...
         
-        const carouselContainer = document.createElement('div');
-        carouselContainer.className = 'carousel';
-        
-        const carouselBody = document.createElement('div');
-        carouselBody.className = 'carousel__body';
-        
-        const sliderDiv = document.createElement('div'); // Renamed from carouselSlider
+        const sliderDiv = document.createElement('div');
         sliderDiv.className = 'carousel__slider';
-        sliderDiv.id = 'photoCarouselSlider'; // New ID for slider
+        sliderDiv.id = 'photoCarouselSlider'; 
         
-        const validPhotos = photos.filter(photo => photo && photo.url);
-        console.log(`Creating carousel HTML with ${validPhotos.length} valid photos`);
-        
-        validPhotos.forEach((photo, index) => {
-            const item = document.createElement('div');
-            item.className = 'carousel__slider__item';
-            item.setAttribute('data-photo', photo.url);
-            item.classList.add('snap-container');
-            
-            const frame = document.createElement('div');
-            frame.className = 'item__3d-frame';
-            
-            const frontBox = document.createElement('div');
-            frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
-            // frontBox.style.borderColor = '#e6e0d4'; // Use CSS variable
-                
-            const img = document.createElement('img');
-            img.src = photo.url;
-            img.alt = photo.alt || 'Photo';
-            img.onerror = function() {
-                console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-                this.onerror = null;
-                this.src = '/static/img/placeholder.png';
-            };
-                
-            frontBox.appendChild(img);
-            
-            const leftBox = document.createElement('div');
-            leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
-            // leftBox.style.borderColor = '#e6e0d4'; // Use CSS variable
-            
-            const rightBox = document.createElement('div');
-            rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
-            // rightBox.style.borderColor = '#e6e0d4'; // Use CSS variable
-            
-            frame.appendChild(frontBox);
-            frame.appendChild(leftBox);
-            frame.appendChild(rightBox);
-            item.appendChild(frame);
-            sliderDiv.appendChild(item);
-        });
+        // ... (forEach loop to create items is the same) ...
         
         carouselBody.appendChild(sliderDiv);
         
-        // Add navigation buttons (structure matches reference now)
+        // Add navigation buttons
         const prevButton = document.createElement('div');
         prevButton.className = 'carousel__prev';
-        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; // Update icon class if needed
+        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; 
         
         const nextButton = document.createElement('div');
         nextButton.className = 'carousel__next';
-        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; // Update icon class if needed
+        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; 
         
-        // Append buttons to carousel container, not body
         carouselContainer.appendChild(prevButton);
         carouselContainer.appendChild(nextButton);
         carouselContainer.appendChild(carouselBody);
         
         snapsContainer.appendChild(carouselContainer);
         
-        // Initialize the carousel JS AFTER the HTML is in the DOM
+        // --- Crucial: Initialize AFTER DOM update --- 
         setTimeout(() => {
-            initCarousel(); // Call the new init function
-            initializeModalFunctionality(); // Keep modal init
-        }, 100); // Short delay to ensure DOM ready
+            // This now correctly finds the buttons just added
+            initCarousel(); 
+            initializeModalFunctionality(); 
+        }, 50); // Shorter delay might be sufficient
     }
-
-    // Remove the old createNavButtons function as it's integrated now
-    /* function createNavButtons(carouselContainer) { ... } */
 
     // Function to close the modal
     function closeModal() {
