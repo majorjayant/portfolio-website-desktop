@@ -39,6 +39,8 @@
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
+    <!-- AOS - Animate On Scroll Library -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     
 <style>
     /* About section styles */
@@ -185,6 +187,128 @@
         to {opacity: 1}
     }
     
+    /* New Banner Styles with 3D effect */
+    #banner-section {
+        height: 100vh;
+        margin-top: 0;
+        padding-top: 80px; /* Account for the fixed header */
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .parallax-container {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        perspective: 1000px;
+        overflow: hidden;
+    }
+    
+    .parallax-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .layer-bg {
+        transform: translateZ(-100px) scale(1.5);
+        background-size: cover;
+        z-index: 1;
+    }
+    
+    .layer-1 {
+        transform: translateZ(-50px) scale(1.2);
+        background: rgba(0, 0, 0, 0.2);
+        z-index: 2;
+    }
+    
+    .layer-2 {
+        transform: translateZ(0) scale(1);
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+        z-index: 3;
+    }
+    
+    .banner-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        text-align: center;
+        color: white;
+        width: 80%;
+        max-width: 800px;
+    }
+    
+    .banner-content h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
+    
+    .banner-content p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    .scroll-indicator {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: bounce 2s infinite;
+    }
+    
+    .scroll-indicator a {
+        color: white;
+        font-size: 2rem;
+        text-decoration: none;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-20px);
+        }
+        60% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    /* Make the snap containers work with new styling */
+    .snap-container {
+        display: block;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .snap-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+    
+    .snap-container img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .snap-container:hover img {
+        transform: scale(1.05);
+    }
+    
     @media (max-width: 992px) {
         .about-container {
             flex-direction: column;
@@ -209,6 +333,10 @@
         .modal-content {
             max-width: 90%;
         }
+        
+        .banner-content h1 {
+            font-size: 3rem;
+        }
     }
     
     @media (max-width: 576px) {
@@ -218,6 +346,14 @@
         
         .snaps {
             grid-template-columns: 1fr;
+        }
+        
+        .banner-content h1 {
+            font-size: 2.5rem;
+        }
+        
+        .banner-content p {
+            font-size: 1.2rem;
         }
     }
 </style>
@@ -341,14 +477,23 @@
     <main>
         
     <!-- Banner Section -->
-    <section class="banner" style="margin-top: 80px; width: 100%; overflow: hidden;">
-        <div class="banner-image" id="banner-image" style="width: 100%; height: 0; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat;">
-            <!-- Banner image is set via JavaScript -->
+    <section class="banner" id="banner-section">
+        <div class="parallax-container">
+            <div class="parallax-layer layer-bg" id="banner-image"></div>
+            <div class="parallax-layer layer-1"></div>
+            <div class="parallax-layer layer-2"></div>
+            <div class="banner-content">
+                <h1 class="animate__animated animate__fadeInUp">Welcome to My Portfolio</h1>
+                <p class="animate__animated animate__fadeInUp animate__delay-1s">Scroll down to explore</p>
+                <div class="scroll-indicator animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="#about-section"><i class="fas fa-chevron-down"></i></a>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- About Me Section - New Design -->
-    <section class="about-section">
+    <section class="about-section" id="about-section" data-aos="fade-up">
         <div class="container">
             <div class="about-container">
                 <div id="text-main" class="text-main">
@@ -584,73 +729,62 @@
         });
         
         // Initialize image elements and fetch content
-            const bannerImage = document.getElementById('banner-image');
-            if (bannerImage) {
-                    bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-                bannerImage.style.backgroundSize = 'contain';
-                bannerImage.style.backgroundPosition = 'center';
-                bannerImage.style.backgroundRepeat = 'no-repeat';
-                bannerImage.style.width = '100%';
-                bannerImage.style.height = '0';
-                bannerImage.style.paddingBottom = '38.75%';
-            }
+        const bannerImage = document.getElementById('banner-image');
+        if (bannerImage) {
+            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+            bannerImage.style.backgroundSize = 'cover';
+            bannerImage.style.backgroundPosition = 'center';
+            bannerImage.style.backgroundRepeat = 'no-repeat';
+        }
 
         // Try to fetch the latest content from our AWS Lambda endpoint
         fetchLatestAboutContent();
+        
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+        
+        // Initialize parallax effect
+        initParallax();
+        
+        // Smooth scroll
+        initSmoothScroll();
     });
     
-    // Function to close the modal
-    function closeModal() {
-        if (modal) {
-            modal.style.display = 'none';
-        }
+    // Initialize parallax effect for banner
+    function initParallax() {
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.scrollY;
+            const parallaxElements = document.querySelectorAll('.parallax-layer');
+            
+            parallaxElements.forEach(function(element, index) {
+                const speed = index * 0.2;
+                const movement = -(scrollTop * speed);
+                const scale = 1 + (scrollTop * 0.0005);
+                
+                element.style.transform = `translateY(${movement}px) scale(${index === 0 ? scale : 1})`;
+            });
+        });
     }
     
-    // Modal functionality for about photos
-    function initializeModalFunctionality() {
-        // Make sure modal elements are defined
-        if (!modal) modal = document.getElementById('photoModal');
-        if (!modalImg) modalImg = document.getElementById('modalImage');
-        
-        const snapContainers = document.querySelectorAll('.snap-container');
-        
-        // Open modal when clicking on a photo
-        snapContainers.forEach(function(container) {
-            container.addEventListener('click', function(e) {
+    // Initialize smooth scroll for navigation
+    function initSmoothScroll() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                const photoUrl = this.getAttribute('data-photo');
-                if (modal) modal.style.display = 'block';
-                if (modalImg) modalImg.src = photoUrl;
                 
-                // If the modal image fails to load, try to use a direct S3 URL or fallback
-                if (modalImg) {
-                    modalImg.onerror = function() {
-                        console.error("Error loading modal image: " + this.src);
-                        this.onerror = null;
-                        
-                        // Try direct S3 URL if the current URL fails
-                        if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
-                            // Extract the photo number from the container's position
-                            const containers = Array.from(document.querySelectorAll('.snap-container'));
-                            const index = containers.indexOf(container);
-                            const s3Urls = [
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
-                            ];
-                            
-                            if (index < s3Urls.length) {
-                                this.src = s3Urls[index];
-                            } else {
-                                // If S3 URL also fails, use placeholder
-                                this.src = '/static/img/placeholder.png';
-                            }
-                        } else {
-                            // If S3 URL also fails, use placeholder
-                            this.src = '/static/img/placeholder.png';
-                        }
-                    };
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70, // Offset for fixed header
+                        behavior: 'smooth'
+                    });
                 }
             });
         });
@@ -871,5 +1005,8 @@
             }
         });
     </script>
+
+    <!-- AOS - Animate On Scroll Library -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 </body>
 </html> 
