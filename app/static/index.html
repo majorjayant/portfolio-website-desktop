@@ -665,6 +665,21 @@
         position: relative;
         z-index: 1;
     }
+
+    /* Add transparent header menu item color */
+    .transparent-header .nav-links a {
+        color: #333333 !important;
+    }
+
+    .transparent-header .social-links a {
+        color: #333333 !important;
+    }
+
+    /* Update the left box color */
+    .item__3d-frame__box--left {
+        background: var(--box-bg) !important;
+        border-color: var(--box-border) !important;
+    }
 </style>
 
     
@@ -1451,8 +1466,8 @@
         if (!items || items.length === 0 || !slider) return;
 
         // Loop index
-        if (index < 1) index = items.length;
-        if (index > items.length) index = 1;
+        if (index < 0) index = items.length - 1;
+        if (index >= items.length) index = 0;
         currIndex = index;
 
         console.log(`Moving to index: ${currIndex}`);
@@ -1462,20 +1477,19 @@
             let item = items[i];
             let box = item.querySelector('.item__3d-frame');
             if (box) {
-                if (i === (index - 1)) {
+                if (i === index) {
                     item.classList.add('carousel__slider__item--active');
                     box.style.transform = "perspective(1200px)"; // Active item faces forward
                 } else {
                     item.classList.remove('carousel__slider__item--active');
                     // Apply rotation based on position relative to current index
-                    const rotation = i < (index - 1) ? 40 : -40; // Reference rotation
+                    const rotation = i < index ? 40 : -40; // Reference rotation
                     box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
                 }
             }
         }
 
         // Move the entire slider element
-        // Calculation from reference: (index * -width) + (width / 2) + window.innerWidth / 2
         const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
         console.log(`Slider target transform: translateX(${targetTranslateX}px)`);
         slider.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
