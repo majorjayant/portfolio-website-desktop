@@ -368,8 +368,10 @@
             try {
                 // Get authentication token
                 const token = localStorage.getItem('admin_token');
+                console.log('Retrieved token for save request:', token);
                 if (!token) {
-                    throw new Error('Authentication token is missing');
+                    showSaveMessage('Error: Authentication token is missing. Please log out and log back in.', 'text-red-500 bg-red-50');
+                    return;
                 }
                 
                 // Prepare payload in the format the Lambda function expects
