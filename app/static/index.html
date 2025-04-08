@@ -942,237 +942,243 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer style="padding: 2rem 0 0.5rem;">
-        <div class="footer-container">
-            <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
-                <div class="footer-logo" style="margin-bottom: 0.5rem;">
-                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
-            </div>
-                <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
-                <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
-                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Contact Info</h3>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
-            </div>
-            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Quick Links</h3>
-                <ul style="margin: 0; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;"><a href="/">Home</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/projects">Projects</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/solutions">Solutions</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/contact">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright" style="margin-top: 1rem; padding-top: 0.8rem;">
-            <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
-        </div>
-    </footer>
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/js/script.js"></script>
     
 <script>
-    // Global variables for modal elements
-    let modal, modalImg, closeModalBtn;
-    
-    // Initialize modal elements and attach event listeners
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set up modal elements
-        modal = document.getElementById('photoModal');
-        modalImg = document.getElementById('modalImage');
-        closeModalBtn = document.querySelector('.close-modal');
-        
-        // Add click event to close button if it exists
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', function() {
-                closeModal();
-            });
-        }
-        
-        // Close modal when clicking outside the image
-        window.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modal && modal.style.display === 'block') {
-                closeModal();
-            }
-        });
-        
-        // Initialize banner image
-        const bannerImage = document.getElementById('banner-image');
-        if (bannerImage) {
-            // Set background image from S3 or use the default one set in HTML
-            if (!bannerImage.style.backgroundImage || bannerImage.style.backgroundImage === 'none') {
-            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-            }
-            bannerImage.style.backgroundSize = "cover";
-            bannerImage.style.backgroundPosition = "center";
-            // Transform is now handled by the parallax effect code
+        // Function to load footer
+        function loadFooter() {
+            fetch('/html/_footer.html') // Path relative to the static root
+            .then(response => {
+                if (!response.ok) {
+                        throw new Error('Footer not found');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    const placeholder = document.getElementById('footer-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = html;
+                        // Re-run any script needed for the footer content, e.g., update footer logo
+                        const config = window.siteConfig; // Assuming siteConfig is global
+                        if (config && config.image_logo_url) {
+                            const footerLogo = placeholder.querySelector('.footer-logo img');
+                            if (footerLogo) {
+                                footerLogo.src = config.image_logo_url;
+                                footerLogo.alt = config.about_title || 'Logo';
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading footer:', error);
+                    const placeholder = document.getElementById('footer-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer content.</p>';
+                    }
+                });
         }
 
-        // Try to fetch the latest content from our AWS Lambda endpoint
-        fetchLatestAboutContent();
+        // Global variables for modal elements
+        let modal, modalImg, closeModalBtn;
         
-        // Initialize NEW scroll effects
-        initScrollEffects();
-        
-        // Smooth scroll (keep this)
-        initSmoothScroll();
-        
-        // Set initial state for about section (safer than CSS for JS control)
-        const aboutSection = document.getElementById('about-section');
-        if (aboutSection) {
-            aboutSection.style.opacity = '0';
-            aboutSection.style.transform = 'scale(0.95)';
-        }
-
-        // Add header transparency on banner hover and scroll
-        const header = document.querySelector('header');
-        const bannerSection = document.getElementById('banner-section');
-        
-        if (header && bannerSection) {
-            // Make header transparent when hovering over banner
-            bannerSection.addEventListener('mouseenter', function() {
-                header.classList.add('transparent-header');
+        // Initialize modal elements and attach event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up modal elements
+            modal = document.getElementById('photoModal');
+            modalImg = document.getElementById('modalImage');
+            closeModalBtn = document.querySelector('.close-modal');
+            
+            // Add click event to close button if it exists
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    closeModal();
+                });
+            }
+            
+            // Close modal when clicking outside the image
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
             });
             
-            bannerSection.addEventListener('mouseleave', function() {
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+                    closeModal();
+                }
+            });
+            
+            // Initialize banner image
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                // Set background image from S3 or use the default one set in HTML
+                if (!bannerImage.style.backgroundImage || bannerImage.style.backgroundImage === 'none') {
+                bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                }
+                bannerImage.style.backgroundSize = "cover";
+                bannerImage.style.backgroundPosition = "center";
+                // Transform is now handled by the parallax effect code
+            }
+
+            // Try to fetch the latest content from our AWS Lambda endpoint
+            fetchLatestAboutContent();
+            
+            // Initialize NEW scroll effects
+            initScrollEffects();
+            
+            // Smooth scroll (keep this)
+            initSmoothScroll();
+            
+            // Set initial state for about section (safer than CSS for JS control)
+            const aboutSection = document.getElementById('about-section');
+            if (aboutSection) {
+                aboutSection.style.opacity = '0';
+                aboutSection.style.transform = 'scale(0.95)';
+            }
+
+            // Add header transparency on banner hover and scroll
+            const header = document.querySelector('header');
+            const bannerSection = document.getElementById('banner-section');
+            
+            if (header && bannerSection) {
+                // Make header transparent when hovering over banner
+                bannerSection.addEventListener('mouseenter', function() {
+                    header.classList.add('transparent-header');
+                });
+                
+                bannerSection.addEventListener('mouseleave', function() {
+                    if (window.scrollY < 100) {
+                        header.classList.add('transparent-header');
+                    } else {
+                        header.classList.remove('transparent-header');
+                    }
+                });
+                
+                // Make header more transparent at the top of the page
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY < 100) {
+                        header.classList.add('transparent-header');
+                    } else {
+                        header.classList.remove('transparent-header');
+                    }
+                });
+                
+                // Initial state
                 if (window.scrollY < 100) {
                     header.classList.add('transparent-header');
-                } else {
-                    header.classList.remove('transparent-header');
                 }
-            });
+            }
+
+            // Call loadFooter after DOM is ready and potentially after config is loaded
+            loadFooter(); 
+            // If siteConfig loads later, you might call loadFooter() again 
+            // within updatePageWithConfig or ensure footer logo update happens there.
+        });
+        
+        // NEW function to handle scroll-based effects
+        function initScrollEffects() {
+            window.addEventListener('scroll', handleScrollEffects);
+            // Run once on load
+            handleScrollEffects(); 
+        }
+        
+        function handleScrollEffects() {
+            const scrollTop = window.scrollY;
+            const bannerSection = document.getElementById('banner-section');
+            const bannerImage = document.getElementById('banner-image');
+            const layer1 = document.querySelector('.parallax-layer.layer-1');
+            const layer2 = document.querySelector('.parallax-layer.layer-2');
+            const aboutSection = document.getElementById('about-section');
+            const viewportHeight = window.innerHeight;
+            const bannerHeight = viewportHeight; // Since banner is 100vh
+
+            if (!bannerSection || !bannerImage || !aboutSection) return;
+
+            // --- 1. Banner Parallax on Scroll --- 
+            const scrollPercentInBanner = Math.min(scrollTop / bannerHeight, 1); // 0 to 1 within banner scroll
             
-            // Make header more transparent at the top of the page
-            window.addEventListener('scroll', function() {
-                if (window.scrollY < 100) {
-                    header.classList.add('transparent-header');
-                } else {
-                    header.classList.remove('transparent-header');
-                }
-            });
+            // Apply scroll-based transformations to parallax layers
+            if (bannerImage) {
+                // The background image moves up slightly as we scroll
+                bannerImage.style.transform = `translateZ(-50px) scale(1.265) translateY(${scrollPercentInBanner * 50}px)`;
+            }
             
-            // Initial state
-            if (window.scrollY < 100) {
-                header.classList.add('transparent-header');
+            if (layer1) {
+                // Layer 1 moves at a different rate
+                layer1.style.transform = `translateY(${scrollPercentInBanner * 30}px)`;
+                // Increase opacity as we scroll
+                layer1.style.opacity = 0.25 + (scrollPercentInBanner * 0.2);
+            }
+            
+            if (layer2) {
+                // Layer 2 moves at a different rate
+                layer2.style.transform = `translateY(${scrollPercentInBanner * 20}px)`;
+                // Increase opacity as we scroll
+                layer2.style.opacity = 0.1 + (scrollPercentInBanner * 0.3);
+            }
+
+            // --- 2. Transition between Banner and About --- 
+            const transitionStart = bannerHeight * 0.5; // Start transition earlier (50% scroll)
+            const transitionEnd = bannerHeight;         // End transition at 100% scroll
+            const transitionDuration = transitionEnd - transitionStart;
+
+            let transitionProgress = 0;
+            if (scrollTop >= transitionStart && scrollTop <= transitionEnd) {
+                transitionProgress = (scrollTop - transitionStart) / transitionDuration;
+            } else if (scrollTop > transitionEnd) {
+                transitionProgress = 1;
+            }
+            
+            // Clamp progress between 0 and 1
+            transitionProgress = Math.max(0, Math.min(1, transitionProgress));
+
+            // Apply transition effects
+            // Fade out banner (starts fading after 60% progress)
+            bannerSection.style.opacity = 1 - Math.max(0, (transitionProgress - 0.6) / 0.4);
+            
+            // Fade in and scale up About section
+            aboutSection.style.opacity = transitionProgress;
+            aboutSection.style.transform = `scale(${0.95 + transitionProgress * 0.05})`;
+        }
+        
+        // Initialize smooth scroll for navigation (Keep this)
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 70, // Offset for fixed header
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            if (modal) {
+                modal.style.display = 'none';
             }
         }
-    });
-    
-    // NEW function to handle scroll-based effects
-    function initScrollEffects() {
-        window.addEventListener('scroll', handleScrollEffects);
-        // Run once on load
-        handleScrollEffects(); 
-    }
-    
-    function handleScrollEffects() {
-        const scrollTop = window.scrollY;
-        const bannerSection = document.getElementById('banner-section');
-        const bannerImage = document.getElementById('banner-image');
-        const layer1 = document.querySelector('.parallax-layer.layer-1');
-        const layer2 = document.querySelector('.parallax-layer.layer-2');
-        const aboutSection = document.getElementById('about-section');
-        const viewportHeight = window.innerHeight;
-        const bannerHeight = viewportHeight; // Since banner is 100vh
-
-        if (!bannerSection || !bannerImage || !aboutSection) return;
-
-        // --- 1. Banner Parallax on Scroll --- 
-        const scrollPercentInBanner = Math.min(scrollTop / bannerHeight, 1); // 0 to 1 within banner scroll
-        
-        // Apply scroll-based transformations to parallax layers
-        if (bannerImage) {
-            // The background image moves up slightly as we scroll
-            bannerImage.style.transform = `translateZ(-50px) scale(1.265) translateY(${scrollPercentInBanner * 50}px)`;
-        }
-        
-        if (layer1) {
-            // Layer 1 moves at a different rate
-            layer1.style.transform = `translateY(${scrollPercentInBanner * 30}px)`;
-            // Increase opacity as we scroll
-            layer1.style.opacity = 0.25 + (scrollPercentInBanner * 0.2);
-        }
-        
-        if (layer2) {
-            // Layer 2 moves at a different rate
-            layer2.style.transform = `translateY(${scrollPercentInBanner * 20}px)`;
-            // Increase opacity as we scroll
-            layer2.style.opacity = 0.1 + (scrollPercentInBanner * 0.3);
-        }
-
-        // --- 2. Transition between Banner and About --- 
-        const transitionStart = bannerHeight * 0.5; // Start transition earlier (50% scroll)
-        const transitionEnd = bannerHeight;         // End transition at 100% scroll
-        const transitionDuration = transitionEnd - transitionStart;
-
-        let transitionProgress = 0;
-        if (scrollTop >= transitionStart && scrollTop <= transitionEnd) {
-            transitionProgress = (scrollTop - transitionStart) / transitionDuration;
-        } else if (scrollTop > transitionEnd) {
-            transitionProgress = 1;
-        }
-        
-        // Clamp progress between 0 and 1
-        transitionProgress = Math.max(0, Math.min(1, transitionProgress));
-
-        // Apply transition effects
-        // Fade out banner (starts fading after 60% progress)
-        bannerSection.style.opacity = 1 - Math.max(0, (transitionProgress - 0.6) / 0.4);
-        
-        // Fade in and scale up About section
-        aboutSection.style.opacity = transitionProgress;
-        aboutSection.style.transform = `scale(${0.95 + transitionProgress * 0.05})`;
-    }
-    
-    // Initialize smooth scroll for navigation (Keep this)
-    function initSmoothScroll() {
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 70, // Offset for fixed header
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-    }
-
-    // Function to close the modal
-    function closeModal() {
-        if (modal) {
-            modal.style.display = 'none';
-        }
-    }
     
     // Modal functionality for about photos
     function initializeModalFunctionality() {
-        // Make sure modal elements are defined
-        if (!modal) modal = document.getElementById('photoModal');
-        if (!modalImg) modalImg = document.getElementById('modalImage');
-        
+            // Make sure modal elements are defined
+            if (!modal) modal = document.getElementById('photoModal');
+            if (!modalImg) modalImg = document.getElementById('modalImage');
+            
         const snapContainers = document.querySelectorAll('.snap-container');
         
         // Open modal when clicking on a photo
@@ -1180,17 +1186,17 @@
             container.addEventListener('click', function(e) {
                 e.preventDefault();
                 const photoUrl = this.getAttribute('data-photo');
-                if (modal) modal.style.display = 'block';
-                if (modalImg) modalImg.src = photoUrl;
-                
-                // Pause carousel rotation when modal is open
-                const carousel = document.getElementById('photoCarousel');
-                if (carousel) {
-                    carousel.style.animationPlayState = 'paused';
-                }
+                    if (modal) modal.style.display = 'block';
+                    if (modalImg) modalImg.src = photoUrl;
+                    
+                    // Pause carousel rotation when modal is open
+                    const carousel = document.getElementById('photoCarousel');
+                    if (carousel) {
+                        carousel.style.animationPlayState = 'paused';
+                    }
                 
                 // If the modal image fails to load, try to use a direct S3 URL or fallback
-                if (modalImg) {
+                    if (modalImg) {
                 modalImg.onerror = function() {
                     console.error("Error loading modal image: " + this.src);
                     this.onerror = null;
@@ -1218,348 +1224,348 @@
                         this.src = '/static/img/placeholder.png';
                     }
                 };
-                }
+                    }
             });
         });
-        
-        // Resume carousel rotation when modal is closed
-        if (modal && closeModalBtn) {
-            closeModalBtn.addEventListener('click', function() {
-                closeModal();
-                
-                const carousel = document.getElementById('photoCarousel');
-                if (carousel) {
-                    carousel.style.animationPlayState = 'running';
-                }
-            });
-        }
-    }
-
-    // Function to fetch the latest content from our API
-    function fetchLatestAboutContent() {
-        console.log('Checking for latest content from API');
-        
-        // For AWS API Gateway endpoint
-        const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
-        
-        fetch(apiUrl)
-            .then(response => {
-                console.log('API response status:', response.status);
-                if (!response.ok) {
-                    throw new Error('API response not OK');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Successfully loaded site config from API:', data);
-                // Process data - directly pass the data to the update function
-                updatePageWithConfig(data);
-            })
-            .catch(error => {
-                console.error('Error loading from API:', error);
-                showErrorMessage('Error loading configuration. Please refresh or try again later.');
-            });
-    }
-
-    function showErrorMessage(message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.style.position = 'fixed';
-        errorDiv.style.top = '20px';
-        errorDiv.style.right = '20px';
-        errorDiv.style.backgroundColor = '#f44336';
-        errorDiv.style.color = 'white';
-        errorDiv.style.padding = '15px';
-        errorDiv.style.borderRadius = '5px';
-        errorDiv.style.zIndex = '1000';
-        errorDiv.textContent = message;
-        
-        document.body.appendChild(errorDiv);
-        
-        setTimeout(() => {
-            errorDiv.style.opacity = '0';
-            errorDiv.style.transition = 'opacity 0.5s';
-            setTimeout(() => document.body.removeChild(errorDiv), 500);
-        }, 5000);
-    }
-
-    function updatePageWithConfig(data) {
-        console.log('Updating page with config data:', data);
-        
-        // Extract site_config from the response and store globally
-        const config = data.site_config;
-        window.siteConfig = config;
-        
-        if (!config) {
-            console.error('site_config not found in API response:', data);
-            showErrorMessage('Configuration data is missing in the response.');
-            return;
-        }
-        
-        // Update title & metadata
-        document.title = config.about_title || 'Portfolio';
-        
-        // Update all favicon instances
-        const allFavicons = document.querySelectorAll('link[rel="icon"]');
-        if (config.image_favicon_url) {
-            allFavicons.forEach(favicon => {
-                favicon.href = config.image_favicon_url;
-                console.log('Updated favicon to:', config.image_favicon_url);
-            });
-        }
-        
-        // Update all header logo instances
-        const allLogoImages = document.querySelectorAll('.navbar .logo img, .navbar-brand img, .logo img');
-        if (config.image_logo_url) {
-            allLogoImages.forEach(logo => {
-                logo.src = config.image_logo_url;
-                logo.alt = config.about_title || 'Logo';
-                console.log('Updated logo to:', config.image_logo_url);
-            });
-        }
-        
-        // Update banner image
-        const bannerImage = document.getElementById('banner-image');
-        if (bannerImage) {
-            // Function to update banner image based on screen size
-            function updateBannerImage() {
-                const isMobile = window.innerWidth <= 768;
-                const mobileUrl = config.image_mobile_banner_url;
-                const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-                
-                if (isMobile && mobileUrl) {
-                    bannerImage.style.backgroundImage = `url('${mobileUrl}')`;
-                } else {
-                    bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
-                }
-                // Always use contain to prevent cropping, and maintain center alignment
-                bannerImage.style.backgroundSize = "contain";
-                bannerImage.style.backgroundPosition = "center";
-                bannerImage.style.backgroundRepeat = "no-repeat";
-            }
             
-            // Update banner image on load and resize
-            updateBannerImage();
-            window.addEventListener('resize', updateBannerImage);
-        }
-        
-        // Update footer logo if present
-        const footerLogo = document.querySelector('.footer-logo img');
-        if (footerLogo && config.image_logo_url) {
-            footerLogo.src = config.image_logo_url;
-            footerLogo.alt = config.about_title || 'Logo';
-            console.log('Updated footer logo to:', config.image_logo_url);
-        }
-        
-        // Update about section
-        const aboutTitle = document.getElementById('about-title');
-        const aboutSubtitle = document.getElementById('about-subtitle');
-        const aboutDescription = document.getElementById('about-description');
-        const profileImage = document.getElementById('profile-image');
+            // Resume carousel rotation when modal is closed
+            if (modal && closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    closeModal();
                     
-                    if (aboutTitle) {
-            aboutTitle.innerHTML = config.about_title || '';
+                    const carousel = document.getElementById('photoCarousel');
+                    if (carousel) {
+                        carousel.style.animationPlayState = 'running';
                     }
-                    
-                    if (aboutSubtitle) {
-            aboutSubtitle.innerHTML = config.about_subtitle || '';
-                    }
-                    
-                    if (aboutDescription) {
-            aboutDescription.innerHTML = config.about_description || '';
-                        aboutDescription.style.textAlign = 'left';
-                    }
-                    
-        if (profileImage) {
-            profileImage.src = config.image_about_profile_url || '';
-            profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
-        }
-                    
-        // Create photos array from config
-        const photos = [
-            { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
-            { url: config.image_about_photo2_url, alt: config.about_photo2_alt },
-            { url: config.image_about_photo3_url, alt: config.about_photo3_alt },
-            { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
-        ];
-        
-        // Update carousel with the photos
-        updateCarousel(photos);
-                    
-        // Show content once loaded
-        document.body.classList.add('content-loaded');
-    }
-    
-    // Initialize carousel controls - Remove button related variables
-    let carousel, slider, items, 
-        width, height, totalWidth, margin = 20, 
-        currIndex = 0,
-        interval, intervalTime = 4000;
-
-    function initCarousel() { 
-        console.log("Initializing carousel (no buttons)...");
-        carousel = document.querySelector('.carousel'); 
-        slider = document.querySelector('.carousel__slider');
-        items = document.querySelectorAll('.carousel__slider__item'); 
-        
-        if (!carousel || !slider || items.length === 0) {
-            console.error("Carousel core elements not found.");
-            return;
-        }
-        
-        console.log(`Found ${items.length} items.`);
-        
-        resize();
-        move(Math.floor(items.length / 2), false); 
-        bindEvents(); // Will now only bind resize
-        timer(); 
-        console.log("Carousel initialized successfully (no buttons).");
-    }
-
-    function resize() {
-        if (!items || items.length === 0 || !slider) return;
-        
-        // Calculate width based on viewport, aiming for wider carousel
-        // Adjust multiplier (e.g., 0.35 or 0.4) and minimum (e.g., 300 or 320) as needed
-        width = Math.max(window.innerWidth * 0.35, 320); // Increased width influence
-        height = window.innerHeight * 0.5; // Keep height reference
-        totalWidth = width * items.length;
-        
-        console.log(`Resizing carousel: item width=${width - (margin * 2)}, total width=${totalWidth}`);
-        
-        slider.style.width = totalWidth + "px";
-        
-        for(let i = 0; i < items.length; i++) {
-            let item = items[i];
-            item.style.width = (width - (margin * 2)) + "px";
-            item.style.height = height + "px";
-        }
-        move(currIndex, false); 
-    }
-
-    function move(index, resetTimer = true) {
-        if (!items || items.length === 0 || !slider) return;
-
-        // Loop index
-        if (index < 1) index = items.length;
-        if (index > items.length) index = 1;
-        currIndex = index;
-
-        console.log(`Moving to index: ${currIndex}`);
-
-        // Apply transformations to items for 3D effect
-        for (let i = 0; i < items.length; i++) {
-            let item = items[i];
-            let box = item.querySelector('.item__3d-frame');
-            if (box) {
-                if (i === (index - 1)) {
-                    item.classList.add('carousel__slider__item--active');
-                    box.style.transform = "perspective(1200px)"; // Active item faces forward
-                } else {
-                    item.classList.remove('carousel__slider__item--active');
-                    // Apply rotation based on position relative to current index
-                    const rotation = i < (index - 1) ? 40 : -40; // Reference rotation
-                    box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
-                }
+                });
             }
         }
 
-        // Move the entire slider element
-        // Calculation from reference: (index * -width) + (width / 2) + window.innerWidth / 2
-        const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
-        console.log(`Slider target transform: translateX(${targetTranslateX}px)`);
-        slider.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
-
-        if (resetTimer) {
-            timer(); // Reset timer only if specified (e.g., on manual nav)
+        // Function to fetch the latest content from our API
+        function fetchLatestAboutContent() {
+            console.log('Checking for latest content from API');
+            
+            // For AWS API Gateway endpoint
+            const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+            
+            fetch(apiUrl)
+                .then(response => {
+                    console.log('API response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('API response not OK');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Successfully loaded site config from API:', data);
+                    // Process data - directly pass the data to the update function
+                    updatePageWithConfig(data);
+                })
+                .catch(error => {
+                    console.error('Error loading from API:', error);
+                    showErrorMessage('Error loading configuration. Please refresh or try again later.');
+                });
         }
-    }
 
-    function timer() {
-        clearInterval(interval);
-        console.log(`Starting auto-rotation timer (${intervalTime}ms)`);
-        interval = setInterval(() => {
-            // console.log("Timer advancing carousel"); // Can be verbose
-            move(++currIndex);
-        }, intervalTime);
-    }
-
-    function bindEvents() {
-        console.log("Binding window resize event...");
-        
-        window.onresize = resize;
-        
-        console.log("Window resize event bound.");
-    }
-    
-    function updateCarousel(photos) {
-        const snapsContainer = document.getElementById('snaps');
-        if (!snapsContainer) {
-            console.error("Snaps container not found!");
-            return;
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '20px';
+            errorDiv.style.right = '20px';
+            errorDiv.style.backgroundColor = '#f44336';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '15px';
+            errorDiv.style.borderRadius = '5px';
+            errorDiv.style.zIndex = '1000';
+            errorDiv.textContent = message;
+            
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                errorDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => document.body.removeChild(errorDiv), 500);
+            }, 5000);
         }
-        clearInterval(interval);
-        snapsContainer.innerHTML = '';
-        
-        const carouselContainer = document.createElement('div');
-        carouselContainer.className = 'carousel';
-        
-        const carouselBody = document.createElement('div');
-        carouselBody.className = 'carousel__body';
-        
-        const sliderDiv = document.createElement('div');
-        sliderDiv.className = 'carousel__slider';
-        sliderDiv.id = 'photoCarouselSlider'; 
-        
-        const validPhotos = photos.filter(photo => photo && photo.url);
-        console.log(`Creating carousel HTML with ${validPhotos.length} valid photos`);
-        
-        validPhotos.forEach((photo, index) => {
-            const item = document.createElement('div');
-            item.className = 'carousel__slider__item';
-            item.setAttribute('data-photo', photo.url);
-            item.classList.add('snap-container');
+
+        function updatePageWithConfig(data) {
+            console.log('Updating page with config data:', data);
             
-            const frame = document.createElement('div');
-            frame.className = 'item__3d-frame';
+            // Extract site_config from the response and store globally
+            const config = data.site_config;
+            window.siteConfig = config;
             
-            const frontBox = document.createElement('div');
-            frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
+            if (!config) {
+                console.error('site_config not found in API response:', data);
+                showErrorMessage('Configuration data is missing in the response.');
+                return;
+            }
+            
+            // Update title & metadata
+            document.title = config.about_title || 'Portfolio';
+            
+            // Update all favicon instances
+            const allFavicons = document.querySelectorAll('link[rel="icon"]');
+            if (config.image_favicon_url) {
+                allFavicons.forEach(favicon => {
+                    favicon.href = config.image_favicon_url;
+                    console.log('Updated favicon to:', config.image_favicon_url);
+                });
+            }
+            
+            // Update all header logo instances
+            const allLogoImages = document.querySelectorAll('.navbar .logo img, .navbar-brand img, .logo img');
+            if (config.image_logo_url) {
+                allLogoImages.forEach(logo => {
+                    logo.src = config.image_logo_url;
+                    logo.alt = config.about_title || 'Logo';
+                    console.log('Updated logo to:', config.image_logo_url);
+                });
+            }
+            
+            // Update banner image
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                // Function to update banner image based on screen size
+                function updateBannerImage() {
+                    const isMobile = window.innerWidth <= 768;
+                    const mobileUrl = config.image_mobile_banner_url;
+                    const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                    
+                    if (isMobile && mobileUrl) {
+                        bannerImage.style.backgroundImage = `url('${mobileUrl}')`;
+                    } else {
+                        bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
+                    }
+                    // Always use contain to prevent cropping, and maintain center alignment
+                    bannerImage.style.backgroundSize = "contain";
+                    bannerImage.style.backgroundPosition = "center";
+                    bannerImage.style.backgroundRepeat = "no-repeat";
+                }
                 
-            const img = document.createElement('img');
-            img.src = photo.url;
-            img.alt = photo.alt || 'Photo';
-            img.onerror = function() {
-                console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-                this.onerror = null;
-                this.src = '/static/img/placeholder.png';
-            };
+                // Update banner image on load and resize
+                updateBannerImage();
+                window.addEventListener('resize', updateBannerImage);
+            }
+            
+            // Update footer logo if present
+            const footerLogo = document.querySelector('.footer-logo img');
+            if (footerLogo && config.image_logo_url) {
+                footerLogo.src = config.image_logo_url;
+                footerLogo.alt = config.about_title || 'Logo';
+                console.log('Updated footer logo to:', config.image_logo_url);
+            }
+            
+            // Update about section
+            const aboutTitle = document.getElementById('about-title');
+            const aboutSubtitle = document.getElementById('about-subtitle');
+            const aboutDescription = document.getElementById('about-description');
+            const profileImage = document.getElementById('profile-image');
+                        
+                        if (aboutTitle) {
+                aboutTitle.innerHTML = config.about_title || '';
+                        }
+                        
+                        if (aboutSubtitle) {
+                aboutSubtitle.innerHTML = config.about_subtitle || '';
+                        }
+                        
+                        if (aboutDescription) {
+                aboutDescription.innerHTML = config.about_description || '';
+                    aboutDescription.style.textAlign = 'left';
+                        }
+                        
+            if (profileImage) {
+                profileImage.src = config.image_about_profile_url || '';
+                profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
+            }
+                        
+            // Create photos array from config
+            const photos = [
+                { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
+                { url: config.image_about_photo2_url, alt: config.about_photo2_alt },
+                { url: config.image_about_photo3_url, alt: config.about_photo3_alt },
+                { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
+            ];
+            
+            // Update carousel with the photos
+            updateCarousel(photos);
+                        
+            // Show content once loaded
+            document.body.classList.add('content-loaded');
+        }
+        
+        // Initialize carousel controls - Remove button related variables
+        let carousel, slider, items, 
+            width, height, totalWidth, margin = 20, 
+            currIndex = 0,
+            interval, intervalTime = 4000;
+
+        function initCarousel() { 
+            console.log("Initializing carousel (no buttons)...");
+            carousel = document.querySelector('.carousel'); 
+            slider = document.querySelector('.carousel__slider');
+            items = document.querySelectorAll('.carousel__slider__item'); 
+            
+            if (!carousel || !slider || items.length === 0) {
+                console.error("Carousel core elements not found.");
+                return;
+            }
+            
+            console.log(`Found ${items.length} items.`);
+            
+            resize();
+            move(Math.floor(items.length / 2), false); 
+            bindEvents(); // Will now only bind resize
+            timer(); 
+            console.log("Carousel initialized successfully (no buttons).");
+        }
+
+        function resize() {
+            if (!items || items.length === 0 || !slider) return;
+            
+            // Calculate width based on viewport, aiming for wider carousel
+            // Adjust multiplier (e.g., 0.35 or 0.4) and minimum (e.g., 300 or 320) as needed
+            width = Math.max(window.innerWidth * 0.35, 320); // Increased width influence
+            height = window.innerHeight * 0.5; // Keep height reference
+            totalWidth = width * items.length;
+            
+            console.log(`Resizing carousel: item width=${width - (margin * 2)}, total width=${totalWidth}`);
+            
+            slider.style.width = totalWidth + "px";
+            
+            for(let i = 0; i < items.length; i++) {
+                let item = items[i];
+                item.style.width = (width - (margin * 2)) + "px";
+                item.style.height = height + "px";
+            }
+            move(currIndex, false); 
+        }
+
+        function move(index, resetTimer = true) {
+            if (!items || items.length === 0 || !slider) return;
+
+            // Loop index
+            if (index < 1) index = items.length;
+            if (index > items.length) index = 1;
+            currIndex = index;
+
+            console.log(`Moving to index: ${currIndex}`);
+
+            // Apply transformations to items for 3D effect
+            for (let i = 0; i < items.length; i++) {
+                let item = items[i];
+                let box = item.querySelector('.item__3d-frame');
+                if (box) {
+                    if (i === (index - 1)) {
+                        item.classList.add('carousel__slider__item--active');
+                        box.style.transform = "perspective(1200px)"; // Active item faces forward
+                    } else {
+                        item.classList.remove('carousel__slider__item--active');
+                        // Apply rotation based on position relative to current index
+                        const rotation = i < (index - 1) ? 40 : -40; // Reference rotation
+                        box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
+                    }
+                }
+            }
+
+            // Move the entire slider element
+            // Calculation from reference: (index * -width) + (width / 2) + window.innerWidth / 2
+            const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
+            console.log(`Slider target transform: translateX(${targetTranslateX}px)`);
+            slider.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
+
+            if (resetTimer) {
+                timer(); // Reset timer only if specified (e.g., on manual nav)
+            }
+        }
+
+        function timer() {
+            clearInterval(interval);
+            console.log(`Starting auto-rotation timer (${intervalTime}ms)`);
+            interval = setInterval(() => {
+                // console.log("Timer advancing carousel"); // Can be verbose
+                move(++currIndex);
+            }, intervalTime);
+        }
+
+        function bindEvents() {
+            console.log("Binding window resize event...");
+            
+            window.onresize = resize;
+            
+            console.log("Window resize event bound.");
+        }
+        
+        function updateCarousel(photos) {
+            const snapsContainer = document.getElementById('snaps');
+            if (!snapsContainer) {
+                console.error("Snaps container not found!");
+                return;
+            }
+            clearInterval(interval);
+            snapsContainer.innerHTML = '';
+            
+            const carouselContainer = document.createElement('div');
+            carouselContainer.className = 'carousel';
+            
+            const carouselBody = document.createElement('div');
+            carouselBody.className = 'carousel__body';
+            
+            const sliderDiv = document.createElement('div');
+            sliderDiv.className = 'carousel__slider';
+            sliderDiv.id = 'photoCarouselSlider'; 
+            
+            const validPhotos = photos.filter(photo => photo && photo.url);
+            console.log(`Creating carousel HTML with ${validPhotos.length} valid photos`);
+            
+            validPhotos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'carousel__slider__item';
+                item.setAttribute('data-photo', photo.url);
+                item.classList.add('snap-container');
                 
-            frontBox.appendChild(img);
+                const frame = document.createElement('div');
+                frame.className = 'item__3d-frame';
+                
+                const frontBox = document.createElement('div');
+                frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
+                    
+                const img = document.createElement('img');
+                img.src = photo.url;
+                img.alt = photo.alt || 'Photo';
+                img.onerror = function() {
+                    console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
+                    this.onerror = null;
+                    this.src = '/static/img/placeholder.png';
+                };
+                    
+                frontBox.appendChild(img);
+                
+                const leftBox = document.createElement('div');
+                leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+                
+                const rightBox = document.createElement('div');
+                rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
+                
+                frame.appendChild(frontBox);
+                frame.appendChild(leftBox);
+                frame.appendChild(rightBox);
+                item.appendChild(frame);
+                sliderDiv.appendChild(item);
+            });
             
-            const leftBox = document.createElement('div');
-            leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+            carouselBody.appendChild(sliderDiv);
             
-            const rightBox = document.createElement('div');
-            rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
+            carouselContainer.appendChild(carouselBody);
             
-            frame.appendChild(frontBox);
-            frame.appendChild(leftBox);
-            frame.appendChild(rightBox);
-            item.appendChild(frame);
-            sliderDiv.appendChild(item);
-        });
-        
-        carouselBody.appendChild(sliderDiv);
-        
-        carouselContainer.appendChild(carouselBody);
-        
-        snapsContainer.appendChild(carouselContainer);
-        
-        setTimeout(() => {
-            initCarousel(); 
-            initializeModalFunctionality(); 
-        }, 50); 
-    }
+            snapsContainer.appendChild(carouselContainer);
+            
+            setTimeout(() => {
+                initCarousel(); 
+                initializeModalFunctionality(); 
+            }, 50); 
+        }
 </script>
 
 

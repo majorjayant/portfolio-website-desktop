@@ -385,32 +385,39 @@
 
             const start = field.selectionStart;
             const end = field.selectionEnd;
-            const selectedText = field.value.substring(start, end);
-            const beforeText = field.value.substring(0, start);
-            const afterText = field.value.substring(end, field.value.length);
+            const currentValue = field.value;
+            const selectedText = currentValue.substring(start, end);
 
-            let replacement = '';
+            let newValue;
+            let cursorPosition = start; // Default cursor position
+
             if (tag === 'br') {
-                replacement = '<br>';
+                // Insert <br> tag at cursor position
+                newValue = currentValue.substring(0, start) + '<br>' + currentValue.substring(end);
+                cursorPosition = start + 4; // Move cursor after <br>
             } else {
-                replacement = `<${tag}>${selectedText}</${tag}>`;
+                // Wrap selected text or insert empty tags
+                const openTag = `<${tag}>`;
+                const closeTag = `</${tag}>`;
+                if (selectedText) {
+                    // Wrap selection
+                    newValue = currentValue.substring(0, start) + openTag + selectedText + closeTag + currentValue.substring(end);
+                    cursorPosition = end + openTag.length + closeTag.length; // Move cursor after the wrapped text
+                } else {
+                    // Insert empty tags at cursor
+                    newValue = currentValue.substring(0, start) + openTag + closeTag + currentValue.substring(end);
+                    cursorPosition = start + openTag.length; // Move cursor between the tags
+                }
             }
 
-            // If text is selected, wrap it; otherwise, insert tags at cursor
-            if (selectedText) {
-                field.value = beforeText + replacement + afterText;
-                // Adjust cursor position after replacement
-                field.selectionStart = start;
-                field.selectionEnd = start + replacement.length;
-            } else {
-                // Insert tag at cursor position (works best for <br>)
-                field.value = beforeText + (tag === 'br' ? replacement : `<${tag}></${tag}>`) + afterText;
-                // Position cursor inside the tags if not a line break
-                const cursorPosition = start + (tag === 'br' ? replacement.length : tag.length + 2); 
-                field.selectionStart = cursorPosition;
-                field.selectionEnd = cursorPosition;
-            }
-            field.focus(); // Keep focus on the field
+            field.value = newValue;
+            // Set focus and cursor position
+            field.focus();
+            field.selectionStart = cursorPosition;
+            field.selectionEnd = cursorPosition;
+
+            // Trigger an input event for frameworks or libraries that might listen for it
+            field.dispatchEvent(new Event('input', { bubbles: true }));
         }
         
         // Save site configuration

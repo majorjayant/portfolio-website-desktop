@@ -980,78 +980,79 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer style="padding: 2rem 0 0.5rem;">
-        <div class="footer-container">
-            <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
-                <div class="footer-logo" style="margin-bottom: 0.5rem;">
-                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
-                </div>
-                <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
-                <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
-                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Contact Info</h3>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
-            </div>
-            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Quick Links</h3>
-                <ul style="margin: 0; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;"><a href="/">Home</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/projects">Projects</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/solutions">Solutions</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/contact">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright" style="margin-top: 1rem; padding-top: 0.8rem;">
-            <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
-        </div>
-    </footer>
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/js/script.js"></script>
     
 <script>
-    // Global variables for modal elements
-    let modal, modalImg, closeModalBtn;
-    
-    // Initialize modal elements and attach event listeners
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set up modal elements
-        modal = document.getElementById('photoModal');
-        modalImg = document.getElementById('modalImage');
-        closeModalBtn = document.querySelector('.close-modal');
-        
-        // Add click event to close button if it exists
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', function() {
-                closeModal();
-            });
+        // Function to load footer
+        function loadFooter() {
+            fetch('/html/_footer.html') // Path relative to the static root
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Footer not found');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    const placeholder = document.getElementById('footer-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = html;
+                        // Re-run any script needed for the footer content, e.g., update footer logo
+                        const config = window.siteConfig; // Assuming siteConfig is global
+                        if (config && config.image_logo_url) {
+                            const footerLogo = placeholder.querySelector('.footer-logo img');
+                            if (footerLogo) {
+                                footerLogo.src = config.image_logo_url;
+                                footerLogo.alt = config.about_title || 'Logo';
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading footer:', error);
+                    const placeholder = document.getElementById('footer-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer content.</p>';
+                    }
+                });
         }
+
+        // Global variables for modal elements
+        let modal, modalImg, closeModalBtn;
         
-        // Close modal when clicking outside the image
-        window.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeModal();
+        // Initialize modal elements and attach event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+            // Set up modal elements
+            modal = document.getElementById('photoModal');
+            modalImg = document.getElementById('modalImage');
+            closeModalBtn = document.querySelector('.close-modal');
+            
+            // Add click event to close button if it exists
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    closeModal();
+                });
             }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modal && modal.style.display === 'block') {
-                closeModal();
-            }
-        });
-        
-        // Initialize image elements and fetch content
+            
+            // Close modal when clicking outside the image
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+                    closeModal();
+                }
+            });
+            
+            // Initialize image elements and fetch content
             const bannerImage = document.getElementById('banner-image');
             if (bannerImage) {
                     bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
@@ -1060,445 +1061,450 @@
         // Try to fetch the latest content from our AWS Lambda endpoint
         fetchLatestAboutContent();
         
-        // Initialize NEW scroll effects
-        initScrollEffects();
-        
-        // Smooth scroll (keep this)
-        initSmoothScroll();
-        
-        // Set initial state for about section (safer than CSS for JS control)
-        const aboutSection = document.getElementById('about-section');
-        if (aboutSection) {
-            aboutSection.style.opacity = '0';
-            aboutSection.style.transform = 'scale(0.95)';
-        }
-        
-        // Add header transparency on banner hover and scroll
-        const header = document.querySelector('header');
-        const bannerSection = document.getElementById('banner-section');
-        
-        if (header && bannerSection) {
-            // Make header transparent when hovering over banner
-            bannerSection.addEventListener('mouseenter', function() {
-                header.classList.add('transparent-header');
-            });
+            // Initialize NEW scroll effects
+            initScrollEffects();
             
-            bannerSection.addEventListener('mouseleave', function() {
-                if (window.scrollY < 100) {
-                    header.classList.add('transparent-header');
-                } else {
-                    header.classList.remove('transparent-header');
-                }
-            });
+            // Smooth scroll (keep this)
+            initSmoothScroll();
             
-            // Make header more transparent at the top of the page
-            window.addEventListener('scroll', function() {
-                if (window.scrollY < 100) {
-                    header.classList.add('transparent-header');
-                } else {
-                    header.classList.remove('transparent-header');
-                }
-            });
-            
-            // Initial state
-            if (window.scrollY < 100) {
-                header.classList.add('transparent-header');
+            // Set initial state for about section (safer than CSS for JS control)
+            const aboutSection = document.getElementById('about-section');
+            if (aboutSection) {
+                aboutSection.style.opacity = '0';
+                aboutSection.style.transform = 'scale(0.95)';
             }
-        }
-    });
-    
-    // NEW function to handle scroll-based effects
-    function initScrollEffects() {
-        window.addEventListener('scroll', handleScrollEffects);
-        // Run once on load
-        handleScrollEffects(); 
-    }
-    
-    function handleScrollEffects() {
-        const scrollTop = window.scrollY;
-        const bannerSection = document.getElementById('banner-section');
-        const bannerImageLayer = document.getElementById('banner-image');
-        const aboutSection = document.getElementById('about-section');
-        const viewportHeight = window.innerHeight;
-        const bannerHeight = viewportHeight; // Since banner is 100vh
-
-        if (!bannerSection || !bannerImageLayer || !aboutSection) return;
-
-        // --- 1. Banner 3D Rotation --- 
-        const scrollPercentInBanner = Math.min(scrollTop / bannerHeight, 1); // 0 to 1 within banner scroll
-        const maxRotation = 10; // Max degrees rotation (keep it subtle)
-        const rotationX = maxRotation * scrollPercentInBanner;
-        // Adjust scale slightly based on scroll for more depth
-        const currentScale = 1.1 + scrollPercentInBanner * 0.1; // Scale from 1.1 to 1.2
-        // Apply rotation and scale. Perspective is handled by the parent's CSS.
-        bannerImageLayer.style.transform = `rotateX(${rotationX}deg) scale(${currentScale})`;
-
-        // --- 2. Transition between Banner and About --- 
-        const transitionStart = bannerHeight * 0.5; // Start transition earlier (50% scroll)
-        const transitionEnd = bannerHeight;         // End transition at 100% scroll
-        const transitionDuration = transitionEnd - transitionStart;
-
-        let transitionProgress = 0;
-        if (scrollTop >= transitionStart && scrollTop <= transitionEnd) {
-            transitionProgress = (scrollTop - transitionStart) / transitionDuration;
-        } else if (scrollTop > transitionEnd) {
-            transitionProgress = 1;
-        }
-        
-        // Clamp progress between 0 and 1
-        transitionProgress = Math.max(0, Math.min(1, transitionProgress));
-
-        // Apply transition effects
-        // Fade out banner (starts fading after 60% progress)
-        bannerSection.style.opacity = 1 - Math.max(0, (transitionProgress - 0.6) / 0.4);
-        
-        // Fade in and scale up About section
-        aboutSection.style.opacity = transitionProgress;
-        aboutSection.style.transform = `scale(${0.95 + transitionProgress * 0.05})`;
-    }
-    
-    // Initialize smooth scroll for navigation (Keep this)
-    function initSmoothScroll() {
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
+            
+            // Add header transparency on banner hover and scroll
+            const header = document.querySelector('header');
+            const bannerSection = document.getElementById('banner-section');
+            
+            if (header && bannerSection) {
+                // Make header transparent when hovering over banner
+                bannerSection.addEventListener('mouseenter', function() {
+                    header.classList.add('transparent-header');
+                });
                 
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
+                bannerSection.addEventListener('mouseleave', function() {
+                    if (window.scrollY < 100) {
+                        header.classList.add('transparent-header');
+                    } else {
+                        header.classList.remove('transparent-header');
+                    }
+                });
                 
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 70, // Offset for fixed header
-                        behavior: 'smooth'
-                    });
+                // Make header more transparent at the top of the page
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY < 100) {
+                        header.classList.add('transparent-header');
+                    } else {
+                        header.classList.remove('transparent-header');
+                    }
+                });
+                
+                // Initial state
+                if (window.scrollY < 100) {
+                    header.classList.add('transparent-header');
                 }
-            });
+            }
+
+            // Call loadFooter after DOM is ready and potentially after config is loaded
+            loadFooter(); 
+            // If siteConfig loads later, you might call loadFooter() again 
+            // within updatePageWithConfig or ensure footer logo update happens there.
         });
-    }
+        
+        // NEW function to handle scroll-based effects
+        function initScrollEffects() {
+            window.addEventListener('scroll', handleScrollEffects);
+            // Run once on load
+            handleScrollEffects(); 
+        }
+        
+        function handleScrollEffects() {
+            const scrollTop = window.scrollY;
+            const bannerSection = document.getElementById('banner-section');
+            const bannerImageLayer = document.getElementById('banner-image');
+            const aboutSection = document.getElementById('about-section');
+            const viewportHeight = window.innerHeight;
+            const bannerHeight = viewportHeight; // Since banner is 100vh
+
+            if (!bannerSection || !bannerImageLayer || !aboutSection) return;
+
+            // --- 1. Banner 3D Rotation --- 
+            const scrollPercentInBanner = Math.min(scrollTop / bannerHeight, 1); // 0 to 1 within banner scroll
+            const maxRotation = 10; // Max degrees rotation (keep it subtle)
+            const rotationX = maxRotation * scrollPercentInBanner;
+            // Adjust scale slightly based on scroll for more depth
+            const currentScale = 1.1 + scrollPercentInBanner * 0.1; // Scale from 1.1 to 1.2
+            // Apply rotation and scale. Perspective is handled by the parent's CSS.
+            bannerImageLayer.style.transform = `rotateX(${rotationX}deg) scale(${currentScale})`;
+
+            // --- 2. Transition between Banner and About --- 
+            const transitionStart = bannerHeight * 0.5; // Start transition earlier (50% scroll)
+            const transitionEnd = bannerHeight;         // End transition at 100% scroll
+            const transitionDuration = transitionEnd - transitionStart;
+
+            let transitionProgress = 0;
+            if (scrollTop >= transitionStart && scrollTop <= transitionEnd) {
+                transitionProgress = (scrollTop - transitionStart) / transitionDuration;
+            } else if (scrollTop > transitionEnd) {
+                transitionProgress = 1;
+            }
+            
+            // Clamp progress between 0 and 1
+            transitionProgress = Math.max(0, Math.min(1, transitionProgress));
+
+            // Apply transition effects
+            // Fade out banner (starts fading after 60% progress)
+            bannerSection.style.opacity = 1 - Math.max(0, (transitionProgress - 0.6) / 0.4);
+            
+            // Fade in and scale up About section
+            aboutSection.style.opacity = transitionProgress;
+            aboutSection.style.transform = `scale(${0.95 + transitionProgress * 0.05})`;
+        }
+        
+        // Initialize smooth scroll for navigation (Keep this)
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 70, // Offset for fixed header
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
 
     // Function to fetch the latest content from our API
     function fetchLatestAboutContent() {
         console.log('Checking for latest content from API');
         
         // For AWS API Gateway endpoint
-        const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+            const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
         
         fetch(apiUrl)
             .then(response => {
-                console.log('API response status:', response.status);
+                    console.log('API response status:', response.status);
                 if (!response.ok) {
-                    throw new Error('API response not OK');
+                        throw new Error('API response not OK');
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('Successfully loaded site config from API:', data);
-                // Process data - directly pass the data to the update function
-                updatePageWithConfig(data);
-            })
-            .catch(error => {
-                console.error('Error loading from API:', error);
-                showErrorMessage('Error loading configuration. Please refresh or try again later.');
-            });
-    }
+                    console.log('Successfully loaded site config from API:', data);
+                    // Process data - directly pass the data to the update function
+                    updatePageWithConfig(data);
+                })
+                .catch(error => {
+                    console.error('Error loading from API:', error);
+                    showErrorMessage('Error loading configuration. Please refresh or try again later.');
+                });
+        }
 
-    function showErrorMessage(message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.style.position = 'fixed';
-        errorDiv.style.top = '20px';
-        errorDiv.style.right = '20px';
-        errorDiv.style.backgroundColor = '#f44336';
-        errorDiv.style.color = 'white';
-        errorDiv.style.padding = '15px';
-        errorDiv.style.borderRadius = '5px';
-        errorDiv.style.zIndex = '1000';
-        errorDiv.textContent = message;
-        
-        document.body.appendChild(errorDiv);
-        
-        setTimeout(() => {
-            errorDiv.style.opacity = '0';
-            errorDiv.style.transition = 'opacity 0.5s';
-            setTimeout(() => document.body.removeChild(errorDiv), 500);
-        }, 5000);
-    }
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '20px';
+            errorDiv.style.right = '20px';
+            errorDiv.style.backgroundColor = '#f44336';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '15px';
+            errorDiv.style.borderRadius = '5px';
+            errorDiv.style.zIndex = '1000';
+            errorDiv.textContent = message;
+            
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                errorDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => document.body.removeChild(errorDiv), 500);
+            }, 5000);
+        }
 
-    function updatePageWithConfig(data) {
-        console.log('Updating page with config data:', data);
-        
-        // Extract site_config from the response
-        const config = data.site_config;
-        
-        if (!config) {
-            console.error('site_config not found in API response:', data);
-            showErrorMessage('Configuration data is missing in the response.');
-            return;
-        }
-        
-        // Update title & metadata
-        document.title = config.about_title || 'Portfolio';
-        
-        // Update all favicon instances
-        const allFavicons = document.querySelectorAll('link[rel="icon"]');
-        if (config.image_favicon_url) {
-            allFavicons.forEach(favicon => {
-                favicon.href = config.image_favicon_url;
-                console.log('Updated favicon to:', config.image_favicon_url);
-            });
-        }
-        
-        // Update all header logo instances
-        const allLogoImages = document.querySelectorAll('.navbar .logo img, .navbar-brand img, .logo img');
-        if (config.image_logo_url) {
-            allLogoImages.forEach(logo => {
-                logo.src = config.image_logo_url;
-                logo.alt = config.about_title || 'Logo';
-                console.log('Updated logo to:', config.image_logo_url);
-            });
-        }
-        
-        // Update banner image
-        const bannerImage = document.getElementById('banner-image');
-        if (bannerImage && config.image_banner_url) {
-            bannerImage.style.backgroundImage = `url('${config.image_banner_url}')`;
-            console.log('Updated banner to:', config.image_banner_url);
-        }
-        
-        // Update footer logo if present
-        const footerLogo = document.querySelector('.footer-logo img');
-        if (footerLogo && config.image_logo_url) {
-            footerLogo.src = config.image_logo_url;
-            footerLogo.alt = config.about_title || 'Logo';
-            console.log('Updated footer logo to:', config.image_logo_url);
-        }
-        
-        // Update about section
-        const aboutTitle = document.getElementById('about-title');
-        const aboutSubtitle = document.getElementById('about-subtitle');
-        const aboutDescription = document.getElementById('about-description');
-        const profileImage = document.getElementById('profile-image');
+        function updatePageWithConfig(data) {
+            console.log('Updating page with config data:', data);
+            
+            // Extract site_config from the response
+            const config = data.site_config;
+            
+            if (!config) {
+                console.error('site_config not found in API response:', data);
+                showErrorMessage('Configuration data is missing in the response.');
+                return;
+            }
+            
+            // Update title & metadata
+            document.title = config.about_title || 'Portfolio';
+            
+            // Update all favicon instances
+            const allFavicons = document.querySelectorAll('link[rel="icon"]');
+            if (config.image_favicon_url) {
+                allFavicons.forEach(favicon => {
+                    favicon.href = config.image_favicon_url;
+                    console.log('Updated favicon to:', config.image_favicon_url);
+                });
+            }
+            
+            // Update all header logo instances
+            const allLogoImages = document.querySelectorAll('.navbar .logo img, .navbar-brand img, .logo img');
+            if (config.image_logo_url) {
+                allLogoImages.forEach(logo => {
+                    logo.src = config.image_logo_url;
+                    logo.alt = config.about_title || 'Logo';
+                    console.log('Updated logo to:', config.image_logo_url);
+                });
+            }
+            
+            // Update banner image
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage && config.image_banner_url) {
+                bannerImage.style.backgroundImage = `url('${config.image_banner_url}')`;
+                console.log('Updated banner to:', config.image_banner_url);
+            }
+            
+            // Update footer logo if present
+            const footerLogo = document.querySelector('.footer-logo img');
+            if (footerLogo && config.image_logo_url) {
+                footerLogo.src = config.image_logo_url;
+                footerLogo.alt = config.about_title || 'Logo';
+                console.log('Updated footer logo to:', config.image_logo_url);
+            }
+            
+            // Update about section
+            const aboutTitle = document.getElementById('about-title');
+            const aboutSubtitle = document.getElementById('about-subtitle');
+            const aboutDescription = document.getElementById('about-description');
+            const profileImage = document.getElementById('profile-image');
                     
                     if (aboutTitle) {
-            aboutTitle.innerHTML = config.about_title || '';
+                aboutTitle.innerHTML = config.about_title || '';
                     }
                     
                     if (aboutSubtitle) {
-            aboutSubtitle.innerHTML = config.about_subtitle || '';
+                aboutSubtitle.innerHTML = config.about_subtitle || '';
                     }
                     
                     if (aboutDescription) {
-            aboutDescription.innerHTML = config.about_description || '';
+                aboutDescription.innerHTML = config.about_description || '';
                         aboutDescription.style.textAlign = 'left';
                     }
                     
-        if (profileImage) {
-            profileImage.src = config.image_about_profile_url || '';
-            profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
+            if (profileImage) {
+                profileImage.src = config.image_about_profile_url || '';
+                profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
                     }
                     
-        // Update photos in the "snaps" section with ENHANCED carousel effect
+            // Update photos in the "snaps" section with ENHANCED carousel effect
                     const snapsContainer = document.getElementById('snaps');
-        if (snapsContainer) {
+            if (snapsContainer) {
                         // Clear existing content
                         snapsContainer.innerHTML = '';
                         
-            // Create the carousel container
-            const carouselContainer = document.createElement('div');
-            carouselContainer.className = 'carousel';
-            
-            const carouselBody = document.createElement('div');
-            carouselBody.className = 'carousel__body';
-            
-            const sliderDiv = document.createElement('div');
-            sliderDiv.className = 'carousel__slider';
-            sliderDiv.id = 'photoCarouselSlider';
-            
-            // Filter out photos without URLs
-            const photos = [
-                { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
-                { url: config.image_about_photo2_url, alt: config.about_photo2_alt },
-                { url: config.image_about_photo3_url, alt: config.about_photo3_alt },
-                { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
-            ];
-            
-            // Filter out photos without URLs
-            const validPhotos = photos.filter(photo => photo.url);
-            
-            // Set up the carousel with photos
-            validPhotos.forEach((photo, index) => {
-                const item = document.createElement('div');
-                item.className = 'carousel__slider__item';
+                // Create the carousel container
+                const carouselContainer = document.createElement('div');
+                carouselContainer.className = 'carousel';
                 
-                const frame = document.createElement('div');
-                frame.className = 'item__3d-frame';
+                const carouselBody = document.createElement('div');
+                carouselBody.className = 'carousel__body';
                 
-                const frontBox = document.createElement('div');
-                frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
+                const sliderDiv = document.createElement('div');
+                sliderDiv.className = 'carousel__slider';
+                sliderDiv.id = 'photoCarouselSlider';
+                
+                // Filter out photos without URLs
+                const photos = [
+                    { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
+                    { url: config.image_about_photo2_url, alt: config.about_photo2_alt },
+                    { url: config.image_about_photo3_url, alt: config.about_photo3_alt },
+                    { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
+                ];
+                
+                // Filter out photos without URLs
+                const validPhotos = photos.filter(photo => photo.url);
+                
+                // Set up the carousel with photos
+                validPhotos.forEach((photo, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'carousel__slider__item';
+                    
+                    const frame = document.createElement('div');
+                    frame.className = 'item__3d-frame';
+                    
+                    const frontBox = document.createElement('div');
+                    frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
                             
                             const img = document.createElement('img');
                             img.src = photo.url;
-                img.alt = photo.alt || 'Photo';
-                frontBox.appendChild(img);
+                    img.alt = photo.alt || 'Photo';
+                    frontBox.appendChild(img);
+                    
+                    const leftBox = document.createElement('div');
+                    leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+                    
+                    const rightBox = document.createElement('div');
+                    rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
+                    rightBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
+                    
+                    frame.appendChild(frontBox);
+                    frame.appendChild(leftBox);
+                    frame.appendChild(rightBox);
+                    item.appendChild(frame);
+                    sliderDiv.appendChild(item);
+                });
                 
-                const leftBox = document.createElement('div');
-                leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+                carouselBody.appendChild(sliderDiv);
+                carouselContainer.appendChild(carouselBody);
+                snapsContainer.appendChild(carouselContainer);
                 
-                const rightBox = document.createElement('div');
-                rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
-                rightBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
+                // Initialize carousel controls
+                initCarousel();
                 
-                frame.appendChild(frontBox);
-                frame.appendChild(leftBox);
-                frame.appendChild(rightBox);
-                item.appendChild(frame);
-                sliderDiv.appendChild(item);
-            });
-            
-            carouselBody.appendChild(sliderDiv);
-            carouselContainer.appendChild(carouselBody);
-            snapsContainer.appendChild(carouselContainer);
-            
-            // Initialize carousel controls
-            initCarousel();
-            
-            // Initialize the modal functionality
+                // Initialize the modal functionality
                         initializeModalFunctionality();
                     }
-        
-        // Show content once loaded
-        document.body.classList.add('content-loaded');
-    }
-
-    // Initialize carousel controls - Remove button related variables
-    let carousel, slider, items, 
-        width, height, totalWidth, margin = 20, 
-        currIndex = 0,
-        interval, intervalTime = 4000;
-
-    function initCarousel() { 
-        console.log("Initializing carousel (no buttons)...");
-        carousel = document.querySelector('.carousel'); 
-        slider = document.querySelector('.carousel__slider');
-        items = document.querySelectorAll('.carousel__slider__item'); 
-        
-        if (!carousel || !slider || items.length === 0) {
-            console.error("Carousel core elements not found.");
-            return;
+            
+            // Show content once loaded
+            document.body.classList.add('content-loaded');
         }
-        
-        console.log(`Found ${items.length} items.`);
-        
-        resize();
-        move(Math.floor(items.length / 2), false); 
-        bindEvents(); // Will now only bind resize
-        timer(); 
-        console.log("Carousel initialized successfully (no buttons).");
-    }
 
-    function resize() {
-        if (!items || items.length === 0 || !slider) return;
-        
-        // Calculate width based on viewport, aiming for wider carousel
-        // Adjust multiplier (e.g., 0.35 or 0.4) and minimum (e.g., 300 or 320) as needed
-        width = Math.max(window.innerWidth * 0.35, 320); // Increased width influence
-        height = window.innerHeight * 0.5; // Keep height reference
-        totalWidth = width * items.length;
-        
-        console.log(`Resizing carousel: item width=${width - (margin * 2)}, total width=${totalWidth}`);
-        
-        slider.style.width = totalWidth + "px";
-        
-        for(let i = 0; i < items.length; i++) {
-            let item = items[i];
-            item.style.width = (width - (margin * 2)) + "px";
-            item.style.height = height + "px";
+        // Initialize carousel controls - Remove button related variables
+        let carousel, slider, items, 
+            width, height, totalWidth, margin = 20, 
+            currIndex = 0,
+            interval, intervalTime = 4000;
+
+        function initCarousel() { 
+            console.log("Initializing carousel (no buttons)...");
+            carousel = document.querySelector('.carousel'); 
+            slider = document.querySelector('.carousel__slider');
+            items = document.querySelectorAll('.carousel__slider__item'); 
+            
+            if (!carousel || !slider || items.length === 0) {
+                console.error("Carousel core elements not found.");
+                return;
+            }
+            
+            console.log(`Found ${items.length} items.`);
+            
+            resize();
+            move(Math.floor(items.length / 2), false); 
+            bindEvents(); // Will now only bind resize
+            timer(); 
+            console.log("Carousel initialized successfully (no buttons).");
         }
-        move(currIndex, false); 
-    }
 
-    function move(index, resetTimer = true) {
-        if (!items || items.length === 0 || !slider) return;
+        function resize() {
+            if (!items || items.length === 0 || !slider) return;
+            
+            // Calculate width based on viewport, aiming for wider carousel
+            // Adjust multiplier (e.g., 0.35 or 0.4) and minimum (e.g., 300 or 320) as needed
+            width = Math.max(window.innerWidth * 0.35, 320); // Increased width influence
+            height = window.innerHeight * 0.5; // Keep height reference
+            totalWidth = width * items.length;
+            
+            console.log(`Resizing carousel: item width=${width - (margin * 2)}, total width=${totalWidth}`);
+            
+            slider.style.width = totalWidth + "px";
+            
+            for(let i = 0; i < items.length; i++) {
+                let item = items[i];
+                item.style.width = (width - (margin * 2)) + "px";
+                item.style.height = height + "px";
+            }
+            move(currIndex, false); 
+        }
 
-        // Loop index
-        if (index < 1) index = items.length;
-        if (index > items.length) index = 1;
-        currIndex = index;
+        function move(index, resetTimer = true) {
+            if (!items || items.length === 0 || !slider) return;
 
-        console.log(`Moving to index: ${currIndex}`);
+            // Loop index
+            if (index < 1) index = items.length;
+            if (index > items.length) index = 1;
+            currIndex = index;
 
-        // Apply transformations to items for 3D effect
-        for (let i = 0; i < items.length; i++) {
-            let item = items[i];
-            let box = item.querySelector('.item__3d-frame');
-            if (box) {
-                if (i === (index - 1)) {
-                    item.classList.add('carousel__slider__item--active');
-                    box.style.transform = "perspective(1200px)"; // Active item faces forward
-                } else {
-                    item.classList.remove('carousel__slider__item--active');
-                    // Apply rotation based on position relative to current index
-                    const rotation = i < (index - 1) ? 40 : -40; // Reference rotation
-                    box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
+            console.log(`Moving to index: ${currIndex}`);
+
+            // Apply transformations to items for 3D effect
+            for (let i = 0; i < items.length; i++) {
+                let item = items[i];
+                let box = item.querySelector('.item__3d-frame');
+                if (box) {
+                    if (i === (index - 1)) {
+                        item.classList.add('carousel__slider__item--active');
+                        box.style.transform = "perspective(1200px)"; // Active item faces forward
+                    } else {
+                        item.classList.remove('carousel__slider__item--active');
+                        // Apply rotation based on position relative to current index
+                        const rotation = i < (index - 1) ? 40 : -40; // Reference rotation
+                        box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
+                    }
                 }
+            }
+
+            // Move the entire slider element
+            // Calculation from reference: (index * -width) + (width / 2) + window.innerWidth / 2
+            const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
+            console.log(`Slider target transform: translateX(${targetTranslateX}px)`);
+            slider.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
+
+            if (resetTimer) {
+                timer(); // Reset timer only if specified (e.g., on manual nav)
             }
         }
 
-        // Move the entire slider element
-        // Calculation from reference: (index * -width) + (width / 2) + window.innerWidth / 2
-        const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
-        console.log(`Slider target transform: translateX(${targetTranslateX}px)`);
-        slider.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
-
-        if (resetTimer) {
-            timer(); // Reset timer only if specified (e.g., on manual nav)
+        function timer() {
+            clearInterval(interval);
+            console.log(`Starting auto-rotation timer (${intervalTime}ms)`);
+            interval = setInterval(() => {
+                // console.log("Timer advancing carousel"); // Can be verbose
+                move(++currIndex);
+            }, intervalTime);
         }
-    }
 
-    function timer() {
-        clearInterval(interval);
-        console.log(`Starting auto-rotation timer (${intervalTime}ms)`);
-        interval = setInterval(() => {
-            // console.log("Timer advancing carousel"); // Can be verbose
-            move(++currIndex);
-        }, intervalTime);
-    }
-
-    function bindEvents() {
-        console.log("Binding window resize event...");
-        
-        window.onresize = resize;
-        
-        console.log("Window resize event bound.");
-    }
-    
-    function updateCarousel(photos) {
-        // ... existing code until button creation ...
-        
-        carouselBody.appendChild(sliderDiv);
-        
-        // ... REMOVED Button Appending ...
-        
-        snapsContainer.appendChild(carouselContainer);
-        
-        setTimeout(() => {
-            initCarousel(); 
-            initializeModalFunctionality(); 
-        }, 50); 
-    }
-
-    // Function to close the modal
-    function closeModal() {
-        if (modal) {
-            modal.style.display = 'none';
+        function bindEvents() {
+            console.log("Binding window resize event...");
+            
+            window.onresize = resize;
+            
+            console.log("Window resize event bound.");
         }
-    }
+        
+        function updateCarousel(photos) {
+            // ... existing code until button creation ...
+            
+            carouselBody.appendChild(sliderDiv);
+            
+            // ... REMOVED Button Appending ...
+            
+            snapsContainer.appendChild(carouselContainer);
+            
+            setTimeout(() => {
+                initCarousel(); 
+                initializeModalFunctionality(); 
+            }, 50); 
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
     
     // Modal functionality for about photos
     function initializeModalFunctionality() {
-        // Make sure modal elements are defined
-        if (!modal) modal = document.getElementById('photoModal');
-        if (!modalImg) modalImg = document.getElementById('modalImage');
-        
+            // Make sure modal elements are defined
+            if (!modal) modal = document.getElementById('photoModal');
+            if (!modalImg) modalImg = document.getElementById('modalImage');
+            
         const snapContainers = document.querySelectorAll('.snap-container');
         
         // Open modal when clicking on a photo
@@ -1506,17 +1512,17 @@
             container.addEventListener('click', function(e) {
                 e.preventDefault();
                 const photoUrl = this.getAttribute('data-photo');
-                if (modal) modal.style.display = 'block';
-                if (modalImg) modalImg.src = photoUrl;
-                
-                // Pause carousel rotation when modal is open
-                const carousel = document.getElementById('photoCarousel');
-                if (carousel) {
-                    carousel.style.animationPlayState = 'paused';
-                }
+                    if (modal) modal.style.display = 'block';
+                    if (modalImg) modalImg.src = photoUrl;
+                    
+                    // Pause carousel rotation when modal is open
+                    const carousel = document.getElementById('photoCarousel');
+                    if (carousel) {
+                        carousel.style.animationPlayState = 'paused';
+                    }
                 
                 // If the modal image fails to load, try to use a direct S3 URL or fallback
-                if (modalImg) {
+                    if (modalImg) {
                 modalImg.onerror = function() {
                     console.error("Error loading modal image: " + this.src);
                     this.onerror = null;
@@ -1544,78 +1550,78 @@
                         this.src = '/static/img/placeholder.png';
                     }
                 };
-                }
+                    }
             });
         });
-        
-        // Resume carousel rotation when modal is closed
-        if (modal && closeModalBtn) {
-            closeModalBtn.addEventListener('click', function() {
-                closeModal();
-                
-                const carousel = document.getElementById('photoCarousel');
-                if (carousel) {
-                    carousel.style.animationPlayState = 'running';
-                }
-            });
-        }
-    }
-
-    function updateBannerImage() {
-        const bannerSection = document.getElementById('banner-section');
-        if (!bannerSection) return;
-
-        const isMobile = window.innerWidth <= 768;
-        const config = window.siteConfig || {};
-        
-        // Get the appropriate banner URL based on screen size
-        const bannerUrl = isMobile 
-            ? (config.image_mobile_banner_url || '/static/img/banner_mobile.png')
-            : (config.image_banner_url || '/static/img/banner.png');
-
-        // Update the banner background image
-        bannerSection.style.backgroundImage = `url('${bannerUrl}')`;
-        bannerSection.style.backgroundSize = 'cover';
-        bannerSection.style.backgroundPosition = 'center';
-    }
-
-    // Add event listener for window resize
-    window.addEventListener('resize', updateBannerImage);
-
-    // Update banner image when site config is loaded
-    function updatePageWithConfig(config) {
-        console.log('Updating page with config:', config);
-        
-        // Store config globally
-        window.siteConfig = config;
-        
-        // Update document title
-        if (config.about_title) {
-            document.title = config.about_title;
-        }
-        
-        // Update favicon
-        if (config.image_favicon_url) {
-            const favicon = document.querySelector('link[rel="icon"]');
-            if (favicon) {
-                favicon.href = config.image_favicon_url;
+            
+            // Resume carousel rotation when modal is closed
+            if (modal && closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    closeModal();
+                    
+                    const carousel = document.getElementById('photoCarousel');
+                    if (carousel) {
+                        carousel.style.animationPlayState = 'running';
+                    }
+                });
             }
         }
-        
-        // Update logo images
-        const headerLogo = document.querySelector('.logo img');
-        const footerLogo = document.querySelector('.footer-logo img');
-        
-        if (config.image_logo_url) {
-            if (headerLogo) headerLogo.src = config.image_logo_url;
-            if (footerLogo) footerLogo.src = config.image_logo_url;
+
+        function updateBannerImage() {
+            const bannerSection = document.getElementById('banner-section');
+            if (!bannerSection) return;
+
+            const isMobile = window.innerWidth <= 768;
+            const config = window.siteConfig || {};
+            
+            // Get the appropriate banner URL based on screen size
+            const bannerUrl = isMobile 
+                ? (config.image_mobile_banner_url || '/static/img/banner_mobile.png')
+                : (config.image_banner_url || '/static/img/banner.png');
+
+            // Update the banner background image
+            bannerSection.style.backgroundImage = `url('${bannerUrl}')`;
+            bannerSection.style.backgroundSize = 'cover';
+            bannerSection.style.backgroundPosition = 'center';
         }
-        
-        // Update banner image
-        updateBannerImage();
-        
-        // ... existing code ...
-    }
+
+        // Add event listener for window resize
+        window.addEventListener('resize', updateBannerImage);
+
+        // Update banner image when site config is loaded
+        function updatePageWithConfig(config) {
+            console.log('Updating page with config:', config);
+            
+            // Store config globally
+            window.siteConfig = config;
+            
+            // Update document title
+            if (config.about_title) {
+                document.title = config.about_title;
+            }
+            
+            // Update favicon
+            if (config.image_favicon_url) {
+                const favicon = document.querySelector('link[rel="icon"]');
+                if (favicon) {
+                    favicon.href = config.image_favicon_url;
+                }
+            }
+            
+            // Update logo images
+            const headerLogo = document.querySelector('.logo img');
+            const footerLogo = document.querySelector('.footer-logo img');
+            
+            if (config.image_logo_url) {
+                if (headerLogo) headerLogo.src = config.image_logo_url;
+                if (footerLogo) footerLogo.src = config.image_logo_url;
+            }
+            
+            // Update banner image
+            updateBannerImage();
+            
+            // ... existing code ...
+        }
 </script>
 
 
