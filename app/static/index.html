@@ -100,36 +100,77 @@
     }
     
     .snaps {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        justify-content: center;
         margin-top: 4rem;
         width: 100%;
     }
     
-    .snaps a {
-        display: block;
-        overflow: hidden;
-        border-radius: 8px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .photo-stack {
+        position: relative;
+        width: 250px;
+        height: 250px;
+        margin: 0 auto;
         cursor: pointer;
+        perspective: 1000px;
+        transition: all 0.3s ease;
     }
     
-    .snaps a:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
-    }
-    
-    .snaps img {
-        width: 100%;
-        height: 200px;
+    .photo-stack img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 250px;
         object-fit: cover;
-        transition: transform 0.5s ease;
+        border: 5px solid #f3f3f3;
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        transition: all 0.3s ease-in-out;
+        transform-origin: center center;
     }
     
-    .snaps a:hover img {
-        transform: scale(1.05);
+    /* Apply different initial rotations and positions to create stacked look */
+    .photo-stack img:nth-child(1) {
+        transform: rotate(-5deg) translateX(-5px);
+        z-index: 3;
+    }
+    
+    .photo-stack img:nth-child(2) {
+        transform: rotate(0deg);
+        z-index: 2;
+    }
+    
+    .photo-stack img:nth-child(3) {
+        transform: rotate(5deg) translateX(5px);
+        z-index: 1;
+    }
+    
+    /* Hover effect - fan out */
+    .photo-stack:hover img:nth-child(1) {
+        transform: rotate(-15deg) translate(-80px, -5px) scale(1.1);
+    }
+    
+    .photo-stack:hover img:nth-child(2) {
+        transform: rotate(0deg) translateY(-5px) scale(1.1);
+    }
+    
+    .photo-stack:hover img:nth-child(3) {
+        transform: rotate(15deg) translate(80px, -5px) scale(1.1);
+    }
+    
+    .photo-stack:hover {
+        z-index: 10;
+    }
+    
+    /* For single image case */
+    .photo-stack.single-photo img {
+        transform: rotate(0deg);
+    }
+    
+    .photo-stack.single-photo:hover img {
+        transform: scale(1.1);
     }
     
     /* Modal styles */
@@ -946,7 +987,7 @@
             profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
         }
                     
-        // Update photos in the "snaps" section
+        // Update photos in the "snaps" section with photo stack effect
         const snapsContainer = document.getElementById('snaps');
         if (snapsContainer) {
             // Clear existing content
@@ -960,20 +1001,34 @@
                 { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
             ];
             
-            // Add photos to container if they have URLs - as static images without modal functionality
-            photos.forEach(photo => {
-                if (photo.url) {
-                    const imgContainer = document.createElement('div');
-                    imgContainer.className = 'snap-container';
-                
-                const img = document.createElement('img');
-                    img.src = photo.url;
-                    img.alt = photo.alt || 'Photo';
-                    
-                    imgContainer.appendChild(img);
-                    snapsContainer.appendChild(imgContainer);
+            // Filter out photos without URLs
+            const validPhotos = photos.filter(photo => photo.url);
+            
+            // Group photos into sets of 3 for stacking
+            for (let i = 0; i < validPhotos.length; i += 3) {
+                const stackContainer = document.createElement('div');
+                stackContainer.className = 'photo-stack';
+                if (validPhotos.length - i < 3) {
+                    stackContainer.className += ' single-photo';
                 }
-            });
+                
+                // Add data attribute for modal functionality
+                stackContainer.setAttribute('data-photo', validPhotos[i].url);
+                stackContainer.classList.add('snap-container');
+                
+                // Add up to 3 photos to this stack
+                for (let j = 0; j < 3 && i + j < validPhotos.length; j++) {
+                    const img = document.createElement('img');
+                    img.src = validPhotos[i + j].url;
+                    img.alt = validPhotos[i + j].alt || 'Photo';
+                    stackContainer.appendChild(img);
+                }
+                
+                snapsContainer.appendChild(stackContainer);
+            }
+            
+            // Initialize the modal functionality
+            initializeModalFunctionality();
         }
         
         // Show content once loaded
