@@ -9,7 +9,7 @@
     <style>
         /* Fallback critical styles */
         header { position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background-color: rgba(0, 0, 0, 0.6); }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background-color: transparent; backdrop-filter: blur(5px); }
         .logo { display: block; padding: 5px 15px; position: relative; }
         .logo img { height: 70px; width: auto; display: block; }
         .nav-links { flex-grow: 1; margin-left: auto; text-align: right; }
@@ -419,8 +419,8 @@
                     // Fix header styles
                     const navbar = document.querySelector('.navbar');
                     if (navbar) {
-                        navbar.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-                        navbar.style.backdropFilter = 'blur(8px)';
+                        navbar.style.backgroundColor = 'transparent';
+                        navbar.style.backdropFilter = 'blur(5px)';
                     }
                     
                     // Fix logo styles
@@ -780,18 +780,37 @@
             aboutSection.style.transform = 'scale(0.95)';
         }
         
-        // Add header transparency on banner hover
+        // Add header transparency on banner hover and scroll
         const header = document.querySelector('header');
         const bannerSection = document.getElementById('banner-section');
         
         if (header && bannerSection) {
+            // Make header transparent when hovering over banner
             bannerSection.addEventListener('mouseenter', function() {
                 header.classList.add('transparent-header');
             });
             
             bannerSection.addEventListener('mouseleave', function() {
-                header.classList.remove('transparent-header');
+                if (window.scrollY < 100) {
+                    header.classList.add('transparent-header');
+                } else {
+                    header.classList.remove('transparent-header');
+                }
             });
+            
+            // Make header more transparent at the top of the page
+            window.addEventListener('scroll', function() {
+                if (window.scrollY < 100) {
+                    header.classList.add('transparent-header');
+                } else {
+                    header.classList.remove('transparent-header');
+                }
+            });
+            
+            // Initial state
+            if (window.scrollY < 100) {
+                header.classList.add('transparent-header');
+            }
         }
     });
     
