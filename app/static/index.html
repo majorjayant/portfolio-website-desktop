@@ -1323,8 +1323,30 @@
                 });
             }
             
-            // Update banner image based on screen size
-            updateBannerImage();
+            // Update banner image
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                // Function to update banner image based on screen size
+                function updateBannerImage() {
+                    const isMobile = window.innerWidth <= 768;
+                    const mobileUrl = config.image_mobile_banner_url;
+                    const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                    
+                    if (isMobile && mobileUrl) {
+                        bannerImage.style.backgroundImage = `url('${mobileUrl}')`;
+                    } else {
+                        bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
+                    }
+                    // Always use contain to prevent cropping, and maintain center alignment
+                    bannerImage.style.backgroundSize = "contain";
+                    bannerImage.style.backgroundPosition = "center";
+                    bannerImage.style.backgroundRepeat = "no-repeat";
+                }
+                
+                // Update banner image on load and resize
+                updateBannerImage();
+                window.addEventListener('resize', updateBannerImage);
+            }
             
             // Update footer logo if present
             const footerLogo = document.querySelector('.footer-logo img');
@@ -1544,43 +1566,6 @@
                 initializeModalFunctionality(); 
             }, 50); 
         }
-
-        function updateBannerImage() {
-            const isMobile = window.innerWidth <= 768;
-            const config = window.siteConfig || {};
-            
-            // Get banner element
-            const bannerElement = document.querySelector('.layer-bg');
-            if (!bannerElement) return;
-            
-            // Determine which banner URL to use
-            let bannerUrl;
-            if (isMobile && config.image_mobile_banner_url) {
-                // Use mobile banner on smaller screens if available
-                bannerUrl = config.image_mobile_banner_url;
-                console.log('Using mobile banner:', bannerUrl);
-            } else if (config.image_banner_url) {
-                // Use desktop banner
-                bannerUrl = config.image_banner_url;
-                console.log('Using desktop banner:', bannerUrl);
-            } else {
-                // Fallback
-                bannerUrl = '/static/img/banner.jpg';
-                console.log('Using fallback banner');
-            }
-            
-            // Update the banner background image
-            bannerElement.style.backgroundImage = `url('${bannerUrl}')`;
-            bannerElement.style.backgroundSize = isMobile ? 'contain' : 'cover';
-            bannerElement.style.backgroundPosition = 'center center';
-        }
-
-        // Call this when page loads and when window resizes
-        window.addEventListener('resize', updateBannerImage);
-        document.addEventListener('DOMContentLoaded', function() {
-            // This will be called after the site config is loaded and stored in window.siteConfig
-            updateBannerImage();
-    });
 </script>
 
 

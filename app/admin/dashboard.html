@@ -422,11 +422,6 @@
         
         // Save site configuration
         async function saveSiteConfig(formData) {
-            const saveButton = document.getElementById('save-button');
-            const originalButtonText = saveButton.innerHTML;
-            saveButton.disabled = true;
-            saveButton.innerHTML = '<span class="spinner inline-block w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></span> Saving...'; // Add loading indicator
-
             showSaveMessage('Saving configuration...', 'text-blue-500 bg-blue-50');
             
             // Convert form data to object
@@ -491,21 +486,8 @@
                 retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
                 retryButton.onclick = () => saveSiteConfig(formData);
                 saveMessage.appendChild(retryButton);
-            } finally {
-                // Restore button state regardless of success or error
-                saveButton.disabled = false;
-                saveButton.innerHTML = originalButtonText;
             }
         }
-        
-        // Add CSS for the spinner
-        const style = document.createElement('style');
-        style.textContent = `
-        .spinner {
-            border-top-color: transparent;
-        }
-        `;
-        document.head.appendChild(style);
         
         // Show save message with appropriate styling
         function showSaveMessage(message, classNames) {
