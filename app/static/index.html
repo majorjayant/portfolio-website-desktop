@@ -350,10 +350,10 @@
     /* Updated Photo Carousel Styles */
     .photo-carousel-container {
         position: relative;
-        width: 90%;
-        height: 500px;
-        margin: 80px auto;
-        perspective: 1200px;
+        width: 100%;
+        height: 600px;
+        margin: 100px auto;
+        perspective: 2000px;
         overflow: visible;
     }
 
@@ -362,104 +362,92 @@
         width: 100%;
         height: 100%;
         transform-style: preserve-3d;
-        transition: transform 1s ease;
-        animation: carousel-rotate 25s linear infinite;
-    }
-
-    .photo-carousel:hover {
-        animation-play-state: paused;
+        transition: transform 0.1s ease-out;
     }
 
     .photo-carousel .photo-item {
         position: absolute;
-        width: 320px;
-        height: 320px;
+        width: 350px;
+        height: 350px;
         left: 50%;
         top: 50%;
-        transform-origin: center center -200px; /* Deeper 3D effect */
+        transform-origin: center center -300px;
         backface-visibility: hidden;
         overflow: hidden;
-        border-radius: 12px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
+        background: #fff;
     }
 
     .photo-carousel .photo-item:hover {
-        transform-origin: center center -200px;
-        transform: translate(-50%, -50%) scale(1.15) translateZ(30px);
+        transform: translate(-50%, -50%) scale(1.1) translateZ(50px);
         z-index: 100;
-        box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4);
     }
 
     .photo-carousel .photo-item img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border: 5px solid #f3f3f3;
-        border-radius: 8px;
-        transition: transform 0.5s ease;
+        border: 8px solid #f3f3f3;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
     }
 
     .photo-carousel .photo-item:hover img {
-        transform: scale(1.1);
-    }
-
-    /* Auto-rotation animation */
-    @keyframes carousel-rotate {
-        0% {
-            transform: rotateY(0deg);
-        }
-        100% {
-            transform: rotateY(360deg);
-        }
+        transform: scale(1.05);
     }
 
     /* Carousel navigation controls */
     .carousel-controls {
         position: absolute;
-        bottom: -60px;
+        bottom: -80px;
         left: 0;
         right: 0;
         display: flex;
         justify-content: center;
-        gap: 30px;
+        gap: 40px;
+        z-index: 10;
     }
 
     .carousel-controls button {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         border: none;
         border-radius: 50%;
-        background-color: rgba(122, 107, 95, 0.7);
+        background-color: rgba(122, 107, 95, 0.8);
         color: white;
-        font-size: 20px;
+        font-size: 24px;
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .carousel-controls button:hover {
-        background-color: rgba(122, 107, 95, 0.9);
-        transform: translateY(-3px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        background-color: rgba(122, 107, 95, 1);
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
     }
 
     .carousel-controls button:active {
-        transform: translateY(0);
-        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        transform: translateY(0) scale(0.95);
     }
 
     /* Carousel progress indicator */
     .carousel-progress {
         position: absolute;
-        bottom: -30px;
+        bottom: -40px;
         left: 50%;
         transform: translateX(-50%);
-        width: 200px;
-        height: 4px;
+        width: 300px;
+        height: 6px;
         background-color: rgba(0,0,0,0.1);
-        border-radius: 2px;
+        border-radius: 3px;
         overflow: hidden;
     }
 
@@ -472,13 +460,13 @@
 
     @media (max-width: 768px) {
         .photo-carousel-container {
-            height: 400px;
+            height: 500px;
         }
         
         .photo-carousel .photo-item {
-            width: 260px;
-            height: 260px;
-            transform-origin: center center -150px;
+            width: 280px;
+            height: 280px;
+            transform-origin: center center -200px;
         }
     }
 </style>
@@ -1214,23 +1202,12 @@
         
         if (carousel && prevBtn && nextBtn) {
             let currentRotation = 0;
-            const rotationIncrement = 45; // Smaller increment for smoother rotation
-            let rotationSpeed = 25; // Default speed in seconds
-            let isAutoRotating = true;
-            
-            // Function to handle manual rotation
-            function rotateCarousel(direction) {
-                // Pause the auto-rotation animation
-                carousel.style.animationPlayState = 'paused';
-                isAutoRotating = false;
-                
-                // Update rotation
-                currentRotation += direction * rotationIncrement;
-                carousel.style.transform = `rotateY(${currentRotation}deg)`;
-                
-                // Update progress bar
-                updateProgressBar(currentRotation);
-            }
+            let targetRotation = 0;
+            let isDragging = false;
+            let startX = 0;
+            let startRotation = 0;
+            let isAutoRotating = false;
+            let autoRotationSpeed = 0.5; // degrees per frame
             
             // Create progress bar
             const progressContainer = document.createElement('div');
@@ -1242,28 +1219,105 @@
             
             // Function to update progress bar
             function updateProgressBar(rotation) {
-                // Calculate progress as a percentage of a full rotation
                 const normalizedRotation = rotation % 360;
                 const percentage = (normalizedRotation < 0 ? 360 + normalizedRotation : normalizedRotation) / 360 * 100;
                 progressBar.style.width = `${percentage}%`;
             }
             
+            // Mouse movement handler
+            function handleMouseMove(e) {
+                if (!isDragging) return;
+                
+                const rect = carousel.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const deltaX = e.clientX - startX;
+                const rotationSpeed = 0.5; // Adjust for sensitivity
+                
+                targetRotation = startRotation + deltaX * rotationSpeed;
+                currentRotation = targetRotation;
+                carousel.style.transform = `rotateY(${currentRotation}deg)`;
+                updateProgressBar(currentRotation);
+            }
+            
+            // Mouse down handler
+            function handleMouseDown(e) {
+                isDragging = true;
+                startX = e.clientX;
+                startRotation = currentRotation;
+                carousel.style.transition = 'none';
+            }
+            
+            // Mouse up handler
+            function handleMouseUp() {
+                isDragging = false;
+                carousel.style.transition = 'transform 0.3s ease-out';
+            }
+            
+            // Add mouse event listeners
+            carousel.addEventListener('mousedown', handleMouseDown);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            
+            // Touch event handlers
+            function handleTouchStart(e) {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startRotation = currentRotation;
+                carousel.style.transition = 'none';
+            }
+            
+            function handleTouchMove(e) {
+                if (!isDragging) return;
+                
+                const rect = carousel.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const deltaX = e.touches[0].clientX - startX;
+                const rotationSpeed = 0.5;
+                
+                targetRotation = startRotation + deltaX * rotationSpeed;
+                currentRotation = targetRotation;
+                carousel.style.transform = `rotateY(${currentRotation}deg)`;
+                updateProgressBar(currentRotation);
+            }
+            
+            function handleTouchEnd() {
+                isDragging = false;
+                carousel.style.transition = 'transform 0.3s ease-out';
+            }
+            
+            // Add touch event listeners
+            carousel.addEventListener('touchstart', handleTouchStart);
+            document.addEventListener('touchmove', handleTouchMove);
+            document.addEventListener('touchend', handleTouchEnd);
+            
             // Previous button click handler
             prevBtn.addEventListener('click', function() {
-                rotateCarousel(-1);
+                targetRotation -= 90;
+                currentRotation = targetRotation;
+                carousel.style.transform = `rotateY(${currentRotation}deg)`;
+                updateProgressBar(currentRotation);
             });
             
             // Next button click handler
             nextBtn.addEventListener('click', function() {
-                rotateCarousel(1);
+                targetRotation += 90;
+                currentRotation = targetRotation;
+                carousel.style.transform = `rotateY(${currentRotation}deg)`;
+                updateProgressBar(currentRotation);
             });
             
             // Keyboard navigation
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'ArrowLeft') {
-                    rotateCarousel(-1);
+                    targetRotation -= 90;
+                    currentRotation = targetRotation;
+                    carousel.style.transform = `rotateY(${currentRotation}deg)`;
+                    updateProgressBar(currentRotation);
                 } else if (e.key === 'ArrowRight') {
-                    rotateCarousel(1);
+                    targetRotation += 90;
+                    currentRotation = targetRotation;
+                    carousel.style.transform = `rotateY(${currentRotation}deg)`;
+                    updateProgressBar(currentRotation);
                 }
             });
             
@@ -1272,7 +1326,6 @@
             photoItems.forEach(item => {
                 // Add hover effect
                 item.addEventListener('mouseenter', function() {
-                    carousel.style.animationPlayState = 'paused';
                     // Slightly bring forward other items on hover
                     photoItems.forEach(otherItem => {
                         if (otherItem !== item) {
@@ -1282,9 +1335,6 @@
                 });
                 
                 item.addEventListener('mouseleave', function() {
-                    if (isAutoRotating) {
-                        carousel.style.animationPlayState = 'running';
-                    }
                     // Restore other items
                     photoItems.forEach(otherItem => {
                         otherItem.style.opacity = '1';
@@ -1301,60 +1351,12 @@
                     if (modal && modalImg) {
                         modal.style.display = 'block';
                         modalImg.src = photoUrl;
-                        isAutoRotating = false;
                     }
                 });
-            });
-            
-            // Handle modal close to resume rotation
-            const closeModal = document.querySelector('.close-modal');
-            if (closeModal) {
-                closeModal.addEventListener('click', function() {
-                    const modal = document.getElementById('photoModal');
-                    if (modal) {
-                        modal.style.display = 'none';
-                        
-                        // Resume auto-rotation after a delay
-                        setTimeout(() => {
-                            carousel.style.transform = '';
-                            carousel.style.animationPlayState = 'running';
-                            isAutoRotating = true;
-                        }, 500);
-                    }
-                });
-            }
-            
-            // Resume auto-rotation when mouse leaves the carousel area
-            carousel.parentElement.addEventListener('mouseleave', function() {
-                // Only resume if it was paused by buttons
-                if (carousel.style.transform && !document.getElementById('photoModal').style.display === 'block') {
-                    // Smoothly transition back to auto-rotation
-                    setTimeout(() => {
-                        carousel.style.transition = 'transform 2s ease';
-                        carousel.style.transform = '';
-                        carousel.style.animationPlayState = 'running';
-                        isAutoRotating = true;
-                        
-                        // Reset transition after animation completes
-                        setTimeout(() => {
-                            carousel.style.transition = 'transform 1s ease';
-                        }, 2000);
-                    }, 1000);
-                }
             });
             
             // Initialize progress bar
             updateProgressBar(0);
-            
-            // Update progress during auto-rotation
-            setInterval(() => {
-                if (isAutoRotating) {
-                    const computedStyle = window.getComputedStyle(carousel);
-                    const matrix = new WebKitCSSMatrix(computedStyle.transform);
-                    const angle = Math.atan2(matrix.m32, matrix.m33) * (180/Math.PI);
-                    updateProgressBar(angle);
-                }
-            }, 100);
         }
     }
     
@@ -1383,7 +1385,7 @@
                 
                 // Position photos in a circle for 3D rotation
                 const angle = (index / validPhotos.length) * 2 * Math.PI;
-                const radius = 200; // Increased radius for more space between photos
+                const radius = 300; // Increased radius for more space between photos
                 
                 // Calculate position in 3D space
                 photoItem.style.transform = `translate(-50%, -50%) rotateY(${angle * (180/Math.PI)}deg) translateZ(${radius}px)`;
