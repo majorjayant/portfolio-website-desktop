@@ -486,7 +486,7 @@
         --box-bg: #1e272e;
         --box-shadow: #0000001c;
         --box-shadow-border: #0000000f;
-        --box-border: #fff;
+        --box-border: #e6e0d4; /* Updated border color */
     }
 
     .carousel {
@@ -494,28 +494,38 @@
         display: block;
         width: 100%;
         box-sizing: border-box;
-        padding-top: 125px;
+        padding-top: 60px; /* Reduced from 125px to reduce gap */
+        margin-top: -40px; /* Added negative margin to reduce gap */
     }
 
     .carousel__prev, .carousel__next {
         position: absolute;
-        bottom: -15%;
+        bottom: 45%; /* Position in the middle of the carousel */
         transition: transform 0.25s ease;
         z-index: 10;
-    }
-
-    .carousel__prev i, .carousel__next i {
-        font-size: 60px;
-        color: var(--box-border);
+        background-color: rgba(230, 224, 212, 0.7); /* Semi-transparent theme color */
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         cursor: pointer;
     }
 
+    .carousel__prev i, .carousel__next i {
+        font-size: 30px; /* Reduced size for better appearance */
+        color: #1e272e; /* Dark color for contrast */
+    }
+
     .carousel__prev:hover, .carousel__next:hover { 
-        transform: scale(1.25); 
+        transform: scale(1.1);
+        background-color: rgba(230, 224, 212, 0.9); /* Darken on hover */
     }  
 
-    .carousel__prev { left: 40%; }
-    .carousel__next { right: 40%; }  
+    .carousel__prev { left: 15px; } /* Position at edges instead of center */
+    .carousel__next { right: 15px; }
 
     .carousel__body {
         width: 100%;
@@ -1406,18 +1416,55 @@
     }
     
     function prev() {
+        console.log("Prev button clicked"); // Debug log
         move(--currIndex);
     }
     
     function next() {
+        console.log("Next button clicked"); // Debug log
         move(++currIndex);    
     }
     
     function bindEvents() {
-        if (!prevBtn || !nextBtn) return;
+        if (!prevBtn || !nextBtn) {
+            console.error("Navigation buttons not found for binding!");
+            return;
+        }
+        console.log("Binding navigation events");
+        
         window.onresize = resize;
-        prevBtn.addEventListener('click', prev);
-        nextBtn.addEventListener('click', next);
+        
+        // Remove any existing event listeners first
+        prevBtn.removeEventListener('click', prev);
+        nextBtn.removeEventListener('click', next);
+        
+        // Add event listeners with explicit binding
+        prevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Prev button clicked via direct handler");
+            prev();
+        });
+        
+        nextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Next button clicked via direct handler");
+            next();
+        });
+        
+        // Also try adding as inline onclick for compatibility
+        prevBtn.onclick = function(e) {
+            e.preventDefault();
+            prev();
+            return false;
+        };
+        
+        nextBtn.onclick = function(e) {
+            e.preventDefault();
+            next();
+            return false;
+        };
     }
     
     function initializeCarouselControls() {
@@ -1429,16 +1476,16 @@
         if (carousel) {
             items = carousel.querySelectorAll('.carousel__slider__item');
             console.log(`Found ${items.length} carousel items`);
-        } else {
+                } else {
             items = [];
             console.error("Carousel element not found!");
-        }
+                }
         
         if (!prevBtn || !nextBtn) {
             console.error("Carousel navigation buttons not found!");
         }
-    }
-    
+        }
+        
     function updateCarousel(photos) {
         const snapsContainer = document.getElementById('snaps');
         if (!snapsContainer) {
@@ -1476,16 +1523,16 @@
             
             const frontBox = document.createElement('div');
             frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
-            
-            const img = document.createElement('img');
+                
+                const img = document.createElement('img');
             img.src = photo.url;
             img.alt = photo.alt || 'Photo';
-            img.onerror = function() {
+                img.onerror = function() {
                 console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-                this.onerror = null;
-                this.src = '/static/img/placeholder.png';
-            };
-            
+                    this.onerror = null;
+                    this.src = '/static/img/placeholder.png';
+                };
+                
             frontBox.appendChild(img);
             
             const leftBox = document.createElement('div');
@@ -1501,16 +1548,20 @@
             carouselSlider.appendChild(item);
         });
         
-        // Add navigation buttons
+        // Add navigation buttons with improved markup
         const prevButton = document.createElement('div');
         prevButton.className = 'carousel__prev';
         prevButton.id = 'prevBtn';
-        prevButton.innerHTML = '<i class="fas fa-angle-left"></i>';
+        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; // Use chevron for nicer appearance
+        prevButton.setAttribute('role', 'button');
+        prevButton.setAttribute('aria-label', 'Previous image');
         
         const nextButton = document.createElement('div');
         nextButton.className = 'carousel__next';
         nextButton.id = 'nextBtn';
-        nextButton.innerHTML = '<i class="fas fa-angle-right"></i>';
+        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; // Use chevron for nicer appearance
+        nextButton.setAttribute('role', 'button');
+        nextButton.setAttribute('aria-label', 'Next image');
         
         // Assemble carousel
         carouselBody.appendChild(carouselSlider);
@@ -1520,21 +1571,24 @@
         snapsContainer.appendChild(carouselContainer);
         
         // Initialize carousel controls
-        initializeCarouselControls();
-        
-        // Start carousel if we have items
-        if (items && items.length > 0) {
-            console.log("Starting carousel...");
-            resize();
-            move(Math.ceil(items.length / 2)); // Center on middle item
-            bindEvents();
-            timer(); // Start auto-rotation
-        } else {
-            console.error("No carousel items found after setup!");
-        }
-        
-        // Initialize modal functionality
-        initializeModalFunctionality();
+        setTimeout(() => {
+            // Adding a small delay to ensure DOM is ready
+            initializeCarouselControls();
+            
+            // Start carousel if we have items
+            if (items && items.length > 0) {
+                console.log("Starting carousel...");
+                resize();
+                move(Math.ceil(items.length / 2)); // Center on middle item
+                bindEvents();
+                timer(); // Start auto-rotation
+            } else {
+                console.error("No carousel items found after setup!");
+            }
+            
+            // Initialize modal functionality
+            initializeModalFunctionality();
+        }, 100);
     }
 
     // Function to close the modal
