@@ -229,12 +229,11 @@ header {
 
 /* ===== Banner Section ===== */
 #banner-section {
-    height: 90vh; /* Reduced from 100vh to prevent overflow on laptop screens */
+    height: 85vh; /* Slightly reduced height */
     margin-top: 0;
     position: relative;
     overflow: hidden;
     perspective: 1000px;
-    /* Removing padding-top that was causing issues */
 }
 
 .parallax-container {
@@ -255,7 +254,7 @@ header {
 }
 
 .layer-bg {
-    transform: translateZ(-50px) scale(1.5);
+    transform: translateZ(-50px) scale(1.1); /* Reduced scale from 1.5 (approx 40% reduction in perceived zoom) */
     background-size: cover !important;
     background-position: center center !important;
 }
@@ -263,13 +262,12 @@ header {
 /* Media query for mobile devices */
 @media (max-width: 768px) {
     #banner-section {
-        height: 70vh; /* Slightly shorter on mobile */
-        /* Removing padding-top that was causing issues */
+        height: 55vh; /* Adjusted height for mobile banner aspect ratio */
     }
     
     .layer-bg {
-        transform: translateZ(-25px) scale(1.05); /* Reduced scale to fix cropping issues */
-        background-size: contain !important; /* Changed from cover to contain to prevent cropping */
+        transform: translateZ(0) scale(1); /* Removed parallax scaling for mobile */
+        background-size: contain !important; 
         background-position: center center !important;
     }
 }
@@ -277,14 +275,14 @@ header {
 /* For laptops and smaller desktops */
 @media (max-height: 900px) {
     #banner-section {
-        height: 80vh; /* Even smaller height for smaller screens */
+        height: 75vh; /* Adjusted smaller screen height */
     }
 }
 
 /* For very small screens */
 @media (max-width: 480px) {
     #banner-section {
-        height: 60vh; /* Further reduced height for very small screens */
+        height: 45vh; /* Adjusted very small screen height */
     }
 }
 
@@ -317,20 +315,10 @@ header {
 /* For mobile, ensure the banner image is fully visible */
 @media (max-width: 768px) {
     .banner-image {
-        background-size: contain !important; /* Changed from cover to contain to prevent cropping */
-        /* Less extreme fade effect on sides for mobile */
-        -webkit-mask-image: linear-gradient(to right, 
-            rgba(0,0,0,0.9) 0%, 
-            rgba(0,0,0,1) 5%, 
-            rgba(0,0,0,1) 95%, 
-            rgba(0,0,0,0.9) 100%
-        );
-        mask-image: linear-gradient(to right, 
-            rgba(0,0,0,0.9) 0%, 
-            rgba(0,0,0,1) 5%, 
-            rgba(0,0,0,1) 95%, 
-            rgba(0,0,0,0.9) 100%
-        );
+        background-size: contain !important; 
+        /* Removing mask as contain should handle fitting */
+        -webkit-mask-image: none;
+        mask-image: none;
     }
 }
 
@@ -344,12 +332,12 @@ header {
 .about-container {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 2rem;
+  align-items: flex-end;
+  gap: 3rem;
 }
 
 .text-main {
-  flex-basis: 45%;
+  flex-basis: 55%;
   flex-grow: 1;
   opacity: 1;
   transition: all 0.5s ease;
@@ -383,7 +371,7 @@ header {
 }
 
 .img-main {
-  flex-basis: 50%;
+  flex-basis: 40%;
   flex-grow: 1;
   text-align: center;
   opacity: 1;
