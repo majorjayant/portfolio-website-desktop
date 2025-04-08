@@ -526,12 +526,13 @@
 
     .carousel__slider {
         position: relative;
-        transition: transform 1s ease-in-out;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background: var(--crsl-bg);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 1;
+        will-change: transform;
     }
 
     .carousel__slider__item {
@@ -539,18 +540,20 @@
         display: block;
         float: left;
         box-sizing: border-box;
-        margin-left: 15px;
-        margin-right: 15px;
+        margin-left: 5px;
+        margin-right: 5px;
         width: 360px;
         height: 384px;
+        will-change: transform;
     }
 
     .item__3d-frame {
         position: relative;
         width: 100%;
         height: 100%;
-        transition: transform 1s ease-in-out;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         transform-style: preserve-3d;
+        will-change: transform;
     }
 
     .item__3d-frame:after {
@@ -629,8 +632,8 @@
         .carousel__slider__item {
             width: 300px;
             height: 324px;
-            margin-left: 10px;
-            margin-right: 10px;
+            margin-left: 3px;
+            margin-right: 3px;
         }
 
         .carousel__prev { left: 30%; }
@@ -641,8 +644,8 @@
         .carousel__slider__item {
             width: 240px;
             height: 264px;
-            margin-left: 8px;
-            margin-right: 8px;
+            margin-left: 2px;
+            margin-right: 2px;
         }
 
         .carousel__prev { left: 20%; }
@@ -1387,7 +1390,7 @@
     }
     
     // Initialize carousel controls - Now primarily defines functions and vars
-    let carousel, prevBtn, nextBtn, items, width, height, margin = 20, currIndex = 0, interval, intervalTime = 4000; 
+    let carousel, prevBtn, nextBtn, items, width, height, margin = 5, currIndex = 0, interval, intervalTime = 4000; 
 
     function resize() {
         if (!carousel || !items || items.length === 0) return;
@@ -1414,28 +1417,31 @@
         // Calculate center position
         const centerOffset = (window.innerWidth / 2) - (width / 2);
         
-        // Apply transformations to each item
-        for(let i = 0; i < items.length; i++) {
-            let item = items[i];
-            let box = item.querySelector('.item__3d-frame');
-            if (box) { 
-                if(i == (index - 1)) {
-                    // Center item
-                    item.classList.add('carousel__slider__item--active');
-                    box.style.transform = "perspective(1200px)";
-                    item.style.transform = `translateX(${centerOffset}px)`;
-                } else {
-                    // Side items
-                    item.classList.remove('carousel__slider__item--active');
-                    const distance = Math.abs(i - (index - 1));
-                    const rotation = i < (index - 1) ? 40 : -40;
-                    const scale = 1 - (distance * 0.1);
-                    const translateX = (i - (index - 1)) * (width + margin);
-                    box.style.transform = `perspective(1200px) rotateY(${rotation}deg) scale(${scale})`;
-                    item.style.transform = `translateX(${translateX + centerOffset}px)`;
+        // Use requestAnimationFrame for smoother animations
+        requestAnimationFrame(() => {
+            // Apply transformations to each item
+            for(let i = 0; i < items.length; i++) {
+                let item = items[i];
+                let box = item.querySelector('.item__3d-frame');
+                if (box) { 
+                    if(i == (index - 1)) {
+                        // Center item
+                        item.classList.add('carousel__slider__item--active');
+                        box.style.transform = "perspective(1200px)";
+                        item.style.transform = `translateX(${centerOffset}px)`;
+                    } else {
+                        // Side items
+                        item.classList.remove('carousel__slider__item--active');
+                        const distance = Math.abs(i - (index - 1));
+                        const rotation = i < (index - 1) ? 30 : -30; // Reduced rotation angle
+                        const scale = 1 - (distance * 0.05); // Reduced scale difference
+                        const translateX = (i - (index - 1)) * (width + margin);
+                        box.style.transform = `perspective(1200px) rotateY(${rotation}deg) scale(${scale})`;
+                        item.style.transform = `translateX(${translateX + centerOffset}px)`;
+                    }
                 }
             }
-        }
+        });
 
         if (resetTimer) {
             timer();
@@ -1445,7 +1451,9 @@
     function timer() {
         clearInterval(interval);  
         interval = setInterval(() => {
-            move(++currIndex);
+            requestAnimationFrame(() => {
+                move(++currIndex);
+            });
         }, intervalTime);    
     }
     
@@ -1631,10 +1639,10 @@
                     timer();
                     
                     console.log("Carousel initialized successfully");
-                        } else {
+                } else {
                     console.error("No carousel items found after setup!");
-                        }
-                    } else {
+                }
+            } else {
                 console.error("Carousel element not found!");
             }
             
