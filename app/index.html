@@ -40,19 +40,30 @@
                 // Process data - Use site_config and provide a default object
                 const config = data.site_config || {}; 
                 updatePageWithConfig(config);
-            })
-        }
+                
+                // Now, update logo and initialize modal *after* data is processed
+                // Update header logo - Correct selector
+                const logoImg = document.querySelector('.logo img');
+                if (logoImg && config.image_logo_url) {
+                    logoImg.src = config.image_logo_url;
+                }
         
-        // Update header logo - Correct selector
-        const logoImg = document.querySelector('.logo img');
-        if (logoImg && config.image_logo_url) {
-            logoImg.src = config.image_logo_url;
-        }
-
-        // Reinitialize the modal functionality *after* snaps are added
-        initializeModalFunctionality();
+                // Initialize the modal functionality *after* snaps are added by updatePageWithConfig
+                initializeModalFunctionality(); 
+                
+            })
+            .catch(error => {
+                console.error('Error loading from API:', error);
+                showErrorMessage('Error loading configuration. Please refresh or try again later.');
+            });
+            
+        // Removed logic previously outside the .then block
     }
-    
+
+    function showErrorMessage(message) {
+        // ... existing code ...
+    }
+
     // Modal functionality for about photos
     function initializeModalFunctionality() {
         const modal = document.getElementById('photoModal');
