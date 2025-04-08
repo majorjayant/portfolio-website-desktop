@@ -187,7 +187,7 @@
         to {opacity: 1}
     }
     
-    /* New Banner Styles with 3D effect */
+    /* New Banner Styles with parallax effect */
     #banner-section {
         height: 100vh;
         margin-top: 0;
@@ -195,23 +195,51 @@
         overflow: hidden;
         perspective: 1000px;
     }
-    
-    .banner-perspective-container {
+
+    .parallax-container {
         height: 100%;
         width: 100%;
         position: relative;
         transform-style: preserve-3d;
     }
-    
-    .banner-image-layer {
+
+    .parallax-layer {
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
         background-size: cover;
         background-position: center;
         transform-origin: center center; 
-        transform: scale(1.1);
         transition: transform 0.3s ease-out, opacity 0.5s ease-out;
         z-index: 1;
+    }
+    
+    .layer-bg {
+        transform: translateZ(-50px) scale(1.5);
+    }
+    
+    .layer-1 {
+        background: rgba(0,0,0,0.4);
+        z-index: 2;
+    }
+    
+    .layer-2 {
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+        z-index: 3;
+    }
+
+    .banner-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #fff;
+        z-index: 4;
     }
     
     /* Styles for the About section transition */
@@ -382,7 +410,7 @@
     <!-- Banner Section -->
     <section class="banner" id="banner-section">
         <div class="parallax-container">
-            <div class="parallax-layer layer-bg" id="banner-image"></div>
+            <div class="parallax-layer layer-bg" id="banner-image" style="background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'); background-size: cover; background-position: center;"></div>
             <div class="parallax-layer layer-1"></div>
             <div class="parallax-layer layer-2"></div>
             <div class="banner-content">
@@ -627,10 +655,16 @@
             }
         });
         
-        // Initialize image elements and fetch content
+        // Initialize banner image
         const bannerImage = document.getElementById('banner-image');
         if (bannerImage) {
-            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+            // Set background image from S3 or use the default one set in HTML
+            if (!bannerImage.style.backgroundImage || bannerImage.style.backgroundImage === 'none') {
+                bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+            }
+            bannerImage.style.backgroundSize = "cover";
+            bannerImage.style.backgroundPosition = "center";
+            // Transform is now handled by the parallax effect code
         }
 
         // Try to fetch the latest content from our AWS Lambda endpoint
@@ -660,21 +694,37 @@
     function handleScrollEffects() {
         const scrollTop = window.scrollY;
         const bannerSection = document.getElementById('banner-section');
-        const bannerImageLayer = document.getElementById('banner-image');
+        const bannerImage = document.getElementById('banner-image');
+        const layer1 = document.querySelector('.parallax-layer.layer-1');
+        const layer2 = document.querySelector('.parallax-layer.layer-2');
         const aboutSection = document.getElementById('about-section');
         const viewportHeight = window.innerHeight;
         const bannerHeight = viewportHeight; // Since banner is 100vh
 
-        if (!bannerSection || !bannerImageLayer || !aboutSection) return;
+        if (!bannerSection || !bannerImage || !aboutSection) return;
 
-        // --- 1. Banner 3D Rotation --- 
+        // --- 1. Banner Parallax on Scroll --- 
         const scrollPercentInBanner = Math.min(scrollTop / bannerHeight, 1); // 0 to 1 within banner scroll
-        const maxRotation = 10; // Max degrees rotation (keep it subtle)
-        const rotationX = maxRotation * scrollPercentInBanner;
-        // Adjust scale slightly based on scroll for more depth
-        const currentScale = 1.1 + scrollPercentInBanner * 0.1; // Scale from 1.1 to 1.2
-        // Apply rotation and scale. Perspective is handled by the parent's CSS.
-        bannerImageLayer.style.transform = `rotateX(${rotationX}deg) scale(${currentScale})`;
+        
+        // Apply scroll-based transformations to parallax layers
+        if (bannerImage) {
+            // The background image moves up slightly as we scroll
+            bannerImage.style.transform = `translateZ(-50px) scale(1.6) translateY(${scrollPercentInBanner * 50}px)`;
+        }
+        
+        if (layer1) {
+            // Layer 1 moves at a different rate
+            layer1.style.transform = `translateY(${scrollPercentInBanner * 30}px)`;
+            // Increase opacity as we scroll
+            layer1.style.opacity = 0.4 + (scrollPercentInBanner * 0.2);
+        }
+        
+        if (layer2) {
+            // Layer 2 moves at a different rate
+            layer2.style.transform = `translateY(${scrollPercentInBanner * 20}px)`;
+            // Increase opacity as we scroll
+            layer2.style.opacity = 0.6 + (scrollPercentInBanner * 0.3);
+        }
 
         // --- 2. Transition between Banner and About --- 
         const transitionStart = bannerHeight * 0.5; // Start transition earlier (50% scroll)
@@ -983,6 +1033,42 @@
                 
                 // Insert as first child to be below the logo
                 logoElement.insertBefore(beforeElement, logoElement.firstChild);
+            }
+        });
+    </script>
+
+    <!-- Add 3D banner effect -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bannerSection = document.getElementById('banner-section');
+            const bannerImage = document.getElementById('banner-image');
+            const layer1 = document.querySelector('.parallax-layer.layer-1');
+            const layer2 = document.querySelector('.parallax-layer.layer-2');
+            
+            // Set initial scale to ensure image covers the area even with movement
+            if (bannerImage) {
+                bannerImage.style.transform = 'translateZ(-50px) scale(1.6)';
+            }
+            
+            if (bannerSection && bannerImage && layer1 && layer2) {
+                bannerSection.addEventListener('mousemove', function(e) {
+                    // Calculate mouse position relative to the center of the section
+                    const rect = bannerSection.getBoundingClientRect();
+                    const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+                    const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+                    
+                    // Apply transformations with different intensities
+                    bannerImage.style.transform = `translateZ(-50px) scale(1.6) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
+                    layer1.style.transform = `translate(${mouseX * 15}px, ${mouseY * 15}px)`;
+                    layer2.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
+                });
+                
+                bannerSection.addEventListener('mouseleave', function() {
+                    // Reset transformations smoothly
+                    bannerImage.style.transform = 'translateZ(-50px) scale(1.6)';
+                    layer1.style.transform = 'translate(0, 0)';
+                    layer2.style.transform = 'translate(0, 0)';
+                });
             }
         });
     </script>
