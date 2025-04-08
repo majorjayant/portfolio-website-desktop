@@ -1290,8 +1290,8 @@
             
             // Extract site_config from the response and store globally
             const config = data.site_config;
-            window.siteConfig = config;
-            
+            window.siteConfig = config; // Assign config here
+
             if (!config) {
                 console.error('site_config not found in API response:', data);
                 showErrorMessage('Configuration data is missing in the response.');
