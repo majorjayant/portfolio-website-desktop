@@ -1,83 +1,75 @@
 version: 1
 frontend:
   phases:
+    preBuild:
+      commands:
+        - echo "Installing dependencies..."
+        - echo "No specific dependencies needed for static site"
     build:
       commands:
-        - echo "Building portfolio website with admin section"
-        - mkdir -p app/static/admin
-        - mkdir -p app/static/data
-        - mkdir -p app/static/api
-        - mkdir -p app/static/admin-direct
-        - echo "Copying admin files..."
-        - cp -f app/admin/dashboard.html app/static/admin/dashboard.html || echo "dashboard.html not found"
-        - cp -f app/admin/index.html app/static/admin/index.html || echo "admin index.html not found"
-        - echo "Admin files in static directory:" && ls -la app/static/admin/
-        - echo "Copying admin-direct directories..."
-        - cp -f app/admin-direct/index.html app/static/admin-direct/index.html || echo "admin-direct/index.html not found"
-        - if [ ! -f app/static/data/site_config.json ]; then echo '{"site_configs":{}}' > app/static/data/site_config.json; fi
-        - echo "Static files ready for deployment"
+        - echo "Build started..."
+        - echo "Copying static assets to build directory..."
+        - mkdir -p public/static
+        - cp -R app/static/* public/static/
+        - echo "Creating redirect from root to main page..."
+        - echo '<!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta http-equiv="refresh" content="0;url=/static/html/index.html">
+              <title>Redirecting to Portfolio</title>
+          </head>
+          <body>
+              <p>Redirecting to <a href="/static/html/index.html">Portfolio Homepage</a>...</p>
+          </body>
+          </html>' > public/index.html
   artifacts:
-    baseDirectory: app/static
+    baseDirectory: public
     files:
       - '**/*'
   cache:
-    paths:
-      - node_modules/**/*
+    paths: []
   customHeaders:
     - pattern: '**/*'
       headers:
         - key: 'Cache-Control'
-          value: 'no-cache, no-store, must-revalidate'
-    - pattern: '*.json'
-      headers:
-        - key: 'Content-Type'
-          value: 'application/json'
-        - key: 'Access-Control-Allow-Origin'
-          value: '*'
-    - pattern: '*.js'
-      headers:
-        - key: 'Content-Type'
-          value: 'application/javascript'
-        - key: 'Access-Control-Allow-Origin'
-          value: '*'
-    - pattern: 'admin/*'
-      headers:
-        - key: 'Cache-Control'
-          value: 'no-cache, no-store, must-revalidate'
-  rewrites:
-    # Admin Routes - Order is important
-    - source: '/admin'
-      target: '/admin/index.html'
-      status: '200'
-    - source: '/admin/'
-      target: '/admin/index.html'
-      status: '200'
-    - source: '/admin/dashboard'
-      target: '/admin/dashboard.html'
-      status: '200'
-    - source: '/admin/dashboard/'
-      target: '/admin/dashboard.html'
-      status: '200'
-    - source: '/admin-direct'
-      target: '/admin-direct/index.html'
-      status: '200'
-    - source: '/admin-direct/'
-      target: '/admin-direct/index.html'
-      status: '200'
-    # API Redirects
-    - source: '/api/site-config'
-      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config'
-      status: '200'
-    - source: '/api/get-site-config'
-      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?action=get_site_config&type=site_config'
-      status: '200'
-    - source: '/api/get-content'
-      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
-      status: '200'
-    - source: '/api/get-content/'
-      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
-      status: '200'
-    # Catch-all route for SPA - this needs to be last
-    - source: '/<*>'
-      target: '/index.html'
-      status: '200'
+          value: 'public, max-age=0, must-revalidate'
+        - key: 'X-Frame-Options'
+          value: 'SAMEORIGIN'
+    
+api_redirects:
+  - source_path: /api/site-config
+    target_url: https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config
+    status: '200'
+  - source_path: /api/get-site-config
+    target_url: https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging?type=site_config
+    status: '200'
+  - source_path: /api/get-content
+    target_url: https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging?type=content
+    status: '200'
+
+redirects:
+  - source: /
+    destination: /static/html/index.html
+    status: '302'
+  - source: /index.html
+    destination: /static/html/index.html
+    status: '302'
+  - source: /admin
+    destination: /admin-direct/
+    status: '302'
+  - source: /admin/
+    destination: /admin-direct/
+    status: '302'
+  - source: /admin/index.html
+    destination: /admin-direct/
+    status: '302'
+  - source: /projects
+    destination: /static/html/projects.html
+    status: '200'
+  - source: /solutions
+    destination: /static/html/solutions.html
+    status: '200'
+  - source: /contact
+    destination: /static/html/contact.html
+    status: '200'

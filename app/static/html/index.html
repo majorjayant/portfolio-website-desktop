@@ -743,15 +743,13 @@
         };
     });
     
-    // Global variable for modal elements
-    let closeModal;
-    let photoModal;
+    // Setup for photo modal functionality
     
     // Modal functionality for about photos
     function initializeModalFunctionality() {
-        photoModal = document.getElementById('photoModal');
+        const photoModal = document.getElementById('photoModal');
         const modalImg = document.getElementById('modalImage');
-        closeModal = document.querySelector('.close-modal');
+        const closeModal = document.querySelector('.close-modal');
         const snapContainers = document.querySelectorAll('.snap-container');
         
         // Open modal when clicking on a photo
@@ -805,21 +803,21 @@
                 photoModal.style.display = 'none';
             });
         }
+        
+        // Close modal when clicking outside the image
+        window.addEventListener('click', function(e) {
+            if (photoModal && e.target === photoModal) {
+                photoModal.style.display = 'none';
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (photoModal && e.key === 'Escape' && photoModal.style.display === 'block') {
+                photoModal.style.display = 'none';
+            }
+        });
     }
-    
-    // Close modal when clicking outside the image
-    window.addEventListener('click', function(e) {
-        if (photoModal && e.target === photoModal) {
-            photoModal.style.display = 'none';
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (photoModal && e.key === 'Escape' && photoModal.style.display === 'block') {
-            photoModal.style.display = 'none';
-        }
-    });
 </script>
 
 
@@ -842,6 +840,21 @@
                 
                 // Insert as first child to be below the logo
                 logoElement.insertBefore(beforeElement, logoElement.firstChild);
+            }
+        });
+    </script>
+
+    <!-- Close modal when clicking on close button -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const closeModalButton = document.querySelector('.close-modal');
+            if (closeModalButton) {
+                closeModalButton.addEventListener('click', function() {
+                    const modal = document.getElementById('photoModal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                });
             }
         });
     </script>
