@@ -43,8 +43,8 @@
             left: 0;
             width: 100%;
             z-index: 1000;
-            background-color: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
+            background-color: rgba(127, 127, 127, 0.65);
+            backdrop-filter: none;
             transition: background-color 0.3s ease, padding 0.3s ease;
         }
 
@@ -60,6 +60,9 @@
         .logo-container {
             display: flex;
             align-items: center;
+            background-color: rgba(74, 97, 114, 0.2);
+            padding: 5px 15px;
+            border-radius: 4px;
         }
 
         .main-logo {
@@ -87,7 +90,7 @@
         .nav-link {
             color: #fff;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 1rem;
             padding: 0.5rem 0;
             transition: color 0.3s ease;
@@ -134,16 +137,14 @@
         }
 
         .contact-button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
             background-color: #ebf0a2;
             color: #333;
-            text-decoration: none;
+            border-radius: 30px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-weight: 600;
-            border-radius: 50px;
-            transition: all 0.3s ease;
         }
 
         .contact-button:hover {
@@ -162,30 +163,31 @@
         /* Hero Banner Styles */
         .hero-banner {
             position: relative;
-            height: 100vh;
+            height: calc(100vh - 80px);
             width: 100%;
             overflow: hidden;
             display: flex;
             align-items: center;
-            justify-content: center;
-            background-color: #090909;
+            justify-content: flex-start;
+            margin-top: 80px;
+            background-color: transparent;
             color: #fff;
         }
 
         .banner-content {
             position: relative;
             z-index: 2;
-            max-width: 800px;
+            max-width: 80%;
             text-align: left;
             padding: 0 2rem;
-            margin-left: 5%;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 1s forwards 0.5s;
+            margin-left: 12%;
+            opacity: 1;
+            transform: none;
+            animation: none;
         }
 
         .animated-title {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
             line-height: 1.1;
@@ -193,32 +195,20 @@
         }
 
         .animated-subtitle {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin-bottom: 2rem;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
         }
 
-        .banner-cta {
-            margin-top: 2rem;
-        }
-
-        .scroll-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #ebf0a2;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .scroll-cta:hover {
-            gap: 0.75rem;
-        }
-
-        .scroll-cta svg {
-            animation: bounce 2s infinite;
+        .animated-subtitle:after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: #ebf0a2;
+            margin-top: 15px;
         }
 
         .banner-image-container {
@@ -236,9 +226,8 @@
             background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner');
             background-size: cover;
             background-position: center;
-            transition: transform 0.5s ease-out;
-            will-change: transform;
-            transform: scale(1.1);
+            transform: none !important;
+            will-change: auto;
         }
 
         .scroll-indicator {
@@ -683,27 +672,14 @@
     <!-- Main Content -->
     <main>
         
-    <!-- Banner Section - New Animated Version -->
+    <!-- Banner Section - Updated Design -->
     <section class="hero-banner">
         <div class="banner-content">
-            <h1 class="animated-title" id="about-title">Turning Chaos Into Clarity</h1>
-            <p class="animated-subtitle" id="about-subtitle">Creative Solutions for Modern Challenges</p>
-            <div class="banner-cta">
-                <a href="#about" class="scroll-cta">
-                    Scroll to explore
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <polyline points="19 12 12 19 5 12"></polyline>
-                    </svg>
-                </a>
-            </div>
+            <h1 class="animated-title" id="about-title">Jayant Arora</h1>
+            <p class="animated-subtitle" id="about-subtitle">Curious Mind, Data Geek, Product Whisperer</p>
         </div>
         <div class="banner-image-container">
             <div id="banner-image" class="parallax-banner"></div>
-        </div>
-        <div class="scroll-indicator">
-            <span>Scroll</span>
-            <div class="scroll-line"></div>
         </div>
     </section>
 
@@ -1227,15 +1203,12 @@
         });
     </script>
     
-    <!-- Modern Scroll Animation Scripts -->
+    <!-- Updated Scroll Animation Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Header scroll effect
             const header = document.querySelector('.main-header');
             const headerContainer = document.querySelector('.header-container');
-            
-            // Parallax effect for banner
-            const parallaxBanner = document.querySelector('.parallax-banner');
             
             // Scroll reveal elements
             const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
@@ -1244,19 +1217,12 @@
             window.addEventListener('scroll', function() {
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                 
-                // Header transformation on scroll
-                if (scrollTop > 50) {
-                    header.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                    headerContainer.style.padding = '0.5rem 2rem';
-                } else {
-                    header.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
-                    headerContainer.style.padding = '1rem 2rem';
-                }
-                
-                // Parallax effect for banner
-                if (parallaxBanner) {
-                    parallaxBanner.style.transform = `scale(1.1) translateY(${scrollTop * 0.2}px)`;
-                }
+                // Header transformation on scroll - disabled to maintain consistent look
+                // if (scrollTop > 50) {
+                //     header.style.backgroundColor = 'rgba(127, 127, 127, 0.75)';
+                // } else {
+                //     header.style.backgroundColor = 'rgba(127, 127, 127, 0.65)';
+                // }
                 
                 // Reveal elements on scroll
                 scrollRevealElements.forEach(element => {
@@ -1273,6 +1239,14 @@
             document.querySelectorAll('.about-container > div, .timeline-item, .education-item, .cert-item').forEach(el => {
                 el.classList.add('scroll-reveal');
             });
+            
+            // Initialize the banner image
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                bannerImage.style.backgroundSize = 'cover';
+                bannerImage.style.backgroundPosition = 'center';
+            }
             
             // Initialize the first scroll event
             window.dispatchEvent(new Event('scroll'));
