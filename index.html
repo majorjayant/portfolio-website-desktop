@@ -14,47 +14,31 @@ function updatePageWithConfig(data) {
 }
 
 <script>
-    // ** Declare closeModal at a higher scope **
-    let closeModal = null; 
-
     // Set banner image as soon as DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
-        function initializeModalFunctionality() {
-            const modal = document.getElementById('photoModal');
-            const modalImg = document.getElementById('modalImage');
-            // ** Assign the element to the higher-scoped variable **
-            closeModal = document.querySelector('.close-modal'); 
-            const snapContainers = document.querySelectorAll('.snap-container');
-            
-            // Open modal when clicking on a photo
-            if (snapContainers && modal && modalImg && closeModal) {
-                snapContainers.forEach(function(container) {
-                    container.addEventListener('click', function(e) {
-                        // ... existing code ...
-                    });
-                    
-                    // Attach closeModal listener HERE, inside the scope
-                    closeModal.addEventListener('click', function() {
-                        modal.style.display = 'none';
-                    });
-                });
-            } else {
-                console.error('Modal elements not found, skipping initialization.');
-            }
-        }
-        
-        // Close modal when clicking outside the image
-        window.addEventListener('click', function(e) {
-            // ... existing code ...
-        });
+        // Try to fetch the latest content from our AWS Lambda endpoint
+        fetchLatestAboutContent();
+    });
 
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            const modal = document.getElementById('photoModal');
-            if (modal && e.key === 'Escape' && modal.style.display === 'block') {
-                modal.style.display = 'none';
-            }
-        });
+    // Function to fetch the latest content from our API
+    function fetchLatestAboutContent() {
+        // ... existing code ...
+    }
+
+    // Close modal when clicking outside the image
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (modal && e.target === modal) { 
+            modal.style.display = 'none';
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (modal && e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+        }
     });
 </script>
 
