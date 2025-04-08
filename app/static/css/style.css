@@ -170,7 +170,7 @@ header {
 .nav-links a {
   color: var(--menu-text); /* Changed from text-light to menu-text */
   font-weight: 600;
-  font-size: 1.25rem; /* Added 25% larger font size */
+  font-size: 1.125rem; /* Reduced from 1.25rem (10% reduction) */
   position: relative;
   padding: 6px 0; /* Increased padding from 5px to 6px */
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -242,7 +242,7 @@ header {
 .banner-image {
   width: 100%;
   height: 0;
-  padding-bottom: 38.75%; /* Exact aspect ratio: (620/1600)*100 = 38.75% */
+  padding-bottom: 34.1%; /* Reduced from 38.75% (12% reduction) */
   background-size: contain !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -1438,6 +1438,14 @@ footer {
   .chatbot-widget {
     width: 300px;
     height: 400px;
+  }
+  
+  #banner-section {
+    height: 70.4vh; /* Reduced from 80vh (12% reduction) */
+  }
+  
+  .layer-bg {
+    transform: translateZ(-25px) scale(1.132); /* Less dramatic parallax on mobile */
   }
 }
 
