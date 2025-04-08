@@ -505,17 +505,20 @@
         transform: translateY(-50%); /* Vertical centering */
         bottom: auto; /* Remove bottom positioning */
         transition: transform 0.25s ease, background-color 0.3s ease; /* Add background transition */
-        z-index: 100; /* Increase z-index */
+        z-index: 1000; /* Increase z-index to ensure buttons are on top */
         width: 50px; /* Give fixed size for better click area */
         height: 50px;
-        background-color: rgba(230, 224, 212, 0.5); /* Semi-transparent background */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow */
+        background-color: rgba(230, 224, 212, 0.7); /* More opaque background */
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3); /* Stronger shadow */
         border-radius: 50%; /* Make them circles */
         display: flex; /* Use flex to center icon */
         align-items: center;
         justify-content: center;
         cursor: pointer; /* Ensure cursor indicates clickable */
         color: #1e272e; /* Darker icon color */
+        pointer-events: auto !important; /* CRITICAL: Force pointer events */
+        -webkit-user-select: none; /* Prevent text selection */
+        user-select: none; /* Prevent text selection */
     }
 
     .carousel__prev i, .carousel__next i {
@@ -1363,12 +1366,12 @@
             // Add navigation controls
             const prevBtn = document.createElement('div');
             prevBtn.className = 'carousel__prev';
-            prevBtn.id = 'prevBtn';
+            prevBtn.id = 'carousel-prev-btn'; // Add ID for easier debugging
             prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
             
             const nextBtn = document.createElement('div');
             nextBtn.className = 'carousel__next';
-            nextBtn.id = 'nextBtn';
+            nextBtn.id = 'carousel-next-btn'; // Add ID for easier debugging
             nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
             
             carouselBody.appendChild(sliderDiv);
@@ -1503,40 +1506,32 @@
     }
 
     function bindEvents() {
-        // This function now assumes prevBtn and nextBtn are valid elements (checked in initCarousel)
-        console.log("Binding events to buttons:", prevBtn, nextBtn);
+        // This assumes prevBtn and nextBtn are valid elements (checked in initCarousel)
+        console.log("Binding button events directly using onclick...");
+        
+        // CRITICAL FIX: Directly assign click handlers to onclick property
+        prevBtn.onclick = function(e) {
+            e.preventDefault();
+            console.log("PREV button clicked");
+            prev();
+            return false; // Prevent event bubbling
+        };
+        
+        nextBtn.onclick = function(e) {
+            e.preventDefault();
+            console.log("NEXT button clicked");
+            next();
+            return false; // Prevent event bubbling
+        };
+        
+        // Also bind the same handler to onmousedown for responsive feel
+        prevBtn.onmousedown = prevBtn.onclick;
+        nextBtn.onmousedown = nextBtn.onclick;
+        
+        console.log("Button click handlers attached successfully.");
+        
+        // Bind window resize separately
         window.onresize = resize;
-
-        // --- Use addEventListener and ensure clean state --- 
-        // Remove potentially old listeners using a named function or reference
-        const handlePrevClick = (e) => { 
-            e.preventDefault(); 
-            console.log("Prev click listener fired");
-            prev(); 
-        };
-        const handleNextClick = (e) => { 
-            e.preventDefault(); 
-            console.log("Next click listener fired");
-            next(); 
-        };
-
-        // Remove previous listeners if they exist (using the reference)
-        // Note: This requires storing the listener reference if re-binding is complex,
-        // but since we rebuild the element in updateCarousel, simply adding should be okay
-        // IF initCarousel is the *only* place bindEvents is called after rebuild.
-        // Let's try direct attachment first, assuming clean elements from updateCarousel.
-        
-        // Clear any inline handlers just in case
-        prevBtn.onclick = null; 
-        nextBtn.onclick = null;
-
-        // Add new listeners
-        prevBtn.removeEventListener('click', handlePrevClick); // Clean up just in case
-        nextBtn.removeEventListener('click', handleNextClick); // Clean up just in case
-        prevBtn.addEventListener('click', handlePrevClick); 
-        nextBtn.addEventListener('click', handleNextClick);
-        
-        console.log("addEventListener attached for prev/next.");
     }
     
     // --- updateCarousel remains largely the same, but ensure initCarousel is called reliably --- 
@@ -1554,10 +1549,12 @@
         // Add navigation buttons
         const prevButton = document.createElement('div');
         prevButton.className = 'carousel__prev';
+        prevButton.id = 'carousel-prev-btn'; // Add ID for easier debugging
         prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; 
         
         const nextButton = document.createElement('div');
         nextButton.className = 'carousel__next';
+        nextButton.id = 'carousel-next-btn'; // Add ID for easier debugging
         nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; 
         
         carouselContainer.appendChild(prevButton);
