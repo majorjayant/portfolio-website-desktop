@@ -1331,8 +1331,10 @@
                 } else {
                     bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
                 }
-                bannerImage.style.backgroundSize = "cover";
+                // Always use contain to prevent cropping, and maintain center alignment
+                bannerImage.style.backgroundSize = "contain";
                 bannerImage.style.backgroundPosition = "center";
+                bannerImage.style.backgroundRepeat = "no-repeat";
             }
             
             // Update banner image on load and resize

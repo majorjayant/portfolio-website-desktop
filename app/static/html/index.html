@@ -1052,8 +1052,8 @@
         });
         
         // Initialize image elements and fetch content
-        const bannerImage = document.getElementById('banner-image');
-        if (bannerImage) {
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
             // Function to update banner image based on screen size
             function updateBannerImage() {
                 const isMobile = window.innerWidth <= 768;
@@ -1066,14 +1066,15 @@
                 } else {
                     bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
                 }
-                bannerImage.style.backgroundSize = "cover";
+                bannerImage.style.backgroundSize = "contain";
                 bannerImage.style.backgroundPosition = "center";
+                bannerImage.style.backgroundRepeat = "no-repeat";
             }
             
             // Update banner image on load and resize
             updateBannerImage();
             window.addEventListener('resize', updateBannerImage);
-        }
+            }
 
         // Try to fetch the latest content from our AWS Lambda endpoint
         fetchLatestAboutContent();
@@ -1290,8 +1291,9 @@
                 } else {
                     bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
                 }
-                bannerImage.style.backgroundSize = "cover";
+                bannerImage.style.backgroundSize = "contain";
                 bannerImage.style.backgroundPosition = "center";
+                bannerImage.style.backgroundRepeat = "no-repeat";
             }
             
             // Update banner image on load and resize
