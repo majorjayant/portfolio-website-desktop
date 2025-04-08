@@ -1451,7 +1451,7 @@ footer {
   }
   
   .layer-bg {
-    transform: translateZ(-25px) scale(1.132); /* Less dramatic parallax on mobile */
+    transform: translateZ(-15px) scale(1.05); /* Less dramatic parallax on mobile */
   }
 }
 
