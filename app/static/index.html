@@ -9,7 +9,7 @@
     <style>
         /* Fallback critical styles */
         header { position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background-color: transparent; backdrop-filter: blur(5px); }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background-color: transparent; backdrop-filter: none; }
         .logo { display: block; padding: 5px 15px; position: relative; }
         .logo img { height: 70px; width: auto; display: block; }
         .nav-links { flex-grow: 1; margin-left: auto; text-align: right; }
@@ -186,8 +186,8 @@
     }
     
     .transparent-header .navbar {
-        background-color: rgba(0, 0, 0, 0.2) !important;
-        backdrop-filter: blur(5px);
+        background-color: transparent !important;
+        backdrop-filter: none;
     }
     
     /* Modal styles */
@@ -345,6 +345,105 @@
             grid-template-columns: 1fr;
         }
     }
+
+    /* Updated Photo Carousel Styles */
+    .photo-carousel-container {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        margin: 50px auto;
+        perspective: 1000px;
+        overflow: hidden;
+    }
+
+    .photo-carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 1s ease;
+        animation: carousel-rotate 20s linear infinite;
+    }
+
+    .photo-carousel:hover {
+        animation-play-state: paused;
+    }
+
+    .photo-carousel .photo-item {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        left: 50%;
+        top: 50%;
+        transform-origin: center center -150px; /* Half the card width for proper 3D rotation */
+        backface-visibility: hidden;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: all 0.5s ease;
+    }
+
+    .photo-carousel .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 5px solid #f3f3f3;
+        border-radius: 5px;
+        transition: transform 0.5s ease;
+    }
+
+    .photo-carousel .photo-item:hover img {
+        transform: scale(1.1);
+    }
+
+    /* Auto-rotation animation */
+    @keyframes carousel-rotate {
+        0% {
+            transform: rotateY(0deg);
+        }
+        100% {
+            transform: rotateY(360deg);
+        }
+    }
+
+    /* Carousel navigation controls */
+    .carousel-controls {
+        position: absolute;
+        bottom: -30px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .carousel-controls button {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background-color: rgba(0,0,0,0.2);
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .carousel-controls button:hover {
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 768px) {
+        .photo-carousel-container {
+            height: 300px;
+        }
+        
+        .photo-carousel .photo-item {
+            width: 220px;
+            height: 220px;
+            transform-origin: center center -110px;
+        }
+    }
 </style>
 
     
@@ -385,7 +484,7 @@
                     const navbar = document.querySelector('.navbar');
                     if (navbar) {
                         navbar.style.backgroundColor = 'transparent';
-                        navbar.style.backdropFilter = 'blur(5px)';
+                        navbar.style.backdropFilter = 'none';
                     }
                     
                     // Fix logo styles
@@ -883,11 +982,17 @@
                 if (modal) modal.style.display = 'block';
                 if (modalImg) modalImg.src = photoUrl;
                 
+                // Pause carousel rotation when modal is open
+                const carousel = document.getElementById('photoCarousel');
+                if (carousel) {
+                    carousel.style.animationPlayState = 'paused';
+                }
+                
                 // If the modal image fails to load, try to use a direct S3 URL or fallback
                 if (modalImg) {
                     modalImg.onerror = function() {
                         console.error("Error loading modal image: " + this.src);
-                                this.onerror = null;
+                        this.onerror = null;
                         
                         // Try direct S3 URL if the current URL fails
                         if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
@@ -915,6 +1020,18 @@
                 }
             });
         });
+        
+        // Resume carousel rotation when modal is closed
+        if (modal && closeModalBtn) {
+            closeModalBtn.addEventListener('click', function() {
+                closeModal();
+                
+                const carousel = document.getElementById('photoCarousel');
+                if (carousel) {
+                    carousel.style.animationPlayState = 'running';
+                }
+            });
+        }
     }
 
     // Function to fetch the latest content from our API
@@ -1037,12 +1154,20 @@
             profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
         }
                     
-        // Update photos in the "snaps" section with ENHANCED photo stack effect
+        // Update photos in the "snaps" section with ENHANCED carousel effect
         const snapsContainer = document.getElementById('snaps');
         if (snapsContainer) {
             // Clear existing content
             snapsContainer.innerHTML = '';
-                        
+            
+            // Create the carousel container
+            const carouselContainer = document.createElement('div');
+            carouselContainer.className = 'photo-carousel-container';
+            
+            const carousel = document.createElement('div');
+            carousel.className = 'photo-carousel';
+            carousel.id = 'photoCarousel';
+            
             // Create photos array from config
             const photos = [
                 { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
@@ -1054,28 +1179,52 @@
             // Filter out photos without URLs
             const validPhotos = photos.filter(photo => photo.url);
             
-            // Group photos into sets of 3 for stacking
-            for (let i = 0; i < validPhotos.length; i += 3) {
-                const stackContainer = document.createElement('div');
-                stackContainer.className = 'photo-stack';
-                if (validPhotos.length - i < 3) {
-                    stackContainer.className += ' single-photo';
-                }
+            // Set up the carousel with photos
+            validPhotos.forEach((photo, index) => {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'photo-item';
+                
+                // Position photos in a circle for 3D rotation
+                const angle = (index / validPhotos.length) * 2 * Math.PI;
+                const radius = 150; // Adjust based on your container size
+                
+                // Calculate position in 3D space
+                photoItem.style.transform = `translate(-50%, -50%) rotateY(${angle * (180/Math.PI)}deg) translateZ(${radius}px)`;
                 
                 // Add data attribute for modal functionality
-                stackContainer.setAttribute('data-photo', validPhotos[i].url);
-                stackContainer.classList.add('snap-container');
+                photoItem.setAttribute('data-photo', photo.url);
+                photoItem.classList.add('snap-container');
                 
-                // Add up to 3 photos to this stack
-                for (let j = 0; j < 3 && i + j < validPhotos.length; j++) {
-                    const img = document.createElement('img');
-                    img.src = validPhotos[i + j].url;
-                    img.alt = validPhotos[i + j].alt || 'Photo';
-                    stackContainer.appendChild(img);
-                }
+                const img = document.createElement('img');
+                img.src = photo.url;
+                img.alt = photo.alt || 'Photo';
+                photoItem.appendChild(img);
                 
-                snapsContainer.appendChild(stackContainer);
-            }
+                carousel.appendChild(photoItem);
+            });
+            
+            carouselContainer.appendChild(carousel);
+            
+            // Add carousel controls
+            const controls = document.createElement('div');
+            controls.className = 'carousel-controls';
+            
+            const prevBtn = document.createElement('button');
+            prevBtn.id = 'prevBtn';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            
+            const nextBtn = document.createElement('button');
+            nextBtn.id = 'nextBtn';
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            
+            controls.appendChild(prevBtn);
+            controls.appendChild(nextBtn);
+            carouselContainer.appendChild(controls);
+            
+            snapsContainer.appendChild(carouselContainer);
+            
+            // Initialize carousel controls
+            initializeCarouselControls();
             
             // Initialize the modal functionality
             initializeModalFunctionality();
@@ -1084,38 +1233,48 @@
         // Show content once loaded
         document.body.classList.add('content-loaded');
     }
-
-    // Handle photo snapshots in about section for error fallbacks
-    const snapImages = document.querySelectorAll('.snaps img');
-    snapImages.forEach(function(img, index) {
-        // Pre-load the S3 images
-        let s3Urls = [
-            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
-            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
-            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
-            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
-        ];
+    
+    // Initialize carousel controls
+    function initializeCarouselControls() {
+        const carousel = document.getElementById('photoCarousel');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
         
-        // If the current image is a placeholder or not an S3 URL, try the corresponding S3 URL
-        if (img.src.includes('placeholder.png') || !img.src.includes('s3.eu-north-1.amazonaws.com')) {
-            if (index < s3Urls.length) {
-                img.src = s3Urls[index];
-            }
-        }
-        
-        img.onerror = function() {
-            console.error("Error loading image: " + this.src);
-            this.onerror = null;
+        if (carousel && prevBtn && nextBtn) {
+            let currentRotation = 0;
+            const rotationIncrement = 90; // Degrees to rotate for each click
             
-            // Try direct S3 URL if the current URL fails
-            if (!this.src.includes('s3.eu-north-1.amazonaws.com') && index < s3Urls.length) {
-                this.src = s3Urls[index];
-            } else {
-                // If S3 URL also fails, use placeholder
-                this.src = '/static/img/placeholder.png';
-            }
-        };
-    });
+            prevBtn.addEventListener('click', function() {
+                // Pause the animation
+                carousel.style.animationPlayState = 'paused';
+                
+                // Update rotation
+                currentRotation -= rotationIncrement;
+                carousel.style.transform = `rotateY(${currentRotation}deg)`;
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                // Pause the animation
+                carousel.style.animationPlayState = 'paused';
+                
+                // Update rotation
+                currentRotation += rotationIncrement;
+                carousel.style.transform = `rotateY(${currentRotation}deg)`;
+            });
+            
+            // Resume animation when mouse leaves the carousel area
+            carousel.parentElement.addEventListener('mouseleave', function() {
+                // Only resume if it was paused by buttons
+                if (carousel.style.transform) {
+                    // Remove the inline transform to let the animation take over
+                    setTimeout(() => {
+                        carousel.style.transform = '';
+                        carousel.style.animationPlayState = 'running';
+                    }, 1000);
+                }
+            });
+        }
+    }
 </script>
 
 
@@ -1132,7 +1291,7 @@
                 beforeElement.style.left = '-3px';
                 beforeElement.style.right = '-3px';
                 beforeElement.style.bottom = '-6px';
-                beforeElement.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                beforeElement.style.backgroundColor = 'transparent';
                 beforeElement.style.borderRadius = '8px';
                 beforeElement.style.zIndex = '-1';
                 
