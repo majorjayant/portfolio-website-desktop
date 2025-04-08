@@ -13,7 +13,7 @@
   --menu-hover: #caa882; /* New trendy copper/gold accent for hover */
   --text-dark: #333333;
   --text-light: #ffffff;
-  --background-light: #fdfaf6; /* Changed from #f5f5f5 to a warmer off-white */
+  --background-light: #F5EFE6; /* Changed from #fdfaf6 to a warmer beige/tan */
   --background-dark: #222222;
   --shadow: 0 2px 10px rgba(0,0,0,0.1);
   --transition: all 0.3s ease;
@@ -310,6 +310,7 @@ header {
   font-weight: 700;
   margin-bottom: 1rem;
   color: #333;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.15); /* Added subtle shadow for depth */
 }
 
 .text-main .intro {
@@ -318,6 +319,7 @@ header {
   margin-bottom: 1.5rem;
   color: #555;
   line-height: 1.4;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Added subtle shadow for depth */
 }
 
 .text-main .description {
