@@ -214,16 +214,16 @@
     }
     
     .layer-bg {
-        transform: translateZ(-50px) scale(1.1);
+        transform: translateZ(-50px) scale(1.265);
     }
     
     .layer-1 {
-        background: rgba(0,0,0,0.4);
+        background: rgba(0,0,0,0.25);
         z-index: 2;
     }
     
     .layer-2 {
-        background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
         z-index: 3;
     }
 
@@ -709,21 +709,21 @@
         // Apply scroll-based transformations to parallax layers
         if (bannerImage) {
             // The background image moves up slightly as we scroll
-            bannerImage.style.transform = `translateZ(-50px) scale(1.1) translateY(${scrollPercentInBanner * 50}px)`;
+            bannerImage.style.transform = `translateZ(-50px) scale(1.265) translateY(${scrollPercentInBanner * 50}px)`;
         }
         
         if (layer1) {
             // Layer 1 moves at a different rate
             layer1.style.transform = `translateY(${scrollPercentInBanner * 30}px)`;
             // Increase opacity as we scroll
-            layer1.style.opacity = 0.4 + (scrollPercentInBanner * 0.2);
+            layer1.style.opacity = 0.25 + (scrollPercentInBanner * 0.2);
         }
         
         if (layer2) {
             // Layer 2 moves at a different rate
             layer2.style.transform = `translateY(${scrollPercentInBanner * 20}px)`;
             // Increase opacity as we scroll
-            layer2.style.opacity = 0.6 + (scrollPercentInBanner * 0.3);
+            layer2.style.opacity = 0.1 + (scrollPercentInBanner * 0.3);
         }
 
         // --- 2. Transition between Banner and About --- 
@@ -1047,7 +1047,7 @@
             
             // Set initial scale to ensure image covers the area even with movement
             if (bannerImage) {
-                bannerImage.style.transform = 'translateZ(-50px) scale(1.1)';
+                bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
             }
             
             if (bannerSection && bannerImage && layer1 && layer2) {
@@ -1058,14 +1058,14 @@
                     const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
                     
                     // Apply transformations with different intensities
-                    bannerImage.style.transform = `translateZ(-50px) scale(1.1) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
+                    bannerImage.style.transform = `translateZ(-50px) scale(1.265) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
                     layer1.style.transform = `translate(${mouseX * 15}px, ${mouseY * 15}px)`;
                     layer2.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
                 });
                 
                 bannerSection.addEventListener('mouseleave', function() {
                     // Reset transformations smoothly
-                    bannerImage.style.transform = 'translateZ(-50px) scale(1.1)';
+                    bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
                     layer1.style.transform = 'translate(0, 0)';
                     layer2.style.transform = 'translate(0, 0)';
                 });

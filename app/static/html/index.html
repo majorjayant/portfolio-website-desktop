@@ -214,16 +214,16 @@
     }
     
     .layer-bg {
-        transform: translateZ(-50px) scale(1.1);
+        transform: translateZ(-50px) scale(1.265);
     }
     
     .layer-1 {
-        background: rgba(0,0,0,0.4);
+        background: rgba(0,0,0,0.25);
         z-index: 2;
     }
     
     .layer-2 {
-        background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
         z-index: 3;
     }
 
@@ -951,7 +951,7 @@
         
         // Set initial scale to ensure image covers the area even with movement
         if (bannerImage) {
-            bannerImage.style.transform = 'translateZ(-50px) scale(1.1)';
+            bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
         }
         
         if (bannerSection && bannerImage && layer1 && layer2) {
@@ -962,14 +962,14 @@
                 const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
                 
                 // Apply transformations with different intensities
-                bannerImage.style.transform = `translateZ(-50px) scale(1.1) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
+                bannerImage.style.transform = `translateZ(-50px) scale(1.265) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
                 layer1.style.transform = `translate(${mouseX * 15}px, ${mouseY * 15}px)`;
                 layer2.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
             });
             
             bannerSection.addEventListener('mouseleave', function() {
                 // Reset transformations smoothly
-                bannerImage.style.transform = 'translateZ(-50px) scale(1.1)';
+                bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
                 layer1.style.transform = 'translate(0, 0)';
                 layer2.style.transform = 'translate(0, 0)';
             });
