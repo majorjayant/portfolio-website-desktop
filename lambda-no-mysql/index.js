@@ -155,6 +155,15 @@ async function getSiteConfig() {
       siteConfig[row.config_key] = row.config_value;
     });
     
+    // Initialize site config if not exists
+    const siteConfigKeys = Object.keys(siteConfig);
+    const missingKeys = ['site_title', 'site_description', 'image_favicon_url', 'image_logo_url', 'image_banner_url', 'image_mobile_banner_url', 'image_about_profile_url', 'about_title'];
+    missingKeys.forEach(key => {
+      if (!siteConfigKeys.includes(key)) {
+        siteConfig[key] = defaultSiteConfig[key];
+      }
+    });
+    
     return siteConfig;
   } catch (error) {
     console.error('Error retrieving site config from database:', error);

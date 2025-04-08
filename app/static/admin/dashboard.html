@@ -121,6 +121,13 @@
                                                 <p class="mt-1 text-xs text-gray-500">URL for the website banner image</p>
                                             </div>
                                             
+                                            <!-- Mobile Banner URL -->
+                                            <div>
+                                                <label for="image_mobile_banner_url" class="block text-sm font-medium text-gray-700">Mobile Banner URL</label>
+                                                <input type="text" id="image_mobile_banner_url" name="image_mobile_banner_url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                <p class="mt-1 text-xs text-gray-500">URL for the mobile-optimized banner image</p>
+                                            </div>
+                                            
                                             <!-- Profile Image URL -->
                                             <div>
                                                 <label for="image_about_profile_url" class="block text-sm font-medium text-gray-700">Profile Image URL</label>
@@ -337,6 +344,7 @@
             document.getElementById('image_favicon_url').value = config.image_favicon_url || '';
             document.getElementById('image_logo_url').value = config.image_logo_url || '';
             document.getElementById('image_banner_url').value = config.image_banner_url || '';
+            document.getElementById('image_mobile_banner_url').value = config.image_mobile_banner_url || '';
             document.getElementById('image_about_profile_url').value = config.image_about_profile_url || '';
             
             // Gallery photos
@@ -370,6 +378,7 @@
                 image_favicon_url: document.getElementById('image_favicon_url').value,
                 image_logo_url: document.getElementById('image_logo_url').value,
                 image_banner_url: document.getElementById('image_banner_url').value,
+                image_mobile_banner_url: document.getElementById('image_mobile_banner_url').value,
                 image_about_profile_url: document.getElementById('image_about_profile_url').value,
                 
                 // Gallery photos
