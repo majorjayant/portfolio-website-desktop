@@ -1285,8 +1285,9 @@
     function updatePageWithConfig(data) {
         console.log('Updating page with config data:', data);
         
-        // Extract site_config from the response
+        // Extract site_config from the response and store globally
         const config = data.site_config;
+        window.siteConfig = config;
         
         if (!config) {
             console.error('site_config not found in API response:', data);
@@ -1318,9 +1319,25 @@
         
         // Update banner image
         const bannerImage = document.getElementById('banner-image');
-        if (bannerImage && config.image_banner_url) {
-            bannerImage.style.backgroundImage = `url('${config.image_banner_url}')`;
-            console.log('Updated banner to:', config.image_banner_url);
+        if (bannerImage) {
+            // Function to update banner image based on screen size
+            function updateBannerImage() {
+                const isMobile = window.innerWidth <= 768;
+                const mobileUrl = config.image_mobile_banner_url;
+                const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                
+                if (isMobile && mobileUrl) {
+                    bannerImage.style.backgroundImage = `url('${mobileUrl}')`;
+                } else {
+                    bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
+                }
+                bannerImage.style.backgroundSize = "cover";
+                bannerImage.style.backgroundPosition = "center";
+            }
+            
+            // Update banner image on load and resize
+            updateBannerImage();
+            window.addEventListener('resize', updateBannerImage);
         }
         
         // Update footer logo if present

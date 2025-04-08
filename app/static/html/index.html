@@ -22,40 +22,6 @@
         .footer-container { display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
         .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
         .footer-logo img { max-width: 100px; max-height: 60px; }
-        .banner-image {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .banner-image img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .desktop-banner {
-            display: block;
-        }
-
-        .mobile-banner {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .desktop-banner {
-                display: none;
-            }
-            
-            .mobile-banner {
-                display: block;
-            }
-        }
     </style>
     
     <!-- Favicon -->
@@ -274,6 +240,17 @@
         text-align: center;
         color: #fff;
         z-index: 4;
+    }
+    
+    /* Media query for mobile devices */
+    @media (max-width: 768px) {
+        #banner-section {
+            height: 80vh; /* Slightly shorter on mobile */
+        }
+        
+        .layer-bg {
+            transform: translateZ(-25px) scale(1.132); /* Less dramatic parallax on mobile */
+        }
     }
     
     /* Styles for the About section transition */
@@ -815,15 +792,17 @@
     <main>
         
     <!-- Banner Section -->
-    <section class="banner" id="home">
-        <div class="banner-content">
-            <div class="banner-image">
-                <img src="" alt="Banner" id="banner-image" class="desktop-banner">
-                <img src="" alt="Banner" id="mobile-banner-image" class="mobile-banner">
-            </div>
-            <div class="banner-text">
-                <h1 id="site-title">Loading...</h1>
-                <p id="site-description">Loading...</p>
+    <section class="banner" id="banner-section">
+        <div class="parallax-container">
+            <div class="parallax-layer layer-bg" id="banner-image" style="background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'); background-size: cover; background-position: center;"></div>
+            <div class="parallax-layer layer-1"></div>
+            <div class="parallax-layer layer-2"></div>
+            <div class="banner-content">
+                <h1 class="animate__animated animate__fadeInUp">Welcome to My Portfolio</h1>
+                <p class="animate__animated animate__fadeInUp animate__delay-1s">Scroll down to explore</p>
+                <div class="scroll-indicator animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="#about-section"><i class="fas fa-chevron-down"></i></a>
+                </div>
             </div>
         </div>
     </section>
@@ -1074,32 +1053,28 @@
         
         // Initialize image elements and fetch content
         const bannerImage = document.getElementById('banner-image');
-        const mobileBannerImage = document.getElementById('mobile-banner-image');
-        const siteTitle = document.getElementById('site-title');
-        const siteDescription = document.getElementById('site-description');
-
-        // Fetch content from AWS Lambda endpoint
-        fetch('https://portfolio-website-lambda.eu-north-1.amazonaws.com/prod/content')
-            .then(response => response.json())
-            .then(data => {
-                // Update banner image
-                if (data.image_banner_url) {
-                    bannerImage.src = data.image_banner_url;
-                }
-                if (data.image_mobile_banner_url) {
-                    mobileBannerImage.src = data.image_mobile_banner_url;
-                }
+        if (bannerImage) {
+            // Function to update banner image based on screen size
+            function updateBannerImage() {
+                const isMobile = window.innerWidth <= 768;
+                const config = window.siteConfig || {};
+                const mobileUrl = config.image_mobile_banner_url;
+                const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
                 
-                // Update site title and description
-                if (data.site_title) {
-                    siteTitle.textContent = data.site_title;
+                if (isMobile && mobileUrl) {
+                    bannerImage.style.backgroundImage = `url('${mobileUrl}')`;
+                } else {
+                    bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
                 }
-                if (data.site_description) {
-                    siteDescription.textContent = data.site_description;
-                }
-            })
-            .catch(error => console.error('Error fetching content:', error));
-        
+                bannerImage.style.backgroundSize = "cover";
+                bannerImage.style.backgroundPosition = "center";
+            }
+            
+            // Update banner image on load and resize
+            updateBannerImage();
+            window.addEventListener('resize', updateBannerImage);
+        }
+
         // Try to fetch the latest content from our AWS Lambda endpoint
         fetchLatestAboutContent();
         
@@ -1118,7 +1093,7 @@
         
         // Add header transparency on banner hover and scroll
         const header = document.querySelector('header');
-        const bannerSection = document.getElementById('home');
+        const bannerSection = document.getElementById('banner-section');
         
         if (header && bannerSection) {
             // Make header transparent when hovering over banner
@@ -1159,7 +1134,7 @@
     
     function handleScrollEffects() {
         const scrollTop = window.scrollY;
-        const bannerSection = document.getElementById('home');
+        const bannerSection = document.getElementById('banner-section');
         const bannerImageLayer = document.getElementById('banner-image');
         const aboutSection = document.getElementById('about-section');
         const viewportHeight = window.innerHeight;
@@ -1269,8 +1244,9 @@
     function updatePageWithConfig(data) {
         console.log('Updating page with config data:', data);
         
-        // Extract site_config from the response
+        // Extract site_config from the response and store globally
         const config = data.site_config;
+        window.siteConfig = config;
         
         if (!config) {
             console.error('site_config not found in API response:', data);
@@ -1302,9 +1278,25 @@
         
         // Update banner image
         const bannerImage = document.getElementById('banner-image');
-        if (bannerImage && config.image_banner_url) {
-            bannerImage.style.backgroundImage = `url('${config.image_banner_url}')`;
-            console.log('Updated banner to:', config.image_banner_url);
+        if (bannerImage) {
+            // Function to update banner image based on screen size
+            function updateBannerImage() {
+                const isMobile = window.innerWidth <= 768;
+                const mobileUrl = config.image_mobile_banner_url;
+                const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                
+                if (isMobile && mobileUrl) {
+                    bannerImage.style.backgroundImage = `url('${mobileUrl}')`;
+                } else {
+                    bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
+                }
+                bannerImage.style.backgroundSize = "cover";
+                bannerImage.style.backgroundPosition = "center";
+            }
+            
+            // Update banner image on load and resize
+            updateBannerImage();
+            window.addEventListener('resize', updateBannerImage);
         }
         
         // Update footer logo if present
