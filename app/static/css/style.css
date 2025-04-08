@@ -13,7 +13,7 @@
   --menu-hover: #caa882; /* New trendy copper/gold accent for hover */
   --text-dark: #333333;
   --text-light: #ffffff;
-  --background-light: #f5f5f5;
+  --background-light: #fdfaf6; /* Changed from #f5f5f5 to a warmer off-white */
   --background-dark: #222222;
   --shadow: 0 2px 10px rgba(0,0,0,0.1);
   --transition: all 0.3s ease;
@@ -321,10 +321,13 @@ header {
 }
 
 .text-main .description {
-  font-size: 1.2rem;
-  line-height: 1.6;
-  color: #666;
+  font-size: 1.1rem; /* Slightly reduced size for better balance */
+  line-height: 1.7; /* Increased line-height for readability */
+  color: #555; /* Slightly darker than #666 for better contrast on new bg */
   text-align: left;
+  padding-left: 1.5rem; /* Add padding for the border */
+  border-left: 3px solid var(--menu-hover); /* Use menu hover color for accent */
+  margin-top: 1.5rem; /* Add some space above the description block */
 }
 
 .img-main {
