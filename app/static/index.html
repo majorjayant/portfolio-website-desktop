@@ -556,12 +556,12 @@
     .item__3d-frame:after {
         content: '';
         position: absolute;
-        bottom: -15%;
+        bottom: -8%;
         width: 100%;
-        height: 40px;
+        height: 20px;
         background: var(--box-shadow);
-        box-shadow: 0px 0px 5px 5px var(--box-shadow);
-        transform: rotateX(90deg) translate3d(0px, -20px, 0px);
+        box-shadow: 0px 0px 3px 3px var(--box-shadow);
+        transform: rotateX(90deg) translate3d(0px, -10px, 0px);
         opacity: 0.85;
     }
 
@@ -574,7 +574,7 @@
         width: 100%;
         height: 100%;
         box-sizing: border-box;
-        border-color: #caa882;
+        border-color: #7a6b5f;
         background: var(--box-bg);
         border-width: 3px;
         border-style: solid;
@@ -597,7 +597,7 @@
         top: 0;
         width: 40px;
         backface-visibility: hidden;
-        border-color: #caa882;
+        border-color: #7a6b5f;
     }
 
     .item__3d-frame__box--left {
@@ -1191,7 +1191,7 @@
                 if (modalImg) {
                 modalImg.onerror = function() {
                     console.error("Error loading modal image: " + this.src);
-                    this.onerror = null;
+                                this.onerror = null;
                     
                     // Try direct S3 URL if the current URL fails
                     if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
@@ -1209,7 +1209,7 @@
                             this.src = s3Urls[index];
                         } else {
                             // If S3 URL also fails, use placeholder
-                            this.src = '/static/img/placeholder.png';
+                                this.src = '/static/img/placeholder.png';
                         }
                     } else {
                         // If S3 URL also fails, use placeholder
@@ -1335,19 +1335,19 @@
         const aboutDescription = document.getElementById('about-description');
         const profileImage = document.getElementById('profile-image');
                     
-        if (aboutTitle) {
+                    if (aboutTitle) {
             aboutTitle.textContent = config.about_title || '';
-        }
+                    }
                     
-        if (aboutSubtitle) {
+                    if (aboutSubtitle) {
             aboutSubtitle.textContent = config.about_subtitle || '';
-        }
+                    }
                     
-        if (aboutDescription) {
+                    if (aboutDescription) {
             aboutDescription.textContent = config.about_description || '';
-            aboutDescription.style.textAlign = 'left';
-        }
-        
+                        aboutDescription.style.textAlign = 'left';
+                    }
+                    
         if (profileImage) {
             profileImage.src = config.image_about_profile_url || '';
             profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
@@ -1385,34 +1385,42 @@
         move(currIndex, false); // Pass false to prevent timer reset during resize
     }
     
-    function move(index, resetTimer = true) { // Added resetTimer flag
+    function move(index, resetTimer = true) {
         if (!carousel || !items || items.length === 0) return;
         
-        if(index < 1) index = items.length;
-        if(index > items.length) index = 1;
+        // Ensure index stays within bounds
+        if (index < 1) index = items.length;
+        if (index > items.length) index = 1;
         currIndex = index;
         
+        // Calculate center position
+        const centerOffset = (window.innerWidth / 2) - (width / 2);
+        
+        // Apply transformations to each item
         for(let i = 0; i < items.length; i++) {
             let item = items[i];
             let box = item.querySelector('.item__3d-frame');
             if (box) { 
                 if(i == (index - 1)) {
+                    // Center item
                     item.classList.add('carousel__slider__item--active');
-                    box.style.transform = "perspective(1200px)"; 
+                    box.style.transform = "perspective(1200px)";
+                    item.style.transform = `translateX(${centerOffset}px)`;
                 } else {
+                    // Side items
                     item.classList.remove('carousel__slider__item--active');
-                    box.style.transform = "perspective(1200px) rotateY(" + (i < (index - 1) ? 40 : -40) + "deg)";
+                    const distance = Math.abs(i - (index - 1));
+                    const rotation = i < (index - 1) ? 40 : -40;
+                    const scale = 1 - (distance * 0.1);
+                    const translateX = (i - (index - 1)) * (width + margin);
+                    box.style.transform = `perspective(1200px) rotateY(${rotation}deg) scale(${scale})`;
+                    item.style.transform = `translateX(${translateX + centerOffset}px)`;
                 }
-            } else {
-                console.error("'.item__3d-frame' not found in item:", item);
             }
         }
-        
-        const centerOffset = (window.innerWidth / 2) - (width / 2);
-        carousel.style.transform = `translate3d(${(index * -width) + centerOffset}px, 0, 0)`;
 
         if (resetTimer) {
-            timer(); // Reset timer only on manual moves or auto-advance
+            timer();
         }
     }
     
@@ -1424,15 +1432,13 @@
     }
     
     function prev() {
-        console.log("Prev button clicked - function triggered");
-        clearInterval(interval); // Stop auto rotation temporarily
-        move(--currIndex);
+        clearInterval(interval);
+        move(currIndex - 1);
     }
     
     function next() {
-        console.log("Next button clicked - function triggered");
-        clearInterval(interval); // Stop auto rotation temporarily
-        move(++currIndex);    
+        clearInterval(interval);
+        move(currIndex + 1);
     }
     
     function bindEvents() {
@@ -1440,31 +1446,62 @@
             console.error("Navigation buttons not found for binding!");
             return;
         }
-        console.log("Binding navigation events");
         
         window.onresize = resize;
         
-        // Remove any existing event listeners for safety
+        // Remove any existing event listeners
         prevBtn.replaceWith(prevBtn.cloneNode(true));
         nextBtn.replaceWith(nextBtn.cloneNode(true));
         
-        // Get fresh references to the buttons
+        // Get fresh references
         prevBtn = document.querySelector('.carousel__prev');
         nextBtn = document.querySelector('.carousel__next');
         
-        // Add click event listeners
+        // Add click event listeners with debounce
+        let debounceTimeout;
+        const debounceTime = 300; // 300ms debounce
+        
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Prev button clicked");
-            prev();
+            
+            if (!debounceTimeout) {
+                console.log("Prev button clicked");
+                prev();
+                debounceTimeout = setTimeout(() => {
+                    debounceTimeout = null;
+                }, debounceTime);
+            }
         });
         
         nextBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log("Next button clicked");
-            next();
+            
+            if (!debounceTimeout) {
+                console.log("Next button clicked");
+                next();
+                debounceTimeout = setTimeout(() => {
+                    debounceTimeout = null;
+                }, debounceTime);
+            }
+        });
+        
+        // Add hover effects
+        prevBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-50%) scale(1.1)';
+        });
+        
+        prevBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-50%) scale(1)';
+        });
+        
+        nextBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-50%) scale(1.1)';
+        });
+        
+        nextBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-50%) scale(1)';
         });
         
         // Start auto-rotation
@@ -1510,16 +1547,16 @@
             const frontBox = document.createElement('div');
             frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
             frontBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
-            
-            const img = document.createElement('img');
+                
+                const img = document.createElement('img');
             img.src = photo.url;
             img.alt = photo.alt || 'Photo';
-            img.onerror = function() {
+                img.onerror = function() {
                 console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-                this.onerror = null;
-                this.src = '/static/img/placeholder.png';
-            };
-            
+                    this.onerror = null;
+                    this.src = '/static/img/placeholder.png';
+                };
+                
             frontBox.appendChild(img);
             
             const leftBox = document.createElement('div');
@@ -1576,10 +1613,10 @@
                     timer();
                     
                     console.log("Carousel initialized successfully");
-                } else {
+                        } else {
                     console.error("No carousel items found after setup!");
-                }
-            } else {
+                        }
+                    } else {
                 console.error("Carousel element not found!");
             }
             

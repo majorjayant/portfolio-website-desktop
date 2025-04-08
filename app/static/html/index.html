@@ -1477,16 +1477,16 @@
             const frontBox = document.createElement('div');
             frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
             frontBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
-            
-            const img = document.createElement('img');
+                
+                const img = document.createElement('img');
             img.src = photo.url;
             img.alt = photo.alt || 'Photo';
-            img.onerror = function() {
+                img.onerror = function() {
                 console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-                this.onerror = null;
-                this.src = '/static/img/placeholder.png';
-            };
-            
+                    this.onerror = null;
+                    this.src = '/static/img/placeholder.png';
+                };
+                
             frontBox.appendChild(img);
             
             const leftBox = document.createElement('div');
