@@ -177,7 +177,7 @@
         animation: floatStack 3s ease-in-out infinite;
     }
     
-    /* Add transparent header on banner hover and scroll */
+    /* Add transparent header on banner hover */
     header {
         transition: background-color 1s ease;
     }
@@ -189,18 +189,6 @@
     .transparent-header .navbar {
         background-color: transparent !important;
         backdrop-filter: none;
-    }
-    
-    /* Update menu text color when header is transparent */
-    .transparent-header .nav-links a {
-        color: #333333 !important;
-        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
-    }
-    
-    /* Ensure the color changes back when header is not transparent */
-    .nav-links a {
-        color: #e6e0d4;
-        transition: color 0.3s ease;
     }
     
     /* Modal styles */
@@ -1506,52 +1494,34 @@
         }, intervalTime);
     }
 
+    function prev() {
+        console.log("Executing prev() function");
+        move(--currIndex, true); // Explicitly reset timer on manual navigation
+    }
+
+    function next() {
+        console.log("Executing next() function");
+        move(++currIndex, true); // Explicitly reset timer on manual navigation
+    }
+
     function bindEvents() {
         // This assumes prevBtn and nextBtn are valid elements (checked in initCarousel)
-        console.log("Binding button events with single/double click support...");
+        console.log("Binding button events directly using onclick...");
         
-        let clickTimeout;
-        let clickCount = 0;
-        
-        // Helper function to handle single/double clicks
-        const handleClick = (direction, e) => {
+        // CRITICAL FIX: Directly assign click handlers to onclick property
+        prevBtn.onclick = function(e) {
             e.preventDefault();
-            clickCount++;
-            
-            if (clickCount === 1) {
-                clickTimeout = setTimeout(() => {
-                    // Single click - move one photo
-                    console.log(`${direction.toUpperCase()} button single-clicked`);
-                    if (direction === 'prev') {
-                        move(--currIndex, true);
-                    } else {
-                        move(++currIndex, true);
-                    }
-                    clickCount = 0;
-                }, 250); // Wait 250ms to see if it's a double click
-            } else if (clickCount === 2) {
-                // Double click - move all photos
-                clearTimeout(clickTimeout);
-                console.log(`${direction.toUpperCase()} button double-clicked`);
-                if (direction === 'prev') {
-                    // Move all photos to the left
-                    for (let i = 0; i < items.length; i++) {
-                        move(--currIndex, false);
-                    }
-                } else {
-                    // Move all photos to the right
-                    for (let i = 0; i < items.length; i++) {
-                        move(++currIndex, false);
-                    }
-                }
-                clickCount = 0;
-            }
-            return false;
+            console.log("PREV button clicked");
+            prev();
+            return false; // Prevent event bubbling
         };
         
-        // Assign click handlers
-        prevBtn.onclick = (e) => handleClick('prev', e);
-        nextBtn.onclick = (e) => handleClick('next', e);
+        nextBtn.onclick = function(e) {
+            e.preventDefault();
+            console.log("NEXT button clicked");
+            next();
+            return false; // Prevent event bubbling
+        };
         
         // Also bind the same handler to onmousedown for responsive feel
         prevBtn.onmousedown = prevBtn.onclick;
