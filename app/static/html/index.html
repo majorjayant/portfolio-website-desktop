@@ -298,56 +298,87 @@
         perspective: 1000px;
     }
 
-    /* Photo Stack Animation */
+    /* UPDATED Photo Stack Animation */
     .photo-stack {
         position: relative;
-        width: 300px;
-        height: 300px;
+        width: 250px;
+        height: 250px;
+        margin: 0 auto;
+        cursor: pointer;
+        perspective: 1000px;
+        transition: all 0.3s ease;
         transform-style: preserve-3d;
     }
-
+    
     .photo-stack img {
         position: absolute;
-        width: 100%;
-        height: 100%;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 250px;
         object-fit: cover;
-        border-radius: 10px;
+        border: 5px solid #f3f3f3;
         box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         transform-origin: center center;
-        cursor: pointer;
         backface-visibility: hidden;
     }
-
+    
+    /* Apply different initial rotations and positions to create stacked look */
     .photo-stack img:nth-child(1) {
         transform: translateZ(0) rotate(-8deg);
         z-index: 3;
     }
-
+    
     .photo-stack img:nth-child(2) {
         transform: translateZ(-20px) rotate(8deg);
         z-index: 2;
     }
-
+    
     .photo-stack img:nth-child(3) {
         transform: translateZ(-40px) rotate(-5deg);
         z-index: 1;
     }
-
-    .photo-stack img:hover {
+    
+    /* Hover effect - 3D transform */
+    .photo-stack:hover img:nth-child(1) {
         transform: translateZ(50px) rotate(0deg) scale(1.2);
         z-index: 4;
         box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     }
-
+    
+    .photo-stack:hover img:nth-child(2) {
+        transform: translateZ(-10px) rotate(0deg) scale(0.9);
+        z-index: 2;
+    }
+    
+    .photo-stack:hover img:nth-child(3) {
+        transform: translateZ(-30px) rotate(0deg) scale(0.8);
+        z-index: 1;
+    }
+    
     /* Add a subtle animation for the stack */
     @keyframes floatStack {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+        50% { transform: translateY(-5px); }
     }
-
+    
     .photo-stack {
         animation: floatStack 3s ease-in-out infinite;
+    }
+    
+    /* Add transparent header on banner hover */
+    header {
+        transition: background-color 0.3s ease;
+    }
+    
+    .navbar {
+        transition: background-color 0.3s ease;
+    }
+    
+    .transparent-header .navbar {
+        background-color: rgba(0, 0, 0, 0.2) !important;
+        backdrop-filter: blur(5px);
     }
 </style>
 
@@ -748,6 +779,20 @@
             aboutSection.style.opacity = '0';
             aboutSection.style.transform = 'scale(0.95)';
         }
+        
+        // Add header transparency on banner hover
+        const header = document.querySelector('header');
+        const bannerSection = document.getElementById('banner-section');
+        
+        if (header && bannerSection) {
+            bannerSection.addEventListener('mouseenter', function() {
+                header.classList.add('transparent-header');
+            });
+            
+            bannerSection.addEventListener('mouseleave', function() {
+                header.classList.remove('transparent-header');
+            });
+        }
     });
     
     // NEW function to handle scroll-based effects
@@ -939,11 +984,11 @@
             profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
                     }
                     
-        // Update photos in the "snaps" section
+        // Update photos in the "snaps" section with ENHANCED photo stack effect
         const snapsContainer = document.getElementById('snaps');
         if (snapsContainer) {
-                        // Clear existing content
-                        snapsContainer.innerHTML = '';
+            // Clear existing content
+            snapsContainer.innerHTML = '';
                         
             // Create photos array from config
             const photos = [
@@ -953,25 +998,34 @@
                 { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
             ];
             
-            // Add photos to container if they have URLs
-            photos.forEach(photo => {
-                if (photo.url) {
-                const container = document.createElement('a');
-                container.href = '#';
-                container.className = 'snap-container';
-                            container.setAttribute('data-photo', photo.url);
-                
-                const img = document.createElement('img');
-                            img.src = photo.url;
-                    img.alt = photo.alt || 'Photo';
-                
-                container.appendChild(img);
-                snapsContainer.appendChild(container);
+            // Filter out photos without URLs
+            const validPhotos = photos.filter(photo => photo.url);
+            
+            // Group photos into sets of 3 for stacking
+            for (let i = 0; i < validPhotos.length; i += 3) {
+                const stackContainer = document.createElement('div');
+                stackContainer.className = 'photo-stack';
+                if (validPhotos.length - i < 3) {
+                    stackContainer.className += ' single-photo';
                 }
-            });
-                        
-            // Initialize or reinitialize the modal functionality after photos are loaded
-                        initializeModalFunctionality();
+                
+                // Add data attribute for modal functionality
+                stackContainer.setAttribute('data-photo', validPhotos[i].url);
+                stackContainer.classList.add('snap-container');
+                
+                // Add up to 3 photos to this stack
+                for (let j = 0; j < 3 && i + j < validPhotos.length; j++) {
+                    const img = document.createElement('img');
+                    img.src = validPhotos[i + j].url;
+                    img.alt = validPhotos[i + j].alt || 'Photo';
+                    stackContainer.appendChild(img);
+                }
+                
+                snapsContainer.appendChild(stackContainer);
+            }
+            
+            // Initialize the modal functionality
+            initializeModalFunctionality();
         }
         
         // Show content once loaded
