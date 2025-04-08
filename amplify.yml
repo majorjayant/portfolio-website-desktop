@@ -81,7 +81,10 @@ frontend:
     - source: '/static/html/index.html'
       target: '/html/index.html'
       status: '200'
+    - source: '/html/index.html'
+      target: '/html/index.html'
+      status: '200'
     # Catch-all route for SPA - this needs to be last
     - source: '/<*>'
-      target: '/html/index.html'
+      target: '/index.html'
       status: '200'
