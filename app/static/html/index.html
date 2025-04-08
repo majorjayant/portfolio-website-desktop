@@ -717,16 +717,39 @@
         
         // Update title & metadata
         document.title = config.about_title || 'Portfolio';
-        const favicon = document.querySelector('link[rel="icon"]');
-        if (favicon && config.image_favicon_url) {
-            favicon.href = config.image_favicon_url;
+        
+        // Update all favicon instances
+        const allFavicons = document.querySelectorAll('link[rel="icon"]');
+        if (config.image_favicon_url) {
+            allFavicons.forEach(favicon => {
+                favicon.href = config.image_favicon_url;
+                console.log('Updated favicon to:', config.image_favicon_url);
+            });
         }
         
-        // Update header logo
-        const logoImg = document.querySelector('.navbar-brand img');
-        if (logoImg && config.image_logo_url) {
-            logoImg.src = config.image_logo_url;
-            logoImg.alt = config.about_title || 'Logo';
+        // Update all header logo instances
+        const allLogoImages = document.querySelectorAll('.navbar .logo img, .navbar-brand img, .logo img');
+        if (config.image_logo_url) {
+            allLogoImages.forEach(logo => {
+                logo.src = config.image_logo_url;
+                logo.alt = config.about_title || 'Logo';
+                console.log('Updated logo to:', config.image_logo_url);
+            });
+        }
+        
+        // Update banner image
+        const bannerImage = document.getElementById('banner-image');
+        if (bannerImage && config.image_banner_url) {
+            bannerImage.style.backgroundImage = `url('${config.image_banner_url}')`;
+            console.log('Updated banner to:', config.image_banner_url);
+        }
+        
+        // Update footer logo if present
+        const footerLogo = document.querySelector('.footer-logo img');
+        if (footerLogo && config.image_logo_url) {
+            footerLogo.src = config.image_logo_url;
+            footerLogo.alt = config.about_title || 'Logo';
+            console.log('Updated footer logo to:', config.image_logo_url);
         }
         
         // Update about section
