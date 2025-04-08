@@ -671,6 +671,167 @@
             transform: translateZ(-15px) scale(1.05); /* Less dramatic parallax on mobile */
         }
     }
+
+    /* Vertical Timeline Styles */
+    .experience-section {
+        padding: 6rem 0;
+        background-color: #fff;
+    }
+
+    .experience-section h2 {
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 4rem;
+        color: #333;
+    }
+
+    .timeline-vertical {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .timeline-vertical::after {
+        content: '';
+        position: absolute;
+        width: 3px;
+        background-color: #e0e0e0;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        margin-left: -1.5px;
+        z-index: 0;
+    }
+
+    .timeline-item {
+        padding: 10px 40px;
+        position: relative;
+        background-color: inherit;
+        width: 50%;
+        margin-bottom: 40px;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .timeline-item.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Alternating items */
+    .timeline-item:nth-child(odd) {
+        left: 0;
+        padding-left: 0;
+        padding-right: 60px;
+        text-align: right;
+    }
+
+    .timeline-item:nth-child(even) {
+        left: 50%;
+        padding-right: 0;
+        padding-left: 60px;
+    }
+
+    /* Circular marker */
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        right: -9px;
+        background-color: white;
+        border: 4px solid #7a6b5f; /* Main theme color */
+        top: 20px;
+        border-radius: 50%;
+        z-index: 1;
+    }
+
+    .timeline-item:nth-child(even)::after {
+        left: -9px;
+    }
+
+    .timeline-content {
+        padding: 20px 30px;
+        background-color: #f9f9f9;
+        position: relative;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content {
+        border-right: 3px solid #7a6b5f;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+        border-left: 3px solid #7a6b5f;
+    }
+
+    .timeline-content h3 {
+        margin-top: 0;
+        color: #7a6b5f;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .timeline-content .date {
+        font-size: 0.9rem;
+        color: #888;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .timeline-content p {
+        margin-bottom: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #555;
+    }
+
+    /* Responsive adjustments */
+    @media screen and (max-width: 768px) {
+        .timeline-vertical::after {
+            left: 31px;
+        }
+
+        .timeline-item {
+            width: 100%;
+            padding-left: 70px;
+            padding-right: 25px;
+            margin-bottom: 30px; /* Reduce margin */
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            text-align: left;
+            padding-left: 70px;
+            padding-right: 25px;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 0;
+            padding-left: 70px;
+            padding-right: 25px;
+        }
+
+        .timeline-item::after {
+            left: 22px; /* Adjusted for new line position */
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            border-right: none;
+            border-left: 3px solid #7a6b5f;
+        }
+    }
+
+    /* Footer styles */
+    footer {
+        background-color: #0d141a; /* Dark background */
+        color: white;
+        padding: 4rem 0 2rem;
+        font-size: 0.9rem;
+        border-top: 1px solid #2a3a47;
+    }
 </style>
 
     
@@ -848,40 +1009,40 @@
         <div class="container">
             <h2 class="section-title">Career Journey</h2>
             
-            <div class="storyboard-container">
-                <div class="storyboard-track">
-                    
-                    <!-- Experience Card 1 -->
-                    <div class="storyboard-card" data-aos="fade-right" data-aos-delay="100">
-                        <div class="card-header">
-                            <!-- Add img tag here if you have logo URLs -->
-                            <h3 class="job-title">Senior Product Manager</h3>
-                        </div>
-                        <h4 class="company-info">Tech Solutions Inc. | Jan 2020 - Present</h4>
-                        <p class="card-description">Leading product development for enterprise SaaS solutions. Managing cross-functional teams and driving roadmap execution.</p>
-                    </div>
-                    
-                    <!-- Experience Card 2 -->
-                    <div class="storyboard-card" data-aos="fade-right" data-aos-delay="200">
-                         <div class="card-header">
-                            <h3 class="job-title">Product Manager</h3>
-                        </div>
-                        <h4 class="company-info">Digital Innovations Co. | Mar 2017 - Dec 2019</h4>
-                        <p class="card-description">Managed the development lifecycle of mobile applications for key financial services clients, focusing on user experience and market fit.</p>
-                    </div>
+            <div class="timeline-vertical">
                 
-                    <!-- Experience Card 3 -->
-                    <div class="storyboard-card" data-aos="fade-right" data-aos-delay="300">
-                         <div class="card-header">
-                            <h3 class="job-title">Associate Product Manager</h3>
-                        </div>
-                        <h4 class="company-info">StartupHub | Jun 2015 - Feb 2017</h4>
-                        <p class="card-description">Assisted in the ideation, development, and successful launch of three B2C web applications in the e-commerce space.</p>
+                <!-- Timeline Item 1 (Most Recent) -->
+                <div class="timeline-item" data-aos="fade-left">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 class="job-title">Senior Product Manager</h3>
+                        <h4 class="company-info">Tech Solutions Inc. | Jan 2020 - Present</h4>
+                        <p class="timeline-description">Leading product development for enterprise SaaS solutions. Managing cross-functional teams and driving roadmap execution.</p>
                     </div>
-                    
-                    <!-- Add more cards as needed -->
-
                 </div>
+                
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item" data-aos="fade-right">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 class="job-title">Product Manager</h3>
+                        <h4 class="company-info">Digital Innovations Co. | Mar 2017 - Dec 2019</h4>
+                        <p class="timeline-description">Managed the development lifecycle of mobile applications for key financial services clients, focusing on user experience and market fit.</p>
+                    </div>
+                </div>
+            
+                <!-- Timeline Item 3 (Oldest) -->
+                <div class="timeline-item" data-aos="fade-left">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 class="job-title">Associate Product Manager</h3>
+                        <h4 class="company-info">StartupHub | Jun 2015 - Feb 2017</h4>
+                        <p class="timeline-description">Assisted in the ideation, development, and successful launch of three B2C web applications in the e-commerce space.</p>
+                    </div>
+                </div>
+                
+                <!-- Add more items here in reverse chronological order (most recent first) -->
+
             </div>
         </div>
     </section>
