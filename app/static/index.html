@@ -567,12 +567,18 @@
         border-width: 3px;
         border-style: solid;
         overflow: hidden;
+        cursor: pointer;
     }
 
     .item__3d-frame__box img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .item__3d-frame__box:hover img {
+        transform: scale(1.1);
     }
 
     .item__3d-frame__box--right, .item__3d-frame__box--left {
@@ -617,6 +623,12 @@
 
         .carousel__prev { left: 20%; }
         .carousel__next { right: 20%; }
+    }
+    
+    /* Auto-rotation animation for entire carousel (not used, we're using JS control) */
+    @keyframes carousel-rotate {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
     }
 </style>
 
@@ -1344,10 +1356,10 @@
     }
     
     // Initialize carousel controls - Now primarily defines functions and vars
-    let carousel, prevBtn, nextBtn, items, width, height, margin = 20, currIndex = 0, interval, intervalTime = 4000; // Define vars globally within script scope
+    let carousel, prevBtn, nextBtn, items, width, height, margin = 20, currIndex = 0, interval, intervalTime = 4000; 
 
     function resize() {
-        if (!carousel || items.length === 0) return;
+        if (!carousel || !items || items.length === 0) return;
         width = Math.max(window.innerWidth * .25, 275);
         height = window.innerHeight * .4;
         
@@ -1361,7 +1373,7 @@
     }
     
     function move(index, resetTimer = true) { // Added resetTimer flag
-        if (!carousel || items.length === 0) return;
+        if (!carousel || !items || items.length === 0) return;
         
         if(index < 1) index = items.length;
         if(index > items.length) index = 1;
@@ -1370,8 +1382,8 @@
         for(let i = 0; i < items.length; i++) {
             let item = items[i];
             let box = item.querySelector('.item__3d-frame');
-            if (box) { // Add check for box existence
-                 if(i == (index - 1)) {
+            if (box) { 
+                if(i == (index - 1)) {
                     item.classList.add('carousel__slider__item--active');
                     box.style.transform = "perspective(1200px)"; 
                 } else {
@@ -1379,7 +1391,7 @@
                     box.style.transform = "perspective(1200px) rotateY(" + (i < (index - 1) ? 40 : -40) + "deg)";
                 }
             } else {
-                 console.error("'.item__3d-frame' not found in item:", item);
+                console.error("'.item__3d-frame' not found in item:", item);
             }
         }
         
@@ -1387,12 +1399,12 @@
         carousel.style.transform = `translate3d(${(index * -width) + centerOffset}px, 0, 0)`;
 
         if (resetTimer) {
-             timer(); // Reset timer only on manual moves or auto-advance
+            timer(); // Reset timer only on manual moves or auto-advance
         }
     }
     
     function timer() {
-        clearInterval(interval);    
+        clearInterval(interval);  
         interval = setInterval(() => {
             move(++currIndex);
         }, intervalTime);    
@@ -1407,103 +1419,127 @@
     }
     
     function bindEvents() {
-         if (!prevBtn || !nextBtn) return;
+        if (!prevBtn || !nextBtn) return;
         window.onresize = resize;
-        prevBtn.addEventListener('click', () => { prev(); });
-        nextBtn.addEventListener('click', () => { next(); });
+        prevBtn.addEventListener('click', prev);
+        nextBtn.addEventListener('click', next);
     }
     
-    // This function is now just a placeholder, logic moved to updateCarousel
     function initializeCarouselControls() {
-         // console.log("Initializing control variables...");
-         carousel = document.getElementById('photoCarousel');
-         prevBtn = document.getElementById('prevBtn');
-         nextBtn = document.getElementById('nextBtn');
-         if (carousel) {
+        console.log("Initializing carousel controls...");
+        carousel = document.getElementById('photoCarousel');
+        prevBtn = document.getElementById('prevBtn');
+        nextBtn = document.getElementById('nextBtn');
+        
+        if (carousel) {
             items = carousel.querySelectorAll('.carousel__slider__item');
-         } else {
-             items = [];
-         }
-         if (!carousel || !prevBtn || !nextBtn) {
-             console.error("Carousel base elements not found during initialization!");
-         }
+            console.log(`Found ${items.length} carousel items`);
+        } else {
+            items = [];
+            console.error("Carousel element not found!");
+        }
+        
+        if (!prevBtn || !nextBtn) {
+            console.error("Carousel navigation buttons not found!");
+        }
     }
     
-    // Function to update photos in the "snaps" section with 3D carousel effect
     function updateCarousel(photos) {
         const snapsContainer = document.getElementById('snaps');
-        if (snapsContainer) {
-            snapsContainer.innerHTML = '';
-            const carouselContainer = document.createElement('div');
-            carouselContainer.className = 'carousel';
-            const carouselBody = document.createElement('div');
-            carouselBody.className = 'carousel__body';
-            const tempCarousel = document.createElement('div'); // Use temporary var name
-            tempCarousel.className = 'carousel__slider';
-            tempCarousel.id = 'photoCarousel';
-            
-            const validPhotos = photos.filter(photo => photo && photo.url);
-            
-            validPhotos.forEach((photo, index) => {
-                const item = document.createElement('div');
-                item.className = 'carousel__slider__item';
-                const frame = document.createElement('div');
-                frame.className = 'item__3d-frame';
-                const frontBox = document.createElement('div');
-                frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
-                const img = document.createElement('img');
-                img.src = photo.url;
-                img.alt = photo.alt || 'Photo';
-                img.onerror = function() {
-                    console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-                    this.onerror = null;
-                    this.src = '/static/img/placeholder.png';
-                };
-                frontBox.appendChild(img);
-                const leftBox = document.createElement('div');
-                leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
-                const rightBox = document.createElement('div');
-                rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
-                frame.appendChild(frontBox);
-                frame.appendChild(leftBox);
-                frame.appendChild(rightBox);
-                item.appendChild(frame);
-                tempCarousel.appendChild(item);
-            });
-            
-            const tempPrevBtn = document.createElement('div'); // Use temporary var name
-            tempPrevBtn.className = 'carousel__prev';
-            tempPrevBtn.id = 'prevBtn';
-            tempPrevBtn.innerHTML = '<i class="fas fa-angle-left"></i>';
-            const tempNextBtn = document.createElement('div'); // Use temporary var name
-            tempNextBtn.className = 'carousel__next';
-            tempNextBtn.id = 'nextBtn';
-            tempNextBtn.innerHTML = '<i class="fas fa-angle-right"></i>';
-            
-            carouselBody.appendChild(tempCarousel);
-            carouselContainer.appendChild(carouselBody);
-            carouselContainer.appendChild(tempPrevBtn);
-            carouselContainer.appendChild(tempNextBtn);
-            snapsContainer.appendChild(carouselContainer);
-            
-            // --- Execute Initialization Logic Here --- 
-            initializeCarouselControls(); // Assigns elements to global vars
-            
-            if (items && items.length > 0) {
-                 console.log(`Found ${items.length} carousel items. Starting setup...`);
-                resize(); // Set initial sizes
-                move(Math.floor(items.length / 2)); // Move to starting position
-                bindEvents(); // Add button/resize listeners
-                timer(); // Start auto-rotation
-            } else {
-                 console.error("Carousel items not found after DOM update. Cannot start carousel.");
-            }
-            // --- End Initialization Logic --- 
-
-            initializeModalFunctionality();
-        } else {
-             console.error("Snaps container not found!");
+        if (!snapsContainer) {
+            console.error("Snaps container not found!");
+            return;
         }
+        
+        // Clear existing content
+        snapsContainer.innerHTML = '';
+        
+        // Create carousel structure
+        const carouselContainer = document.createElement('div');
+        carouselContainer.className = 'carousel';
+        
+        const carouselBody = document.createElement('div');
+        carouselBody.className = 'carousel__body';
+        
+        const carouselSlider = document.createElement('div');
+        carouselSlider.className = 'carousel__slider';
+        carouselSlider.id = 'photoCarousel';
+        
+        // Filter out photos without URLs
+        const validPhotos = photos.filter(photo => photo && photo.url);
+        console.log(`Creating carousel with ${validPhotos.length} valid photos`);
+        
+        // Add photos to carousel
+        validPhotos.forEach((photo, index) => {
+            const item = document.createElement('div');
+            item.className = 'carousel__slider__item';
+            item.setAttribute('data-photo', photo.url); // For modal functionality
+            item.classList.add('snap-container');
+            
+            const frame = document.createElement('div');
+            frame.className = 'item__3d-frame';
+            
+            const frontBox = document.createElement('div');
+            frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
+            
+            const img = document.createElement('img');
+            img.src = photo.url;
+            img.alt = photo.alt || 'Photo';
+            img.onerror = function() {
+                console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
+                this.onerror = null;
+                this.src = '/static/img/placeholder.png';
+            };
+            
+            frontBox.appendChild(img);
+            
+            const leftBox = document.createElement('div');
+            leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+            
+            const rightBox = document.createElement('div');
+            rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
+            
+            frame.appendChild(frontBox);
+            frame.appendChild(leftBox);
+            frame.appendChild(rightBox);
+            item.appendChild(frame);
+            carouselSlider.appendChild(item);
+        });
+        
+        // Add navigation buttons
+        const prevButton = document.createElement('div');
+        prevButton.className = 'carousel__prev';
+        prevButton.id = 'prevBtn';
+        prevButton.innerHTML = '<i class="fas fa-angle-left"></i>';
+        
+        const nextButton = document.createElement('div');
+        nextButton.className = 'carousel__next';
+        nextButton.id = 'nextBtn';
+        nextButton.innerHTML = '<i class="fas fa-angle-right"></i>';
+        
+        // Assemble carousel
+        carouselBody.appendChild(carouselSlider);
+        carouselContainer.appendChild(carouselBody);
+        carouselContainer.appendChild(prevButton);
+        carouselContainer.appendChild(nextButton);
+        snapsContainer.appendChild(carouselContainer);
+        
+        // Initialize carousel controls
+        initializeCarouselControls();
+        
+        // Start carousel if we have items
+        if (items && items.length > 0) {
+            console.log("Starting carousel...");
+            resize();
+            move(Math.ceil(items.length / 2)); // Center on middle item
+            bindEvents();
+            timer(); // Start auto-rotation
+        } else {
+            console.error("No carousel items found after setup!");
+        }
+        
+        // Initialize modal functionality
+        initializeModalFunctionality();
     }
 </script>
 
