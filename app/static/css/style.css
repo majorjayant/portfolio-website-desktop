@@ -486,72 +486,120 @@ header {
 
 /* ===== Experience Section ===== */
 .experience-section {
-  padding: 4rem 0;
-  background-color: var(--background-light);
-}
-
-.timeline {
+  padding: 2rem 0; /* Adjust padding as needed */
+  background-color: #ffffff; /* Slightly different background */
   position: relative;
-  max-width: 800px;
-  margin: 0 auto;
+  /* Remove negative margin if it exists from previous edits */
+  margin-top: 0; 
 }
 
-.timeline:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 20px;
-  height: 100%;
-  width: 2px;
-  background-color: var(--accent-color);
+/* Container for horizontal scrolling */
+.storyboard-container {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: hidden; /* Hide vertical scrollbar */
+  white-space: nowrap; /* Prevent items from wrapping */
+  padding: 1.5rem 0 1.5rem 5px; /* Padding for visual spacing and scrollbar room */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--menu-hover) var(--background-light); /* Firefox - thumb track */
 }
 
-.timeline-item {
-  position: relative;
-  margin-bottom: 2rem;
-  padding-left: 60px;
+/* Webkit scrollbar styling */
+.storyboard-container::-webkit-scrollbar {
+  height: 8px;
 }
 
-.timeline-icon {
-  position: absolute;
-  left: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: var(--primary-color);
+.storyboard-container::-webkit-scrollbar-track {
+  background: var(--background-light); 
+  border-radius: 4px;
+}
+
+.storyboard-container::-webkit-scrollbar-thumb {
+  background-color: var(--menu-hover); 
+  border-radius: 4px;
+  border: 2px solid var(--background-light); 
+}
+
+/* Track containing the cards */
+.storyboard-track {
+  display: inline-flex; /* Use inline-flex for nowrap behavior */
+  gap: 1.5rem; /* Space between cards */
+}
+
+/* Individual experience card */
+.storyboard-card {
+  display: inline-block; /* Required for nowrap */
+  flex-shrink: 0; /* Prevent cards from shrinking */
+  width: 350px; /* Fixed width for cards */
+  background: var(--background-light); /* Use light background */
+  border-radius: 10px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  white-space: normal; /* Allow text inside card to wrap */
+  vertical-align: top; /* Align cards to the top */
+}
+
+.storyboard-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.storyboard-card .card-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: var(--text-light);
-  z-index: 1;
-}
-
-.timeline-content {
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-}
-
-.timeline-content h3 {
   margin-bottom: 0.5rem;
+}
+
+/* Optional logo styling 
+.storyboard-card .company-logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 1rem;
+  border-radius: 50%;
+  object-fit: contain;
+}*/
+
+.storyboard-card .job-title {
+  font-size: 1.25rem;
+  font-weight: 600;
   color: var(--primary-color);
+  margin-bottom: 0.25rem;
 }
 
-.timeline-content h4 {
-  color: var(--accent-color);
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-.timeline-date {
-  color: #777;
+.storyboard-card .company-info {
   font-size: 0.9rem;
+  color: var(--accent-color); 
   margin-bottom: 1rem;
+  font-weight: 500;
 }
 
-.timeline-description {
+.storyboard-card .card-description {
+  font-size: 0.95rem;
   line-height: 1.6;
+  color: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .storyboard-container {
+    overflow-x: visible; /* Disable horizontal scroll */
+    white-space: normal; /* Allow wrapping */
+    padding: 1rem 0;
+  }
+  
+  .storyboard-track {
+    display: flex;
+    flex-direction: column; /* Stack cards vertically */
+    gap: 1.5rem;
+    width: 100%;
+  }
+  
+  .storyboard-card {
+    width: 100%; /* Cards take full width */
+    flex-shrink: 1;
+    display: block;
+  }
 }
 
 /* ===== Education Section ===== */
