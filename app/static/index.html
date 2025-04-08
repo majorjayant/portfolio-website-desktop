@@ -490,33 +490,31 @@
 
     .carousel__prev, .carousel__next {
         position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 50px;
-        height: 50px;
-        background-color: #e6e0d4;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-        cursor: pointer;
-        pointer-events: auto;
-        z-index: 5;
+        bottom: 10px;
+        top: auto;
+        transform: none;
+        transition: transform 0.25s ease;
+        z-index: 10;
+        width: auto;
+        height: auto;
+        background-color: transparent;
+        box-shadow: none;
+        border-radius: 0;
     }
 
     .carousel__prev i, .carousel__next i {
-        font-size: 30px;
-        color: #1e272e;
+        font-size: 50px;
+        color: var(--box-border);
+        cursor: pointer;
     }
 
-    .carousel__prev:hover, .carousel__next:hover { 
-        transform: translateY(-50%) scale(1.1);
-        background-color: #e6e0d4;
-    }  
+    .carousel__prev:hover, .carousel__next:hover {
+        transform: scale(1.15);
+        background-color: transparent;
+    }
 
-    .carousel__prev { left: 5px; }
-    .carousel__next { right: 5px; }
+    .carousel__prev { left: 45%; }
+    .carousel__next { right: 45%; }
 
     .carousel__body {
         width: 100%;
@@ -526,11 +524,8 @@
 
     .carousel__slider {
         position: relative;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 1s ease-in-out;
         background: var(--crsl-bg);
-        display: flex;
-        justify-content: center;
-        align-items: center;
         z-index: 1;
         will-change: transform;
     }
@@ -540,10 +535,8 @@
         display: block;
         float: left;
         box-sizing: border-box;
-        margin-left: 5px;
-        margin-right: 5px;
-        width: 360px;
-        height: 384px;
+        margin-left: 20px;
+        margin-right: 20px;
         will-change: transform;
     }
 
@@ -551,7 +544,7 @@
         position: relative;
         width: 100%;
         height: 100%;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 1s ease-in-out;
         transform-style: preserve-3d;
         will-change: transform;
     }
@@ -559,12 +552,12 @@
     .item__3d-frame:after {
         content: '';
         position: absolute;
-        bottom: -8%;
+        bottom: -15%;
         width: 100%;
-        height: 20px;
+        height: 40px;
         background: var(--box-shadow);
-        box-shadow: 0px 0px 3px 3px var(--box-shadow);
-        transform: rotateX(90deg) translate3d(0px, -10px, 0px);
+        box-shadow: 0px 0px 5px 5px var(--box-shadow);
+        transform: rotateX(90deg) translate3d(0px, -20px, 0px);
         opacity: 0.85;
     }
 
@@ -577,9 +570,9 @@
         width: 100%;
         height: 100%;
         box-sizing: border-box;
-        border-color: #7a6b5f;
+        border-color: var(--box-border);
         background: var(--box-bg);
-        border-width: 5px;
+        border-width: 3px;
         border-style: solid;
         border-radius: 15px;
         overflow: hidden;
@@ -599,57 +592,49 @@
 
     .item__3d-frame__box--right, .item__3d-frame__box--left {
         top: 0;
-        width: 48px;
+        width: 40px;
         backface-visibility: hidden;
-        border-color: #7a6b5f;
-        border-width: 5px;
+        border-color: var(--box-border);
+        background: var(--box-bg);
+        border-width: 3px;
+        border-style: solid;
         border-radius: 15px;
     }
 
     .item__3d-frame__box--left {
         left: 0;
-        border-left-width: 8px;
-        transform: translate3d(1px, 0, -48px) rotateY(-90deg);
+        border-left-width: 5px;
+        transform: translate3d(1px, 0, -40px) rotateY(-90deg);
         transform-origin: 0%;
         border-top-left-radius: 15px;
         border-bottom-left-radius: 15px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
     }
 
     .item__3d-frame__box--right {
         right: 0;
-        border-right-width: 8px;
-        transform: translate3d(-1px, 0, -48px) rotateY(90deg);
+        border-right-width: 5px;
+        transform: translate3d(-1px, 0, -40px) rotateY(90deg);
         transform-origin: 100%;
         border-top-right-radius: 15px;
         border-bottom-right-radius: 15px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
     }
 
     .carousel__slider__item--active .item__3d-frame {
-        transform: perspective(1200px);
+        
     }
 
     @media (max-width: 768px) {
-        .carousel__slider__item {
-            width: 300px;
-            height: 324px;
-            margin-left: 3px;
-            margin-right: 3px;
-        }
-
-        .carousel__prev { left: 30%; }
-        .carousel__next { right: 30%; }
+        .carousel__prev { left: 40%; }
+        .carousel__next { right: 40%; }
     }
 
     @media (max-width: 480px) {
-        .carousel__slider__item {
-            width: 240px;
-            height: 264px;
-            margin-left: 2px;
-            margin-right: 2px;
-        }
-
-        .carousel__prev { left: 20%; }
-        .carousel__next { right: 20%; }
+        .carousel__prev { left: 35%; }
+        .carousel__next { right: 35%; }
     }
     
     /* Auto-rotation animation for entire carousel (not used, we're using JS control) */
@@ -1389,182 +1374,163 @@
         document.body.classList.add('content-loaded');
     }
     
-    // Initialize carousel controls - Now primarily defines functions and vars
-    let carousel, prevBtn, nextBtn, items, width, height, margin = 5, currIndex = 0, interval, intervalTime = 4000; 
+    // Initialize carousel controls - Use reference logic
+    let carousel, slider, items, prevBtn, nextBtn, 
+        width, height, totalWidth, margin = 20, // Use reference margin
+        currIndex = 0,
+        interval, intervalTime = 4000;
+
+    function initCarousel() { // Renamed from 'init' in reference
+        console.log("Initializing carousel with reference logic...");
+        carousel = document.querySelector('.carousel'); // Use querySelector
+        slider = document.querySelector('.carousel__slider');
+        items = document.querySelectorAll('.carousel__slider__item'); // Use querySelectorAll
+        prevBtn = document.querySelector('.carousel__prev');
+        nextBtn = document.querySelector('.carousel__next');
+
+        if (!carousel || !slider || items.length === 0 || !prevBtn || !nextBtn) {
+            console.error("Carousel elements not found for initialization.");
+            return;
+        }
+
+        console.log(`Found ${items.length} items.`);
+        resize();
+        move(Math.floor(items.length / 2)); // Start in the middle
+        bindEvents();
+        timer();
+        console.log("Carousel initialized successfully.");
+    }
 
     function resize() {
-        if (!carousel || !items || items.length === 0) return;
-        width = Math.max(window.innerWidth * .25, 275);
-        height = window.innerHeight * .4;
+        if (!items || items.length === 0 || !slider) return;
         
+        // Calculate width based on viewport, similar to reference
+        width = Math.max(window.innerWidth * .25, 275); // Reference calculation
+        height = window.innerHeight * .5; // Reference calculation
+        totalWidth = width * items.length;
+        
+        console.log(`Resizing carousel: item width=${width - (margin * 2)}, total width=${totalWidth}`);
+        
+        // Set total slider width
+        slider.style.width = totalWidth + "px";
+        
+        // Set individual item widths and heights
         for(let i = 0; i < items.length; i++) {
             let item = items[i];
             item.style.width = (width - (margin * 2)) + "px";
             item.style.height = height + "px";
         }
-        // Re-center after resize
-        move(currIndex, false); // Pass false to prevent timer reset during resize
+        // Recalculate slider position after resize
+        move(currIndex, false); // Don't reset timer on resize
     }
-    
+
     function move(index, resetTimer = true) {
-        if (!carousel || !items || items.length === 0) return;
-        
-        // Ensure index stays within bounds
+        if (!items || items.length === 0 || !slider) return;
+
+        // Loop index
         if (index < 1) index = items.length;
         if (index > items.length) index = 1;
         currIndex = index;
-        
-        // Calculate center position
-        const centerOffset = (window.innerWidth / 2) - (width / 2);
-        
-        // Use requestAnimationFrame for smoother animations
-        requestAnimationFrame(() => {
-            // Apply transformations to each item
-            for(let i = 0; i < items.length; i++) {
-                let item = items[i];
-                let box = item.querySelector('.item__3d-frame');
-                if (box) { 
-                    if(i == (index - 1)) {
-                        // Center item
-                        item.classList.add('carousel__slider__item--active');
-                        box.style.transform = "perspective(1200px)";
-                        item.style.transform = `translateX(${centerOffset}px)`;
-                    } else {
-                        // Side items
-                        item.classList.remove('carousel__slider__item--active');
-                        const distance = Math.abs(i - (index - 1));
-                        const rotation = i < (index - 1) ? 30 : -30; // Reduced rotation angle
-                        const scale = 1 - (distance * 0.05); // Reduced scale difference
-                        const translateX = (i - (index - 1)) * (width + margin);
-                        box.style.transform = `perspective(1200px) rotateY(${rotation}deg) scale(${scale})`;
-                        item.style.transform = `translateX(${translateX + centerOffset}px)`;
-                    }
+
+        console.log(`Moving to index: ${currIndex}`);
+
+        // Apply transformations to items for 3D effect
+        for (let i = 0; i < items.length; i++) {
+            let item = items[i];
+            let box = item.querySelector('.item__3d-frame');
+            if (box) {
+                if (i === (index - 1)) {
+                    item.classList.add('carousel__slider__item--active');
+                    box.style.transform = "perspective(1200px)"; // Active item faces forward
+                } else {
+                    item.classList.remove('carousel__slider__item--active');
+                    // Apply rotation based on position relative to current index
+                    const rotation = i < (index - 1) ? 40 : -40; // Reference rotation
+                    box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
                 }
             }
-        });
+        }
+
+        // Move the entire slider element
+        // Calculation from reference: (index * -width) + (width / 2) + window.innerWidth / 2
+        const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
+        console.log(`Slider target transform: translateX(${targetTranslateX}px)`);
+        slider.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
 
         if (resetTimer) {
-            timer();
+            timer(); // Reset timer only if specified (e.g., on manual nav)
         }
     }
-    
+
     function timer() {
-        clearInterval(interval);  
+        clearInterval(interval);
+        console.log(`Starting timer (${intervalTime}ms)`);
         interval = setInterval(() => {
-            requestAnimationFrame(() => {
-                move(++currIndex);
-            });
-        }, intervalTime);    
+            console.log("Timer advancing carousel");
+            move(++currIndex);
+        }, intervalTime);
     }
-    
+
     function prev() {
-        clearInterval(interval);
-        move(currIndex - 1);
+        console.log("Previous button clicked");
+        move(--currIndex);
+        // timer(); // Reference code calls timer() here to reset it
     }
-    
+
     function next() {
-        clearInterval(interval);
-        move(currIndex + 1);
+        console.log("Next button clicked");
+        move(++currIndex);
+        // timer(); // Reference code calls timer() here to reset it
     }
-    
+
     function bindEvents() {
         if (!prevBtn || !nextBtn) {
             console.error("Navigation buttons not found for binding!");
             return;
         }
-        
+        console.log("Binding events...");
         window.onresize = resize;
-        
-        // Remove any existing event listeners
-        prevBtn.replaceWith(prevBtn.cloneNode(true));
-        nextBtn.replaceWith(nextBtn.cloneNode(true));
-        
-        // Get fresh references
-        prevBtn = document.querySelector('.carousel__prev');
-        nextBtn = document.querySelector('.carousel__next');
-        
-        // Add click event listeners with debounce
-        let debounceTimeout;
-        const debounceTime = 300; // 300ms debounce
-        
-        prevBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            if (!debounceTimeout) {
-                console.log("Prev button clicked");
-                prev();
-                debounceTimeout = setTimeout(() => {
-                    debounceTimeout = null;
-                }, debounceTime);
-            }
-        });
-        
-        nextBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            if (!debounceTimeout) {
-                console.log("Next button clicked");
-                next();
-                debounceTimeout = setTimeout(() => {
-                    debounceTimeout = null;
-                }, debounceTime);
-            }
-        });
-        
-        // Add hover effects
-        prevBtn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-50%) scale(1.1)';
-        });
-        
-        prevBtn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(-50%) scale(1)';
-        });
-        
-        nextBtn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-50%) scale(1.1)';
-        });
-        
-        nextBtn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(-50%) scale(1)';
-        });
-        
-        // Start auto-rotation
-        timer();
+
+        // Use fresh clones to avoid duplicate listeners if re-binding
+        const prevBtnClone = prevBtn.cloneNode(true);
+        const nextBtnClone = nextBtn.cloneNode(true);
+        prevBtn.parentNode.replaceChild(prevBtnClone, prevBtn);
+        nextBtn.parentNode.replaceChild(nextBtnClone, nextBtn);
+        prevBtn = prevBtnClone;
+        nextBtn = nextBtnClone;
+
+        prevBtn.addEventListener('click', (e) => { e.preventDefault(); prev(); });
+        nextBtn.addEventListener('click', (e) => { e.preventDefault(); next(); });
+        console.log("Events bound.");
     }
     
+    // Modify updateCarousel to call initCarousel AFTER items are added
     function updateCarousel(photos) {
         const snapsContainer = document.getElementById('snaps');
         if (!snapsContainer) {
             console.error("Snaps container not found!");
             return;
         }
-        
-        // Clear existing content and any existing intervals
         clearInterval(interval);
         snapsContainer.innerHTML = '';
         
-        // Create carousel structure
         const carouselContainer = document.createElement('div');
         carouselContainer.className = 'carousel';
         
         const carouselBody = document.createElement('div');
         carouselBody.className = 'carousel__body';
         
-        const carouselSlider = document.createElement('div');
-        carouselSlider.className = 'carousel__slider';
-        carouselSlider.id = 'photoCarousel';
+        const sliderDiv = document.createElement('div'); // Renamed from carouselSlider
+        sliderDiv.className = 'carousel__slider';
+        sliderDiv.id = 'photoCarouselSlider'; // New ID for slider
         
-        // Filter out photos without URLs
         const validPhotos = photos.filter(photo => photo && photo.url);
-        console.log(`Creating carousel with ${validPhotos.length} valid photos`);
+        console.log(`Creating carousel HTML with ${validPhotos.length} valid photos`);
         
-        // Add photos to carousel
         validPhotos.forEach((photo, index) => {
             const item = document.createElement('div');
             item.className = 'carousel__slider__item';
-            item.setAttribute('data-photo', photo.url); // For modal functionality
+            item.setAttribute('data-photo', photo.url);
             item.classList.add('snap-container');
             
             const frame = document.createElement('div');
@@ -1572,122 +1538,61 @@
             
             const frontBox = document.createElement('div');
             frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
-            frontBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
+            // frontBox.style.borderColor = '#e6e0d4'; // Use CSS variable
                 
-                const img = document.createElement('img');
+            const img = document.createElement('img');
             img.src = photo.url;
             img.alt = photo.alt || 'Photo';
-        img.onerror = function() {
+            img.onerror = function() {
                 console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
-            this.onerror = null;
+                this.onerror = null;
                 this.src = '/static/img/placeholder.png';
-                };
+            };
                 
             frontBox.appendChild(img);
             
             const leftBox = document.createElement('div');
             leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
-            leftBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
+            // leftBox.style.borderColor = '#e6e0d4'; // Use CSS variable
             
             const rightBox = document.createElement('div');
             rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
-            rightBox.style.borderColor = '#e6e0d4'; // Explicitly set border color
+            // rightBox.style.borderColor = '#e6e0d4'; // Use CSS variable
             
             frame.appendChild(frontBox);
             frame.appendChild(leftBox);
             frame.appendChild(rightBox);
             item.appendChild(frame);
-            carouselSlider.appendChild(item);
+            sliderDiv.appendChild(item);
         });
         
-        // Assemble carousel
-        carouselBody.appendChild(carouselSlider);
-        carouselContainer.appendChild(carouselBody);
+        carouselBody.appendChild(sliderDiv);
         
-        // Create and add navigation buttons with direct event binding
-        const { prevButton, nextButton } = createNavButtons(carouselContainer);
-        
-        // Add carousel to page
-        snapsContainer.appendChild(carouselContainer);
-        
-        // Initialize carousel controls with a brief delay
-        setTimeout(() => {
-            console.log("Setting up carousel functionality");
-            
-            // Get references to DOM elements
-            carousel = document.getElementById('photoCarousel');
-            prevBtn = document.querySelector('.carousel__prev');
-            nextBtn = document.querySelector('.carousel__next');
-            
-            if (carousel) {
-                items = carousel.querySelectorAll('.carousel__slider__item');
-                console.log(`Found ${items.length} carousel items`);
-                
-                if (items && items.length > 0) {
-                    console.log("Starting carousel...");
-                    
-                    // Set initial dimensions
-                    resize();
-                    
-                    // Center on middle item
-                    move(Math.ceil(items.length / 2));
-                    
-                    // Bind navigation events
-                    bindEvents();
-                    
-                    // Start auto-rotation
-                    timer();
-                    
-                    console.log("Carousel initialized successfully");
-                } else {
-                    console.error("No carousel items found after setup!");
-                }
-            } else {
-                console.error("Carousel element not found!");
-            }
-            
-            // Initialize modal functionality
-            initializeModalFunctionality();
-        }, 200); // Slightly longer timeout to ensure DOM is fully ready
-    }
-
-    // Function to directly bind to arrow elements after creation
-    function createNavButtons(carouselContainer) {
-        // Add navigation buttons with improved markup
+        // Add navigation buttons (structure matches reference now)
         const prevButton = document.createElement('div');
         prevButton.className = 'carousel__prev';
-        prevButton.id = 'prevBtn';
-        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
-        prevButton.setAttribute('role', 'button');
-        prevButton.setAttribute('aria-label', 'Previous image');
+        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>'; // Update icon class if needed
         
         const nextButton = document.createElement('div');
         nextButton.className = 'carousel__next';
-        nextButton.id = 'nextBtn';
-        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
-        nextButton.setAttribute('role', 'button');
-        nextButton.setAttribute('aria-label', 'Next image');
+        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>'; // Update icon class if needed
         
-        // Add direct event listeners immediately
-        prevButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("Prev button clicked directly");
-            prev();
-        });
-        
-        nextButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("Next button clicked directly");
-            next();
-        });
-        
+        // Append buttons to carousel container, not body
         carouselContainer.appendChild(prevButton);
         carouselContainer.appendChild(nextButton);
+        carouselContainer.appendChild(carouselBody);
         
-        return { prevButton, nextButton };
+        snapsContainer.appendChild(carouselContainer);
+        
+        // Initialize the carousel JS AFTER the HTML is in the DOM
+        setTimeout(() => {
+            initCarousel(); // Call the new init function
+            initializeModalFunctionality(); // Keep modal init
+        }, 100); // Short delay to ensure DOM ready
     }
+
+    // Remove the old createNavButtons function as it's integrated now
+    /* function createNavButtons(carouselContainer) { ... } */
 </script>
 
 
