@@ -191,123 +191,37 @@
     #banner-section {
         height: 100vh;
         margin-top: 0;
-        padding-top: 80px; /* Account for the fixed header */
         position: relative;
         overflow: hidden;
+        perspective: 1000px;
     }
     
-    .parallax-container {
+    .banner-perspective-container {
         height: 100%;
         width: 100%;
         position: relative;
-        perspective: 1000px;
-        overflow: hidden;
+        transform-style: preserve-3d;
     }
     
-    .parallax-layer {
+    .banner-image-layer {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
         background-size: cover;
         background-position: center;
-        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    
-    .layer-bg {
-        transform: translateZ(-100px) scale(1.2);
-        background-size: cover;
+        transform-origin: center center; 
+        transform: scale(1.1);
+        transition: transform 0.3s ease-out, opacity 0.5s ease-out;
         z-index: 1;
     }
     
-    .layer-1 {
-        transform: translateZ(-50px) scale(1.1);
-        background: rgba(0, 0, 0, 0.05);
-        z-index: 2;
-    }
-    
-    .layer-2 {
-        transform: translateZ(0) scale(1);
-        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.1) 100%);
-        z-index: 3;
-    }
-    
-    .banner-content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10;
-        text-align: center;
-        color: white;
-        width: 80%;
-        max-width: 800px;
-        pointer-events: none;
-    }
-    
-    .banner-content h1 {
-        font-size: 4rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-    }
-    
-    .banner-content p {
-        font-size: 1.5rem;
-        margin-bottom: 2rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-    }
-    
-    .scroll-indicator {
-        position: absolute;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        animation: bounce 2s infinite;
-    }
-    
-    .scroll-indicator a {
-        color: white;
-        font-size: 2rem;
-        text-decoration: none;
-    }
-    
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
-        }
-        40% {
-            transform: translateY(-20px);
-        }
-        60% {
-            transform: translateY(-10px);
-        }
-    }
-    
-    /* Make the snap containers work with new styling */
-    .snap-container {
-        display: block;
-        overflow: hidden;
-        border-radius: 8px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .snap-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
-    }
-    
-    .snap-container img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-    
-    .snap-container:hover img {
-        transform: scale(1.05);
+    /* Styles for the About section transition */
+    #about-section {
+        padding: 6rem 0;
+        background-color: #f8f8f8;
+        opacity: 0;
+        transform: scale(0.95);
+        position: relative;
+        z-index: 5;
     }
     
     @media (max-width: 992px) {
@@ -334,10 +248,6 @@
         .modal-content {
             max-width: 90%;
         }
-        
-        .banner-content h1 {
-            font-size: 3rem;
-        }
     }
     
     @media (max-width: 576px) {
@@ -347,14 +257,6 @@
         
         .snaps {
             grid-template-columns: 1fr;
-        }
-        
-        .banner-content h1 {
-            font-size: 2.5rem;
-        }
-        
-        .banner-content p {
-            font-size: 1.2rem;
         }
     }
 </style>
@@ -730,49 +632,79 @@
         });
         
         // Initialize image elements and fetch content
-            const bannerImage = document.getElementById('banner-image');
-            if (bannerImage) {
-                    bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-            bannerImage.style.backgroundSize = 'cover';
-                bannerImage.style.backgroundPosition = 'center';
-                bannerImage.style.backgroundRepeat = 'no-repeat';
-            }
+        const bannerImage = document.getElementById('banner-image');
+        if (bannerImage) {
+            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+        }
 
         // Try to fetch the latest content from our AWS Lambda endpoint
         fetchLatestAboutContent();
         
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            easing: 'ease-in-out',
-            once: true,
-            mirror: false
-        });
+        // Initialize NEW scroll effects
+        initScrollEffects();
         
-        // Initialize parallax effect
-        initParallax();
-        
-        // Smooth scroll
+        // Smooth scroll (keep this)
         initSmoothScroll();
+        
+        // Set initial state for about section (safer than CSS for JS control)
+        const aboutSection = document.getElementById('about-section');
+        if (aboutSection) {
+            aboutSection.style.opacity = '0';
+            aboutSection.style.transform = 'scale(0.95)';
+        }
     });
     
-    // Initialize parallax effect for banner
-    function initParallax() {
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.scrollY;
-            const parallaxElements = document.querySelectorAll('.parallax-layer');
-            
-            parallaxElements.forEach(function(element, index) {
-                const speed = index * 0.2;
-                const movement = -(scrollTop * speed);
-                const scale = 1 + (scrollTop * 0.0005);
-                
-                element.style.transform = `translateY(${movement}px) scale(${index === 0 ? scale : 1})`;
-            });
-        });
+    // NEW function to handle scroll-based effects
+    function initScrollEffects() {
+        window.addEventListener('scroll', handleScrollEffects);
+        // Run once on load
+        handleScrollEffects(); 
     }
     
-    // Initialize smooth scroll for navigation
+    function handleScrollEffects() {
+        const scrollTop = window.scrollY;
+        const bannerSection = document.getElementById('banner-section');
+        const bannerImageLayer = document.getElementById('banner-image');
+        const aboutSection = document.getElementById('about-section');
+        const viewportHeight = window.innerHeight;
+        const bannerHeight = viewportHeight; // Since banner is 100vh
+
+        if (!bannerSection || !bannerImageLayer || !aboutSection) return;
+
+        // --- 1. Banner 3D Rotation --- 
+        const scrollPercentInBanner = Math.min(scrollTop / bannerHeight, 1); // 0 to 1 within banner scroll
+        const maxRotation = 10; // Max degrees rotation (keep it subtle)
+        const rotationX = maxRotation * scrollPercentInBanner;
+        // Apply perspective rotation directly to the image layer
+        // Adjust scale slightly based on scroll for more depth
+        const currentScale = 1.1 + scrollPercentInBanner * 0.1; // Scale from 1.1 to 1.2
+        bannerImageLayer.style.transform = `perspective(1500px) rotateX(${rotationX}deg) scale(${currentScale})`;
+
+        // --- 2. Transition between Banner and About --- 
+        const transitionStart = bannerHeight * 0.5; // Start transition earlier (50% scroll)
+        const transitionEnd = bannerHeight;         // End transition at 100% scroll
+        const transitionDuration = transitionEnd - transitionStart;
+
+        let transitionProgress = 0;
+        if (scrollTop >= transitionStart && scrollTop <= transitionEnd) {
+            transitionProgress = (scrollTop - transitionStart) / transitionDuration;
+        } else if (scrollTop > transitionEnd) {
+            transitionProgress = 1;
+        }
+        
+        // Clamp progress between 0 and 1
+        transitionProgress = Math.max(0, Math.min(1, transitionProgress));
+
+        // Apply transition effects
+        // Fade out banner (starts fading after 60% progress)
+        bannerSection.style.opacity = 1 - Math.max(0, (transitionProgress - 0.6) / 0.4);
+        
+        // Fade in and scale up About section
+        aboutSection.style.opacity = transitionProgress;
+        aboutSection.style.transform = `scale(${0.95 + transitionProgress * 0.05})`;
+    }
+    
+    // Initialize smooth scroll for navigation (Keep this)
     function initSmoothScroll() {
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1006,8 +938,5 @@
             }
         });
     </script>
-
-    <!-- AOS - Animate On Scroll Library -->
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 </body>
 </html> 
