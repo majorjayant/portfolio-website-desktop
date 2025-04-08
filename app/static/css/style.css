@@ -55,9 +55,9 @@ img {
 
 .container {
   width: 90%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 1rem 0;
 }
 
 .section-title {
@@ -282,7 +282,7 @@ header {
 
 /* ===== About Section ===== */
 .about-section {
-  padding: 4rem 0;
+  padding: 1rem 0;
   margin-top: 0;
   background-color: #f8f8f8;
 }
@@ -291,6 +291,7 @@ header {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: flex-end;
   margin: 0 auto;
   max-width: 1400px;
 }
