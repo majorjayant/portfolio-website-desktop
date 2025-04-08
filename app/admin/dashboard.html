@@ -197,6 +197,14 @@
         </footer>
     </div>
 
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white p-5 rounded-lg shadow-lg flex flex-col items-center">
+            <div class="loader mb-3 w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-gray-700">Saving changes...</p>
+        </div>
+    </div>
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Admin dashboard loaded');
@@ -422,6 +430,10 @@
         
         // Save site configuration
         async function saveSiteConfig(formData) {
+            // Show loading overlay
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+            
             showSaveMessage('Saving configuration...', 'text-blue-500 bg-blue-50');
             
             // Convert form data to object
@@ -437,6 +449,8 @@
                 const token = localStorage.getItem('admin_token');
                 console.log('Retrieved token for save request:', token);
                 if (!token) {
+                    // Hide loading overlay
+                    if (loadingOverlay) loadingOverlay.classList.add('hidden');
                     showSaveMessage('Error: Authentication token is missing. Please log out and log back in.', 'text-red-500 bg-red-50');
                     return;
                 }
@@ -463,6 +477,9 @@
                 const responseData = await response.json();
                 console.log('Raw API response data on save:', JSON.stringify(responseData));
 
+                // Hide loading overlay
+                if (loadingOverlay) loadingOverlay.classList.add('hidden');
+
                 // Validate the response
                 if (response.ok && responseData.success === true) {
                     console.log('Configuration saved successfully:', responseData.message);
@@ -477,6 +494,9 @@
                     throw new Error(errorMessage);
                 }
             } catch (error) {
+                // Hide loading overlay
+                if (loadingOverlay) loadingOverlay.classList.add('hidden');
+                
                 console.error('Error saving configuration:', error);
                 showSaveMessage('Error saving configuration: ' + error.message, 'text-red-500 bg-red-50');
                 

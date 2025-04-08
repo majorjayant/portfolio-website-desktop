@@ -228,25 +228,22 @@ header {
 }
 
 /* ===== Banner Section ===== */
-.banner {
-  margin: 0;
-  padding: 0;
-  height: auto;
-  width: 100%;
+#banner-section {
   position: relative;
+  height: 85vh; /* Adjusted from 100vh to prevent overflow */
+  width: 100%;
   overflow: hidden;
-  border-bottom: none;
-  margin-top: 80px; /* Account for fixed header */
+  perspective: 10px;
+  z-index: 1;
 }
 
 .banner-image {
   width: 100%;
   height: 100%;
-  background-size: contain !important;
+  background-size: cover !important; /* Changed from 'contain' to 'cover' */
   background-position: center !important;
   background-repeat: no-repeat !important;
   position: relative;
-  /* Enhanced fade effect on both sides */
   -webkit-mask-image: linear-gradient(to right, 
     transparent 0%, 
     rgba(0,0,0,0.2) 3%, 
@@ -298,8 +295,9 @@ header {
 }
 
 .text-main {
-  flex-basis: 45%;
-  flex-grow: 1;
+  flex-basis: 60%;
+  padding-right: 2rem;
+  padding-left: 15px; /* Added padding-left to move text left by 15px */
   opacity: 1;
   transition: all 0.5s ease;
 }
@@ -1445,7 +1443,11 @@ footer {
   }
   
   #banner-section {
-    height: 70.4vh; /* Reduced from 80vh (12% reduction) */
+    height: 60vh; /* Reduced to prevent excessive height on mobile */
+  }
+  
+  .banner-image {
+    background-size: cover !important; /* Ensure background size is consistent */
   }
   
   .layer-bg {
