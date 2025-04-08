@@ -1,10 +1,10 @@
 function updatePageWithConfig(data) {
     console.log('Updating page with config data:', data);
     
-    const config = data.site_config; 
+    const config = data.site_config || data;
+    
     if (!config) {
-        console.error('site_config object not found in the response data.');
-        showErrorMessage('Configuration data is missing in the response.');
+        console.error('No valid configuration data found');
         return;
     }
 
@@ -16,7 +16,7 @@ function updatePageWithConfig(data) {
     }
     
     // Update header logo
-    const logoImg = document.querySelector('.navbar .logo img'); // Verified correct selector
+    const logoImg = document.querySelector('.navbar .logo img');
     if (logoImg && config.image_logo_url) {
         logoImg.src = config.image_logo_url;
         logoImg.alt = config.about_title || 'Logo';
@@ -77,8 +77,8 @@ function updatePageWithConfig(data) {
             }
         });
                     
-        // Reinitialize the modal functionality AFTER adding snaps
-        initializeModalFunctionality(); 
+        // Reinitialize the modal functionality
+        initializeModalFunctionality();
     }
     
     // Show content once loaded
@@ -127,6 +127,10 @@ function initializeModalFunctionality() {
     // Remove potential old listener before adding
     const newCloseModalButton = closeModalButton.cloneNode(true);
     closeModalButton.parentNode.replaceChild(newCloseModalButton, closeModalButton);
+    
+    // Update global closeModal reference
+    closeModal = newCloseModalButton;
+    
     newCloseModalButton.addEventListener('click', function() {
         console.log('Close button clicked');
         modal.style.display = 'none';
@@ -157,29 +161,28 @@ let closeModal = document.querySelector('.close-modal'); // Define globally to p
 
 // Set banner image as soon as DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize closeModal globally
+    closeModal = document.querySelector('.close-modal');
+    
     const bannerImage = document.getElementById('banner-image');
     if (bannerImage) {
-        // Set the banner image dynamically IF the API provides it later
-        // bannerImage.style.backgroundImage = "url('...')"; // Done in updatePageWithConfig
+        // Set the banner image
+        bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
         
-        // Ensure correct base styling (fallback)
+        // Ensure correct styling
         bannerImage.style.backgroundSize = 'contain';
         bannerImage.style.backgroundPosition = 'center';
         bannerImage.style.backgroundRepeat = 'no-repeat';
         bannerImage.style.width = '100%';
         bannerImage.style.height = '0';
-        bannerImage.style.paddingBottom = '38.75%'; // Maintain aspect ratio
+        bannerImage.style.paddingBottom = '38.75%';
     }
 
     // Try to fetch the latest content from our AWS Lambda endpoint
     fetchLatestAboutContent();
     
-    // Initialize modal functionality for elements present on initial load (if any)
-    // Note: This is likely re-initialized after API content is loaded
-    initializeModalFunctionality(); 
-
-    // Refresh the global closeModal reference once DOM is fully loaded
-    closeModal = document.querySelector('.close-modal');
+    // Initialize modal functionality for initial page load
+    initializeModalFunctionality();
 });
 
 // Function to fetch the latest content from our API
@@ -192,14 +195,14 @@ function fetchLatestAboutContent() {
         .then(response => {
             console.log('API response status:', response.status);
             if (!response.ok) {
-                throw new Error(`API response not OK: ${response.status}`);
+                throw new Error('API response not OK');
             }
             return response.json();
         })
         .then(data => {
             console.log('Successfully loaded site config from API:', data);
-            // Pass the raw data object
-            updatePageWithConfig(data); 
+            // Extract the site_config object from the data
+            updatePageWithConfig(data);
         })
         .catch(error => {
             console.error('Error loading from API:', error);
@@ -208,7 +211,6 @@ function fetchLatestAboutContent() {
 }
 
 function showErrorMessage(message) {
-    // Create and show error message element (code omitted for brevity)
     const errorDiv = document.createElement('div');
     errorDiv.style.position = 'fixed';
     errorDiv.style.top = '20px';
@@ -219,7 +221,9 @@ function showErrorMessage(message) {
     errorDiv.style.borderRadius = '5px';
     errorDiv.style.zIndex = '1000';
     errorDiv.textContent = message;
+    
     document.body.appendChild(errorDiv);
+    
     setTimeout(() => {
         errorDiv.style.opacity = '0';
         errorDiv.style.transition = 'opacity 0.5s';
