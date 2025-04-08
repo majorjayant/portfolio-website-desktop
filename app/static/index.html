@@ -744,7 +744,6 @@
     }
 
     .experience-item.active .experience-details {
-        height: auto;
         padding: 5px 25px 25px;
         opacity: 1;
     }
@@ -1775,31 +1774,70 @@
             const experienceItems = document.querySelectorAll('.experience-item');
             
             experienceItems.forEach(item => {
-                const color = item.getAttribute('data-color') || '#4285F4';
-                item.style.color = color;
+                const header = item.querySelector('.experience-header'); // Use header for click
+                const details = item.querySelector('.experience-details');
+                const color = item.getAttribute('data-color') || '#4285F4'; // Get color
                 
-                item.addEventListener('click', function() {
-                    const isActive = this.classList.contains('active');
+                if (!header || !details) return; // Skip if elements missing
+
+                // Set initial color
+                item.style.color = color; 
+                
+                header.addEventListener('click', function() { // Attach listener to header
+                    const currentItem = this.closest('.experience-item'); // Get parent item
+                    const isActive = currentItem.classList.contains('active');
                     
-                    // Close all items first
-                    experienceItems.forEach(exp => {
-                        exp.classList.remove('active');
-                        const details = exp.querySelector('.experience-details');
-                        details.style.height = '0px';
+                    // Close other active items
+                    experienceItems.forEach(otherItem => {
+                        if (otherItem !== currentItem && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                            const otherDetails = otherItem.querySelector('.experience-details');
+                            if (otherDetails) {
+                                otherDetails.style.height = '0px';
+                                otherDetails.style.opacity = '0';
+                                otherDetails.style.paddingTop = '0';
+                                otherDetails.style.paddingBottom = '0';
+                            }
+                        }
                     });
                     
-                    // If the clicked item wasn't active, open it
-                    if (!isActive) {
-                        this.classList.add('active');
-                        const details = this.querySelector('.experience-details');
+                    // Toggle the current item
+                    currentItem.classList.toggle('active');
+                    
+                    if (currentItem.classList.contains('active')) {
+                        // Open the current item
                         details.style.height = details.scrollHeight + 'px';
+                        details.style.opacity = '1';
+                        // Restore padding with transition (optional, adjust timing if needed)
+                        setTimeout(() => {
+                             details.style.paddingTop = '5px'; 
+                             details.style.paddingBottom = '25px';
+                        }, 50); // Small delay matches transition start
+                    } else {
+                        // Close the current item
+                        details.style.height = '0px';
+                        details.style.opacity = '0';
+                        details.style.paddingTop = '0';
+                        details.style.paddingBottom = '0';
                     }
                 });
+
+                // Initialize details padding for transition
+                details.style.paddingTop = '0';
+                details.style.paddingBottom = '0';
+                details.style.transition = 'height 0.3s ease, opacity 0.3s ease, padding 0.3s ease'; // Include padding in transition
+
             });
             
-            // Open the first item by default
+            // Open the first item by default if it exists
             if (experienceItems.length > 0) {
-                experienceItems[0].click();
+                const firstHeader = experienceItems[0].querySelector('.experience-header');
+                if (firstHeader) {
+                    // Use timeout to ensure layout is complete for scrollHeight calculation
+                    setTimeout(() => {
+                         firstHeader.click();
+                    }, 100);
+                }
             }
         }
 
