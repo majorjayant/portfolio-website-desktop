@@ -675,10 +675,10 @@
         const scrollPercentInBanner = Math.min(scrollTop / bannerHeight, 1); // 0 to 1 within banner scroll
         const maxRotation = 10; // Max degrees rotation (keep it subtle)
         const rotationX = maxRotation * scrollPercentInBanner;
-        // Apply perspective rotation directly to the image layer
         // Adjust scale slightly based on scroll for more depth
         const currentScale = 1.1 + scrollPercentInBanner * 0.1; // Scale from 1.1 to 1.2
-        bannerImageLayer.style.transform = `perspective(1500px) rotateX(${rotationX}deg) scale(${currentScale})`;
+        // Apply rotation and scale. Perspective is handled by the parent's CSS.
+        bannerImageLayer.style.transform = `rotateX(${rotationX}deg) scale(${currentScale})`;
 
         // --- 2. Transition between Banner and About --- 
         const transitionStart = bannerHeight * 0.5; // Start transition earlier (50% scroll)
