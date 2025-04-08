@@ -23,6 +23,26 @@
         .footer-container { display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
         .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
         .footer-logo img { max-width: 100px; max-height: 60px; }
+        /* Update header menu colors when transparent */
+        .transparent-header .nav-links a,
+        .transparent-header .social-links a {
+            color: #333333 !important;
+        }
+
+        .transparent-header .social-links i {
+            color: #333333 !important;
+        }
+
+        /* Update carousel left box color */
+        .item__3d-frame__box--left {
+            background: #333333 !important;
+            border-color: #333333 !important;
+        }
+
+        .item__3d-frame__box--right {
+            background: #333333 !important;
+            border-color: #333333 !important;
+        }
     </style>
     
     <!-- Favicon -->
@@ -1451,8 +1471,8 @@
         if (!items || items.length === 0 || !slider) return;
 
         // Loop index
-        if (index < 1) index = items.length;
-        if (index > items.length) index = 1;
+        if (index < 0) index = items.length - 1;
+        if (index >= items.length) index = 0;
         currIndex = index;
 
         console.log(`Moving to index: ${currIndex}`);
@@ -1462,20 +1482,19 @@
             let item = items[i];
             let box = item.querySelector('.item__3d-frame');
             if (box) {
-                if (i === (index - 1)) {
+                if (i === index) {
                     item.classList.add('carousel__slider__item--active');
                     box.style.transform = "perspective(1200px)"; // Active item faces forward
                 } else {
                     item.classList.remove('carousel__slider__item--active');
                     // Apply rotation based on position relative to current index
-                    const rotation = i < (index - 1) ? 40 : -40; // Reference rotation
+                    const rotation = i < index ? 40 : -40; // Reference rotation
                     box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
                 }
             }
         }
 
         // Move the entire slider element
-        // Calculation from reference: (index * -width) + (width / 2) + window.innerWidth / 2
         const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
         console.log(`Slider target transform: translateX(${targetTranslateX}px)`);
         slider.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
@@ -1496,12 +1515,12 @@
 
     function prev() {
         console.log("Executing prev() function");
-        move(--currIndex, true); // Explicitly reset timer on manual navigation
+        move(currIndex - 1, true); // Move one photo back
     }
 
     function next() {
         console.log("Executing next() function");
-        move(++currIndex, true); // Explicitly reset timer on manual navigation
+        move(currIndex + 1, true); // Move one photo forward
     }
 
     function bindEvents() {
