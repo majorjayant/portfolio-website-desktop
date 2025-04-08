@@ -109,8 +109,8 @@ header {
 
 .navbar {
   background-color: rgba(0, 0, 0, 0.6) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
