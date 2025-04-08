@@ -330,14 +330,11 @@ header {
 }
 
 .img-main {
-  flex-basis: 40%;
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  margin-left: 20px; /* Added 20px margin to shift the image to the right */
-  z-index: 2;
+  flex-basis: 50%;
+  flex-grow: 1;
+  text-align: center;
+  opacity: 1;
+  transition: all 0.5s ease;
 }
 
 .img-main img.profile-image {
@@ -1454,7 +1451,7 @@ footer {
   }
   
   .layer-bg {
-    transform: translateZ(-25px) scale(1.132); /* Less dramatic parallax on mobile */
+    transform: translateZ(-15px) scale(1.05); /* Less dramatic parallax on mobile */
   }
 }
 
