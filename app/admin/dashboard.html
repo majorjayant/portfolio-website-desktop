@@ -39,16 +39,34 @@
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                             <div class="sm:col-span-1">
                                 <label for="about_title" class="block text-sm font-medium text-gray-700">Site Title</label>
+                                <div class="flex items-center space-x-1 mb-1">
+                                    <button type="button" onclick="insertTag('about_title', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
+                                    <button type="button" onclick="insertTag('about_title', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
+                                    <button type="button" onclick="insertTag('about_title', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
+                                    <button type="button" onclick="insertTag('about_title', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
+                                </div>
                                 <input type="text" name="about_title" id="about_title" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
                             </div>
                             
                             <div class="sm:col-span-1">
                                 <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
+                                <div class="flex items-center space-x-1 mb-1">
+                                    <button type="button" onclick="insertTag('about_subtitle', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
+                                    <button type="button" onclick="insertTag('about_subtitle', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
+                                    <button type="button" onclick="insertTag('about_subtitle', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
+                                    <button type="button" onclick="insertTag('about_subtitle', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
+                                </div>
                                 <input type="text" name="about_subtitle" id="about_subtitle" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
                             </div>
                             
                             <div class="sm:col-span-2">
                                 <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
+                                <div class="flex items-center space-x-1 mb-1">
+                                    <button type="button" onclick="insertTag('about_description', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
+                                    <button type="button" onclick="insertTag('about_description', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
+                                    <button type="button" onclick="insertTag('about_description', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
+                                    <button type="button" onclick="insertTag('about_description', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
+                                </div>
                                 <textarea name="about_description" id="about_description" rows="4" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"></textarea>
                             </div>
                         </div>
@@ -358,6 +376,41 @@
             setInputValue('about_photo2_alt', config.about_photo2_alt);
             setInputValue('about_photo3_alt', config.about_photo3_alt);
             setInputValue('about_photo4_alt', config.about_photo4_alt);
+        }
+        
+        // Insert HTML tags for formatting
+        function insertTag(fieldId, tag) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+
+            const start = field.selectionStart;
+            const end = field.selectionEnd;
+            const selectedText = field.value.substring(start, end);
+            const beforeText = field.value.substring(0, start);
+            const afterText = field.value.substring(end, field.value.length);
+
+            let replacement = '';
+            if (tag === 'br') {
+                replacement = '<br>';
+            } else {
+                replacement = `<${tag}>${selectedText}</${tag}>`;
+            }
+
+            // If text is selected, wrap it; otherwise, insert tags at cursor
+            if (selectedText) {
+                field.value = beforeText + replacement + afterText;
+                // Adjust cursor position after replacement
+                field.selectionStart = start;
+                field.selectionEnd = start + replacement.length;
+            } else {
+                // Insert tag at cursor position (works best for <br>)
+                field.value = beforeText + (tag === 'br' ? replacement : `<${tag}></${tag}>`) + afterText;
+                // Position cursor inside the tags if not a line break
+                const cursorPosition = start + (tag === 'br' ? replacement.length : tag.length + 2); 
+                field.selectionStart = cursorPosition;
+                field.selectionEnd = cursorPosition;
+            }
+            field.focus(); // Keep focus on the field
         }
         
         // Save site configuration

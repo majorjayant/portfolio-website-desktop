@@ -1279,15 +1279,15 @@
         const profileImage = document.getElementById('profile-image');
                     
                     if (aboutTitle) {
-            aboutTitle.textContent = config.about_title || '';
+            aboutTitle.innerHTML = config.about_title || '';
                     }
                     
                     if (aboutSubtitle) {
-            aboutSubtitle.textContent = config.about_subtitle || '';
+            aboutSubtitle.innerHTML = config.about_subtitle || '';
                     }
                     
                     if (aboutDescription) {
-            aboutDescription.textContent = config.about_description || '';
+            aboutDescription.innerHTML = config.about_description || '';
                         aboutDescription.style.textAlign = 'left';
                     }
                     
