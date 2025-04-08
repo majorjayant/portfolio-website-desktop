@@ -199,7 +199,7 @@ header {
 .social-links a {
   margin: 0 10px;
   color: var(--menu-text); /* Changed to match menu text */
-  font-size: 23px;
+  font-size: 40px;
   transition: var(--transition);
 }
 
