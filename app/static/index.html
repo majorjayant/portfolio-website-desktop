@@ -781,30 +781,29 @@
                 };
             });
         });
-        
-        // Close modal when clicking on close button
-        if (closeModal) {
-            closeModal.addEventListener('click', function() {
-                if (modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        }
-        
-        // Close modal when clicking outside the image
-        window.addEventListener('click', function(e) {
-            if (modal && e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (modal && e.key === 'Escape' && modal.style.display === 'block') {
-                modal.style.display = 'none';
-            }
-        });
     }
+    
+    // Close modal when clicking on close button
+    closeModal.addEventListener('click', function() {
+        const modal = document.getElementById('photoModal');
+        modal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside the image
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+        }
+    });
 </script>
 
 
