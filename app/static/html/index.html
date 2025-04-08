@@ -22,6 +22,40 @@
         .footer-container { display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
         .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
         .footer-logo img { max-width: 100px; max-height: 60px; }
+        .banner-image {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .banner-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .desktop-banner {
+            display: block;
+        }
+
+        .mobile-banner {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-banner {
+                display: none;
+            }
+            
+            .mobile-banner {
+                display: block;
+            }
+        }
     </style>
     
     <!-- Favicon -->
@@ -781,17 +815,15 @@
     <main>
         
     <!-- Banner Section -->
-    <section class="banner" id="banner-section">
-        <div class="parallax-container">
-            <div class="parallax-layer layer-bg" id="banner-image" style="background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'); background-size: cover; background-position: center;"></div>
-            <div class="parallax-layer layer-1"></div>
-            <div class="parallax-layer layer-2"></div>
-            <div class="banner-content">
-                <h1 class="animate__animated animate__fadeInUp">Welcome to My Portfolio</h1>
-                <p class="animate__animated animate__fadeInUp animate__delay-1s">Scroll down to explore</p>
-                <div class="scroll-indicator animate__animated animate__fadeInUp animate__delay-2s">
-                    <a href="#about-section"><i class="fas fa-chevron-down"></i></a>
-                </div>
+    <section class="banner" id="home">
+        <div class="banner-content">
+            <div class="banner-image">
+                <img src="" alt="Banner" id="banner-image" class="desktop-banner">
+                <img src="" alt="Banner" id="mobile-banner-image" class="mobile-banner">
+            </div>
+            <div class="banner-text">
+                <h1 id="site-title">Loading...</h1>
+                <p id="site-description">Loading...</p>
             </div>
         </div>
     </section>
@@ -1041,11 +1073,33 @@
         });
         
         // Initialize image elements and fetch content
-            const bannerImage = document.getElementById('banner-image');
-            if (bannerImage) {
-                    bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-            }
+        const bannerImage = document.getElementById('banner-image');
+        const mobileBannerImage = document.getElementById('mobile-banner-image');
+        const siteTitle = document.getElementById('site-title');
+        const siteDescription = document.getElementById('site-description');
 
+        // Fetch content from AWS Lambda endpoint
+        fetch('https://portfolio-website-lambda.eu-north-1.amazonaws.com/prod/content')
+            .then(response => response.json())
+            .then(data => {
+                // Update banner image
+                if (data.image_banner_url) {
+                    bannerImage.src = data.image_banner_url;
+                }
+                if (data.image_mobile_banner_url) {
+                    mobileBannerImage.src = data.image_mobile_banner_url;
+                }
+                
+                // Update site title and description
+                if (data.site_title) {
+                    siteTitle.textContent = data.site_title;
+                }
+                if (data.site_description) {
+                    siteDescription.textContent = data.site_description;
+                }
+            })
+            .catch(error => console.error('Error fetching content:', error));
+        
         // Try to fetch the latest content from our AWS Lambda endpoint
         fetchLatestAboutContent();
         
@@ -1064,7 +1118,7 @@
         
         // Add header transparency on banner hover and scroll
         const header = document.querySelector('header');
-        const bannerSection = document.getElementById('banner-section');
+        const bannerSection = document.getElementById('home');
         
         if (header && bannerSection) {
             // Make header transparent when hovering over banner
@@ -1105,7 +1159,7 @@
     
     function handleScrollEffects() {
         const scrollTop = window.scrollY;
-        const bannerSection = document.getElementById('banner-section');
+        const bannerSection = document.getElementById('home');
         const bannerImageLayer = document.getElementById('banner-image');
         const aboutSection = document.getElementById('about-section');
         const viewportHeight = window.innerHeight;
