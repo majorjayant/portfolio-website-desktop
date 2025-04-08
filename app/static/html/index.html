@@ -516,10 +516,10 @@
         display: block;
         float: left;
         box-sizing: border-box;
-        margin-left: 10px;  /* Reduced from 20px */
-        margin-right: 10px; /* Reduced from 20px */
-        width: 360px;      /* Increased by 20% from 300px */
-        height: 384px;     /* Increased by 20% from 320px */
+        margin-left: 5px;  /* Reduced from 10px */
+        margin-right: 5px; /* Reduced from 10px */
+        width: 360px;
+        height: 384px;
     }
     
     .carousel__slider__item.active {
@@ -545,8 +545,9 @@
         box-sizing: border-box;
         border-color: #7a6b5f;
         background: var(--box-bg);
-        border-width: 5px;  /* Increased from 3px */
+        border-width: 5px;
         border-style: solid;
+        border-radius: 15px;  /* Added rounded corners */
         overflow: hidden;
         cursor: pointer;
     }
@@ -565,16 +566,20 @@
     
     .item__3d-frame__box--left {
         left: 0;
-        border-left-width: 8px;  /* Increased from 5px */
-        transform: translate3d(1px, 0, -48px) rotateY(-90deg);  /* Adjusted for new width */
+        border-left-width: 8px;
+        transform: translate3d(1px, 0, -48px) rotateY(-90deg);
         transform-origin: 0%;
+        border-top-left-radius: 15px;  /* Added rounded corners */
+        border-bottom-left-radius: 15px;
     }
     
     .item__3d-frame__box--right {
         right: 0;
-        border-right-width: 8px;  /* Increased from 5px */
-        transform: translate3d(-1px, 0, -48px) rotateY(90deg);  /* Adjusted for new width */
+        border-right-width: 8px;
+        transform: translate3d(-1px, 0, -48px) rotateY(90deg);
         transform-origin: 100%;
+        border-top-right-radius: 15px;  /* Added rounded corners */
+        border-bottom-right-radius: 15px;
     }
     
     .carousel__prev,
@@ -612,16 +617,27 @@
 
     @media (max-width: 768px) {
         .carousel__slider__item {
-            width: 300px;  /* Increased by 20% from 250px */
-            height: 324px; /* Increased by 20% from 270px */
+            width: 300px;
+            height: 324px;
+            margin-left: 3px;  /* Reduced for mobile */
+            margin-right: 3px; /* Reduced for mobile */
         }
     }
 
     @media (max-width: 480px) {
         .carousel__slider__item {
-            width: 240px;  /* Increased by 20% from 200px */
-            height: 264px; /* Increased by 20% from 220px */
+            width: 240px;
+            height: 264px;
+            margin-left: 2px;  /* Reduced for mobile */
+            margin-right: 2px; /* Reduced for mobile */
         }
+    }
+
+    /* Reduce space between carousel and work experience section */
+    .experience-section {
+        margin-top: -100px;  /* Added negative margin */
+        position: relative;
+        z-index: 1;
     }
 </style>
 

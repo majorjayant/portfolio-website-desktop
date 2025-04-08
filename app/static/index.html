@@ -539,8 +539,8 @@
         display: block;
         float: left;
         box-sizing: border-box;
-        margin-left: 10px;
-        margin-right: 10px;
+        margin-left: 5px;
+        margin-right: 5px;
         width: 360px;
         height: 384px;
     }
@@ -578,6 +578,7 @@
         background: var(--box-bg);
         border-width: 5px;
         border-style: solid;
+        border-radius: 15px;
         overflow: hidden;
         cursor: pointer;
     }
@@ -599,6 +600,7 @@
         backface-visibility: hidden;
         border-color: #7a6b5f;
         border-width: 5px;
+        border-radius: 15px;
     }
 
     .item__3d-frame__box--left {
@@ -606,6 +608,8 @@
         border-left-width: 8px;
         transform: translate3d(1px, 0, -48px) rotateY(-90deg);
         transform-origin: 0%;
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
     }
 
     .item__3d-frame__box--right {
@@ -613,6 +617,8 @@
         border-right-width: 8px;
         transform: translate3d(-1px, 0, -48px) rotateY(90deg);
         transform-origin: 100%;
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
     }
 
     .carousel__slider__item--active .item__3d-frame {
@@ -623,6 +629,8 @@
         .carousel__slider__item {
             width: 300px;
             height: 324px;
+            margin-left: 3px;
+            margin-right: 3px;
         }
 
         .carousel__prev { left: 30%; }
@@ -633,6 +641,8 @@
         .carousel__slider__item {
             width: 240px;
             height: 264px;
+            margin-left: 2px;
+            margin-right: 2px;
         }
 
         .carousel__prev { left: 20%; }
@@ -643,6 +653,13 @@
     @keyframes carousel-rotate {
         0% { transform: translateX(0); }
         100% { transform: translateX(-100%); }
+    }
+
+    /* Reduce space between carousel and work experience section */
+    .experience-section {
+        margin-top: -100px;
+        position: relative;
+        z-index: 1;
     }
 </style>
 
