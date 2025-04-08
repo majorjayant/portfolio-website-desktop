@@ -228,59 +228,110 @@ header {
 }
 
 /* ===== Banner Section ===== */
-.banner {
-  margin: 0;
-  padding: 0;
-  height: auto;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  border-bottom: none;
-  margin-top: 80px; /* Account for fixed header */
+#banner-section {
+    height: 90vh; /* Reduced from 100vh to prevent overflow on laptop screens */
+    margin-top: 0;
+    position: relative;
+    overflow: hidden;
+    perspective: 1000px;
+    padding-top: 80px; /* Add padding-top equal to header height to prevent top cropping */
+}
+
+.parallax-container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.parallax-layer {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-size: cover;
+    background-position: center;
+    transform-origin: center center; 
+    transition: transform 0.3s ease-out, opacity 0.5s ease-out;
+    z-index: 1;
+}
+
+.layer-bg {
+    transform: translateZ(-50px) scale(1.5);
+    background-size: cover !important; /* Changed from contain to cover */
+    background-position: center top !important; /* Position from top to prevent cropping */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+    #banner-section {
+        height: 70vh; /* Slightly shorter on mobile */
+        padding-top: 60px; /* Adjusted padding for mobile header */
+    }
+    
+    .layer-bg {
+        transform: translateZ(-25px) scale(1.132); /* Less dramatic parallax on mobile */
+        background-size: cover !important; /* Ensure cover on mobile to prevent side cropping */
+        background-position: center center !important; /* Center position on mobile */
+    }
+}
+
+/* For laptops and smaller desktops */
+@media (max-height: 900px) {
+    #banner-section {
+        height: 80vh; /* Even smaller height for smaller screens */
+    }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+    #banner-section {
+        height: 60vh; /* Further reduced height for very small screens */
+    }
 }
 
 .banner-image {
-  width: 100%;
-  height: 100%;
-  background-size: contain !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  position: relative;
-  /* Enhanced fade effect on both sides */
-  -webkit-mask-image: linear-gradient(to right, 
-    transparent 0%, 
-    rgba(0,0,0,0.2) 3%, 
-    rgba(0,0,0,0.5) 8%,
-    rgba(0,0,0,0.8) 12%, 
-    rgba(0,0,0,1) 20%, 
-    rgba(0,0,0,1) 80%, 
-    rgba(0,0,0,0.8) 88%, 
-    rgba(0,0,0,0.5) 92%,
-    rgba(0,0,0,0.2) 97%, 
-    transparent 100%
-  );
-  mask-image: linear-gradient(to right, 
-    transparent 0%, 
-    rgba(0,0,0,0.2) 3%, 
-    rgba(0,0,0,0.5) 8%,
-    rgba(0,0,0,0.8) 12%, 
-    rgba(0,0,0,1) 20%, 
-    rgba(0,0,0,1) 80%, 
-    rgba(0,0,0,0.8) 88%, 
-    rgba(0,0,0,0.5) 92%,
-    rgba(0,0,0,0.2) 97%, 
-    transparent 100%
-  );
+    width: 100%;
+    height: 100%;
+    background-size: contain !important;
+    background-position: center top !important; /* Position from top to prevent cropping */
+    background-repeat: no-repeat !important;
+    position: relative;
+    /* Enhanced fade effect on both sides */
+    -webkit-mask-image: linear-gradient(to right, 
+        rgba(0,0,0,0.6) 0%, 
+        rgba(0,0,0,0.8) 10%, 
+        rgba(0,0,0,1) 20%, 
+        rgba(0,0,0,1) 80%, 
+        rgba(0,0,0,0.8) 90%,
+        rgba(0,0,0,0.6) 100%
+    );
+    mask-image: linear-gradient(to right, 
+        rgba(0,0,0,0.6) 0%, 
+        rgba(0,0,0,0.8) 10%, 
+        rgba(0,0,0,1) 20%, 
+        rgba(0,0,0,1) 80%, 
+        rgba(0,0,0,0.8) 90%,
+        rgba(0,0,0,0.6) 100%
+    );
 }
 
-.banner-image:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+/* For mobile, ensure the banner image is fully visible */
+@media (max-width: 768px) {
+    .banner-image {
+        background-size: cover !important; /* Use cover on mobile */
+        /* Less extreme fade effect on sides for mobile */
+        -webkit-mask-image: linear-gradient(to right, 
+            rgba(0,0,0,0.8) 0%, 
+            rgba(0,0,0,1) 10%, 
+            rgba(0,0,0,1) 90%, 
+            rgba(0,0,0,0.8) 100%
+        );
+        mask-image: linear-gradient(to right, 
+            rgba(0,0,0,0.8) 0%, 
+            rgba(0,0,0,1) 10%, 
+            rgba(0,0,0,1) 90%, 
+            rgba(0,0,0,0.8) 100%
+        );
+    }
 }
 
 /* ===== About Section ===== */

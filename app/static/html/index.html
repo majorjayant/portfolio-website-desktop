@@ -1232,8 +1232,9 @@
         function updatePageWithConfig(data) {
             console.log('Updating page with config data:', data);
             
-            // Extract site_config from the response
+            // Extract site_config from the response and store globally
             const config = data.site_config;
+            window.siteConfig = config;
             
             if (!config) {
                 console.error('site_config not found in API response:', data);
@@ -1263,12 +1264,8 @@
                 });
             }
             
-            // Update banner image
-            const bannerImage = document.getElementById('banner-image');
-            if (bannerImage && config.image_banner_url) {
-                bannerImage.style.backgroundImage = `url('${config.image_banner_url}')`;
-                console.log('Updated banner to:', config.image_banner_url);
-            }
+            // Update banner image based on screen size
+            updateBannerImage();
             
             // Update footer logo if present
             const footerLogo = document.querySelector('.footer-logo img');
@@ -1301,7 +1298,7 @@
                 profileImage.src = config.image_about_profile_url || '';
                 profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
                     }
-                    
+            
             // Update photos in the "snaps" section with ENHANCED carousel effect
                     const snapsContainer = document.getElementById('snaps');
             if (snapsContainer) {
@@ -1568,60 +1565,41 @@
         }
 
         function updateBannerImage() {
-            const bannerSection = document.getElementById('banner-section');
-            if (!bannerSection) return;
-
             const isMobile = window.innerWidth <= 768;
             const config = window.siteConfig || {};
             
-            // Get the appropriate banner URL based on screen size
-            const bannerUrl = isMobile 
-                ? (config.image_mobile_banner_url || '/static/img/banner_mobile.png')
-                : (config.image_banner_url || '/static/img/banner.png');
-
+            // Get banner element
+            const bannerElement = document.querySelector('.layer-bg');
+            if (!bannerElement) return;
+            
+            // Determine which banner URL to use
+            let bannerUrl;
+            if (isMobile && config.image_mobile_banner_url) {
+                // Use mobile banner on smaller screens if available
+                bannerUrl = config.image_mobile_banner_url;
+                console.log('Using mobile banner:', bannerUrl);
+            } else if (config.image_banner_url) {
+                // Use desktop banner
+                bannerUrl = config.image_banner_url;
+                console.log('Using desktop banner:', bannerUrl);
+            } else {
+                // Fallback
+                bannerUrl = '/static/img/banner.jpg';
+                console.log('Using fallback banner');
+            }
+            
             // Update the banner background image
-            bannerSection.style.backgroundImage = `url('${bannerUrl}')`;
-            bannerSection.style.backgroundSize = 'cover';
-            bannerSection.style.backgroundPosition = 'center';
+            bannerElement.style.backgroundImage = `url('${bannerUrl}')`;
+            bannerElement.style.backgroundSize = isMobile ? 'cover' : 'cover';
+            bannerElement.style.backgroundPosition = isMobile ? 'center center' : 'center top';
         }
 
-        // Add event listener for window resize
+        // Call this when page loads and when window resizes
         window.addEventListener('resize', updateBannerImage);
-
-        // Update banner image when site config is loaded
-        function updatePageWithConfig(config) {
-            console.log('Updating page with config:', config);
-            
-            // Store config globally
-            window.siteConfig = config;
-            
-            // Update document title
-            if (config.about_title) {
-                document.title = config.about_title;
-            }
-            
-            // Update favicon
-            if (config.image_favicon_url) {
-                const favicon = document.querySelector('link[rel="icon"]');
-                if (favicon) {
-                    favicon.href = config.image_favicon_url;
-                }
-            }
-            
-            // Update logo images
-            const headerLogo = document.querySelector('.logo img');
-            const footerLogo = document.querySelector('.footer-logo img');
-            
-            if (config.image_logo_url) {
-                if (headerLogo) headerLogo.src = config.image_logo_url;
-                if (footerLogo) footerLogo.src = config.image_logo_url;
-            }
-            
-            // Update banner image
+        document.addEventListener('DOMContentLoaded', function() {
+            // This will be called after the site config is loaded and stored in window.siteConfig
             updateBannerImage();
-            
-            // ... existing code ...
-        }
+        });
 </script>
 
 
