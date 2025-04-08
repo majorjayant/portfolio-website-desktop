@@ -484,7 +484,7 @@
         display: block;
         width: 100%;
         box-sizing: border-box;
-        padding-top: 60px;
+        padding-top: 20px;
         margin-top: -40px;
     }
 
@@ -1404,24 +1404,22 @@
     function resize() {
         if (!items || items.length === 0 || !slider) return;
         
-        // Calculate width based on viewport, similar to reference
-        width = Math.max(window.innerWidth * .25, 275); // Reference calculation
-        height = window.innerHeight * .5; // Reference calculation
+        // Calculate width based on viewport, aiming for wider carousel
+        // Adjust multiplier (e.g., 0.35 or 0.4) and minimum (e.g., 300 or 320) as needed
+        width = Math.max(window.innerWidth * 0.35, 320); // Increased width influence
+        height = window.innerHeight * 0.5; // Keep height reference
         totalWidth = width * items.length;
         
         console.log(`Resizing carousel: item width=${width - (margin * 2)}, total width=${totalWidth}`);
         
-        // Set total slider width
         slider.style.width = totalWidth + "px";
         
-        // Set individual item widths and heights
         for(let i = 0; i < items.length; i++) {
             let item = items[i];
             item.style.width = (width - (margin * 2)) + "px";
             item.style.height = height + "px";
         }
-        // Recalculate slider position after resize
-        move(currIndex, false); // Don't reset timer on resize
+        move(currIndex, false); 
     }
 
     function move(index, resetTimer = true) {
@@ -1467,20 +1465,20 @@
         console.log(`Starting timer (${intervalTime}ms)`);
         interval = setInterval(() => {
             console.log("Timer advancing carousel");
-            move(++currIndex);
+            move(++currIndex); // Timer resets automatically here
         }, intervalTime);
     }
 
     function prev() {
         console.log("Previous button clicked");
-        move(--currIndex);
-        // timer(); // Reference code calls timer() here to reset it
+        move(--currIndex); // Default behavior is resetTimer = true
+        // timer(); // Explicit timer reset is redundant if move defaults to true
     }
 
     function next() {
         console.log("Next button clicked");
-        move(++currIndex);
-        // timer(); // Reference code calls timer() here to reset it
+        move(++currIndex); // Default behavior is resetTimer = true
+        // timer(); // Explicit timer reset is redundant if move defaults to true
     }
 
     function bindEvents() {
@@ -1491,16 +1489,40 @@
         console.log("Binding events...");
         window.onresize = resize;
 
-        // Use fresh clones to avoid duplicate listeners if re-binding
-        const prevBtnClone = prevBtn.cloneNode(true);
-        const nextBtnClone = nextBtn.cloneNode(true);
-        prevBtn.parentNode.replaceChild(prevBtnClone, prevBtn);
-        nextBtn.parentNode.replaceChild(nextBtnClone, nextBtn);
-        prevBtn = prevBtnClone;
-        nextBtn = nextBtnClone;
+        // Ensure buttons are clickable - Check if they exist before cloning
+        if (prevBtn.parentNode && nextBtn.parentNode) {
+            const prevBtnClone = prevBtn.cloneNode(true);
+            const nextBtnClone = nextBtn.cloneNode(true);
+            prevBtn.parentNode.replaceChild(prevBtnClone, prevBtn);
+            nextBtn.parentNode.replaceChild(nextBtnClone, nextBtn);
+            prevBtn = prevBtnClone;
+            nextBtn = nextBtnClone;
+        } else {
+             console.error("Button parent node not found during clone!");
+             // Attempt to re-query buttons in case they were detached
+             prevBtn = document.querySelector('.carousel__prev');
+             nextBtn = document.querySelector('.carousel__next');
+             if (!prevBtn || !nextBtn) {
+                 console.error("Failed to re-query buttons!");
+                 return; // Stop if buttons cannot be found
+             }
+        }
 
-        prevBtn.addEventListener('click', (e) => { e.preventDefault(); prev(); });
-        nextBtn.addEventListener('click', (e) => { e.preventDefault(); next(); });
+        // Clear potential old listeners before adding new ones
+        prevBtn.onclick = null;
+        nextBtn.onclick = null;
+
+        // Add new listeners
+        prevBtn.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            console.log("Prev click listener fired");
+            prev(); 
+        });
+        nextBtn.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            console.log("Next click listener fired");
+            next(); 
+        });
         console.log("Events bound.");
     }
     
