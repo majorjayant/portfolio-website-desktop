@@ -4,7 +4,7 @@ const mysql = require('mysql2/promise');
 // Define standard response headers
 const headers = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,Cache-Control,Pragma,X-Custom-Action',
+  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,Cache-Control,Pragma',
   'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT,DELETE',
   'Content-Type': 'application/json'
 };
@@ -76,7 +76,7 @@ async function ensureTableExists() {
 
 // Function to log all relevant info for debugging
 function logRequestInfo(event, context) {
-  console.log('Lambda Version: 2.1.19 - Using MySQL for persistent storage');
+  console.log('Lambda Version: 2.1.13 - Using MySQL for persistent storage with Lambda Proxy Integration');
   console.log('Request ID:', context ? context.awsRequestId : 'Not available');
   console.log('Event httpMethod:', event.httpMethod);
   console.log('Path:', event.path);
@@ -225,43 +225,54 @@ async function saveSiteConfig(configData) {
 
 // Lambda handler
 exports.handler = async (event, context) => {
-  console.log('Lambda Version 2.1.27 - Fixed GET and POST handling');
-  console.log('Request method:', event.httpMethod);
-  console.log('Request path:', event.path);
-  console.log('Headers:', JSON.stringify(event.headers || {}));
-  console.log('Query params:', JSON.stringify(event.queryStringParameters || {}));
-  console.log('Raw query string:', event.rawQueryString || '');
+  // Log detailed information about the request
+  logRequestInfo(event, context);
   
   try {
     // Handle OPTIONS requests for CORS
     if (event.httpMethod === 'OPTIONS') {
-      console.log('Handling OPTIONS request for CORS preflight');
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({ 
           message: 'CORS preflight request successful',
-          timestamp: new Date().toISOString(),
-          version: '2.1.27'
+          timestamp: new Date().toISOString()
         })
       };
     }
     
-    // Extract query parameters
+    // Extract and log query parameters
     const queryParams = event.queryStringParameters || {};
-    const type = queryParams.type;
-    const action = queryParams.action;
+    const pathParams = event.pathParameters || {};
+    let requestType = queryParams.type || '';
+    let actionType = queryParams.action || '';
+    const path = event.path || '';
     
-    console.log('Request action:', action);
-    console.log('Request type:', type);
+    // Check if we have a raw query string that contains the parameters
+    // This is a fallback for when API Gateway doesn't parse query params correctly
+    if (event.rawQueryString) {
+      console.log('Checking raw query string:', event.rawQueryString);
+      if (event.rawQueryString.includes('type=site_config')) {
+        requestType = 'site_config';
+        console.log('Found site_config in raw query string');
+      }
+      if (event.rawQueryString.includes('action=get_site_config')) {
+        actionType = 'get_site_config';
+        console.log('Found get_site_config in raw query string');
+      }
+    }
     
-    // GET method - for retrieving site configuration
+    console.log('Request type from query parameters:', requestType);
+    console.log('Action type from query parameters:', actionType);
+    console.log('Path:', path);
+    
+    // HIGHEST PRIORITY: Handle any GET request
     if (event.httpMethod === 'GET') {
-      console.log('ℹ️ Handling GET request with action:', action, 'and type:', type);
+      console.log('Processing GET request');
       
-      // Return site configuration - check for both 'get_site_config' action and 'site_config' type
-      if ((action === 'get_site_config' || type === 'site_config')) {
-        console.log('ℹ️ Fetching site configuration for GET request');
+      // Prioritize site_config requests
+      if (requestType === 'site_config' || actionType === 'get_site_config') {
+        console.log('GET request for site_config detected');
         const siteConfig = await getSiteConfig();
         
         return {
@@ -269,277 +280,259 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
-            message: "Site configuration retrieved successfully",
-            version: "2.1.27",
+            _version: "2.1.13",
+            source: "GET handler with query params",
             timestamp: new Date().toISOString()
           })
         };
       }
+      
+      // General GET request handling
+      console.log('Processing general GET request');
+      const siteConfig = await getSiteConfig();
+      
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          site_config: siteConfig,
+          _version: "2.1.13",
+          source: "GET general handler",
+          timestamp: new Date().toISOString()
+        })
+      };
     }
     
-    // POST method - for various operations including updating site config
+    // Check for admin access query parameter - special backdoor for access issues
+    if (queryParams.admin_check === 'true') {
+      console.log('Admin check requested');
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          message: 'Admin API is working correctly',
+          timestamp: new Date().toISOString(),
+          lambda_version: '2.1.13',
+          storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
+          routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
+        })
+      };
+    }
+    
+    // If we have an action in the query params, handle it accordingly
+    if (actionType === 'get_site_config' || requestType === 'site_config') {
+        console.log('Processing site_config request from query parameters');
+        const siteConfig = await getSiteConfig();
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                site_config: siteConfig,
+                _version: "2.1.13",
+                from: "query_parameters",
+                timestamp: new Date().toISOString(),
+                storage: "Using MySQL persistent storage with Lambda Proxy Integration"
+            })
+        };
+    }
+    
+    // Handle POST request to save site configuration
     if (event.httpMethod === 'POST') {
-      console.log('✅ Handling POST request with body');
+      console.log('Processing POST request');
       
-      // Parse request body
-      let body = {};
-      if (event.body) {
-        try {
-          if (typeof event.body === 'string') {
-            body = JSON.parse(event.body);
-          } else {
-            body = event.body;
-          }
-          console.log('Parsed POST body action:', body.action);
-          console.log('Config fields:', body.site_config ? Object.keys(body.site_config).join(', ') : 'No site_config found');
-        } catch (error) {
-          console.error('Error parsing request body:', error);
+      // Validate body
+      if (!event.body) {
+        console.error('Missing request body');
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ 
+            success: false,
+            message: 'Request body is missing',
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // Parse body
+      let parsedBody;
+      try {
+        parsedBody = JSON.parse(event.body);
+        console.log('Parsed body:', JSON.stringify(parsedBody));
+        console.log('Parsed body action:', parsedBody.action);
+      } catch (parseError) {
+        console.error('Error parsing request body:', parseError);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ 
+            success: false,
+            message: 'Invalid JSON in request body',
+            error: parseError.message,
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // Check for different request formats and determine action
+      actionType = parsedBody.action || actionType || '';
+      
+      console.log('Action type detected in request:', actionType);
+      
+      // Handle login action
+      if (actionType === 'login') {
+        console.log('Processing login request');
+        
+        const { username, password } = parsedBody;
+        if (!username || !password) {
           return {
-            statusCode: 400,
+            statusCode: 200,
             headers,
             body: JSON.stringify({
               success: false,
-              message: "Invalid request body: " + error.message,
-              version: "2.1.27",
+              message: 'Username and password are required',
               timestamp: new Date().toISOString()
             })
           };
         }
+        
+        const loginResult = handleLogin(username, password);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            ...loginResult,
+            timestamp: new Date().toISOString(),
+            lambda_version: '2.1.13'
+          })
+        };
       }
       
-      // Handle site config update - check if action is in body or query params
-      if ((body.action === 'update_site_config' || action === 'update_site_config') && body.site_config) {
-        console.log('✅ Updating database with site_config data');
-        const result = await saveSiteConfig(body.site_config);
+      // Special admin access check
+      if (actionType === 'admin_access_check') {
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            message: 'Admin API is accessible',
+            lambda_version: '2.1.13',
+            storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
+            timestamp: new Date().toISOString(),
+            access_paths: {
+              admin_direct: '/admin-direct/',
+              admin_dashboard: '/admin/dashboard/'
+            }
+          })
+        };
+      }
+      
+      // Handle update site config
+      if (actionType === 'update_site_config') {
+        console.log('Processing site_config update request');
+        
+        // Validate authorization token (simplified for demo)
+        const authHeader = event.headers.Authorization || event.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          console.error('Missing or invalid Authorization header');
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Authorization required',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        // Extract config data
+        const configData = parsedBody.site_config || {};
+        if (Object.keys(configData).length === 0) {
+          console.error('No configuration data provided');
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'No configuration data provided',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        // Save the configuration data
+        const updateResult = await saveSiteConfig(configData);
         
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
-            success: result.success,
-            message: result.message,
-            result: result,
-            version: "2.1.27",
-            timestamp: new Date().toISOString()
+            ...updateResult,
+            timestamp: new Date().toISOString(),
+            lambda_version: '2.1.13'
           })
         };
       }
       
-      // Handle login requests
-      if (body.action === 'login' && body.username && body.password) {
-        console.log('Processing login request for user:', body.username);
-        const loginResult = handleLogin(body.username, body.password);
+      // Handle get site config via POST (for dashboard)
+      if (actionType === 'get_site_config') {
+        console.log('Processing site_config get request via POST');
+        
+        // Get site configuration from the database
+        const siteConfig = await getSiteConfig();
         
         return {
-          statusCode: loginResult.success ? 200 : 401,
+          statusCode: 200,
           headers,
           body: JSON.stringify({
-            ...loginResult,
-            version: "2.1.27",
-            timestamp: new Date().toISOString()
+            site_config: siteConfig,
+            _version: "2.1.13",
+            from: "post_body",
+            timestamp: new Date().toISOString(),
+            storage: "Using MySQL persistent storage with Lambda Proxy Integration"
           })
         };
       }
+      
+      // Handle unknown action type
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          message: `Unknown action type: ${actionType}`,
+          timestamp: new Date().toISOString()
+        })
+      };
     }
     
-    // If we get here, no specific handler matched
-    console.log('⚠️ No specific handler matched the request');
+    // Handle unknown request type
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message: "Request processed but no specific handler matched",
-        version: "2.1.27",
+        site_config: await getSiteConfig(), // Always return site_config as fallback
+        message: 'Unknown request type but returning site_config',
+        request_path: event.path,
+        request_method: event.httpMethod,
+        request_type: requestType,
+        _version: "2.1.13",
         timestamp: new Date().toISOString()
       })
     };
     
   } catch (error) {
-    console.error('Unhandled error in Lambda handler:', error);
+    console.error('Unhandled error:', error);
     return {
-      statusCode: 500,
+      statusCode: 200,
       headers,
       body: JSON.stringify({
         success: false,
-        message: "Internal server error: " + error.message,
-        version: "2.1.27",
+        message: 'Internal server error: ' + error.message,
+        error_type: error.name,
         timestamp: new Date().toISOString()
       })
     };
   }
-};
-
-// Emergency database update function - bypasses all validation
-async function emergencyDbUpdate(configData) {
-  let connection;
-  try {
-    console.log('Connecting to database for emergency update');
-    connection = await mysql.createConnection(dbConfig);
-    console.log('DB connection established');
-    
-    // Create table if it doesn't exist
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS site_config (
-        config_key VARCHAR(100) PRIMARY KEY,
-        config_value TEXT,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
-    console.log('site_config table verified');
-    
-    // Start transaction
-    await connection.beginTransaction();
-    console.log('Transaction started');
-    
-    // Update each config item
-    const results = [];
-    for (const [key, value] of Object.entries(configData)) {
-      console.log(`Updating ${key} = ${value}`);
-      
-      // Try update first
-      const [updateResult] = await connection.execute(
-        'UPDATE site_config SET config_value = ? WHERE config_key = ?',
-        [value, key]
-      );
-      
-      // If no rows affected, insert instead
-      if (updateResult.affectedRows === 0) {
-        const [insertResult] = await connection.execute(
-          'INSERT INTO site_config (config_key, config_value) VALUES (?, ?)',
-          [key, value]
-        );
-        results.push({ key, action: 'insert', result: insertResult.affectedRows });
-      } else {
-        results.push({ key, action: 'update', result: updateResult.affectedRows });
-      }
-    }
-    
-    // Commit transaction
-    await connection.commit();
-    console.log('Transaction committed successfully');
-    
-    return {
-      success: true,
-      operations: results,
-      message: 'Emergency database update successful'
-    };
-  } catch (error) {
-    console.error('Database error during emergency update:', error);
-    if (connection) {
-      try {
-        await connection.rollback();
-        console.log('Transaction rolled back due to error');
-      } catch (rollbackError) {
-        console.error('Error rolling back transaction:', rollbackError);
-      }
-    }
-    
-    return {
-      success: false,
-      error: error.message,
-      message: 'Emergency database update failed'
-    };
-  } finally {
-    if (connection) {
-      try {
-        await connection.end();
-        console.log('Database connection closed');
-      } catch (closeError) {
-        console.error('Error closing database connection:', closeError);
-      }
-    }
-  }
-}
-
-// New function for direct database updates (completely bypasses all other logic)
-async function directDatabaseUpdate(configData) {
-  let connection;
-  try {
-    console.log('🟨 DIRECT DATABASE: Opening database connection');
-    connection = await mysql.createConnection(dbConfig);
-    
-    // Create table if not exists
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS site_config (
-        config_key VARCHAR(100) PRIMARY KEY,
-        config_value TEXT,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
-    
-    // Begin transaction
-    await connection.beginTransaction();
-    console.log('🟨 DIRECT DATABASE: Transaction started');
-    
-    // Update each config value
-    const updates = [];
-    for (const [key, value] of Object.entries(configData)) {
-      // Only process non-empty keys
-      if (key && key.trim() !== '') {
-        console.log(`🟨 DIRECT DATABASE: Processing field "${key}" = "${value}"`);
-        
-        try {
-          // Try to update existing row
-          const [updateResult] = await connection.execute(
-            'UPDATE site_config SET config_value = ? WHERE config_key = ?',
-            [value, key]
-          );
-          
-          // If no update, insert new row
-          if (updateResult.affectedRows === 0) {
-            console.log(`🟨 DIRECT DATABASE: Inserting new record for "${key}"`);
-            const [insertResult] = await connection.execute(
-              'INSERT INTO site_config (config_key, config_value) VALUES (?, ?)',
-              [key, value]
-            );
-            updates.push({ key, action: 'insert', result: 'success' });
-          } else {
-            console.log(`🟨 DIRECT DATABASE: Updated existing record for "${key}"`);
-            updates.push({ key, action: 'update', result: 'success' });
-          }
-        } catch (fieldError) {
-          console.error(`🟨 DIRECT DATABASE: Error updating field "${key}":`, fieldError);
-          updates.push({ key, action: 'error', result: fieldError.message });
-        }
-      }
-    }
-    
-    // Commit transaction
-    await connection.commit();
-    console.log('🟨 DIRECT DATABASE: Transaction committed successfully');
-    
-    return {
-      success: true,
-      updates: updates,
-      fields_processed: updates.length
-    };
-  } catch (error) {
-    console.error('🟨 DIRECT DATABASE: Error during database update:', error);
-    
-    // Rollback if transaction active
-    if (connection) {
-      try {
-        await connection.rollback();
-        console.log('🟨 DIRECT DATABASE: Transaction rolled back');
-      } catch (rollbackError) {
-        console.error('🟨 DIRECT DATABASE: Error rolling back transaction:', rollbackError);
-      }
-    }
-    
-    return {
-      success: false,
-      error: error.message,
-      message: 'Failed to update database'
-    };
-  } finally {
-    // Close connection
-    if (connection) {
-      try {
-        await connection.end();
-        console.log('🟨 DIRECT DATABASE: Database connection closed');
-      } catch (closeError) {
-        console.error('🟨 DIRECT DATABASE: Error closing database connection:', closeError);
-      }
-    }
-  }
-} 
+}; 

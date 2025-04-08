@@ -378,63 +378,35 @@
                     site_config: configData
                 };
                 
-                console.log('Sending API payload:', payload);
+                console.log('Sending API payload:', JSON.stringify(payload));
                 
                 // Save to API
-                const apiResponse = await fetch(API_BASE_URL, {
+                const response = await fetch(API_BASE_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': token
                     },
                     body: JSON.stringify(payload)
                 });
 
-                console.log('API response status:', apiResponse.status);
-                if (!apiResponse.ok) {
-                    throw new Error(`API Error: ${apiResponse.status}`);
-                }
+                console.log('API response status:', response.status);
+                const responseData = await response.json();
+                console.log('Raw API response data on save:', JSON.stringify(responseData));
 
-                const apiData = await apiResponse.json();
-                console.log('API response data:', apiData);
-                
-                // Handle different response formats
-                if (apiData.body && typeof apiData.body === 'string') {
-                    // Handle API Gateway response format
-                    try {
-                        const parsedBody = JSON.parse(apiData.body);
-                        console.log('Parsed API Gateway response body:', parsedBody);
-                        if (parsedBody.success === false) {
-                            throw new Error(parsedBody.message || 'API save failed');
-                        }
-                        // If we have a success property and it's true, or we have a message that includes success
-                        if (parsedBody.success === true || 
-                            (parsedBody.message && parsedBody.message.toLowerCase().includes('success'))) {
-                            console.log('Save successful based on parsed body');
-                            showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
-                            setTimeout(hideSaveMessage, 3000);
-                            await fetchConfiguration();
-                            return;
-                        }
-                    } catch (e) {
-                        console.error('Error parsing API Gateway response body:', e);
-                        throw new Error('Invalid response format from API: ' + e.message);
-                    }
-                } 
-                
-                // Direct Lambda response format
-                if (apiData.success === true) {
-                    console.log('Save successful based on direct response');
+                // Validate the response
+                if (response.ok && responseData.success === true) {
+                    console.log('Configuration saved successfully:', responseData.message);
                     showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
                     setTimeout(hideSaveMessage, 3000);
-                    await fetchConfiguration();
-                    return;
-                }
-                
-                // If we get here, the response didn't match any expected format
-                console.warn('Unexpected API response format:', apiData);
-                throw new Error('Unexpected response format from API');
 
+                    // Refresh the configuration after saving
+                    await fetchConfiguration();
+                } else {
+                    console.error('Invalid response from API or save failed:', responseData);
+                    const errorMessage = responseData.message || 'Invalid response from API';
+                    throw new Error(errorMessage);
+                }
             } catch (error) {
                 console.error('Error saving configuration:', error);
                 showSaveMessage('Error saving configuration: ' + error.message, 'text-red-500 bg-red-50');

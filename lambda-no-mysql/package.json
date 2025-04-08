@@ -1,14 +1,14 @@
 {
-  "name": "portfolio-lambda-function",
-  "version": "2.1.27",
-  "description": "Lambda function to handle portfolio website backend operations",
+  "name": "website-portfolio-lambda-mysql",
+  "version": "2.1.13",
+  "description": "Lambda function for portfolio website configuration using MySQL",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "mysql2": "^3.9.2"
+    "mysql2": "^3.14.0"
   },
-  "author": "Jayant Arora",
-  "license": "MIT"
+  "author": "",
+  "license": "ISC"
 }
