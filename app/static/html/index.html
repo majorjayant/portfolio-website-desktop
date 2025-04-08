@@ -712,42 +712,67 @@
 
     .experience-header {
         padding: 1.5rem 2rem;
-        display: flex;
-        justify-content: space-between;
+        display: grid; /* Use grid for flexible layout */
+        grid-template-columns: auto 1fr auto; /* Date | Title | City */
         align-items: center;
+        gap: 1rem; /* Spacing between header elements */
         border-bottom: 1px solid #eee;
         transition: background-color 0.3s ease;
     }
 
     .experience-item.active .experience-header {
-        background-color: #f9f9f9; /* Slightly different background when active */
+        /* Background color will be set by JS using data-color */
+        border-bottom-color: transparent; /* Hide border when active */
     }
-
-    .experience-header h3.job-title {
+    
+    .experience-header span, .experience-header h3 {
         margin: 0;
-        color: #7a6b5f; /* Theme color */
-        font-size: 1.4rem;
-        font-weight: 600;
-        flex-grow: 1;
-        margin-right: 1rem;
     }
 
-    .experience-header .company-info {
-        font-size: 0.95rem;
-        color: #666;
-        white-space: nowrap; /* Prevent wrapping */
-        margin-right: 1rem;
+    .experience-date {
+        font-size: 0.9rem;
+        color: #888;
+        white-space: nowrap;
+    }
+
+    .experience-title {
+        color: #333; /* Darker title color */
+        font-size: 1.3rem; /* Adjust size */
+        font-weight: 600;
+        text-align: center; /* Center the title */
+    }
+
+    .experience-item.active .experience-header .experience-title,
+    .experience-item.active .experience-header .experience-date,
+    .experience-item.active .experience-header .experience-city,
+    .experience-item.active .experience-header .expand-icon {
+        color: #ffffff; /* White text when header is colored */
+    }
+
+    .experience-city {
+        font-size: 0.9rem;
+        color: #888;
+        white-space: nowrap;
+        text-align: right;
     }
 
     .experience-header .expand-icon {
         color: #aaa;
         transition: transform 0.3s ease;
         font-size: 1rem;
+        justify-self: end; /* Align icon to the very end */
+        grid-column: 4 / 5; /* Place icon in its own column if needed, adjusting grid */
+    }
+
+    /* Adjust grid for icon placement */
+    .experience-header {
+        grid-template-columns: auto 1fr auto auto; /* Date | Title | City | Icon */
+        gap: 1rem;
     }
 
     .experience-item.active .expand-icon {
         transform: rotate(180deg);
-        color: #7a6b5f; /* Theme color when active */
+        color: #ffffff; /* White icon when active */
     }
 
     .experience-details {
@@ -780,26 +805,41 @@
         .experience-header {
             padding: 1rem 1.5rem;
             flex-wrap: wrap; /* Allow wrapping on small screens */
+            grid-template-columns: 1fr auto; /* Title | Icon */
+            gap: 0.5rem;
+            position: relative; /* Needed for absolute positioning of icon */
         }
 
-        .experience-header h3.job-title {
+        .experience-header .experience-date {
+            grid-row: 2 / 3; /* Move date below title */
+            grid-column: 1 / 2;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+        
+        .experience-header h3.experience-title {
+            grid-row: 1 / 2;
+            grid-column: 1 / 2; /* Title takes first column */
             font-size: 1.2rem;
-            width: 100%; /* Title takes full width initially */
-            margin-bottom: 0.5rem; /* Space below title */
-            margin-right: 0;
+            text-align: left;
+            margin-bottom: 0; /* Remove bottom margin */
         }
 
-        .experience-header .company-info {
-            font-size: 0.9rem;
-            width: calc(100% - 30px); /* Adjust width to leave space for icon */
-            margin-right: 0;
+        .experience-header .experience-city {
+            grid-row: 2 / 3; /* Move city below title, next to date */
+            grid-column: 2 / 3;
+            text-align: right;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
         }
 
         .experience-header .expand-icon {
+            grid-row: 1 / 2; /* Icon stays top right */
+            grid-column: 2 / 3;
             font-size: 0.9rem;
-            position: absolute; /* Position icon */
-            right: 1.5rem;
-            top: 1.2rem; /* Align icon vertically */
+            position: static; /* Reset absolute positioning */
+            justify-self: end;
+            align-self: center; /* Center vertically */
         }
 
         .experience-details {
@@ -996,42 +1036,56 @@
             
             <div class="experience-drawer-container">
                 <!-- Experience Item 1 -->
-                <div class="experience-item" data-aos="fade-up">
+                <div class="experience-item" data-aos="fade-up" data-color="#8F9067">
                     <div class="experience-header">
-                        <h3 class="job-title">Senior Product Manager</h3>
-                        <span class="company-info">Tech Solutions Inc. | Jan 2020 - Present</span>
+                        <span class="experience-date">Jan 2020 - Present</span>
+                        <h3 class="experience-title">Tech Solutions Inc. - Senior Product Manager</h3>
+                        <span class="experience-city">San Francisco, CA</span>
                         <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
                     </div>
                     <div class="experience-details">
-                        <p class="timeline-description">Leading product development for enterprise SaaS solutions. Managing cross-functional teams and driving roadmap execution. More details can go here, explaining responsibilities, achievements, etc.</p>
+                        <p>Led product strategy and roadmap for flagship SaaS platform. Managed agile teams, conducted user research, and drove a 30% increase in user engagement through feature enhancements. Defined key metrics and presented progress to stakeholders.</p>
                     </div>
                 </div>
 
                 <!-- Experience Item 2 -->
-                <div class="experience-item" data-aos="fade-up">
+                <div class="experience-item" data-aos="fade-up" data-color="#BE5B2A">
                     <div class="experience-header">
-                        <h3 class="job-title">Product Manager</h3>
-                        <span class="company-info">Digital Innovations Co. | Mar 2017 - Dec 2019</span>
+                        <span class="experience-date">Mar 2017 - Dec 2019</span>
+                        <h3 class="experience-title">Digital Innovations Co. - Product Manager</h3>
+                        <span class="experience-city">New York, NY</span>
                         <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
                     </div>
                     <div class="experience-details">
-                        <p class="timeline-description">Managed the development lifecycle of mobile applications for key financial services clients, focusing on user experience and market fit. Further elaboration on the role and impact.</p>
+                        <p>Owned the development lifecycle for client-facing mobile applications. Collaborated with design and engineering teams to deliver high-quality products on time. Analyzed market trends and competitor activities to inform product decisions.</p>
                     </div>
                 </div>
 
                 <!-- Experience Item 3 -->
-                <div class="experience-item" data-aos="fade-up">
+                <div class="experience-item" data-aos="fade-up" data-color="#828D94">
                     <div class="experience-header">
-                        <h3 class="job-title">Associate Product Manager</h3>
-                        <span class="company-info">StartupHub | Jun 2015 - Feb 2017</span>
+                        <span class="experience-date">Jun 2015 - Feb 2017</span>
+                        <h3 class="experience-title">StartupHub - Associate Product Manager</h3>
+                        <span class="experience-city">Austin, TX</span>
                         <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
                     </div>
                     <div class="experience-details">
-                        <p class="timeline-description">Assisted in the ideation, development, and successful launch of three B2C web applications in the e-commerce space. Additional context about the startup environment or specific contributions.</p>
+                        <p>Supported product planning and execution for new e-commerce features. Gathered user feedback, wrote specifications, and coordinated testing efforts. Contributed to a 15% growth in conversion rate.</p>
                     </div>
                 </div>
 
-                <!-- Add more items dynamically later -->
+                <!-- Experience Item 4 -->
+                <div class="experience-item" data-aos="fade-up" data-color="#D69A3F">
+                    <div class="experience-header">
+                        <span class="experience-date">May 2014 - May 2015</span>
+                        <h3 class="experience-title">Web Solutions Agency - Junior Web Developer</h3>
+                        <span class="experience-city">Remote</span>
+                        <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="experience-details">
+                        <p>Developed and maintained client websites using HTML, CSS, and JavaScript. Worked closely with designers to implement user interfaces. Gained experience with version control and web performance optimization.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1780,36 +1834,19 @@
             
             items.forEach(item => {
                 const header = item.querySelector('.experience-header');
-                if (header) {
-                    header.addEventListener('click', () => {
-                        // Check if the item is already active
-                        const isActive = item.classList.contains('active');
-                        
-                        // Optional: Close all other items first
-                        items.forEach(otherItem => {
-                            if (otherItem !== item && otherItem.classList.contains('active')) {
-                                otherItem.classList.remove('active');
-                                const otherDetails = otherItem.querySelector('.experience-details');
-                                if (otherDetails) {
-                                    otherDetails.style.maxHeight = null;
-                                }
-                            }
-                        });
-
-                        // Toggle the current item
-                        item.classList.toggle('active');
-                        
-                        const details = item.querySelector('.experience-details');
-                        if (details) {
-                            if (item.classList.contains('active')) {
-                                // Set max-height to the scroll height for smooth expansion
-                                details.style.maxHeight = details.scrollHeight + 'px';
-                            } else {
-                                // Reset max-height for collapse
-                                details.style.maxHeight = null;
-                            }
-                        }
-                    });
+                const details = item.querySelector('.experience-details');
+                const color = item.getAttribute('data-color') || '#f9f9f9'; // Fallback color
+                
+                if (header && details) {
+                    if (item.classList.contains('active')) {
+                        // Set max-height and apply background color
+                        details.style.maxHeight = details.scrollHeight + 'px';
+                        header.style.backgroundColor = color;
+                    } else {
+                        // Reset max-height and background color
+                        details.style.maxHeight = null;
+                        header.style.backgroundColor = ''; // Remove inline style
+                    }
                 }
             });
         }
