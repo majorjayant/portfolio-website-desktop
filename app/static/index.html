@@ -490,36 +490,42 @@
 
     .carousel__prev, .carousel__next {
         position: absolute;
-        bottom: 10px;
-        top: auto;
-        transform: none;
-        transition: transform 0.25s ease;
-        z-index: 10;
-        width: auto;
-        height: auto;
-        background-color: transparent;
-        box-shadow: none;
-        border-radius: 0;
+        /* Position to vertical center edges */
+        top: 50%;
+        transform: translateY(-50%); /* Vertical centering */
+        bottom: auto; /* Remove bottom positioning */
+        transition: transform 0.25s ease, background-color 0.3s ease; /* Add background transition */
+        z-index: 100; /* Increase z-index */
+        width: 50px; /* Give fixed size for better click area */
+        height: 50px;
+        background-color: rgba(230, 224, 212, 0.5); /* Semi-transparent background */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow */
+        border-radius: 50%; /* Make them circles */
+        display: flex; /* Use flex to center icon */
+        align-items: center;
+        justify-content: center;
+        cursor: pointer; /* Ensure cursor indicates clickable */
+        color: #1e272e; /* Darker icon color */
     }
 
     .carousel__prev i, .carousel__next i {
-        font-size: 50px;
-        color: var(--box-border);
-        cursor: pointer;
+        font-size: 30px; /* Adjust icon size */
+        color: inherit; /* Inherit color from parent */
     }
 
     .carousel__prev:hover, .carousel__next:hover {
-        transform: scale(1.15);
-        background-color: transparent;
+        transform: translateY(-50%) scale(1.1); /* Keep scale effect */
+        background-color: rgba(230, 224, 212, 0.8); /* Darken background on hover */
     }
 
-    .carousel__prev { left: 45%; }
-    .carousel__next { right: 45%; }
+    /* Positioning prev/next buttons horizontally to edges */
+    .carousel__prev { left: 15px; } /* Adjust pixel value as needed */
+    .carousel__next { right: 15px; }
 
     .carousel__body {
         width: 100%;
-        padding: 20px 0 50px 0;
-        overflow: hidden;
+        padding: 40px 0 70px 0; /* Increased vertical padding */
+        overflow: visible; /* Allow shadows/rotated items to show */
     }
 
     .carousel__slider {
@@ -628,13 +634,20 @@
     }
 
     @media (max-width: 768px) {
-        .carousel__prev { left: 40%; }
-        .carousel__next { right: 40%; }
+        .carousel__prev { left: 10px; } /* Closer to edge on smaller screens */
+        .carousel__next { right: 10px; }
     }
 
     @media (max-width: 480px) {
-        .carousel__prev { left: 35%; }
-        .carousel__next { right: 35%; }
+        .carousel__prev { left: 5px; } /* Even closer */
+        .carousel__next { right: 5px; }
+        .carousel__prev i, .carousel__next i {
+            font-size: 24px; /* Smaller icons on mobile */
+        }
+        .carousel__prev, .carousel__next {
+            width: 40px; /* Smaller buttons on mobile */
+            height: 40px;
+        }
     }
     
     /* Auto-rotation animation for entire carousel (not used, we're using JS control) */
@@ -1489,40 +1502,30 @@
         console.log("Binding events...");
         window.onresize = resize;
 
-        // Ensure buttons are clickable - Check if they exist before cloning
-        if (prevBtn.parentNode && nextBtn.parentNode) {
-            const prevBtnClone = prevBtn.cloneNode(true);
-            const nextBtnClone = nextBtn.cloneNode(true);
-            prevBtn.parentNode.replaceChild(prevBtnClone, prevBtn);
-            nextBtn.parentNode.replaceChild(nextBtnClone, nextBtn);
-            prevBtn = prevBtnClone;
-            nextBtn = nextBtnClone;
-        } else {
-             console.error("Button parent node not found during clone!");
-             // Attempt to re-query buttons in case they were detached
-             prevBtn = document.querySelector('.carousel__prev');
-             nextBtn = document.querySelector('.carousel__next');
-             if (!prevBtn || !nextBtn) {
-                 console.error("Failed to re-query buttons!");
-                 return; // Stop if buttons cannot be found
-             }
-        }
-
-        // Clear potential old listeners before adding new ones
-        prevBtn.onclick = null;
+        // --- Simplified Binding --- 
+        // Remove potential old listeners first (safer)
+        prevBtn.onclick = null; 
         nextBtn.onclick = null;
-
-        // Add new listeners
-        prevBtn.addEventListener('click', (e) => { 
+        
+        // Use simple onclick for clarity, or stick to addEventListener if preferred
+        prevBtn.onclick = (e) => { 
             e.preventDefault(); 
-            console.log("Prev click listener fired");
+            console.log("Prev click handler fired");
             prev(); 
-        });
-        nextBtn.addEventListener('click', (e) => { 
+        };
+        nextBtn.onclick = (e) => { 
             e.preventDefault(); 
-            console.log("Next click listener fired");
+            console.log("Next click handler fired");
             next(); 
-        });
+        };
+        
+        // Add descriptive logging
+        if(prevBtn.onclick && nextBtn.onclick) {
+             console.log("onclick handlers attached successfully.");
+        } else {
+             console.error("Failed to attach onclick handlers.");
+        }
+        
         console.log("Events bound.");
     }
     
