@@ -19,7 +19,21 @@ function initializeModalFunctionality() {
     const closeModal = document.querySelector('.close-modal'); 
     const snapContainers = document.querySelectorAll('.snap-container');
     
-    // ... existing code ...
+    // Open modal when clicking on a photo
+    if (snapContainers && modal && modalImg && closeModal) {
+        snapContainers.forEach(function(container) {
+            container.addEventListener('click', function(e) {
+                // ... existing code ...
+            });
+            
+            // Attach closeModal listener HERE, inside the scope
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        } else {
+             console.error('Modal elements not found, skipping initialization.');
+        }
+    }
 }
 
 // Close modal when clicking outside the image
