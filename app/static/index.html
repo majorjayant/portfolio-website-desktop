@@ -214,7 +214,7 @@
     }
     
     .layer-bg {
-        transform: translateZ(-50px) scale(1.5);
+        transform: translateZ(-50px) scale(1.1);
     }
     
     .layer-1 {
@@ -709,7 +709,7 @@
         // Apply scroll-based transformations to parallax layers
         if (bannerImage) {
             // The background image moves up slightly as we scroll
-            bannerImage.style.transform = `translateZ(-50px) scale(1.6) translateY(${scrollPercentInBanner * 50}px)`;
+            bannerImage.style.transform = `translateZ(-50px) scale(1.1) translateY(${scrollPercentInBanner * 50}px)`;
         }
         
         if (layer1) {
@@ -1047,7 +1047,7 @@
             
             // Set initial scale to ensure image covers the area even with movement
             if (bannerImage) {
-                bannerImage.style.transform = 'translateZ(-50px) scale(1.6)';
+                bannerImage.style.transform = 'translateZ(-50px) scale(1.1)';
             }
             
             if (bannerSection && bannerImage && layer1 && layer2) {
@@ -1058,14 +1058,14 @@
                     const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
                     
                     // Apply transformations with different intensities
-                    bannerImage.style.transform = `translateZ(-50px) scale(1.6) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
+                    bannerImage.style.transform = `translateZ(-50px) scale(1.1) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
                     layer1.style.transform = `translate(${mouseX * 15}px, ${mouseY * 15}px)`;
                     layer2.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
                 });
                 
                 bannerSection.addEventListener('mouseleave', function() {
                     // Reset transformations smoothly
-                    bannerImage.style.transform = 'translateZ(-50px) scale(1.6)';
+                    bannerImage.style.transform = 'translateZ(-50px) scale(1.1)';
                     layer1.style.transform = 'translate(0, 0)';
                     layer2.style.transform = 'translate(0, 0)';
                 });
