@@ -76,6 +76,12 @@
                                 <input type="url" name="image_banner_url" id="image_banner_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
                                 <p class="mt-1 text-xs text-gray-500">URL for the main banner image</p>
                             </div>
+                            
+                            <div class="sm:col-span-2">
+                                <label for="image_mobile_banner_url" class="block text-sm font-medium text-gray-700">Mobile Banner URL</label>
+                                <input type="url" name="image_mobile_banner_url" id="image_mobile_banner_url" class="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                <p class="mt-1 text-xs text-gray-500">URL for the mobile version of the banner image (displayed on screens 768px or smaller)</p>
+                            </div>
                         </div>
                     </div>
                     
@@ -342,6 +348,7 @@
             setInputValue('image_favicon_url', config.image_favicon_url);
             setInputValue('image_logo_url', config.image_logo_url);
             setInputValue('image_banner_url', config.image_banner_url);
+            setInputValue('image_mobile_banner_url', config.image_mobile_banner_url);
             setInputValue('image_about_profile_url', config.image_about_profile_url);
             setInputValue('image_about_photo1_url', config.image_about_photo1_url);
             setInputValue('image_about_photo2_url', config.image_about_photo2_url);
