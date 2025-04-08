@@ -234,7 +234,7 @@ header {
     position: relative;
     overflow: hidden;
     perspective: 1000px;
-    padding-top: 80px; /* Add padding-top equal to header height to prevent top cropping */
+    /* Removing padding-top that was causing issues */
 }
 
 .parallax-container {
@@ -256,21 +256,21 @@ header {
 
 .layer-bg {
     transform: translateZ(-50px) scale(1.5);
-    background-size: cover !important; /* Changed from contain to cover */
-    background-position: center top !important; /* Position from top to prevent cropping */
+    background-size: cover !important;
+    background-position: center center !important;
 }
 
 /* Media query for mobile devices */
 @media (max-width: 768px) {
     #banner-section {
         height: 70vh; /* Slightly shorter on mobile */
-        padding-top: 60px; /* Adjusted padding for mobile header */
+        /* Removing padding-top that was causing issues */
     }
     
     .layer-bg {
-        transform: translateZ(-25px) scale(1.132); /* Less dramatic parallax on mobile */
-        background-size: cover !important; /* Ensure cover on mobile to prevent side cropping */
-        background-position: center center !important; /* Center position on mobile */
+        transform: translateZ(-25px) scale(1.05); /* Reduced scale to fix cropping issues */
+        background-size: contain !important; /* Changed from cover to contain to prevent cropping */
+        background-position: center center !important;
     }
 }
 
@@ -292,7 +292,7 @@ header {
     width: 100%;
     height: 100%;
     background-size: contain !important;
-    background-position: center top !important; /* Position from top to prevent cropping */
+    background-position: center center !important; /* Center position for better alignment */
     background-repeat: no-repeat !important;
     position: relative;
     /* Enhanced fade effect on both sides */
@@ -317,19 +317,19 @@ header {
 /* For mobile, ensure the banner image is fully visible */
 @media (max-width: 768px) {
     .banner-image {
-        background-size: cover !important; /* Use cover on mobile */
+        background-size: contain !important; /* Changed from cover to contain to prevent cropping */
         /* Less extreme fade effect on sides for mobile */
         -webkit-mask-image: linear-gradient(to right, 
-            rgba(0,0,0,0.8) 0%, 
-            rgba(0,0,0,1) 10%, 
-            rgba(0,0,0,1) 90%, 
-            rgba(0,0,0,0.8) 100%
+            rgba(0,0,0,0.9) 0%, 
+            rgba(0,0,0,1) 5%, 
+            rgba(0,0,0,1) 95%, 
+            rgba(0,0,0,0.9) 100%
         );
         mask-image: linear-gradient(to right, 
-            rgba(0,0,0,0.8) 0%, 
-            rgba(0,0,0,1) 10%, 
-            rgba(0,0,0,1) 90%, 
-            rgba(0,0,0,0.8) 100%
+            rgba(0,0,0,0.9) 0%, 
+            rgba(0,0,0,1) 5%, 
+            rgba(0,0,0,1) 95%, 
+            rgba(0,0,0,0.9) 100%
         );
     }
 }

@@ -1590,8 +1590,8 @@
             
             // Update the banner background image
             bannerElement.style.backgroundImage = `url('${bannerUrl}')`;
-            bannerElement.style.backgroundSize = isMobile ? 'cover' : 'cover';
-            bannerElement.style.backgroundPosition = isMobile ? 'center center' : 'center top';
+            bannerElement.style.backgroundSize = isMobile ? 'contain' : 'cover';
+            bannerElement.style.backgroundPosition = 'center center';
         }
 
         // Call this when page loads and when window resizes
