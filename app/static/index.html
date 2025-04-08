@@ -593,8 +593,8 @@
             })
             .then(data => {
                 console.log('Successfully loaded site config from API:', data);
-                // Process data - handle nested 'site_configs' if present
-                const config = data.site_configs || data;
+                // Process data - Correctly access the singular 'site_config' object
+                const config = data.site_config || {}; // Use site_config (singular) and fallback to empty object
                 updatePageWithConfig(config);
             })
             .catch(error => {
@@ -740,8 +740,13 @@
     function initializeModalFunctionality() {
         const modal = document.getElementById('photoModal');
         const modalImg = document.getElementById('modalImage');
-        const closeModal = document.querySelector('.close-modal');
+        const closeModalButton = document.querySelector('.close-modal'); // Renamed for clarity
         const snapContainers = document.querySelectorAll('.snap-container');
+        
+        if (!modal || !modalImg || !closeModalButton) {
+            console.error("Modal elements not found!");
+            return; // Exit if essential modal elements aren't present
+        }
         
         // Open modal when clicking on a photo
         snapContainers.forEach(function(container) {
@@ -781,13 +786,14 @@
                 };
             });
         });
+        
+        // Close modal when clicking on close button (Moved inside this function)
+        closeModalButton.addEventListener('click', function() {
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        });
     }
-    
-    // Close modal when clicking on close button
-    closeModal.addEventListener('click', function() {
-        const modal = document.getElementById('photoModal');
-        modal.style.display = 'none';
-    });
     
     // Close modal when clicking outside the image
     window.addEventListener('click', function(e) {
