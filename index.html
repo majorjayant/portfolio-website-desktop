@@ -152,6 +152,9 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// Global definitions to handle cached/old code
+let closeModal = document.querySelector('.close-modal'); // Define globally to prevent errors in old code
+
 // Set banner image as soon as DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     const bannerImage = document.getElementById('banner-image');
@@ -174,6 +177,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize modal functionality for elements present on initial load (if any)
     // Note: This is likely re-initialized after API content is loaded
     initializeModalFunctionality(); 
+
+    // Refresh the global closeModal reference once DOM is fully loaded
+    closeModal = document.querySelector('.close-modal');
 });
 
 // Function to fetch the latest content from our API
