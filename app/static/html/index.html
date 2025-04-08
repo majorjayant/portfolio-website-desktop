@@ -592,9 +592,8 @@
             })
             .then(data => {
                 console.log('Successfully loaded site config from API:', data);
-                // Process data - handle nested 'site_configs' if present
-                const config = data.site_configs || data;
-                updatePageWithConfig(config);
+                // Process data - directly pass the data to the update function
+                updatePageWithConfig(data);
             })
             .catch(error => {
                 console.error('Error loading from API:', error);
@@ -623,8 +622,17 @@
         }, 5000);
     }
 
-    function updatePageWithConfig(config) {
-        console.log('Updating page with config data:', config);
+    function updatePageWithConfig(data) {
+        console.log('Updating page with config data:', data);
+        
+        // Extract site_config from the response
+        const config = data.site_config;
+        
+        if (!config) {
+            console.error('site_config not found in API response:', data);
+            showErrorMessage('Configuration data is missing in the response.');
+            return;
+        }
         
         // Update title & metadata
         document.title = config.about_title || 'Portfolio';
@@ -735,11 +743,15 @@
         };
     });
     
+    // Global variable for the modal close button
+    let closeModal;
+
     // Modal functionality for about photos
     function initializeModalFunctionality() {
         const modal = document.getElementById('photoModal');
         const modalImg = document.getElementById('modalImage');
-        const closeModal = document.querySelector('.close-modal');
+        // Set the global closeModal variable
+        closeModal = document.querySelector('.close-modal');
         const snapContainers = document.querySelectorAll('.snap-container');
         
         // Open modal when clicking on a photo
@@ -780,13 +792,16 @@
                 };
             });
         });
+                
+        // Add event listener inside the initialization function
+        if (closeModal) {
+            closeModal.addEventListener('click', function() {
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
     }
-    
-    // Close modal when clicking on close button
-    closeModal.addEventListener('click', function() {
-        const modal = document.getElementById('photoModal');
-        modal.style.display = 'none';
-    });
     
     // Close modal when clicking outside the image
     window.addEventListener('click', function(e) {
