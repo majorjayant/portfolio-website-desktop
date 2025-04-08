@@ -174,150 +174,168 @@
     </div>
 
     <script>
-    // API endpoints - Updated to match API Gateway's existing path
-    const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
-    const GET_CONFIG_URL = API_BASE_URL; // Use the base URL directly
-    const SAVE_CONFIG_URL = API_BASE_URL; // Use the base URL directly
-    
-    // DOM elements
     document.addEventListener('DOMContentLoaded', function() {
-        const siteConfigForm = document.getElementById('site-config-form');
-        const logoutButton = document.getElementById('logout-button');
-        const saveMessage = document.getElementById('save-message');
-        const refreshButton = document.getElementById('refresh-button');
+        console.log('Admin dashboard loaded');
         
-        // Check if user is logged in
+        const authLoading = document.getElementById('auth-loading');
+        const notAuthenticated = document.getElementById('not-authenticated');
+        const dashboardContent = document.getElementById('dashboard-content');
+        const logoutButton = document.getElementById('logout-button');
+        const siteConfigForm = document.getElementById('site-config-form');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const formContainer = document.getElementById('form-container');
+        const apiError = document.getElementById('api-error');
+        const saveButton = document.getElementById('save-button');
+        
+        // Get or create the save message element
+        let saveMessage = document.getElementById('save-message');
+        if (!saveMessage) {
+            console.log('Creating new save message element');
+            saveMessage = document.createElement('div');
+            saveMessage.className = 'px-4 py-3 text-center border-t border-b hidden';
+            saveMessage.id = 'save-message';
+            
+            // Insert before the form if possible
+            const form = document.getElementById('site-config-form');
+            if (form && form.parentNode) {
+                form.parentNode.insertBefore(saveMessage, form);
+            }
+        }
+        
+        // API endpoints
+        const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
+        // Create a dedicated endpoint just for get_site_config
+        const SITE_CONFIG_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/get-site-config';
+        
+        // Check authentication
         function checkAuthentication() {
             const token = localStorage.getItem('admin_token');
             if (!token) {
-                console.log('No authentication token found, redirecting to login');
+                console.log('User is not authenticated, redirecting to login');
                 window.location.href = '/admin-direct/';
                 return false;
             }
             return true;
         }
         
-        // Logout function
+        // Log out function
         function logout() {
+            console.log('Logging out');
             localStorage.removeItem('admin_token');
-            window.location.href = '/admin-direct/';
+            localStorage.removeItem('admin_user');
+            window.location.href = '/admin/login.html';
         }
         
-        // Utility function to set input value
-        function setInputValue(id, value) {
-            const input = document.getElementById(id);
-            if (input) {
-                input.value = value || '';
-                console.log(`Set ${id} = ${value}`);
-            }
-        }
-        
-        // Fetch site configuration
+        // Load site configuration
         async function fetchConfiguration() {
-            console.log('Admin dashboard loaded');
+            showSaveMessage('Loading configuration...', 'text-blue-500 bg-blue-50');
             try {
-                // Add cache buster to prevent caching
-                const cacheBuster = new Date().getTime();
-                
-                console.log('Fetching config with explicit action parameter');
-                
+                // Get authentication token
                 const token = localStorage.getItem('admin_token');
-                if (!token) {
-                    console.error('Authentication token is missing');
-                    return;
-                }
                 
-                // Fetch configuration data with explicit action=get_site_config parameter
-                // This matches the exact format used in the successful Lambda test
-                const response = await fetch(`${GET_CONFIG_URL}?action=get_site_config&type=site_config&t=${cacheBuster}`, {
+                // Try a more direct approach - GET request
+                const url = `${API_BASE_URL}?action=get_site_config&type=site_config&t=${Date.now()}`;
+                console.log('Fetching config using GET with cache buster:', url);
+                
+                // Use simple GET request
+                const response = await fetch(url, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': token || '',
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
                         'Pragma': 'no-cache'
                     }
                 });
                 
                 console.log('Response status:', response.status);
-                
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch configuration: ${response.status}`);
+                    throw new Error(`Failed to load configuration (Status: ${response.status})`);
                 }
                 
-                const data = await response.json();
-                console.log('Raw API response:', data);
+                const rawData = await response.json();
+                console.log('Raw API response:', rawData);
                 
-                // Handle multiple response formats
-                let config = null;
-                
-                if (data.site_config) {
-                    console.log('Found site_config directly in response');
-                    config = data.site_config;
-                } else if (data.body && typeof data.body === 'string') {
+                // Extract the site_config object from the response
+                let config;
+                if (rawData.site_config) {
+                    // Direct structure from Lambda
+                    console.log('Found site_config in direct response');
+                    config = rawData.site_config;
+                } else if (rawData.body && typeof rawData.body === 'string') {
+                    // API Gateway might wrap the response in a body property
                     try {
-                        const parsedBody = JSON.parse(data.body);
+                        console.log('Attempting to parse body from API Gateway response');
+                        const parsedBody = JSON.parse(rawData.body);
                         if (parsedBody.site_config) {
                             console.log('Found site_config in parsed body');
                             config = parsedBody.site_config;
+                        } else {
+                            console.error('No site_config found in parsed body:', parsedBody);
+                            showSaveMessage('Error: Received response from server but no configuration data was found', 'text-red-500 bg-red-50');
+                            return;
                         }
                     } catch (e) {
                         console.error('Error parsing body:', e);
+                        showSaveMessage('Error: Could not parse response from server', 'text-red-500 bg-red-50');
+                        return;
                     }
-                }
-                
-                // If no data found, use default values
-                if (!config) {
-                    console.error('No configuration data found in API response');
-                    clearForm();
+                } else if (rawData.message && rawData.message.includes("Unknown request type")) {
+                    console.error('Server responded with "Unknown request type"');
+                    showSaveMessage('Error: Server does not recognize this request. The Lambda function may need to be updated.', 'text-red-500 bg-red-50');
+                    return;
+                } else {
+                    console.error('Unexpected API response format:', rawData);
+                    showSaveMessage('Error: Unexpected response format from server', 'text-red-500 bg-red-50');
                     return;
                 }
                 
                 console.log('Extracted config for form:', config);
                 
-                // Populate the form with configuration data
+                if (!config || Object.keys(config).length === 0) {
+                    console.error('No configuration data found in API response');
+                    showSaveMessage('Error: No configuration data found in API response', 'text-red-500 bg-red-50');
+                    return;
+                }
+                
+                // Config data found, populate form
+                hideSaveMessage();
                 populateForm(config);
             } catch (error) {
                 console.error('Error loading configuration:', error);
-                // Show an error message
-                if (saveMessage) {
-                    saveMessage.textContent = 'Error loading configuration: ' + error.message;
-                    saveMessage.className = 'px-4 py-3 text-center border-t border-b text-red-500 bg-red-50';
-                    saveMessage.classList.remove('hidden');
-                    
-                    // Add refresh button
-                    const refreshButton = document.createElement('button');
-                    refreshButton.textContent = 'Retry Loading';
-                    refreshButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
-                    refreshButton.onclick = fetchConfiguration;
-                    saveMessage.appendChild(refreshButton);
-                }
+                showSaveMessage('Error loading configuration: ' + error.message, 'text-red-500 bg-red-50');
+                
+                // Add retry button
+                const retryButton = document.createElement('button');
+                retryButton.textContent = 'Retry';
+                retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
+                retryButton.onclick = fetchConfiguration;
+                saveMessage.appendChild(retryButton);
             }
         }
         
-        // Clear form fields
-        function clearForm() {
-            const fields = ['about_title', 'about_subtitle', 'about_description',
-                           'image_favicon_url', 'image_logo_url', 'image_banner_url',
-                           'image_about_profile_url', 'image_about_photo1_url', 'image_about_photo2_url',
-                           'image_about_photo3_url', 'image_about_photo4_url', 'about_photo1_alt',
-                           'about_photo2_alt', 'about_photo3_alt', 'about_photo4_alt'];
-            
-            fields.forEach(fieldId => {
-                setInputValue(fieldId, '');
-            });
-        }
-        
-        // Populate form with configuration data
+        // Fill form with configuration data
         function populateForm(config) {
             console.log('Populating form with config:', config);
             
-            // Check if config is valid
-            if (!config || typeof config !== 'object') {
-                console.error('Invalid configuration object:', config);
-                return;
+            // Helper function to set input values
+            function setInputValue(id, value) {
+                const input = document.getElementById(id);
+                if (input) {
+                    if (value !== undefined && value !== null) {
+                        input.value = value;
+                        console.log(`Set ${id} = ${value}`);
+                    } else {
+                        input.value = '';
+                        console.log(`Field ${id} is empty (undefined/null value)`);
+                    }
+                } else {
+                    console.warn(`Element with ID ${id} not found in the form`);
+                }
             }
             
-            // Set values for each field
+            // Set values for each form field
             setInputValue('about_title', config.about_title);
             setInputValue('about_subtitle', config.about_subtitle);
             setInputValue('about_description', config.about_description);
@@ -360,10 +378,10 @@
                     site_config: configData
                 };
                 
-                console.log('Sending POST to Lambda with website-portfolio path');
+                console.log('Sending API payload:', payload);
                 
-                // Send a simplified POST request matching what the Lambda test event expects
-                const apiResponse = await fetch(SAVE_CONFIG_URL, {
+                // Save to API
+                const apiResponse = await fetch(API_BASE_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -380,23 +398,43 @@
                 const apiData = await apiResponse.json();
                 console.log('API response data:', apiData);
                 
-                // Check for success status in various formats
-                let success = false;
-                if (apiData.success === true || 
-                    (apiData.body && typeof apiData.body === 'string' && apiData.body.includes('success":true')) ||
-                    (apiData.message && apiData.message.includes('success'))) {
-                    success = true;
-                }
+                // Handle different response formats
+                if (apiData.body && typeof apiData.body === 'string') {
+                    // Handle API Gateway response format
+                    try {
+                        const parsedBody = JSON.parse(apiData.body);
+                        console.log('Parsed API Gateway response body:', parsedBody);
+                        if (parsedBody.success === false) {
+                            throw new Error(parsedBody.message || 'API save failed');
+                        }
+                        // If we have a success property and it's true, or we have a message that includes success
+                        if (parsedBody.success === true || 
+                            (parsedBody.message && parsedBody.message.toLowerCase().includes('success'))) {
+                            console.log('Save successful based on parsed body');
+                            showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
+                            setTimeout(hideSaveMessage, 3000);
+                            await fetchConfiguration();
+                            return;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing API Gateway response body:', e);
+                        throw new Error('Invalid response format from API: ' + e.message);
+                    }
+                } 
                 
-                if (success) {
+                // Direct Lambda response format
+                if (apiData.success === true) {
+                    console.log('Save successful based on direct response');
                     showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
                     setTimeout(hideSaveMessage, 3000);
-                    
-                    // Refresh data after saving
                     await fetchConfiguration();
-                } else {
-                    throw new Error('Save operation did not return success confirmation');
+                    return;
                 }
+                
+                // If we get here, the response didn't match any expected format
+                console.warn('Unexpected API response format:', apiData);
+                throw new Error('Unexpected response format from API');
+
             } catch (error) {
                 console.error('Error saving configuration:', error);
                 showSaveMessage('Error saving configuration: ' + error.message, 'text-red-500 bg-red-50');
@@ -404,7 +442,7 @@
                 // Add retry button
                 const retryButton = document.createElement('button');
                 retryButton.textContent = 'Retry Save';
-                retryButton.className = 'ml-4 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700';
+                retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
                 retryButton.onclick = () => saveSiteConfig(formData);
                 saveMessage.appendChild(retryButton);
             }
@@ -436,6 +474,7 @@
         }
         
         // Add refresh button event listener
+        const refreshButton = document.getElementById('refresh-button');
         if (refreshButton) {
             refreshButton.addEventListener('click', fetchConfiguration);
         }
