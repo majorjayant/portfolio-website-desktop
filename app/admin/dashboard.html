@@ -228,30 +228,28 @@
         
         // Load site configuration
         async function fetchConfiguration() {
-            const cacheBuster = Date.now();
-            const url = SITE_CONFIG_URL ? `${SITE_CONFIG_URL}&t=${cacheBuster}` : `${API_BASE_URL}?action=get_site_config&type=site_config&t=${cacheBuster}`;
-            console.log(`Fetching config using GET with cache buster: ${url}`);
-
+            showSaveMessage('Loading configuration...', 'text-blue-500 bg-blue-50');
             try {
-                const token = localStorage.getItem('adminAuthToken'); // Get token for GET request
-                if (!token) {
-                    console.error('No auth token found for fetching config.');
-                    showNotification('Authentication error fetching config. Please log in again.', 'error');
-                    clearAdminFields(); // Clear fields if not authenticated
-                    throw new Error('Authentication token not found.');
-                }
-
+                // Get authentication token
+                const token = localStorage.getItem('admin_token');
+                
+                // Try a more direct approach - GET request
+                const url = `${API_BASE_URL}?action=get_site_config&type=site_config&t=${Date.now()}`;
+                console.log('Fetching config using GET with cache buster:', url);
+                
+                // Use simple GET request
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`, // Add Authorization header here
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': token || '',
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
+                        'Pragma': 'no-cache'
                     }
                 });
-
-                console.log('API response status:', response.status);
+                
+                console.log('Response status:', response.status);
                 if (!response.ok) {
                     throw new Error(`Failed to load configuration (Status: ${response.status})`);
                 }
