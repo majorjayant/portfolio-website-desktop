@@ -584,16 +584,16 @@
         });
         
         // Initialize image elements and fetch content
-        const bannerImage = document.getElementById('banner-image');
-        if (bannerImage) {
-            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-            bannerImage.style.backgroundSize = 'contain';
-            bannerImage.style.backgroundPosition = 'center';
-            bannerImage.style.backgroundRepeat = 'no-repeat';
-            bannerImage.style.width = '100%';
-            bannerImage.style.height = '0';
-            bannerImage.style.paddingBottom = '38.75%';
-        }
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                    bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                bannerImage.style.backgroundSize = 'contain';
+                bannerImage.style.backgroundPosition = 'center';
+                bannerImage.style.backgroundRepeat = 'no-repeat';
+                bannerImage.style.width = '100%';
+                bannerImage.style.height = '0';
+                bannerImage.style.paddingBottom = '38.75%';
+            }
 
         // Try to fetch the latest content from our AWS Lambda endpoint
         fetchLatestAboutContent();
@@ -758,29 +758,29 @@
         const aboutDescription = document.getElementById('about-description');
         const profileImage = document.getElementById('profile-image');
                     
-        if (aboutTitle) {
+                    if (aboutTitle) {
             aboutTitle.textContent = config.about_title || '';
-        }
+                    }
                     
-        if (aboutSubtitle) {
+                    if (aboutSubtitle) {
             aboutSubtitle.textContent = config.about_subtitle || '';
-        }
+                    }
                     
-        if (aboutDescription) {
+                    if (aboutDescription) {
             aboutDescription.textContent = config.about_description || '';
-            aboutDescription.style.textAlign = 'left';
-        }
+                        aboutDescription.style.textAlign = 'left';
+                    }
                     
         if (profileImage) {
             profileImage.src = config.image_about_profile_url || '';
             profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
-        }
+                    }
                     
         // Update photos in the "snaps" section
-        const snapsContainer = document.getElementById('snaps');
+                    const snapsContainer = document.getElementById('snaps');
         if (snapsContainer) {
-            // Clear existing content
-            snapsContainer.innerHTML = '';
+                        // Clear existing content
+                        snapsContainer.innerHTML = '';
                         
             // Create photos array from config
             const photos = [
@@ -793,22 +793,22 @@
             // Add photos to container if they have URLs
             photos.forEach(photo => {
                 if (photo.url) {
-                    const container = document.createElement('a');
-                    container.href = '#';
-                    container.className = 'snap-container';
-                    container.setAttribute('data-photo', photo.url);
+                            const container = document.createElement('a');
+                            container.href = '#';
+                            container.className = 'snap-container';
+                            container.setAttribute('data-photo', photo.url);
                             
-                    const img = document.createElement('img');
-                    img.src = photo.url;
+                            const img = document.createElement('img');
+                            img.src = photo.url;
                     img.alt = photo.alt || 'Photo';
                             
-                    container.appendChild(img);
-                    snapsContainer.appendChild(container);
+                            container.appendChild(img);
+                            snapsContainer.appendChild(container);
                 }
-            });
+                        });
                         
             // Initialize or reinitialize the modal functionality after photos are loaded
-            initializeModalFunctionality();
+                        initializeModalFunctionality();
         }
         
         // Show content once loaded

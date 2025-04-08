@@ -24,336 +24,6 @@
         .footer-logo img { max-width: 100px; max-height: 60px; }
     </style>
     
-    <!-- Critical CSS - Modern Design with Scroll Animations -->
-    <style>
-        /* Base styles */
-        body { 
-            margin: 0; 
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            background-color: #fff;
-            color: #333;
-        }
-
-        /* New Modern Header Styles */
-        .main-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: rgba(100, 100, 100, 0.95);
-            backdrop-filter: none;
-            transition: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0.75rem 2rem;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            background-color: rgba(74, 97, 114, 0.2);
-            padding: 5px 15px;
-            border-radius: 4px;
-        }
-
-        .main-logo {
-            height: 50px;
-            width: auto;
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
-        }
-
-        .main-nav {
-            margin: 0;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            gap: 3rem;
-        }
-
-        .nav-item {
-            position: relative;
-        }
-
-        .nav-link {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 400;
-            font-size: 1rem;
-            padding: 0.5rem 0;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        .nav-link:after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background-color: #fff;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover:after,
-        .nav-link.active:after {
-            width: 100%;
-        }
-
-        .header-actions {
-            position: absolute;
-            right: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .social-icon {
-            color: #fff;
-            font-size: 1.2rem;
-            transition: opacity 0.3s ease;
-        }
-
-        .social-icon:hover {
-            opacity: 0.8;
-        }
-
-        .lang-selector {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            transition: background-color 0.3s ease;
-        }
-
-        .lang-selector:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .contact-button {
-            background-color: #ebf0a2;
-            color: #333;
-            border-radius: 30px;
-            padding: 8px 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-
-        .contact-button:hover {
-            background-color: #dfe48c;
-            transform: translateY(-2px);
-        }
-
-        .contact-button svg {
-            transition: transform 0.3s ease;
-        }
-
-        .contact-button:hover svg {
-            transform: translateX(3px);
-        }
-
-        /* Hero Banner Styles */
-        .hero-banner {
-            position: relative;
-            height: calc(100vh - 80px);
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            margin-top: 80px;
-            background-color: transparent;
-            color: #fff;
-        }
-
-        .banner-content {
-            position: relative;
-            z-index: 2;
-            max-width: 80%;
-            text-align: left;
-            padding: 0 2rem;
-            margin-left: 12%;
-            opacity: 1;
-            transform: none;
-            animation: none;
-        }
-
-        .animated-title {
-            font-size: 4.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            color: #fff;
-        }
-
-        .animated-subtitle {
-            font-size: 1.8rem;
-            margin-bottom: 2rem;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.9);
-            position: relative;
-        }
-
-        .animated-subtitle:after {
-            content: none;
-        }
-
-        .banner-image-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .parallax-banner {
-            width: 100%;
-            height: 100%;
-            background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner');
-            background-size: cover;
-            background-position: center;
-            transform: none !important;
-            will-change: auto;
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 2;
-            opacity: 0;
-            animation: fadeIn 1s forwards 1.5s;
-        }
-
-        .scroll-indicator span {
-            font-size: 0.875rem;
-            font-weight: 500;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .scroll-line {
-            width: 1px;
-            height: 50px;
-            background-color: rgba(255, 255, 255, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .scroll-line:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #ebf0a2;
-            animation: scrollLine 2s infinite;
-        }
-
-        /* Animation Keyframes */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(5px); }
-            60% { transform: translateY(3px); }
-        }
-
-        @keyframes scrollLine {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-
-        /* Scroll Animation Classes */
-        .scroll-reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .scroll-reveal.revealed {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Original CSS - keeping some parts for backward compatibility */
-        footer { background-color: #0d141a; color: white; padding: 3rem 0 1rem; }
-        .footer-container { display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-        .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
-        .footer-logo img { max-width: 100px; max-height: 60px; }
-
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            .animated-title {
-                font-size: 3rem;
-            }
-            
-            .nav-menu {
-                gap: 1.5rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header-container {
-                padding: 0.75rem 1rem;
-            }
-            
-            .main-nav {
-                display: none;
-            }
-            
-            .animated-title {
-                font-size: 2.5rem;
-            }
-            
-            .animated-subtitle {
-                font-size: 1.25rem;
-            }
-        }
-    </style>
-    
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon">
     
@@ -640,30 +310,26 @@
     </script>
 </head>
 <body>
-    <!-- Simple Header Layout - Based on Reference Image -->
-    <header class="main-header">
-        <div class="header-container">
-            <nav class="main-nav">
-                <ul class="nav-menu">
-                    <li class="nav-item"><a href="/" class="nav-link active">Home</a></li>
-                    <li class="nav-item"><a href="/projects" class="nav-link">Projects</a></li>
-                    <li class="nav-item"><a href="/solutions" class="nav-link">Solutions</a></li>
-                    <li class="nav-item"><a href="/contact" class="nav-link">Contact</a></li>
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+            <a href="/" class="logo" style="display: block !important; padding: 5px 15px !important; position: relative !important;">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="height: 70px !important; width: auto !important; display: block !important; max-width: none !important; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));">
+            </a>
+            <div class="nav-links" style="flex-grow: 1 !important; margin-left: auto !important; text-align: right !important;">
+                <ul style="display: flex !important; list-style: none !important; justify-content: flex-end !important; margin: 0 !important; padding: 0 !important;">
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/" class="active" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/projects"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/solutions"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Solutions</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/contact"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
                 </ul>
-            </nav>
-            
-            <div class="header-actions">
-                <a href="https://github.com/majorjayant" target="_blank" class="social-icon">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="https://www.linkedin.com/in/majorjayant/" target="_blank" class="social-icon">
-                    <i class="fab fa-linkedin"></i>
-                </a>
-                <a href="https://twitter.com/majorjayant" target="_blank" class="social-icon">
-                    <i class="fab fa-twitter"></i>
-                </a>
             </div>
-        </div>
+            <div class="social-links">
+                <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+        </nav>
     </header>
 
     <!-- Flash Messages -->
@@ -674,24 +340,20 @@
     <!-- Main Content -->
     <main>
         
-    <!-- Banner Section - Updated Design -->
-    <section class="hero-banner">
-        <div class="banner-content">
-            <h1 class="animated-title" id="about-title">Jayant Arora</h1>
-            <p class="animated-subtitle" id="about-subtitle">Curious Mind, Data Geek, Product Whisperer</p>
-        </div>
-        <div class="banner-image-container">
-            <div id="banner-image" class="parallax-banner"></div>
+    <!-- Banner Section -->
+    <section class="banner" style="margin-top: 80px; width: 100%; overflow: hidden;">
+        <div class="banner-image" id="banner-image" style="width: 100%; height: 0; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat;">
+            <!-- Banner image is set via JavaScript -->
         </div>
     </section>
 
-    <!-- About Me Section - Updated Design -->
-    <section class="about-section" id="about">
+    <!-- About Me Section - New Design -->
+    <section class="about-section">
         <div class="container">
             <div class="about-container">
                 <div id="text-main" class="text-main">
-                    <h1 id="about-title-section">About</h1>
-                    <p id="about-subtitle-section" class="intro">Curious Mind, Data Geek, Product Whisperer</p>
+                    <h1 id="about-title"></h1>
+                    <p id="about-subtitle" class="intro"></p>
                     <p id="about-description" class="description"></p>
                 </div>
                 <div id="img-main" class="img-main">
@@ -856,7 +518,7 @@
             <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
                 <div class="footer-logo" style="margin-bottom: 0.5rem;">
                     <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
-                </div>
+            </div>
                 <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
                 <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
                     <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
@@ -964,7 +626,7 @@
                 if (modalImg) {
                     modalImg.onerror = function() {
                         console.error("Error loading modal image: " + this.src);
-                        this.onerror = null;
+                                this.onerror = null;
                         
                         // Try direct S3 URL if the current URL fails
                         if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
@@ -1097,18 +759,18 @@
         const profileImage = document.getElementById('profile-image');
                     
         if (aboutTitle) {
-            aboutTitle.textContent = config.about_title || 'Jayant Arora';
+            aboutTitle.textContent = config.about_title || '';
         }
                     
         if (aboutSubtitle) {
-            aboutSubtitle.textContent = config.about_subtitle || 'Curious Mind, Data Geek, Product Whisperer';
+            aboutSubtitle.textContent = config.about_subtitle || '';
         }
                     
         if (aboutDescription) {
             aboutDescription.textContent = config.about_description || '';
             aboutDescription.style.textAlign = 'left';
         }
-                    
+        
         if (profileImage) {
             profileImage.src = config.image_about_profile_url || '';
             profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
@@ -1133,8 +795,8 @@
                 if (photo.url) {
                     const imgContainer = document.createElement('div');
                     imgContainer.className = 'snap-container';
-                    
-                    const img = document.createElement('img');
+                
+                const img = document.createElement('img');
                     img.src = photo.url;
                     img.alt = photo.alt || 'Photo';
                     
@@ -1202,73 +864,6 @@
                 // Insert as first child to be below the logo
                 logoElement.insertBefore(beforeElement, logoElement.firstChild);
             }
-        });
-    </script>
-    
-    <!-- Updated Scroll Animation Scripts -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Header scroll effect
-            const header = document.querySelector('.main-header');
-            const headerContainer = document.querySelector('.header-container');
-            
-            // Scroll reveal elements
-            const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-            
-            // Handle scroll events
-            window.addEventListener('scroll', function() {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                // Header transformation on scroll - disabled to maintain consistent look
-                // if (scrollTop > 50) {
-                //     header.style.backgroundColor = 'rgba(127, 127, 127, 0.75)';
-                // } else {
-                //     header.style.backgroundColor = 'rgba(127, 127, 127, 0.65)';
-                // }
-                
-                // Reveal elements on scroll
-                scrollRevealElements.forEach(element => {
-                    const elementTop = element.getBoundingClientRect().top;
-                    const windowHeight = window.innerHeight;
-                    
-                    if (elementTop < windowHeight * 0.85) {
-                        element.classList.add('revealed');
-                    }
-                });
-            });
-            
-            // Add scroll-reveal class to elements we want to animate
-            document.querySelectorAll('.about-container > div, .timeline-item, .education-item, .cert-item').forEach(el => {
-                el.classList.add('scroll-reveal');
-            });
-            
-            // Initialize the banner image
-            const bannerImage = document.getElementById('banner-image');
-            if (bannerImage) {
-                bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
-                bannerImage.style.backgroundSize = 'cover';
-                bannerImage.style.backgroundPosition = 'center';
-            }
-            
-            // Initialize the first scroll event
-            window.dispatchEvent(new Event('scroll'));
-            
-            // Smooth scroll for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 100,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
         });
     </script>
 </body>
