@@ -592,7 +592,7 @@
             })
             .then(data => {
                 console.log('Successfully loaded site config from API:', data);
-                // Pass the complete data object to updatePageWithConfig
+                // Process data - directly pass the data to the update function
                 updatePageWithConfig(data);
             })
             .catch(error => {
@@ -625,11 +625,11 @@
     function updatePageWithConfig(data) {
         console.log('Updating page with config data:', data);
         
-        // Extract the site_config from the response data
-        const config = data.site_config || data;
+        // Extract site_config from the response
+        const config = data.site_config;
         
         if (!config) {
-            console.error('Configuration data not found:', data);
+            console.error('site_config not found in API response:', data);
             showErrorMessage('Configuration data is missing in the response.');
             return;
         }
@@ -743,13 +743,15 @@
         };
     });
     
-    // Setup for photo modal functionality
-    
+    // Global variable for the modal close button
+    let closeModal;
+
     // Modal functionality for about photos
     function initializeModalFunctionality() {
-        const photoModal = document.getElementById('photoModal');
+        const modal = document.getElementById('photoModal');
         const modalImg = document.getElementById('modalImage');
-        const closeModal = document.querySelector('.close-modal');
+        // Set the global closeModal variable
+        closeModal = document.querySelector('.close-modal');
         const snapContainers = document.querySelectorAll('.snap-container');
         
         // Open modal when clicking on a photo
@@ -757,67 +759,65 @@
             container.addEventListener('click', function(e) {
                 e.preventDefault();
                 const photoUrl = this.getAttribute('data-photo');
-                if (photoModal) {
-                    photoModal.style.display = 'block';
-                }
-                if (modalImg) {
-                    modalImg.src = photoUrl;
-                }
+                modal.style.display = 'block';
+                modalImg.src = photoUrl;
                 
                 // If the modal image fails to load, try to use a direct S3 URL or fallback
-                if (modalImg) {
-                    modalImg.onerror = function() {
-                        console.error("Error loading modal image: " + this.src);
-                        this.onerror = null;
+                modalImg.onerror = function() {
+                    console.error("Error loading modal image: " + this.src);
+                    this.onerror = null;
+                    
+                    // Try direct S3 URL if the current URL fails
+                    if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
+                        // Extract the photo number from the container's position
+                        const containers = Array.from(document.querySelectorAll('.snap-container'));
+                        const index = containers.indexOf(container);
+                        const s3Urls = [
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+                        ];
                         
-                        // Try direct S3 URL if the current URL fails
-                        if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
-                            // Extract the photo number from the container's position
-                            const containers = Array.from(document.querySelectorAll('.snap-container'));
-                            const index = containers.indexOf(container);
-                            const s3Urls = [
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
-                                'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
-                            ];
-                            
-                            if (index < s3Urls.length) {
-                                this.src = s3Urls[index];
-                            } else {
-                                // If S3 URL also fails, use placeholder
-                                this.src = '/static/img/placeholder.png';
-                            }
+                        if (index < s3Urls.length) {
+                            this.src = s3Urls[index];
                         } else {
                             // If S3 URL also fails, use placeholder
                             this.src = '/static/img/placeholder.png';
                         }
-                    };
+                    } else {
+                        // If S3 URL also fails, use placeholder
+                        this.src = '/static/img/placeholder.png';
+                    }
+                };
+            });
+        });
+                
+        // Add event listener inside the initialization function
+        if (closeModal) {
+            closeModal.addEventListener('click', function() {
+                if (modal) {
+                    modal.style.display = 'none';
                 }
             });
-        });
-        
-        // Add event listeners if elements exist
-        if (closeModal && photoModal) {
-            closeModal.addEventListener('click', function() {
-                photoModal.style.display = 'none';
-            });
         }
-        
-        // Close modal when clicking outside the image
-        window.addEventListener('click', function(e) {
-            if (photoModal && e.target === photoModal) {
-                photoModal.style.display = 'none';
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (photoModal && e.key === 'Escape' && photoModal.style.display === 'block') {
-                photoModal.style.display = 'none';
-            }
-        });
     }
+    
+    // Close modal when clicking outside the image
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('photoModal');
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+        }
+    });
 </script>
 
 
@@ -840,21 +840,6 @@
                 
                 // Insert as first child to be below the logo
                 logoElement.insertBefore(beforeElement, logoElement.firstChild);
-            }
-        });
-    </script>
-
-    <!-- Close modal when clicking on close button -->
-    <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            const closeModalButton = document.querySelector('.close-modal');
-            if (closeModalButton) {
-                closeModalButton.addEventListener('click', function() {
-                    const modal = document.getElementById('photoModal');
-                    if (modal) {
-                        modal.style.display = 'none';
-                    }
-                });
             }
         });
     </script>
