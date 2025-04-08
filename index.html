@@ -11,6 +11,24 @@ function updatePageWithConfig(data) {
     // Update title & metadata
     // ... existing code ...
     // Modal functionality for about photos
+
+    const photos = config.photos || [];
+    const snapsContainer = document.getElementById('snapsContainer');
+    if (snapsContainer) {
+        photos.forEach(photo => {
+            if (photo.url) {
+                const container = document.createElement('div');
+                container.className = 'snap-image-container';
+                
+                const img = document.createElement('img');
+                img.src = photo.url;
+                img.alt = photo.alt || 'Photo';
+                
+                container.appendChild(img);
+                snapsContainer.appendChild(container);
+            }
+        });
+    }
 }
 
 <script>
@@ -25,21 +43,31 @@ function updatePageWithConfig(data) {
         // ... existing code ...
     }
 
-    // Close modal when clicking outside the image
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('photoModal');
-        if (modal && e.target === modal) { 
-            modal.style.display = 'none';
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        const modal = document.getElementById('photoModal');
-        if (modal && e.key === 'Escape' && modal.style.display === 'block') {
-            modal.style.display = 'none';
-        }
-    });
+    // Show content once loaded
+    // ... existing code ...
 </script>
 
+<style>
+    /* About section styles */
+    .about-section {
+        padding: 6rem 0;
+        background-color: #f8f8f8;
+    }
+
+    @media (max-width: 992px) {
+        .about-container {
+            // ... existing code ...
+        }
+    }
+</style>
+
+<!-- About Me Section - New Design -->
+<section class="about-section">
+    // ... existing code ...
+</section>
+
+<!-- Photo Modal - REMOVED -->
+<!-- <div id="photoModal" class="photo-modal"> ... </div> -->
+
+<!-- Experience Section -->
 // ... existing code ... 
