@@ -481,11 +481,18 @@ function updateWorkExperienceTimeline(workExperienceData) {
     sortedWorkExperience.forEach((experience, index) => {
         console.log(`📋 Processing experience #${index}:`, experience);
         
+        // Debug each field to identify issues
+        Object.keys(experience).forEach(key => {
+            console.log(`  - ${key}: ${experience[key]}`);
+        });
+        
         // Get title and company values (handle both naming conventions)
-        const jobTitle = experience.title || experience.job_title || '';
-        const company = experience.company || experience.company_name || '';
+        const jobTitle = experience.job_title || experience.title || '';
+        const company = experience.company_name || experience.company || '';
         const location = experience.location || '';
         const description = experience.description || '';
+        
+        console.log(`  → Using job title: "${jobTitle}", company: "${company}"`);
         
         // Format the period string
         let period = '';
