@@ -21,6 +21,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize visitor count from localStorage or set default
     initVisitorCount();
 
+    // Initialize AOS animation library if available
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            offset: 100,
+            once: true
+        });
+    }
+
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
@@ -244,21 +253,31 @@ function loadSiteConfig() {
         // Show error notification on the page
         showErrorNotification('Failed to load configuration. Please refresh the page or contact support.');
     });
+}
+
+/**
+ * Process the configuration data from the API
+ */
+function processConfigData(data) {
+    console.log('Processing configuration data');
     
-    function processConfigData(data) {
-        console.log('Processing configuration data');
-        
-        // Handle nested data structure if present
-        let configData = data;
-        if (data.site_configs) {
-            console.log('Detected nested site_configs structure');
-            configData = data.site_configs;
-        }
-        
-        console.log('Final config data to apply:', configData);
-        
-        // Apply configuration to the website
-        updateWebsiteElements(configData);
+    // Handle nested data structure if present
+    let configData = data;
+    if (data.site_configs) {
+        console.log('Detected nested site_configs structure');
+        configData = data.site_configs;
+    }
+    
+    // Store config globally
+    window.siteConfig = configData;
+    
+    // Apply configuration to the website elements
+    updateWebsiteElements(configData);
+    
+    // Update work experience if available
+    if (data.work_experience && Array.isArray(data.work_experience)) {
+        console.log('Work experience data found:', data.work_experience);
+        updateWorkExperienceTimeline(data.work_experience);
     }
 }
 
@@ -307,63 +326,82 @@ function updateWebsiteElements(config) {
     
     // Update logo
     if (config.image_logo_url) {
-        const logoImg = document.querySelector('.logo img');
-        if (logoImg) {
-            logoImg.src = config.image_logo_url;
+        const logoImages = document.querySelectorAll('.logo img');
+        logoImages.forEach(img => {
+            img.src = config.image_logo_url;
             console.log('Updated logo:', config.image_logo_url);
-        }
+        });
     }
     
-    // Update banner
-    if (config.image_banner_url) {
-        const banner = document.querySelector('.banner-image');
-        if (banner) {
-            banner.style.backgroundImage = `url('${config.image_banner_url}')`;
-            console.log('Updated banner:', config.image_banner_url);
-        }
-    }
+    // Update banner based on screen size
+    updateBannerImage();
     
     // Update about section
-    if (config.about_title) {
-        const aboutTitle = document.querySelector('.about-title');
-        if (aboutTitle) {
-            aboutTitle.textContent = config.about_title;
-            console.log('Updated about title:', config.about_title);
-        }
+    const aboutTitle = document.getElementById('about-title');
+    if (aboutTitle && config.about_title) {
+        aboutTitle.textContent = config.about_title;
+        console.log('Updated about title:', config.about_title);
     }
     
-    if (config.about_subtitle) {
-        const aboutSubtitle = document.querySelector('.about-subtitle');
-        if (aboutSubtitle) {
-            aboutSubtitle.textContent = config.about_subtitle;
-            console.log('Updated about subtitle:', config.about_subtitle);
-        }
+    const aboutSubtitle = document.getElementById('about-subtitle');
+    if (aboutSubtitle && config.about_subtitle) {
+        aboutSubtitle.textContent = config.about_subtitle;
+        console.log('Updated about subtitle:', config.about_subtitle);
     }
     
-    if (config.about_description) {
-        const aboutDescription = document.querySelector('.about-description');
-        if (aboutDescription) {
-            aboutDescription.textContent = config.about_description;
-            console.log('Updated about description');
-        }
+    const aboutDescription = document.getElementById('about-description');
+    if (aboutDescription && config.about_description) {
+        aboutDescription.textContent = config.about_description;
+        console.log('Updated about description');
     }
     
     // Update profile photo
-    if (config.image_about_profile_url) {
-        const profilePhoto = document.querySelector('.profile-photo img');
-        if (profilePhoto) {
-            profilePhoto.src = config.image_about_profile_url;
-            console.log('Updated profile photo:', config.image_about_profile_url);
-        }
+    const profileImage = document.getElementById('profile-image');
+    if (profileImage && config.image_about_profile_url) {
+        profileImage.src = config.image_about_profile_url;
+        console.log('Updated profile photo:', config.image_about_profile_url);
     }
     
     // Update gallery photos
-    updateGalleryPhoto('.gallery-photo-1', config.image_about_photo1_url, config.about_photo1_alt);
-    updateGalleryPhoto('.gallery-photo-2', config.image_about_photo2_url, config.about_photo2_alt);
-    updateGalleryPhoto('.gallery-photo-3', config.image_about_photo3_url, config.about_photo3_alt);
-    updateGalleryPhoto('.gallery-photo-4', config.image_about_photo4_url, config.about_photo4_alt);
+    if (config.image_about_photo1_url) {
+        updateGalleryPhoto('.gallery-photo-1', config.image_about_photo1_url, config.about_photo1_alt);
+    }
+    if (config.image_about_photo2_url) {
+        updateGalleryPhoto('.gallery-photo-2', config.image_about_photo2_url, config.about_photo2_alt);
+    }
+    if (config.image_about_photo3_url) {
+        updateGalleryPhoto('.gallery-photo-3', config.image_about_photo3_url, config.about_photo3_alt);
+    }
+    if (config.image_about_photo4_url) {
+        updateGalleryPhoto('.gallery-photo-4', config.image_about_photo4_url, config.about_photo4_alt);
+    }
     
     console.log('Website elements updated successfully');
+    
+    // Set page title
+    document.title = config.about_title ? `${config.about_title} | Portfolio` : 'Portfolio';
+}
+
+/**
+ * Update banner image based on screen size
+ */
+function updateBannerImage() {
+    const config = window.siteConfig || {};
+    const isMobile = window.innerWidth <= 768;
+    const bannerImage = document.getElementById('banner-image');
+    
+    if (!bannerImage) return;
+    
+    const mobileUrl = config.image_mobile_banner_url;
+    const desktopUrl = config.image_banner_url || 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner';
+    
+    if (isMobile && mobileUrl) {
+        bannerImage.style.backgroundImage = `url('${mobileUrl}')`;
+        console.log('Updated banner with mobile image:', mobileUrl);
+    } else {
+        bannerImage.style.backgroundImage = `url('${desktopUrl}')`;
+        console.log('Updated banner with desktop image:', desktopUrl);
+    }
 }
 
 /**
@@ -380,4 +418,75 @@ function updateGalleryPhoto(selector, photoUrl, altText) {
             console.log(`Updated ${selector}:`, photoUrl);
         }
     }
-} 
+}
+
+/**
+ * Update the work experience timeline with data from the API
+ */
+function updateWorkExperienceTimeline(workExperienceData) {
+    console.log('Updating work experience timeline with:', workExperienceData);
+    
+    // Get the timeline container
+    const timelineContainer = document.querySelector('.timeline-vertical');
+    if (!timelineContainer) {
+        console.error('Timeline container not found');
+        return;
+    }
+    
+    // Clear existing timeline items
+    timelineContainer.innerHTML = '';
+    
+    // Sort work experience by from_date (most recent first)
+    const sortedWorkExperience = [...workExperienceData].sort((a, b) => {
+        // Compare dates (assuming format is YYYY-MM-DD)
+        const dateA = new Date(a.from_date);
+        const dateB = new Date(b.from_date);
+        return dateB - dateA; // Most recent first
+    });
+    
+    // Add timeline items
+    sortedWorkExperience.forEach((experience, index) => {
+        // Format the period string
+        let period = '';
+        if (experience.from_date) {
+            const fromDate = new Date(experience.from_date);
+            const fromMonth = fromDate.toLocaleString('default', { month: 'short' });
+            const fromYear = fromDate.getFullYear();
+            
+            period = `${fromMonth} ${fromYear} - `;
+            
+            if (experience.is_current) {
+                period += 'Present';
+            } else if (experience.to_date) {
+                const toDate = new Date(experience.to_date);
+                const toMonth = toDate.toLocaleString('default', { month: 'short' });
+                const toYear = toDate.getFullYear();
+                period += `${toMonth} ${toYear}`;
+            }
+        }
+        
+        // Create the timeline item
+        const timelineItem = document.createElement('div');
+        timelineItem.className = 'timeline-item';
+        timelineItem.setAttribute('data-aos', index % 2 === 0 ? 'fade-left' : 'fade-right');
+        
+        timelineItem.innerHTML = `
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+                <h3 class="job-title">${experience.title || ''}</h3>
+                <h4 class="company-info">${experience.company || ''} ${period ? `| ${period}` : ''}</h4>
+                <p class="timeline-description">${experience.description || ''}</p>
+            </div>
+        `;
+        
+        timelineContainer.appendChild(timelineItem);
+    });
+    
+    // Initialize AOS for new elements if AOS is available
+    if (typeof AOS !== 'undefined' && AOS.refresh) {
+        AOS.refresh();
+    }
+}
+
+// Add window resize event listener for banner image updates
+window.addEventListener('resize', updateBannerImage); 

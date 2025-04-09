@@ -24,7 +24,7 @@ Ensure these settings are configured in the AWS Amplify Console:
    REGION: eu-north-1
    IMAGE_FAVICON_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon
    IMAGE_LOGO_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo
-   IMAGE_BANNER_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner
+   IMAGE_BANNER_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Apr+8%2C+2025%2C+12_46_36+PM.png
    IMAGE_ABOUT_PROFILE_URL: https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg
    ```
 
