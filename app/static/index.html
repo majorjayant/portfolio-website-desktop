@@ -1695,5 +1695,44 @@
             }
         });
     </script>
+
+    <!-- Initialize AOS animations -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AOS
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true,
+                mirror: false
+            });
+            
+            console.log('✅ AOS initialized for animations');
+        });
+    </script>
+
+    <!-- Fix for the timeline alternating classes -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure timeline items are properly labeled as left/right
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach((item, index) => {
+                // Clear existing classes
+                item.classList.remove('timeline-item-left', 'timeline-item-right');
+                
+                // Add appropriate class based on index
+                if (index % 2 === 0) {
+                    item.classList.add('timeline-item-left');
+                    item.setAttribute('data-aos', 'fade-right');
+                } else {
+                    item.classList.add('timeline-item-right');
+                    item.setAttribute('data-aos', 'fade-left');
+                }
+            });
+            
+            console.log('✅ Timeline items alternating classes applied');
+        });
+    </script>
 </body>
 </html> 

@@ -20,5 +20,6 @@ Write-Host "6. Review the deployment"
 Write-Host ""
 Write-Host "After deployment, verify that:" -ForegroundColor Green
 Write-Host "- The site loads correctly with no 404 errors"
-Write-Host "- The modal functionality works properly"
+Write-Host "- The work experience timeline displays correctly"
+Write-Host "- The carousel and modal functionality works properly"
 Write-Host "" 

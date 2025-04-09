@@ -246,7 +246,7 @@ function loadSiteConfig() {
     });
     
     function processConfigData(data) {
-        console.log('Processing configuration data');
+        console.log('Processing configuration data', data);
         
         // Handle nested data structure if present
         let configData = data;
@@ -255,10 +255,24 @@ function loadSiteConfig() {
             configData = data.site_configs;
         }
         
+        if (data.site_config) {
+            console.log('Detected site_config object');
+            configData = data.site_config;
+        }
+        
         console.log('Final config data to apply:', configData);
         
         // Apply configuration to the website
         updateWebsiteElements(configData);
+        
+        // Check for work experience data and update timeline
+        if (data.work_experience && Array.isArray(data.work_experience)) {
+            console.log('Found work experience data:', data.work_experience);
+            // Call the function to update the work experience timeline
+            updateWorkExperienceTimeline(data.work_experience);
+        } else {
+            console.warn('No work experience data found in API response');
+        }
     }
 }
 
@@ -296,6 +310,9 @@ function showErrorNotification(message) {
 function updateWebsiteElements(config) {
     console.log('Updating website elements with config data');
     
+    // Store config globally for other components to access
+    window.siteConfig = config;
+    
     // Update favicon
     if (config.image_favicon_url) {
         const favicon = document.querySelector('link[rel="icon"]');
@@ -316,16 +333,38 @@ function updateWebsiteElements(config) {
     
     // Update banner
     if (config.image_banner_url) {
-        const banner = document.querySelector('.banner-image');
+        const banner = document.getElementById('banner-image');
         if (banner) {
-            banner.style.backgroundImage = `url('${config.image_banner_url}')`;
-            console.log('Updated banner:', config.image_banner_url);
+            // Function to update banner image based on screen size
+            function updateBannerImage() {
+                const isMobile = window.innerWidth <= 768;
+                const mobileUrl = config.image_mobile_banner_url;
+                const desktopUrl = config.image_banner_url;
+                
+                console.log('Updating banner image. Mobile?', isMobile, 'Mobile URL:', mobileUrl, 'Desktop URL:', desktopUrl);
+                
+                if (isMobile && mobileUrl) {
+                    banner.style.backgroundImage = `url('${mobileUrl}')`;
+                    console.log('Set mobile banner URL:', mobileUrl);
+                } else if (desktopUrl) {
+                    banner.style.backgroundImage = `url('${desktopUrl}')`;
+                    console.log('Set desktop banner URL:', desktopUrl);
+                }
+                
+                banner.style.backgroundSize = "cover";
+                banner.style.backgroundPosition = "center";
+            }
+            
+            // Update banner immediately and on resize
+            updateBannerImage();
+            window.addEventListener('resize', updateBannerImage);
+            console.log('Banner update complete and resize listener added');
         }
     }
     
     // Update about section
     if (config.about_title) {
-        const aboutTitle = document.querySelector('.about-title');
+        const aboutTitle = document.getElementById('about-title');
         if (aboutTitle) {
             aboutTitle.textContent = config.about_title;
             console.log('Updated about title:', config.about_title);
@@ -333,7 +372,7 @@ function updateWebsiteElements(config) {
     }
     
     if (config.about_subtitle) {
-        const aboutSubtitle = document.querySelector('.about-subtitle');
+        const aboutSubtitle = document.getElementById('about-subtitle');
         if (aboutSubtitle) {
             aboutSubtitle.textContent = config.about_subtitle;
             console.log('Updated about subtitle:', config.about_subtitle);
@@ -341,7 +380,7 @@ function updateWebsiteElements(config) {
     }
     
     if (config.about_description) {
-        const aboutDescription = document.querySelector('.about-description');
+        const aboutDescription = document.getElementById('about-description');
         if (aboutDescription) {
             aboutDescription.textContent = config.about_description;
             console.log('Updated about description');
@@ -350,7 +389,7 @@ function updateWebsiteElements(config) {
     
     // Update profile photo
     if (config.image_about_profile_url) {
-        const profilePhoto = document.querySelector('.profile-photo img');
+        const profilePhoto = document.getElementById('profile-image');
         if (profilePhoto) {
             profilePhoto.src = config.image_about_profile_url;
             console.log('Updated profile photo:', config.image_about_profile_url);
@@ -358,10 +397,20 @@ function updateWebsiteElements(config) {
     }
     
     // Update gallery photos
-    updateGalleryPhoto('.gallery-photo-1', config.image_about_photo1_url, config.about_photo1_alt);
-    updateGalleryPhoto('.gallery-photo-2', config.image_about_photo2_url, config.about_photo2_alt);
-    updateGalleryPhoto('.gallery-photo-3', config.image_about_photo3_url, config.about_photo3_alt);
-    updateGalleryPhoto('.gallery-photo-4', config.image_about_photo4_url, config.about_photo4_alt);
+    const photos = [
+        { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
+        { url: config.image_about_photo2_url, alt: config.about_photo2_alt },
+        { url: config.image_about_photo3_url, alt: config.about_photo3_alt },
+        { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
+    ];
+    
+    // If updateCarousel function exists, call it
+    if (typeof updateCarousel === 'function') {
+        updateCarousel(photos);
+        console.log('Updated photo carousel with gallery photos');
+    } else {
+        console.warn('updateCarousel function not found');
+    }
     
     console.log('Website elements updated successfully');
 }
@@ -379,5 +428,103 @@ function updateGalleryPhoto(selector, photoUrl, altText) {
             }
             console.log(`Updated ${selector}:`, photoUrl);
         }
+    }
+}
+
+/**
+ * Update work experience timeline with data from API
+ * Enhanced with debugging to identify issues
+ */
+function updateWorkExperienceTimeline(workExperienceData) {
+    console.log('🔍 DEBUG: updateWorkExperienceTimeline called with data:', workExperienceData);
+    
+    // Get the timeline container
+    const timelineContainer = document.querySelector('.timeline-vertical');
+    if (!timelineContainer) {
+        console.error('❌ ERROR: Timeline container (.timeline-vertical) not found in the DOM');
+        return;
+    }
+    
+    console.log('✅ Found timeline container:', timelineContainer);
+    
+    // Clear existing timeline items
+    timelineContainer.innerHTML = '';
+    
+    // Check if we have valid data
+    if (!workExperienceData || !Array.isArray(workExperienceData) || workExperienceData.length === 0) {
+        console.error('❌ ERROR: No valid work experience data to display:', workExperienceData);
+        // Add a placeholder item for debugging
+        timelineContainer.innerHTML = `
+            <div class="timeline-item timeline-item-debug">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <h3 class="job-title">Debug: No Timeline Data</h3>
+                    <h4 class="company-info">Check Lambda Function | Debug Mode</h4>
+                    <p class="timeline-description">No work experience data was received from the API. Check the Lambda function response and ensure work_experience array is included.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    console.log(`✅ Processing ${workExperienceData.length} work experience items`);
+    
+    // Sort work experience by from_date (most recent first)
+    const sortedWorkExperience = [...workExperienceData].sort((a, b) => {
+        // Compare dates (assuming format is YYYY-MM-DD)
+        const dateA = new Date(a.from_date || '2000-01-01');
+        const dateB = new Date(b.from_date || '2000-01-01');
+        return dateB - dateA; // Most recent first
+    });
+    
+    // Add timeline items
+    sortedWorkExperience.forEach((experience, index) => {
+        console.log(`📋 Processing experience #${index}:`, experience);
+        
+        // Format the period string
+        let period = '';
+        if (experience.from_date) {
+            const fromDate = new Date(experience.from_date);
+            const fromMonth = fromDate.toLocaleString('default', { month: 'short' });
+            const fromYear = fromDate.getFullYear();
+            
+            period = `${fromMonth} ${fromYear} - `;
+            
+            if (experience.is_current) {
+                period += 'Present';
+            } else if (experience.to_date) {
+                const toDate = new Date(experience.to_date);
+                const toMonth = toDate.toLocaleString('default', { month: 'short' });
+                const toYear = toDate.getFullYear();
+                period += `${toMonth} ${toYear}`;
+            }
+        }
+        
+        // Create the timeline item
+        const timelineItem = document.createElement('div');
+        timelineItem.className = `timeline-item ${index % 2 === 0 ? 'timeline-item-left' : 'timeline-item-right'}`;
+        timelineItem.setAttribute('data-aos', index % 2 === 0 ? 'fade-right' : 'fade-left');
+        
+        timelineItem.innerHTML = `
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+                <h3 class="job-title">${experience.title || ''}</h3>
+                <h4 class="company-info">${experience.company || ''} ${experience.location ? `| ${experience.location}` : ''}</h4>
+                <span class="date">${period}</span>
+                <p class="timeline-description">${experience.description || ''}</p>
+            </div>
+        `;
+        
+        timelineContainer.appendChild(timelineItem);
+    });
+    
+    console.log('✅ Timeline updated successfully with', sortedWorkExperience.length, 'items');
+    
+    // Initialize AOS for new elements if AOS is available
+    if (typeof AOS !== 'undefined' && AOS.refresh) {
+        AOS.refresh();
+        console.log('✅ AOS refresh called for animations');
+    } else {
+        console.warn('⚠️ AOS not available, animations may not work');
     }
 } 

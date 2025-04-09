@@ -493,6 +493,180 @@ header {
   margin-top: 0; 
 }
 
+/* Vertical Timeline Styles */
+.timeline-vertical {
+  position: relative;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Center line */
+.timeline-vertical::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  background-color: var(--accent-color);
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  margin-left: -2px;
+  border-radius: 2px;
+}
+
+/* Container for timeline items */
+.timeline-item {
+  position: relative;
+  width: 50%;
+  padding: 0 2.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Left and right timeline items */
+.timeline-item-left {
+  left: 0;
+}
+
+.timeline-item-right {
+  left: 50%;
+}
+
+/* Timeline markers */
+.timeline-marker {
+  position: absolute;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.timeline-item-left .timeline-marker {
+  right: -10px;
+}
+
+.timeline-item-right .timeline-marker {
+  left: -10px;
+}
+
+/* Arrow pointers */
+.timeline-content {
+  position: relative;
+  padding: 1.5rem;
+  background-color: var(--background-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.timeline-content::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+}
+
+.timeline-item-left .timeline-content::before {
+  right: -20px;
+  border-left-color: var(--background-light);
+}
+
+.timeline-item-right .timeline-content::before {
+  left: -20px;
+  border-right-color: var(--background-light);
+}
+
+/* Timeline content styling */
+.timeline-content .job-title {
+  color: var(--primary-color);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content .company-info {
+  color: var(--accent-color);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.timeline-content .date {
+  display: block;
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content .timeline-description {
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Hover effects */
+.timeline-item:hover .timeline-marker {
+  transform: scale(1.3);
+  background-color: var(--menu-hover);
+}
+
+.timeline-item:hover .timeline-content {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Debug styles */
+.timeline-item-debug .timeline-content {
+  background-color: #fff9c4;
+  border: 1px dashed #fbc02d;
+}
+
+.timeline-item-debug .timeline-content::before {
+  border-left-color: #fff9c4;
+  border-right-color: #fff9c4;
+}
+
+/* Responsive adjustments for timeline */
+@media (max-width: 768px) {
+  .timeline-vertical::after {
+    left: 40px;
+  }
+
+  .timeline-item {
+    width: 100%;
+    padding-left: 70px;
+    padding-right: 25px;
+  }
+
+  .timeline-item-left,
+  .timeline-item-right {
+    left: 0;
+  }
+
+  .timeline-item-left .timeline-marker,
+  .timeline-item-right .timeline-marker {
+    left: 30px;
+    right: auto;
+  }
+
+  .timeline-item-left .timeline-content::before,
+  .timeline-item-right .timeline-content::before {
+    left: -20px;
+    right: auto;
+    border-right-color: var(--background-light);
+    border-left-color: transparent;
+  }
+  
+  .timeline-item-debug .timeline-content::before {
+    border-right-color: #fff9c4;
+    border-left-color: transparent;
+  }
+}
+
 /* Container for horizontal scrolling */
 .storyboard-container {
   overflow-x: auto; /* Enable horizontal scrolling */
@@ -578,28 +752,6 @@ header {
   font-size: 0.95rem;
   line-height: 1.6;
   color: #555;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .storyboard-container {
-    overflow-x: visible; /* Disable horizontal scroll */
-    white-space: normal; /* Allow wrapping */
-    padding: 1rem 0;
-  }
-  
-  .storyboard-track {
-    display: flex;
-    flex-direction: column; /* Stack cards vertically */
-    gap: 1.5rem;
-    width: 100%;
-  }
-  
-  .storyboard-card {
-    width: 100%; /* Cards take full width */
-    flex-shrink: 1;
-    display: block;
-  }
 }
 
 /* ===== Education Section ===== */
