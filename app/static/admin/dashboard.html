@@ -370,6 +370,41 @@
             field.selectionEnd = cursorPosition;
         }
         
+        // Check if token exists and is not expired
+        function isValidToken(token) {
+            if (!token) {
+                console.log('No token found');
+                return false;
+            }
+            
+            try {
+                // JWT tokens have three parts separated by dots
+                const parts = token.split('.');
+                if (parts.length !== 3) {
+                    console.log('Token does not have 3 parts');
+                    return false;
+                }
+                
+                // Decode the payload (middle part)
+                const payload = JSON.parse(atob(parts[1]));
+                console.log('Token payload:', payload);
+                
+                // Check if token has an expiration time and if it's expired
+                if (payload.exp) {
+                    const now = Math.floor(Date.now() / 1000);
+                    if (now >= payload.exp) {
+                        console.log('Token is expired');
+                        return false;
+                    }
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error parsing token:', error);
+                return false;
+            }
+        }
+
         function checkAuth() {
             console.log('Checking authentication');
             
@@ -380,14 +415,14 @@
             setTimeout(() => {
                 authLoading.classList.add('hidden');
                 
-                if (!token) {
-                    console.log('No token found, showing not authenticated message');
+                if (!isValidToken(token)) {
+                    console.log('No valid token found, showing not authenticated message');
                     notAuthenticated.classList.remove('hidden');
                     return;
                 }
                 
                 // Token found, show dashboard
-                console.log('Token found, showing dashboard');
+                console.log('Valid token found, showing dashboard');
                 dashboardContent.classList.remove('hidden');
                 loadSiteConfig();
             }, 1000);
@@ -435,20 +470,35 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Successfully loaded site config from API:', data);
+                console.log('API response data structure:', JSON.stringify(data));
                 
                 // Hide loading indicator and show form
                 loadingIndicator.classList.add('hidden');
                 formContainer.classList.remove('hidden');
                 
-                // Process data - no need to check for site_configs wrapping
-                populateForm(data);
+                // Extract the site_config from the response
+                let configData = data;
                 
-                // Load work experience data if available
-                if (data.work_experience) {
+                // Handle different possible response structures
+                if (data.site_config) {
+                    console.log('Found site_config in response');
+                    configData = data.site_config;
+                } else if (data.site_configs) {
+                    console.log('Found site_configs in response');
+                    configData = data.site_configs;
+                }
+                
+                // Populate the form with the config data
+                populateForm(configData);
+                
+                // Load work experience data
+                if (data.work_experience && Array.isArray(data.work_experience)) {
+                    console.log('Work experience data found in main response');
                     loadWorkExperienceData(data.work_experience);
+                    document.getElementById('work-experience-loading').classList.add('hidden');
                 } else {
-                    // Fetch work experience data separately if not included in site config
+                    console.log('Work experience data not found in main response, fetching separately');
+                    // Fetch work experience data separately
                     fetchWorkExperienceData();
                 }
             })
@@ -474,6 +524,8 @@
                         let configData = data;
                         if (data.site_configs) {
                             configData = data.site_configs;
+                        } else if (data.site_config) {
+                            configData = data.site_config;
                         }
                         populateForm(configData);
                         formContainer.classList.remove('hidden');
@@ -536,6 +588,7 @@
             saveButton.textContent = 'Saving...';
             saveButton.classList.add('opacity-75');
             
+            // Collect form data from all fields
             const formData = {
                 about_title: document.getElementById('about_title').value,
                 about_subtitle: document.getElementById('about_subtitle').value,
@@ -552,16 +605,29 @@
                 image_about_photo3_url: document.getElementById('image_about_photo3_url').value,
                 about_photo3_alt: document.getElementById('about_photo3_alt').value,
                 image_about_photo4_url: document.getElementById('image_about_photo4_url').value,
-                about_photo4_alt: document.getElementById('about_photo4_alt').value,
-                
-                // Add work experience data
-                work_experience: getWorkExperienceData()
+                about_photo4_alt: document.getElementById('about_photo4_alt').value
             };
             
-            console.log('Form data to save:', formData);
+            // Log all the form field values for debugging
+            console.log('Form field values:');
+            for (const [key, value] of Object.entries(formData)) {
+                console.log(`${key}: ${value ? (value.length > 50 ? value.substring(0, 50) + '...' : value) : 'empty'}`);
+            }
+            
+            // Get work experience data
+            const workExperienceData = getWorkExperienceData();
+            console.log(`Collected ${workExperienceData.length} work experience items`);
+            
+            // Add work experience data to the form data
+            const fullFormData = {
+                ...formData,
+                work_experience: workExperienceData
+            };
+            
+            console.log('Complete form data prepared for submission');
             
             // Save site configuration
-            saveSiteConfig(formData);
+            saveSiteConfig(fullFormData);
         });
 
         // Show save message with appropriate styling
@@ -591,31 +657,24 @@
             const loadingOverlay = document.getElementById('loading-overlay');
             if (loadingOverlay) loadingOverlay.classList.remove('hidden');
             
-            showSaveMessage('Saving configuration...', 'text-blue-500 bg-blue-50');
-            
-            // Convert form data to object
-            const configData = {};
-            formData.forEach((value, key) => {
-                configData[key] = value;
-            });
-            
-            console.log('Saving config data:', configData);
+            console.log('Saving config data:', formData);
             
             try {
                 // Get authentication token
                 const token = localStorage.getItem('admin_token');
-                console.log('Retrieved token for save request:', token);
-                if (!token) {
+                console.log('Retrieved token for save request:', token ? 'Found' : 'Not found');
+                
+                if (!isValidToken(token)) {
                     // Hide loading overlay
                     if (loadingOverlay) loadingOverlay.classList.add('hidden');
-                    showSaveMessage('Error: Authentication token is missing. Please log out and log back in.', 'text-red-500 bg-red-50');
+                    alert('Error: Authentication token is missing or invalid. Please log out and log back in.');
                     return;
                 }
                 
                 // Prepare payload in the format the Lambda function expects
                 const payload = {
                     action: 'update_site_config',
-                    site_config: configData
+                    site_config: formData
                 };
                 
                 console.log('Sending API payload:', JSON.stringify(payload));
@@ -631,6 +690,10 @@
                 });
 
                 console.log('API response status:', response.status);
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Authentication failed. Please log out and log back in.');
+                }
+                
                 const responseData = await response.json();
                 console.log('Raw API response data on save:', JSON.stringify(responseData));
 
@@ -640,11 +703,10 @@
                 // Validate the response
                 if (response.ok && responseData.success === true) {
                     console.log('Configuration saved successfully:', responseData.message);
-                    showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
-                    setTimeout(hideSaveMessage, 3000);
+                    alert('Configuration saved successfully!');
 
                     // Refresh the configuration after saving
-                    await fetchConfiguration();
+                    loadSiteConfig();
                 } else {
                     console.error('Invalid response from API or save failed:', responseData);
                     const errorMessage = responseData.message || 'Invalid response from API';
@@ -655,54 +717,21 @@
                 if (loadingOverlay) loadingOverlay.classList.add('hidden');
                 
                 console.error('Error saving configuration:', error);
-                showSaveMessage('Error saving configuration: ' + error.message, 'text-red-500 bg-red-50');
-                
-                // Add retry button
-                const retryButton = document.createElement('button');
-                retryButton.textContent = 'Retry Save';
-                retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
-                retryButton.onclick = () => saveSiteConfig(formData);
-                saveMessage.appendChild(retryButton);
+                alert('Error saving configuration: ' + error.message);
             }
+
+            // Re-enable save button
+            saveButton.disabled = false;
+            saveButton.textContent = 'Save Changes';
+            saveButton.classList.remove('opacity-75');
         }
 
         // Fetch configuration data
-        async function fetchConfiguration() {
+        function fetchConfiguration() {
             console.log('Refreshing configuration data');
             
-            try {
-                const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
-                
-                const response = await fetch(apiEndpoint, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    mode: 'cors',
-                    credentials: 'omit'
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API response not OK: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log('Successfully refreshed site config from API:', data);
-                
-                // Process data
-                populateForm(data);
-                
-                // Refresh work experience data if available
-                if (data.work_experience) {
-                    loadWorkExperienceData(data.work_experience);
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('Error refreshing configuration:', error);
-                return false;
-            }
+            // Re-load the site config from scratch
+            loadSiteConfig();
         }
 
         // Work Experience Functions
@@ -727,20 +756,46 @@
             
             // Clear existing work experience items
             const container = document.getElementById('work-experience-container');
+            const loadingMsg = document.getElementById('work-experience-loading');
+            
             if (container) {
-                container.innerHTML = '';
+                // Remove all existing items except the loading message
+                const existingItems = container.querySelectorAll('.work-experience-item');
+                existingItems.forEach(item => item.remove());
+                
+                // Hide loading message if it exists
+                if (loadingMsg) {
+                    loadingMsg.classList.add('hidden');
+                }
             }
             
             // Check if we have any work experience data
             if (Array.isArray(workExperienceData) && workExperienceData.length > 0) {
+                console.log(`Adding ${workExperienceData.length} work experience items`);
+                
+                // Sort by date (most recent first)
+                const sortedData = [...workExperienceData].sort((a, b) => {
+                    // Convert dates to timestamps for comparison (or use 0 if invalid)
+                    const dateA = a.from_date ? new Date(a.from_date).getTime() : 0;
+                    const dateB = b.from_date ? new Date(b.from_date).getTime() : 0;
+                    return dateB - dateA; // Descending order (recent first)
+                });
+                
                 // Create a work experience item for each data entry
-                workExperienceData.forEach(experience => {
+                sortedData.forEach(experience => {
+                    console.log('Adding work experience item:', experience);
                     addWorkExperienceItem(null, experience);
                 });
             } else {
                 // If no work experience data, add an empty item
                 console.log('No work experience data found, adding empty item');
                 addWorkExperienceItem();
+                
+                // Show message if no items were added
+                if (loadingMsg) {
+                    loadingMsg.textContent = 'No work experience items found. Add one below.';
+                    loadingMsg.classList.remove('hidden');
+                }
             }
         }
         
@@ -889,6 +944,12 @@
         function fetchWorkExperienceData() {
             console.log('Fetching work experience data');
             
+            // Hide loading message if work experience already loaded
+            const workExperienceLoading = document.getElementById('work-experience-loading');
+            if (workExperienceLoading) {
+                workExperienceLoading.textContent = 'Loading work experience...';
+            }
+            
             const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=workex';
             
             fetch(apiEndpoint, {
@@ -907,11 +968,29 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Successfully loaded work experience from API:', data);
+                console.log('Work experience API response:', JSON.stringify(data));
+                
+                // Hide loading message
+                if (workExperienceLoading) {
+                    workExperienceLoading.classList.add('hidden');
+                }
                 
                 // Process data
+                let workExperienceData = [];
+                
+                // Handle different response structures
                 if (data.work_experience && Array.isArray(data.work_experience)) {
-                    loadWorkExperienceData(data.work_experience);
+                    console.log('Found work_experience array in response');
+                    workExperienceData = data.work_experience;
+                } else if (Array.isArray(data)) {
+                    console.log('Response is a direct array');
+                    workExperienceData = data;
+                } else {
+                    console.log('Unexpected response structure', data);
+                }
+                
+                if (workExperienceData.length > 0) {
+                    loadWorkExperienceData(workExperienceData);
                 } else {
                     console.log('No work experience data in API response');
                     // Add empty work experience item
@@ -921,18 +1000,38 @@
             .catch(error => {
                 console.error('Error loading work experience from API:', error);
                 
+                // Hide loading message
+                if (workExperienceLoading) {
+                    workExperienceLoading.textContent = 'Failed to load work experience data';
+                }
+                
                 // Try loading from local JSON file as fallback
                 console.log('Trying to load work experience from local JSON file');
                 fetch('/data/experience.json')
                     .then(response => response.json())
                     .then(data => {
                         console.log('Loaded work experience from local JSON:', data);
-                        loadWorkExperienceData(data);
+                        let workExperienceData = data;
+                        if (data.work_experience) {
+                            workExperienceData = data.work_experience;
+                        }
+                        
+                        loadWorkExperienceData(workExperienceData);
+                        
+                        // Hide loading message
+                        if (workExperienceLoading) {
+                            workExperienceLoading.classList.add('hidden');
+                        }
                     })
                     .catch(localError => {
                         console.error('Error loading work experience from local JSON:', localError);
                         // Add empty work experience item
                         addWorkExperienceItem();
+                        
+                        // Hide loading message
+                        if (workExperienceLoading) {
+                            workExperienceLoading.classList.add('hidden');
+                        }
                     });
             });
         }
