@@ -861,19 +861,24 @@
         
         async function loadWorkExperienceData(existingData = null) {
             console.log('Loading work experience data...');
+            
+            // Re-query elements each time to ensure they are found
             const container = document.getElementById('work-experience-container');
             const loadingMsg = document.getElementById('work-experience-loading');
             
-            if (!container || !loadingMsg) {
-                console.error('Work experience container or loading message element not found');
-                return;
+            if (!container) {
+                console.error('Work experience container (#work-experience-container) not found! Cannot update UI.');
+                return; // Exit if container is missing
+            }
+            if (!loadingMsg) {
+                console.warn('Work experience loading message (#work-experience-loading) not found. Proceeding without it.');
+            } else {
+                 // Show loading message only if found
+                 loadingMsg.style.display = 'block';
             }
             
-            // Show loading message
-            loadingMsg.style.display = 'block';
-            
             try {
-                // Clear existing items
+                // Clear existing items from the container
                 container.innerHTML = '';
                 
                 let experienceData = existingData;
@@ -906,14 +911,11 @@
                     }
                 }
                 
-                if (experienceData && Array.isArray(experienceData.items || experienceData)) {
-                    // Normalize data structure
-                    const items = experienceData.items || experienceData;
-                    
-                    // Log the complete structure of the first item (if it exists)
-                    if (items.length > 0) {
-                        console.log('First work experience item structure:', JSON.stringify(items[0], null, 2));
-                    }
+                const items = experienceData && Array.isArray(experienceData) ? experienceData : [];
+
+                if (items.length > 0) {
+                     // Log the complete structure of the first item (if it exists)
+                     console.log('First work experience item structure:', JSON.stringify(items[0], null, 2));
                     
                     // Sort items by from_date in descending order (newest first)
                     items.sort((a, b) => {
@@ -928,26 +930,27 @@
                         addWorkExperienceItem(null, item);
                     });
                     
-                    if (items.length === 0) {
-                        console.log('No work experience items found, adding empty item');
-                        addWorkExperienceItem(null);
-                    }
                 } else {
-                    console.log('No work experience data found, adding empty item');
-                    addWorkExperienceItem(null);
+                    console.log('No work experience data found or data is not an array, adding empty item');
+                    addWorkExperienceItem(null); // Add an empty item if no data
                 }
             } catch (error) {
-                console.error('Error loading work experience data:', error);
-                // Add an empty item if there's an error
-                addWorkExperienceItem(null);
-                // Show error message
-                const errorMsg = document.createElement('p');
-                errorMsg.className = 'error-message';
-                errorMsg.textContent = 'Failed to load work experience data. Please try again later.';
-                container.appendChild(errorMsg);
+                console.error('Error processing work experience data:', error);
+                // Attempt to add an empty item even if there's an error during processing
+                 if (container) {
+                     container.innerHTML = ''; // Clear potentially broken state
+                     addWorkExperienceItem(null);
+                     // Show error message within the container
+                     const errorMsg = document.createElement('p');
+                     errorMsg.className = 'error-message';
+                     errorMsg.textContent = 'Failed to load or process work experience data. Displaying empty item.';
+                     container.appendChild(errorMsg);
+                 }
             } finally {
-                // Hide loading message
-                loadingMsg.style.display = 'none';
+                // Hide loading message only if it was found initially
+                if (loadingMsg) {
+                    loadingMsg.style.display = 'none';
+                }
             }
         }
         
