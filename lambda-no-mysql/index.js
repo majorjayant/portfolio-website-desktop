@@ -291,112 +291,91 @@ async function saveSiteConfig(configData) {
   }
 }
 
-// Function to save work experience data to the database
+// Function to save work experience data (implements soft delete based on payload flag)
 async function saveWorkExperience(workExperienceData) {
   let connection;
   try {
-    // First ensure the table exists
-    await ensureTableExists();
-    
-    // Create a connection to the database
     connection = await getConnection();
-    
-    // Start a transaction for atomicity
     await connection.beginTransaction();
-    
-    // Get existing NON-DELETED work experience IDs from database
-    const [existingRows] = await connection.execute('SELECT id FROM workex WHERE is_deleted = 0');
-    const existingIds = existingRows.map(row => row.id); // These should be numbers
-    console.log('Existing non-deleted DB IDs:', existingIds);
-    
-    // Track provided IDs from the payload (ensure they are numbers)
-    const providedIds = [];
-    const now = new Date(); // Get current timestamp for audit fields
-    
-    // Process each work experience item for update/insert
+    console.log('Starting transaction to save work experience (soft delete based on payload)...');
+
+    const now = new Date();
+
     for (const item of workExperienceData) {
-      console.log(`Processing item from payload: ID=${item.id}, Type=${typeof item.id}`);
-      
+      const itemId = item.id ? parseInt(String(item.id).trim(), 10) : null;
+      // Check the flag directly from the payload
+      const isMarkedDeleted = item.is_deleted === 1;
       const fromDate = item.from_date || null;
       const toDate = item.is_current ? null : (item.to_date || null);
-      
-      if (item.id && String(item.id).trim() !== '') {
-          // Update existing record - Ensure ID is parsed as integer
-          const itemIdInt = parseInt(String(item.id).trim(), 10);
-          if (!isNaN(itemIdInt)) {
-              providedIds.push(itemIdInt);
-              await connection.execute(
-                // Set updated_date, keep is_deleted = 0
-                `UPDATE workex SET 
-                    job_title = ?, company_name = ?, location = ?, 
-                    from_date = ?, to_date = ?, is_current = ?, description = ?, 
-                    updated_date = ? 
-                 WHERE id = ? AND is_deleted = 0`, // Ensure we only update non-deleted records
-                [item.job_title || '', item.company_name || '', item.location || '', fromDate, toDate, item.is_current ? 1 : 0, item.description || '', now, itemIdInt]
-              );
-              console.log(`Updated work experience ID ${itemIdInt}`);
-          } else {
-              console.warn(`Skipping update for invalid ID: ${item.id}`);
-          }
+
+      if (itemId && !isNaN(itemId)) {
+        // Item has an ID, so it's either an UPDATE or a SOFT DELETE request
+        if (isMarkedDeleted) {
+            // Perform SOFT DELETE - Update the flag and timestamp
+            console.log(`Executing soft delete for ID: ${itemId}`);
+            const [softDeleteResult] = await connection.execute(
+                `UPDATE workex SET is_deleted = 1, updated_date = ? WHERE id = ? AND is_deleted = 0`, // Only soft-delete if not already deleted
+                [now, itemId]
+            );
+             console.log(`Soft delete result for ID ${itemId}: ${softDeleteResult.affectedRows} row(s) marked.`);
+        } else {
+            // Perform UPDATE for non-deleted item
+            console.log(`Executing update for ID: ${itemId}`);
+            const [updateResult] = await connection.execute(
+              `UPDATE workex SET
+                  job_title = ?, company_name = ?, location = ?,
+                  from_date = ?, to_date = ?, is_current = ?, description = ?,
+                  updated_date = ?, is_deleted = 0 /* Ensure is_deleted is 0 on update */
+               WHERE id = ?`, // Update existing record regardless of its current is_deleted status, effectively undeleting if needed
+              [item.job_title || '', item.company_name || '', item.location || '', fromDate, toDate, item.is_current ? 1 : 0, item.description || '', now, itemId]
+            );
+             if (updateResult.affectedRows > 0) {
+                 console.log(`Updated work experience ID ${itemId}`);
+             } else {
+                 // This could happen if the ID was invalid or hard-deleted somehow
+                 console.warn(`Attempted to update ID ${itemId}, but no rows were affected. ID might be invalid or already hard-deleted.`);
+             }
+        }
+      } else if (!isMarkedDeleted) {
+        // INSERT new item (item had no ID and is NOT marked for deletion)
+        console.log(`Executing insert for new item...`);
+        const [insertResult] = await connection.execute(
+          `INSERT INTO workex (
+              job_title, company_name, location, from_date, to_date, is_current, description,
+              created_date, updated_date, is_deleted
+           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+          [item.job_title || '', item.company_name || '', item.location || '', fromDate, toDate, item.is_current ? 1 : 0, item.description || '', now, now]
+        );
+        const newId = insertResult.insertId;
+        if (typeof newId === 'number') {
+            console.log(`Inserted new work experience with ID ${newId}`);
+        } else {
+            console.error("Insert failed to return a valid new ID.");
+            await connection.rollback();
+            return { success: false, message: "Failed to insert new work experience item." };
+        }
       } else {
-          // Insert new record
-          const [result] = await connection.execute(
-            // Set created_date, updated_date, and is_deleted = 0
-            `INSERT INTO workex (
-                job_title, company_name, location, from_date, to_date, is_current, description, 
-                created_date, updated_date, is_deleted
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
-            [item.job_title || '', item.company_name || '', item.location || '', fromDate, toDate, item.is_current ? 1 : 0, item.description || '', now, now]
-          );
-          const newId = result.insertId; // This should be a number
-          providedIds.push(newId);
-          console.log(`Inserted new work experience with ID ${newId}`);
+           // Item has no ID AND is marked deleted - This case shouldn't be sent by the current dashboard logic.
+           console.warn(`Received item with no ID but marked for deletion - skipping:`, item);
       }
     }
-    
-    console.log('Provided IDs (after processing payload, should be numbers):', providedIds);
-    
-    // Determine which records to SOFT DELETE (IDs in DB but not in payload)
-    const idsToSoftDelete = existingIds.filter(id => !providedIds.includes(id));
-    console.log('IDs calculated for soft deletion:', idsToSoftDelete);
-    
-    // Soft delete records that weren't included in the provided data
-    if (idsToSoftDelete.length > 0) {
-      console.log(`Attempting to soft delete work experience IDs: ${idsToSoftDelete.join(', ')}`);
-      try {
-          // Set is_deleted = 1 and update updated_date
-          const [softDeleteResult] = await connection.execute(
-            `UPDATE workex SET is_deleted = 1, updated_date = ? WHERE id IN (?) AND is_deleted = 0`,
-            [now, idsToSoftDelete] // Pass timestamp and array of IDs
-          );
-          console.log('Soft delete execution result (affectedRows):', softDeleteResult.affectedRows);
-          if (softDeleteResult.affectedRows !== idsToSoftDelete.length) {
-              console.warn('Mismatch in expected soft delete count and affected rows.');
-          }
-      } catch (deleteError) {
-          console.error('ERROR during soft DELETE execution:', deleteError);
-          await connection.rollback(); 
-          return { success: false, message: "Failed during soft DELETE operation: " + deleteError.message };
-      }
-    } else {
-      console.log('No IDs marked for soft deletion.');
-    }
-    
-    // Commit the transaction
+
+    // Commit all changes (updates, inserts, soft deletes)
     await connection.commit();
     console.log('Transaction committed successfully.');
-    
     return { success: true, message: "Work experience updated successfully" };
-    
+
   } catch (error) {
     console.error('Error in saveWorkExperience function:', error);
-    // Rollback in case of any error during the process
     if (connection) await connection.rollback();
     console.log('Transaction rolled back due to error.');
     return { success: false, message: "Failed to update work experience: " + error.message };
-    
+
   } finally {
-    if (connection) await connection.end();
+    if (connection) {
+        console.log('Closing database connection.');
+        await connection.end();
+    }
   }
 }
 
