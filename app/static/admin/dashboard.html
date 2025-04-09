@@ -441,8 +441,8 @@
                 loadingIndicator.classList.add('hidden');
                 formContainer.classList.remove('hidden');
                 
-                // Process data - no need to check for site_configs wrapping
-                populateForm(data);
+                // Fix: Pass the site_config object instead of the entire response
+                populateForm(data.site_config);
                 
                 // Load work experience data if available
                 if (data.work_experience) {
@@ -474,6 +474,9 @@
                         let configData = data;
                         if (data.site_configs) {
                             configData = data.site_configs;
+                        }
+                        if (data.site_config) {
+                            configData = data.site_config;
                         }
                         populateForm(configData);
                         formContainer.classList.remove('hidden');
@@ -536,7 +539,12 @@
             saveButton.textContent = 'Saving...';
             saveButton.classList.add('opacity-75');
             
-            const formData = {
+            // Show loading overlay
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+            
+            // Gather form data for site configuration
+            const siteConfigData = {
                 about_title: document.getElementById('about_title').value,
                 about_subtitle: document.getElementById('about_subtitle').value,
                 about_description: document.getElementById('about_description').value,
@@ -552,16 +560,23 @@
                 image_about_photo3_url: document.getElementById('image_about_photo3_url').value,
                 about_photo3_alt: document.getElementById('about_photo3_alt').value,
                 image_about_photo4_url: document.getElementById('image_about_photo4_url').value,
-                about_photo4_alt: document.getElementById('about_photo4_alt').value,
-                
-                // Add work experience data
-                work_experience: getWorkExperienceData()
+                about_photo4_alt: document.getElementById('about_photo4_alt').value
             };
             
-            console.log('Form data to save:', formData);
+            // Get work experience data
+            const workExperienceData = getWorkExperienceData();
+            
+            // Create the complete API payload
+            const payload = {
+                action: 'update_site_config',
+                site_config: siteConfigData,
+                work_experience: workExperienceData
+            };
+            
+            console.log('Form data to save:', payload);
             
             // Save site configuration
-            saveSiteConfig(formData);
+            saveSiteConfig(payload);
         });
 
         // Show save message with appropriate styling
@@ -586,37 +601,33 @@
         const API_BASE_URL = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
 
         // Save site configuration
-        async function saveSiteConfig(formData) {
-            // Show loading overlay
-            const loadingOverlay = document.getElementById('loading-overlay');
-            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
-            
-            showSaveMessage('Saving configuration...', 'text-blue-500 bg-blue-50');
-            
-            // Convert form data to object
-            const configData = {};
-            formData.forEach((value, key) => {
-                configData[key] = value;
-            });
-            
-            console.log('Saving config data:', configData);
+        async function saveSiteConfig(payload) {
+            console.log('Saving with payload:', payload);
             
             try {
                 // Get authentication token
                 const token = localStorage.getItem('admin_token');
-                console.log('Retrieved token for save request:', token);
+                console.log('Retrieved token for save request:', token ? 'Found' : 'Not found');
+                
                 if (!token) {
                     // Hide loading overlay
+                    const loadingOverlay = document.getElementById('loading-overlay');
                     if (loadingOverlay) loadingOverlay.classList.add('hidden');
-                    showSaveMessage('Error: Authentication token is missing. Please log out and log back in.', 'text-red-500 bg-red-50');
+                    
+                    // Show error and re-enable save button
+                    saveButton.disabled = false;
+                    saveButton.textContent = 'Save Changes';
+                    saveButton.classList.remove('opacity-75');
+                    
+                    // Show error message
+                    apiError.classList.remove('hidden');
+                    apiError.textContent = 'Error: Authentication token is missing. Please log out and log back in.';
+                    setTimeout(() => {
+                        apiError.classList.add('hidden');
+                    }, 5000);
+                    
                     return;
                 }
-                
-                // Prepare payload in the format the Lambda function expects
-                const payload = {
-                    action: 'update_site_config',
-                    site_config: configData
-                };
                 
                 console.log('Sending API payload:', JSON.stringify(payload));
                 
@@ -635,16 +646,33 @@
                 console.log('Raw API response data on save:', JSON.stringify(responseData));
 
                 // Hide loading overlay
+                const loadingOverlay = document.getElementById('loading-overlay');
                 if (loadingOverlay) loadingOverlay.classList.add('hidden');
+                
+                // Re-enable save button
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save Changes';
+                saveButton.classList.remove('opacity-75');
 
                 // Validate the response
                 if (response.ok && responseData.success === true) {
                     console.log('Configuration saved successfully:', responseData.message);
-                    showSaveMessage('Configuration saved successfully!', 'text-green-500 bg-green-50');
-                    setTimeout(hideSaveMessage, 3000);
+                    
+                    // Show success message
+                    apiError.classList.remove('hidden');
+                    apiError.textContent = 'Configuration saved successfully!';
+                    apiError.style.backgroundColor = '#d1fae5';
+                    apiError.style.color = '#065f46';
+                    setTimeout(() => {
+                        apiError.classList.add('hidden');
+                        apiError.style.backgroundColor = '';
+                        apiError.style.color = '';
+                    }, 3000);
 
                     // Refresh the configuration after saving
-                    await fetchConfiguration();
+                    setTimeout(() => {
+                        fetchConfiguration();
+                    }, 1000);
                 } else {
                     console.error('Invalid response from API or save failed:', responseData);
                     const errorMessage = responseData.message || 'Invalid response from API';
@@ -652,17 +680,24 @@
                 }
             } catch (error) {
                 // Hide loading overlay
+                const loadingOverlay = document.getElementById('loading-overlay');
                 if (loadingOverlay) loadingOverlay.classList.add('hidden');
                 
-                console.error('Error saving configuration:', error);
-                showSaveMessage('Error saving configuration: ' + error.message, 'text-red-500 bg-red-50');
+                // Re-enable save button
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save Changes';
+                saveButton.classList.remove('opacity-75');
                 
-                // Add retry button
-                const retryButton = document.createElement('button');
-                retryButton.textContent = 'Retry Save';
-                retryButton.className = 'ml-4 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700';
-                retryButton.onclick = () => saveSiteConfig(formData);
-                saveMessage.appendChild(retryButton);
+                console.error('Error saving configuration:', error);
+                
+                // Show error message
+                apiError.classList.remove('hidden');
+                apiError.textContent = 'Error saving configuration: ' + error.message;
+                apiError.style.backgroundColor = '';
+                apiError.style.color = '';
+                setTimeout(() => {
+                    apiError.classList.add('hidden');
+                }, 5000);
             }
         }
 
@@ -690,8 +725,8 @@
                 const data = await response.json();
                 console.log('Successfully refreshed site config from API:', data);
                 
-                // Process data
-                populateForm(data);
+                // Process data - using site_config property
+                populateForm(data.site_config);
                 
                 // Refresh work experience data if available
                 if (data.work_experience) {
