@@ -852,9 +852,6 @@
                 addWorkExperienceBtn.addEventListener('click', addWorkExperienceItem);
             }
             
-            // Attach event listeners to any delete buttons that might already exist
-            attachDeleteWorkExperienceListeners();
-            
             // Initialize "current" checkbox behavior for existing items
             initCurrentCheckboxBehavior();
         }
@@ -1092,35 +1089,29 @@
             return workExItem;
         }
         
-        function deleteWorkExperienceItem(event) {
-            const item = event.target.closest('.work-experience-item');
-            if (item && item.parentNode) {
-                console.log('Deleting work experience item');
-                item.parentNode.removeChild(item);
-            }
-        }
-        
-        function attachDeleteWorkExperienceListeners() {
-            const deleteButtons = document.querySelectorAll('.delete-work-experience');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', deleteWorkExperienceItem);
-            });
-        }
-        
         function initCurrentCheckboxBehavior() {
-            const checkboxes = document.querySelectorAll('.workex-current');
+            // Find checkboxes within the dynamically added .workex-item elements
+            const checkboxes = document.querySelectorAll('.workex-item .workex-is-current'); 
             checkboxes.forEach(checkbox => {
-                const toDateInput = checkbox.closest('.work-experience-item').querySelector('.workex-to-date');
+                // Find the parent .workex-item and then the date input within it
+                const parentItem = checkbox.closest('.workex-item'); 
+                if (!parentItem) return; // Skip if parent item not found
+                
+                const toDateInput = parentItem.querySelector('.workex-to-date');
                 if (toDateInput) {
+                    // Set initial state
                     if (checkbox.checked) {
                         toDateInput.disabled = true;
-                        toDateInput.value = '';
+                        toDateInput.value = ''; // Clear value when disabled
+                    } else {
+                        toDateInput.disabled = false; 
                     }
                     
+                    // Add change listener
                     checkbox.addEventListener('change', function() {
                         if (this.checked) {
                             toDateInput.disabled = true;
-                            toDateInput.value = '';
+                            toDateInput.value = ''; // Clear value when disabled
                         } else {
                             toDateInput.disabled = false;
                         }
