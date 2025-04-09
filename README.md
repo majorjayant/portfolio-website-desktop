@@ -7,22 +7,22 @@ A streamlined portfolio website using AWS Amplify for hosting and AWS Lambda wit
 - **Frontend**: Static HTML/CSS/JS files in the `app/static` directory.
 - **Admin Dashboard**: Located at `app/static/admin/dashboard.html` for managing site content.
 - **Backend**: AWS Lambda function in the `lambda-no-mysql` directory (using MySQL for storage via RDS).
-- **Database**: MySQL database on AWS RDS (configuration in the Lambda function and `.env`).
+- **Database**: MySQL database on AWS RDS (configuration in the Lambda function and `.env`). Assumes `workex` table includes `is_deleted` (TINYINT), `created_date` (DATETIME/TIMESTAMP), `updated_date` (DATETIME/TIMESTAMP) columns.
 
 ## Key Files
 
-- `lambda-no-mysql/index.js`: Lambda function handling API requests for getting/updating site configuration and work experience.
-- `lambda-no-mysql/lambda-*.zip`: Various deployment packages for the Lambda function (use the latest version recommended).
+- `lambda-no-mysql/index.js`: Lambda function handling API requests for getting/updating site configuration and work experience (implements soft delete for work experience).
+- `lambda-no-mysql/lambda-*.zip`: Various deployment packages for the Lambda function (use the latest version recommended, e.g., `lambda-soft-delete.zip`).
 - `app/static/html/index.html` or `app/static/index.html`: Main portfolio website page.
-- `app/static/js/main.js`: Frontend JavaScript for the portfolio page, including loading config and displaying data.
+- `app/static/js/main.js`: Frontend JavaScript for the portfolio page, including loading config and displaying data (only shows non-deleted work experience).
 - `app/static/admin/dashboard.html`: HTML and JavaScript for the Admin Dashboard interface.
 - `app/static/admin/login.html`: Admin login page.
 
 ## Deployment
 
-1.  Set up AWS RDS MySQL database and run the necessary SQL setup scripts (if applicable, details may vary based on setup).
+1.  Set up AWS RDS MySQL database. Ensure the `workex` table has `is_deleted` (TINYINT DEFAULT 0), `created_date`, and `updated_date` columns. Ensure `site_config` table exists.
 2.  Configure environment variables for the Lambda function (e.g., DB host, user, password, database name).
-3.  Deploy the latest Lambda deployment package (e.g., `lambda-db-fix.zip`) to AWS Lambda and configure API Gateway trigger.
+3.  Deploy the latest Lambda deployment package (e.g., `lambda-soft-delete.zip`) to AWS Lambda and configure API Gateway trigger.
 4.  Deploy the frontend static files (contents of `app/static/`) to AWS Amplify or another static hosting provider.
 5.  Ensure the API endpoint URL in `app/static/admin/dashboard.html` and `app/static/js/main.js` points to your deployed API Gateway stage URL.
 
@@ -65,7 +65,7 @@ The dashboard is divided into several sections:
 
 4.  **Work Experience:**
     *   This section allows you to manage your professional experience timeline.
-    *   Items are loaded dynamically from the database when the page loads.
+    *   Items are loaded dynamically from the database when the page loads (only non-deleted items are shown).
     *   **Adding an Item:** Click the "Add Work Experience" button.
     *   **Fields per Item:**
         *   `Job Title*`: Your role or position (Required).
@@ -75,156 +75,108 @@ The dashboard is divided into several sections:
         *   `To Date`: The end date of the position (Year and Month). Leave empty and check "Current Job" if you are still employed there.
         *   `Current Job`: Checkbox to indicate if this is your current position. If checked, the 'To Date' field will be disabled.
         *   `Description`: A brief description of your responsibilities and achievements in the role.
-    *   **Deleting an Item:** Click the "Delete" button next to the item you wish to remove. *Note: Deletion happens immediately on the frontend; changes are finalized only when you click "Save Changes".*
+    *   **Deleting an Item (Soft Delete):** Click the "Delete" button next to the item you wish to remove. This removes the item from the dashboard view immediately. When you click "Save Changes", the backend marks this item as deleted in the database (`is_deleted = 1`) instead of permanently removing it. It will no longer appear on the public website or in the dashboard on subsequent loads.
 
 ### Operations
 
-1.  **Loading Data:** When the dashboard loads, it automatically fetches the current site configuration and work experience data from the Lambda backend (which queries the MySQL database).
+1.  **Loading Data:** When the dashboard loads, it automatically fetches the current site configuration and *non-deleted* work experience data (`is_deleted = 0`) from the Lambda backend.
     *   A loading indicator is shown while data is being fetched.
     *   If there's an error fetching data (e.g., API issue), an error message appears, and the dashboard might try to load fallback data from local JSON files (if configured).
 
 2.  **Saving Changes:**
-    *   After making any modifications in the form fields (text, URLs, work experience), click the "Save Changes" button.
-    *   The dashboard gathers all the data from the form, including all work experience items.
-    *   It sends this data in a `POST` request to the Lambda function (`action: 'update_site_config'`).
-    *   The Lambda function validates the request (including authentication token) and then performs `UPDATE` or `INSERT` operations on the `site_config` and `workex` tables in the database.
-    *   Work Experience Handling: The save function updates existing items based on their ID, inserts new items (if no ID is present), and deletes any items from the database that were present before but are *not* included in the submitted data (this handles the frontend delete button functionality).
-    *   A loading overlay appears during the save process.
-    *   Success or error messages are displayed upon completion.
+    *   After making modifications, click "Save Changes".
+    *   The dashboard gathers all data, including the currently displayed work experience items.
+    *   It sends a `POST` request to the Lambda function (`action: 'update_site_config'`).
+    *   The Lambda function:
+        *   Validates the request.
+        *   Updates/Inserts `site_config` data.
+        *   Processes `work_experience` data:
+            *   **Updates:** For existing items sent in the payload, it updates the data and sets the `updated_date` to the current time.
+            *   **Inserts:** For new items (no ID), it inserts them with `is_deleted = 0` and sets both `created_date` and `updated_date` to the current time.
+            *   **Soft Deletes:** It compares the list of non-deleted IDs currently in the database with the IDs received in the payload. Any existing non-deleted ID *not* present in the payload is marked for soft deletion. It then runs an `UPDATE` statement to set `is_deleted = 1` and update `updated_date` for these specific IDs.
+    *   A loading overlay appears; success/error messages are displayed.
 
 3.  **Refreshing Data:**
-    *   Click the "Refresh Data" button to manually reload the latest configuration and work experience data from the backend without saving any current changes.
-    *   This is useful if you want to discard local edits or see if data has been updated elsewhere.
+    *   Clicking "Refresh Data" reloads only the *non-deleted* configuration and work experience items.
 
 4.  **Logout:**
     *   Click the "Logout" button in the top navigation bar.
     *   This removes the authentication token from your browser's local storage and redirects you to the login page.
 
-### How it Works (Technical Flow)
+### How it Works (Technical Flow - Updated)
 
-1.  **Load:** `dashboard.html` loads -> JavaScript checks for auth token -> If valid, calls `loadSiteConfig`.
-2.  **Fetch:** `loadSiteConfig` makes a `GET` request to the Lambda API endpoint (`?type=site_config`).
-3.  **Lambda GET:** Lambda function receives the request, calls `getSiteConfig` and `getWorkExperience` (which query the MySQL DB), and returns a JSON object containing both `site_config` and `work_experience` data.
-4.  **Populate:** Back in `dashboard.html`, `loadSiteConfig` receives the JSON, calls `populateForm` to fill the main config fields, and calls `loadWorkExperienceData` to process and display the work experience items.
-5.  **Display WorkEx:** `loadWorkExperienceData` clears the existing items and calls `addWorkExperienceItem` for each entry received from the API, dynamically creating the HTML form elements.
-6.  **Save:** User clicks "Save Changes" -> `submit` event listener gathers data (using `getWorkExperienceData` for workex items) -> `saveSiteConfig` function sends a `POST` request to Lambda with the combined payload.
-7.  **Lambda POST:** Lambda function receives the `POST` request, validates auth, calls `saveSiteConfig` and `saveWorkExperience` (which perform `UPDATE`/`INSERT`/`DELETE` operations on the DB), and returns a success/error message.
-8.  **Refresh After Save:** Upon successful save, `saveSiteConfig` calls `fetchConfiguration` (similar to `loadSiteConfig`) to reload the dashboard with the newly saved data.
-
-This detailed flow ensures that the dashboard reflects the current state of the database and allows seamless content management for the portfolio website.
+1.  **Load:** `dashboard.html` loads -> JavaScript checks auth -> Calls `loadSiteConfig`.
+2.  **Fetch:** `loadSiteConfig` makes `GET` request (`?type=site_config`).
+3.  **Lambda GET:** Lambda runs `getSiteConfig` and `getWorkExperience`. `getWorkExperience` now uses `SELECT * FROM workex WHERE is_deleted = 0 ...`. Returns JSON with `site_config` and only *non-deleted* `work_experience`.
+4.  **Populate:** `loadSiteConfig` calls `populateForm` and `loadWorkExperienceData`.
+5.  **Display WorkEx:** `loadWorkExperienceData` displays only the non-deleted items received.
+6.  **User Deletes (Frontend):** User clicks delete -> JavaScript removes the item visually from the dashboard.
+7.  **Save:** User clicks "Save Changes" -> `getWorkExperienceData` collects only the *remaining visible* items -> `saveSiteConfig` sends `POST` request.
+8.  **Lambda POST:** Lambda receives request -> Calls `saveSiteConfig` -> Calls `saveWorkExperience`.
+    *   `saveWorkExperience` fetches existing *non-deleted* IDs from DB.
+    *   It loops through payload items: updates existing ones (setting `updated_date`), inserts new ones (setting `created_date`, `updated_date`, `is_deleted=0`).
+    *   It calculates which existing non-deleted IDs were *not* in the payload (`idsToSoftDelete`).
+    *   It runs `UPDATE workex SET is_deleted = 1, updated_date = NOW() WHERE id IN (...)` for the calculated IDs.
+    *   Commits transaction.
+    *   Returns success/error.
+9.  **Refresh After Save:** `saveSiteConfig` calls `fetchConfiguration` which re-runs the `GET` request, fetching only the items where `is_deleted = 0`.
 
 ---
 
-## Developer Guide: Adding New Manageable Fields
+## Developer Guide: Adding New Fields
 
-This section outlines the steps required to add a new field that can be managed via the Admin Dashboard and displayed on the frontend portfolio.
+This section outlines the steps required to add a new manageable field to the website, controllable via the Admin Dashboard.
 
-**Example Scenario:** Adding a `skills_used` text field to the Work Experience section.
+**Scenario:** Add a new text field called `portfolio_highlight` to the `site_config`.
 
-**1. Database Modification:**
-   *   Add the new column to your MySQL `workex` table.
-      ```sql
-      ALTER TABLE workex
-      ADD COLUMN skills_used TEXT NULL DEFAULT NULL AFTER description;
-      ```
-   *   _Choose appropriate data types (TEXT, VARCHAR, INT, etc.) and constraints (NULL, DEFAULT)._
+1.  **Database Schema:**
+    *   **Add Column:** Add the new column `portfolio_highlight` (e.g., `VARCHAR(255)`) to your `site_config` table in the MySQL database. Set a sensible default if needed (e.g., `NULL` or `''`).
+    *   _Location: Perform this directly on your RDS instance using a SQL client._
 
-**2. Lambda Function (`lambda-no-mysql/index.js`):**
-   *   **`getWorkExperience` Function:**
-      *   Ensure your `SELECT * ...` statement implicitly fetches the new column. If you selected specific columns, add `skills_used` to the list.
-      *   In the `rows.map(...)` section, add the new field to the `expObj` being returned:
-         ```javascript
-         const expObj = {
-           // ... existing fields ...
-           description: row.description,
-           skills_used: row.skills_used || '' // Add the new field
-         };
-         ```
-   *   **`saveWorkExperience` Function:**
-      *   Add the new field (`skills_used`) to the parameters extracted from the `item` payload at the beginning of the `for...of` loop:
-         ```javascript
-         const skillsUsed = item.skills_used || '';
-         ```
-      *   Add the new field and its corresponding placeholder (`?`) to the `UPDATE workex SET ...` SQL statement:
-         ```sql
-         `UPDATE workex SET 
-            ..., 
-            description = ?, 
-            skills_used = ?, -- Add new field
-            updated_date = NOW(), 
-            is_deleted = 0 
-          WHERE id = ?`,
-         // Add the variable to the parameter array in the correct position:
-         [..., description, skillsUsed, itemIdInt] 
-         ```
-      *   Add the new column name and its corresponding placeholder (`?`) to the `INSERT INTO workex (...) VALUES (...)` SQL statement:
-         ```sql
-         `INSERT INTO workex (... description, skills_used, is_deleted, created_date, updated_date) 
-          VALUES (?, ..., ?, ?, 0, NOW(), NOW())`, // Add placeholder
-         // Add the variable to the parameter array in the correct position:
-         [..., description, skillsUsed]
-         ```
-      *   _**Important:** Make sure the order of placeholders (`?`) exactly matches the order of variables in the parameter array for both UPDATE and INSERT._
+2.  **Lambda Function (`lambda-no-mysql/index.js`):**
+    *   **`getSiteConfig` Function:**
+        *   Ensure the `SELECT` query retrieves the new column. If using `SELECT *`, it might be included automatically, but explicitly adding it (`SELECT config_key, config_value, ... portfolio_highlight FROM site_config`) is safer if you aren't selecting all columns.
+        *   Update the logic that builds the `configObject` to include the new field: `configObject.portfolio_highlight = row.portfolio_highlight;` (adjust based on how your query returns data).
+    *   **`saveSiteConfig` Function:**
+        *   Add the new field to the list of fields being updated/inserted. Modify the `INSERT` and `UPDATE` statements.
+        *   Example (Conceptual - adapt to your specific query structure):
+            ```sql
+            -- For UPDATE
+            UPDATE site_config SET ..., portfolio_highlight = ? WHERE ...
+            -- For INSERT
+            INSERT INTO site_config (..., portfolio_highlight) VALUES (..., ?)
+            ```
+        *   Ensure the corresponding value from the `configData` payload is passed in the parameters array for the SQL execution: `..., configData.portfolio_highlight || '', ...`.
 
-**3. Admin Dashboard (`app/static/admin/dashboard.html`):**
-   *   **`addWorkExperienceItem` Function:**
-      *   Within this function, create the HTML elements (label, input/textarea) for the new field (`skills_used`). Assign appropriate classes (e.g., `workex-skills-used`) and attributes (`type`, `placeholder`, `rows` if textarea).
-         ```javascript
-         // Create skills field
-         const skillsLabel = document.createElement('label');
-         skillsLabel.textContent = 'Skills Used:';
-         const skillsInput = document.createElement('textarea');
-         skillsInput.className = 'workex-skills-used'; // Assign a class
-         skillsInput.value = data.skills_used || ''; // Populate from loaded data
-         skillsInput.placeholder = 'e.g., JavaScript, React, Node.js';
-         skillsInput.rows = 2;
-         ```
-      *   Append these new elements to the `workExItem` div in the desired visual order:
-         ```javascript
-         // Add fields to work experience item
-         // ... append other fields ...
-         workExItem.appendChild(descLabel);
-         workExItem.appendChild(descInput);
-         workExItem.appendChild(skillsLabel); // Append new label
-         workExItem.appendChild(skillsInput); // Append new input
-         workExItem.appendChild(deleteBtn);
-         ```
-   *   **`getWorkExperienceData` Function:**
-      *   Inside the `workExItems.forEach(...)` loop, retrieve the value from the new input field using its class.
-         ```javascript
-         const skillsUsed = item.querySelector('.workex-skills-used')?.value || '';
-         ```
-      *   Add the new field to the `workExData` object being created:
-         ```javascript
-         const workExData = {
-           // ... existing fields ...
-           description: item.querySelector('.workex-description')?.value || '',
-           skills_used: skillsUsed // Add the new field
-         };
-         ```
-   *   **(Optional) CSS Styling:** Add any necessary CSS rules in the `<style>` block or external CSS file for the new elements (e.g., `.workex-skills-used`) if needed.
+3.  **Admin Dashboard (`app/static/admin/dashboard.html`):**
+    *   **HTML (Form Input):**
+        *   Add a new `label` and `input` (or `textarea`) element within the `<form id="site-config-form">`. Give the input a unique `id` matching the field name (e.g., `id="portfolio_highlight"`).
+        *   Place it in a relevant section (e.g., "General Website Information").
+    *   **JavaScript (`populateForm` function):**
+        *   Add a line to set the value of the new input field when data is loaded: `document.getElementById('portfolio_highlight').value = config.portfolio_highlight || '';`.
+    *   **JavaScript (Form Submission Listener / `siteConfigData` object):**
+        *   Add the new field to the `siteConfigData` object that gathers form values: `portfolio_highlight: document.getElementById('portfolio_highlight').value,`.
 
-**4. Frontend Portfolio Display (`app/static/js/main.js` or similar):**
-   *   **`updateWorkExperienceTimeline` Function (or equivalent):**
-      *   Ensure the data received from the API (via `loadSiteConfig`) includes the new field (`skills_used`). You might need to check the `processConfigData` function.
-      *   Inside the loop that creates timeline items (`sortedWorkExperience.forEach(...)`), access the new field:
-         ```javascript
-         const skillsUsed = experience.skills_used || '';
-         ```
-      *   Modify the `innerHTML` for the `timelineItem` to display the `skillsUsed` data where desired. You might add a new paragraph or list.
-         ```html
-         <div class="timeline-content">
-             <h3 class="job-title">${jobTitle}</h3>
-             <h4 class="company-info">${company} ${location ? `| ${location}` : ''}</h4>
-             <span class="date">${period}</span>
-             <p class="timeline-description">${description}</p>
-             ${skillsUsed ? `<p class="timeline-skills"><strong>Skills:</strong> ${skillsUsed}</p>` : ''} <!-- Display skills -->
-         </div>
-         ```
-   *   **(Optional) CSS Styling:** Add CSS rules (e.g., in `app/static/css/style.css`) for the new element (e.g., `.timeline-skills`).
+4.  **Frontend Website (`app/static/js/main.js` or relevant JS):**
+    *   **`updateWebsiteElements` Function (or similar):**
+        *   Access the new field from the globally stored `window.siteConfig` object (which is populated by `processConfigData`).
+        *   Find the target HTML element on the *public* website where this data should be displayed.
+        *   Update the `textContent` or `innerHTML` of the target element: `targetElement.textContent = config.portfolio_highlight || '';`.
 
-**5. Deployment:**
-   *   Deploy the updated Lambda function package (`.zip`).
-   *   Deploy the updated frontend files (`dashboard.html`, `main.js`, potentially CSS files) to your hosting provider (e.g., Amplify).
+5.  **Deployment:**
+    *   Create a new Lambda deployment package (`.zip`) including the updated `index.js` and `node_modules`.
+    *   Deploy the updated Lambda function.
+    *   Deploy the updated frontend files (`dashboard.html`, potentially `main.js` and the main `index.html` if you added a display element there).
 
-By following these steps, you can systematically add new manageable content fields to your portfolio system.
+**Summary for New Field (`portfolio_highlight`):**
+
+*   **DB:** Add column `portfolio_highlight` to `site_config`.
+*   **Lambda `getSiteConfig`:** Select and include `portfolio_highlight` in the response.
+*   **Lambda `saveSiteConfig`:** Include `portfolio_highlight` in `INSERT`/`UPDATE` SQL and parameters.
+*   **Dashboard HTML:** Add `<label>` and `<input id="portfolio_highlight">`.
+*   **Dashboard JS `populateForm`:** Set `$('#portfolio_highlight').value`.
+*   **Dashboard JS `submit` listener:** Add `portfolio_highlight: $('#portfolio_highlight').value` to `siteConfigData`.
+*   **Frontend JS `updateWebsiteElements`:** Update relevant HTML element using `window.siteConfig.portfolio_highlight`.
+*   **Deploy:** Update Lambda & Frontend.
+
+This workflow ensures data flows correctly from the database, to the dashboard for editing, back to the database for saving, and finally to the public website for display.
