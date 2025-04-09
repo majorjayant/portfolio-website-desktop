@@ -637,45 +637,10 @@
         margin-top: -100px;
         position: relative;
         z-index: 1;
-    }
-
-    /* Styles for Transparent Header Text/Icons */
-    header.transparent-header .nav-links a,
-    header.transparent-header .social-links a i {
-        color: #333333 !important; /* Dark grey for transparent header */
-        text-shadow: none; /* Remove text shadow for better readability on light banner */
-    }
-    
-    header.transparent-header .navbar .logo img {
-        filter: none; /* Remove drop shadow on logo when header is transparent */
-    }
-    
-    /* Default Header Text/Icons (when header is NOT transparent) */
-    header:not(.transparent-header) .nav-links a,
-    header:not(.transparent-header) .social-links a i {
-        color: #e6e0d4; /* Original light color */
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Restore text shadow */
-    }
-    
-    header:not(.transparent-header) .navbar .logo img {
-         filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4)); /* Restore logo shadow */
-    }
-
-    /* Media query for mobile devices */
-    @media (max-width: 600px) {
-        #banner-section {
-            height: 80vh; /* Slightly shorter on mobile */
-        }
-        
-        .layer-bg {
-            transform: translateZ(-15px) scale(1.05); /* Less dramatic parallax on mobile */
-        }
-    }
-
-    /* Vertical Timeline Styles */
-    .experience-section {
         padding: 6rem 0;
         background-color: #fff;
+        visibility: visible !important;
+        display: block !important;
     }
 
     .experience-section h2 {
@@ -714,6 +679,7 @@
         transform: translateY(50px);
         transition: opacity 0.6s ease-out, transform 0.6s ease-out;
     }
+    
     .timeline-item.is-visible {
         opacity: 1;
         transform: translateY(0);
@@ -734,7 +700,7 @@
     }
 
     /* Circular marker */
-    .timeline-item::after {
+    .timeline-marker {
         content: '';
         position: absolute;
         width: 18px;
@@ -747,8 +713,9 @@
         z-index: 1;
     }
 
-    .timeline-item:nth-child(even)::after {
+    .timeline-item:nth-child(even) .timeline-marker {
         left: -9px;
+        right: auto;
     }
 
     .timeline-content {
@@ -772,6 +739,13 @@
         color: #7a6b5f;
         font-size: 1.5rem;
         font-weight: 600;
+    }
+    
+    .timeline-content h4 {
+        margin: 0.5rem 0;
+        color: #555;
+        font-size: 1.1rem;
+        font-weight: 500;
     }
 
     .timeline-content .date {
@@ -814,8 +788,9 @@
             padding-right: 25px;
         }
 
-        .timeline-item::after {
+        .timeline-item .timeline-marker {
             left: 22px; /* Adjusted for new line position */
+            right: auto;
         }
 
         .timeline-item:nth-child(odd) .timeline-content {
@@ -895,7 +870,7 @@
         }
         
         /* Adjust marker size and position */
-        .timeline-item::after {
+        .timeline-item .timeline-marker {
             width: 14px;
             height: 14px;
             left: 19px;
@@ -914,6 +889,39 @@
         padding: 4rem 0 2rem;
         font-size: 0.9rem;
         border-top: 1px solid #2a3a47;
+    }
+    
+    /* Styles for Transparent Header Text/Icons */
+    header.transparent-header .nav-links a,
+    header.transparent-header .social-links a i {
+        color: #333333 !important; /* Dark grey for transparent header */
+        text-shadow: none; /* Remove text shadow for better readability on light banner */
+    }
+    
+    header.transparent-header .navbar .logo img {
+        filter: none; /* Remove drop shadow on logo when header is transparent */
+    }
+    
+    /* Default Header Text/Icons (when header is NOT transparent) */
+    header:not(.transparent-header) .nav-links a,
+    header:not(.transparent-header) .social-links a i {
+        color: #e6e0d4; /* Original light color */
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Restore text shadow */
+    }
+    
+    header:not(.transparent-header) .navbar .logo img {
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4)); /* Restore logo shadow */
+    }
+
+    /* Media query for mobile devices */
+    @media (max-width: 600px) {
+        #banner-section {
+            height: 80vh; /* Slightly shorter on mobile */
+        }
+        
+        .layer-bg {
+            transform: translateZ(-15px) scale(1.05); /* Less dramatic parallax on mobile */
+        }
     }
 </style>
 
@@ -1569,8 +1577,12 @@
             updateCarousel(photos);
             
             // Update work experience timeline if data is available
-            if (data.work_experience && Array.isArray(data.work_experience)) {
-                updateWorkExperienceTimeline(data.work_experience);
+            const workExperience = data.work_experience;
+            if (workExperience && Array.isArray(workExperience)) {
+                console.log(`Found ${workExperience.length} work experience items in API response`);
+                updateWorkExperienceTimeline(workExperience);
+            } else {
+                console.warn('No work experience data found in API response');
             }
                         
             // Show content once loaded
@@ -1848,6 +1860,7 @@
             }
         }
 
+        // Function to update the work experience timeline
         function updateWorkExperienceTimeline(workExperienceData) {
             console.log('Updating work experience timeline with:', workExperienceData);
             
@@ -1919,36 +1932,42 @@
                 
                 timelineContainer.appendChild(timelineItem);
                 
-                // Set a timeout to add the is-visible class for CSS animations
+                // Manually add visibility class for non-AOS animations
                 setTimeout(() => {
                     timelineItem.classList.add('is-visible');
-                }, 50 + (index * 100)); // Staggered appearance
+                }, 100 + (index * 150));
             });
             
             // Initialize or refresh AOS for new elements if AOS is available
             if (typeof AOS !== 'undefined') {
-                AOS.refresh();
+                setTimeout(() => {
+                    AOS.refresh();
+                }, 200);
             }
             
-            // Add scroll listener to handle manual animations if AOS isn't available
-            if (typeof AOS === 'undefined') {
-                const checkScroll = () => {
-                    const timelineItems = document.querySelectorAll('.timeline-item:not(.is-visible)');
-                    timelineItems.forEach(item => {
-                        const itemTop = item.getBoundingClientRect().top;
-                        const windowHeight = window.innerHeight;
-                        
-                        if (itemTop < windowHeight * 0.9) {
-                            item.classList.add('is-visible');
-                        }
-                    });
-                };
-                
-                // Initial check
-                checkScroll();
-                
-                // Add event listener
-                window.addEventListener('scroll', checkScroll);
+            // Add custom animation if AOS isn't working
+            const checkVisibility = () => {
+                const timelineItems = document.querySelectorAll('.timeline-item:not(.is-visible)');
+                timelineItems.forEach(item => {
+                    const itemPosition = item.getBoundingClientRect();
+                    // Check if item is in viewport
+                    if (itemPosition.top < window.innerHeight * 0.9) {
+                        item.classList.add('is-visible');
+                    }
+                });
+            };
+            
+            // Add scroll event for manual animation
+            window.addEventListener('scroll', checkVisibility);
+            
+            // Initial check
+            setTimeout(checkVisibility, 300);
+            
+            // Show the timeline section
+            const experienceSection = document.querySelector('.experience-section');
+            if (experienceSection) {
+                experienceSection.style.display = 'block';
+                experienceSection.style.visibility = 'visible';
             }
         }
 </script>
