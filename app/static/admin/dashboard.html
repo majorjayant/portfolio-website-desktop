@@ -606,6 +606,45 @@
             }
         }
 
+        // Fetch configuration data
+        async function fetchConfiguration() {
+            console.log('Refreshing configuration data');
+            
+            try {
+                const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+                
+                const response = await fetch(apiEndpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API response not OK: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Successfully refreshed site config from API:', data);
+                
+                // Process data
+                populateForm(data);
+                
+                // Refresh work experience data if available
+                if (data.work_experience) {
+                    loadWorkExperienceData(data.work_experience);
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error refreshing configuration:', error);
+                return false;
+            }
+        }
+
         // Work Experience Functions
         function initWorkExperience() {
             console.log('Initializing work experience section');
