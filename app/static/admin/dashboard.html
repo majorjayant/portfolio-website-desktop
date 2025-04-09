@@ -80,18 +80,36 @@
                                             <!-- Site Title -->
                                             <div>
                                                 <label for="about_title" class="block text-sm font-medium text-gray-700">Site Title</label>
+                                                <div class="flex items-center space-x-1 mb-1">
+                                                    <button type="button" onclick="insertTag('about_title', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
+                                                    <button type="button" onclick="insertTag('about_title', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
+                                                    <button type="button" onclick="insertTag('about_title', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
+                                                    <button type="button" onclick="insertTag('about_title', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
+                                                </div>
                                                 <input type="text" id="about_title" name="about_title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                             </div>
                                             
                                             <!-- Subtitle -->
                                             <div>
                                                 <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
+                                                <div class="flex items-center space-x-1 mb-1">
+                                                    <button type="button" onclick="insertTag('about_subtitle', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
+                                                    <button type="button" onclick="insertTag('about_subtitle', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
+                                                    <button type="button" onclick="insertTag('about_subtitle', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
+                                                    <button type="button" onclick="insertTag('about_subtitle', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
+                                                </div>
                                                 <input type="text" id="about_subtitle" name="about_subtitle" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                             </div>
                                             
                                             <!-- Description -->
                                             <div class="sm:col-span-2">
                                                 <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
+                                                <div class="flex items-center space-x-1 mb-1">
+                                                    <button type="button" onclick="insertTag('about_description', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
+                                                    <button type="button" onclick="insertTag('about_description', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
+                                                    <button type="button" onclick="insertTag('about_description', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
+                                                    <button type="button" onclick="insertTag('about_description', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
+                                                </div>
                                                 <textarea id="about_description" name="about_description" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                                             </div>
                                         </div>
@@ -194,12 +212,13 @@
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <h3 class="text-md font-medium text-gray-700 border-b pb-2 mb-4">Work Experience</h3>
-                                        <div id="work-experience-container">
+                                    <!-- Work Experience -->
+                                    <div class="mb-8">
+                                        <h3 class="text-lg font-medium text-gray-900 mb-4">Work Experience</h3>
+                                        <div id="work-experience-container" class="space-y-6">
                                             <!-- Work experience items will be dynamically added here -->
+                                            <p id="work-experience-loading" class="text-gray-500">Loading work experience...</p>
                                         </div>
-                                        
                                         <div class="mt-4">
                                             <button type="button" id="add-work-experience" class="inline-flex items-center px-3 py-2 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                                 <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -208,70 +227,72 @@
                                                 Add Work Experience
                                             </button>
                                         </div>
-                                        
-                                        <!-- Template for new work experience items -->
-                                        <template id="work-experience-template">
-                                            <div class="work-experience-item bg-gray-50 rounded-md p-4 my-4 border border-gray-200">
-                                                <div class="flex justify-between mb-2">
-                                                    <h4 class="text-sm font-medium text-gray-700">Work Experience</h4>
-                                                    <button type="button" class="delete-work-experience text-red-600 hover:text-red-800">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </button>
+                                    </div>
+
+                                    <!-- Template for new work experience items -->
+                                    <template id="work-experience-template">
+                                        <div class="work-experience-item bg-gray-50 rounded-md p-4 my-4 border border-gray-200">
+                                            <div class="flex justify-between items-start mb-3">
+                                                <h4 class="text-base font-medium text-gray-800">Work Experience Entry</h4>
+                                                <button type="button" class="delete-work-experience text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            
+                                            <input type="hidden" class="workex-id" name="workex_id">
+                                            
+                                            <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
+                                                <!-- Job Title -->
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Job Title</label>
+                                                    <input type="text" class="workex-title mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
                                                 </div>
                                                 
-                                                <input type="hidden" class="workex-id" name="workex_id">
+                                                <!-- Company Name -->
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Company Name</label>
+                                                    <input type="text" class="workex-company mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
+                                                </div>
                                                 
-                                                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                                    <!-- Job Title -->
+                                                <!-- Location -->
+                                                <div class="sm:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Location</label>
+                                                    <input type="text" class="workex-location mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                                </div>
+                                                
+                                                <!-- Date Range -->
+                                                <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                                                     <div>
-                                                        <label class="block text-sm font-medium text-gray-700">Job Title</label>
-                                                        <input type="text" class="workex-title mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                                                        <label class="block text-sm font-medium text-gray-700">From Date</label>
+                                                        <input type="month" class="workex-from-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
                                                     </div>
                                                     
-                                                    <!-- Company Name -->
                                                     <div>
-                                                        <label class="block text-sm font-medium text-gray-700">Company Name</label>
-                                                        <input type="text" class="workex-company mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                                                        <label class="block text-sm font-medium text-gray-700">To Date</label>
+                                                        <input type="month" class="workex-to-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
                                                     </div>
-                                                    
-                                                    <!-- Location -->
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-700">Location</label>
-                                                        <input type="text" class="workex-location mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+                                                    <div class="flex items-center pb-2">
+                                                        <input type="checkbox" class="workex-current h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                                        <label class="ml-2 block text-sm text-gray-700">Current Job</label>
                                                     </div>
-                                                    
-                                                    <!-- Date Range -->
-                                                    <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700">From Date</label>
-                                                            <input type="month" class="workex-from-date mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                                                        </div>
-                                                        
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700">To Date</label>
-                                                            <div class="flex items-center space-x-2">
-                                                                <input type="month" class="workex-to-date mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                                                <div class="flex items-center mt-1">
-                                                                    <input type="checkbox" class="workex-current h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                                                    <label class="ml-2 block text-sm text-gray-700">Current</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <!-- Description / Responsibilities -->
-                                                    <div class="sm:col-span-2">
-                                                        <label class="block text-sm font-medium text-gray-700">Description / Responsibilities</label>
-                                                        <textarea class="workex-description mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" rows="3" required></textarea>
-                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Description / Responsibilities -->
+                                                <div class="sm:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Description / Responsibilities</label>
+                                                    <textarea class="workex-description mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" rows="3" required></textarea>
                                                 </div>
                                             </div>
-                                        </template>
-                                    </div>
+                                        </div>
+                                    </template>
                                     
                                     <div class="flex justify-end">
+                                        <button type="button" id="refresh-button" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2">
+                                            Refresh Data
+                                        </button>
                                         <button type="submit" id="save-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                             Save Changes
                                         </button>
@@ -309,6 +330,45 @@
         
         // Check authentication
         checkAuth();
+        
+        // Insert HTML tags for formatting text fields
+        function insertTag(fieldId, tag) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+
+            const start = field.selectionStart;
+            const end = field.selectionEnd;
+            const currentValue = field.value;
+            const selectedText = currentValue.substring(start, end);
+
+            let newValue;
+            let cursorPosition = start; // Default cursor position
+
+            if (tag === 'br') {
+                // Insert <br> tag at cursor position
+                newValue = currentValue.substring(0, start) + '<br>' + currentValue.substring(end);
+                cursorPosition = start + 4; // Move cursor after <br>
+            } else {
+                // Wrap selected text or insert empty tags
+                const openTag = `<${tag}>`;
+                const closeTag = `</${tag}>`;
+                if (selectedText) {
+                    // Wrap selection
+                    newValue = currentValue.substring(0, start) + openTag + selectedText + closeTag + currentValue.substring(end);
+                    cursorPosition = end + openTag.length + closeTag.length; // Move cursor after the wrapped text
+                } else {
+                    // Insert empty tags at cursor
+                    newValue = currentValue.substring(0, start) + openTag + closeTag + currentValue.substring(end);
+                    cursorPosition = start + openTag.length; // Move cursor between the tags
+                }
+            }
+
+            field.value = newValue;
+            // Set focus and cursor position
+            field.focus();
+            field.selectionStart = cursorPosition;
+            field.selectionEnd = cursorPosition;
+        }
         
         function checkAuth() {
             console.log('Checking authentication');
@@ -874,6 +934,20 @@
                         // Add empty work experience item
                         addWorkExperienceItem();
                     });
+            });
+        }
+        
+        // Add refresh button event listener
+        const refreshButton = document.getElementById('refresh-button');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', function() {
+                console.log('Refreshing data');
+                // Show loading indicator
+                if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+                if (formContainer) formContainer.classList.add('hidden');
+                
+                // Load configuration again
+                loadSiteConfig();
             });
         }
     });
