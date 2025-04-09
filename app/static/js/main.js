@@ -486,9 +486,8 @@ function updateWorkExperienceTimeline(workExperienceData) {
             console.log(`  - ${key}: ${experience[key]}`);
         });
         
-        // Get title and company values (handle both naming conventions)
-        const jobTitle = experience.job_title || experience.title || '';
-        const company = experience.company_name || experience.company || '';
+        const jobTitle = experience.job_title || '';
+        const company = experience.company_name || '';
         const location = experience.location || '';
         const description = experience.description || '';
         

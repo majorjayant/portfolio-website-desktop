@@ -915,48 +915,20 @@
                         console.log('First work experience item structure:', JSON.stringify(items[0], null, 2));
                     }
                     
-                    // Ensure each item has both naming conventions (job_title/company_name and title/company)
-                    const normalizedItems = items.map(item => {
-                        // Create a normalized copy of the item
-                        const normalizedItem = {...item};
-                        
-                        // Ensure job_title field exists
-                        if (!normalizedItem.job_title && normalizedItem.title) {
-                            normalizedItem.job_title = normalizedItem.title;
-                        }
-                        
-                        // Ensure title field exists
-                        if (!normalizedItem.title && normalizedItem.job_title) {
-                            normalizedItem.title = normalizedItem.job_title;
-                        }
-                        
-                        // Ensure company_name field exists
-                        if (!normalizedItem.company_name && normalizedItem.company) {
-                            normalizedItem.company_name = normalizedItem.company;
-                        }
-                        
-                        // Ensure company field exists
-                        if (!normalizedItem.company && normalizedItem.company_name) {
-                            normalizedItem.company = normalizedItem.company_name;
-                        }
-                        
-                        return normalizedItem;
-                    });
-                    
                     // Sort items by from_date in descending order (newest first)
-                    normalizedItems.sort((a, b) => {
+                    items.sort((a, b) => {
                         const dateA = a.from_date ? new Date(a.from_date) : new Date(0);
                         const dateB = b.from_date ? new Date(b.from_date) : new Date(0);
                         return dateB - dateA;
                     });
                     
                     // Add each work experience item to the container
-                    normalizedItems.forEach(item => {
+                    items.forEach(item => {
                         console.log('Adding work experience item:', item);
                         addWorkExperienceItem(null, item);
                     });
                     
-                    if (normalizedItems.length === 0) {
+                    if (items.length === 0) {
                         console.log('No work experience items found, adding empty item');
                         addWorkExperienceItem(null);
                     }
@@ -997,8 +969,8 @@
             workExItem.dataset.id = data.id || '';
             
             // Debug log to see what's in the job_title field
-            console.log('Job title from data:', data.job_title || data.title);
-            console.log('Company name from data:', data.company_name || data.company);
+            console.log('Job title from data:', data.job_title);
+            console.log('Company name from data:', data.company_name);
             
             // Create job title field
             const titleLabel = document.createElement('label');
@@ -1007,7 +979,7 @@
             titleInput.type = 'text';
             titleInput.className = 'workex-title';
             titleInput.required = true;
-            titleInput.value = data.job_title || data.title || '';
+            titleInput.value = data.job_title || '';
             titleInput.placeholder = 'e.g. Software Engineer';
             
             // Create company name field
@@ -1017,7 +989,7 @@
             companyInput.type = 'text';
             companyInput.className = 'workex-company';
             companyInput.required = true;
-            companyInput.value = data.company_name || data.company || '';
+            companyInput.value = data.company_name || '';
             companyInput.placeholder = 'e.g. Tech Company Inc.';
             
             // Create location field
@@ -1168,16 +1140,11 @@
                     return;
                 }
                 
-                // Build complete work experience data object with both field naming conventions
+                // Build work experience data object with correct field names
                 const workExData = {
                     id: item.dataset.id || '',
-                    
-                    // Include both job_title/company_name and title/company for maximum compatibility
                     job_title: jobTitle,
                     company_name: company,
-                    title: jobTitle, 
-                    company: company,
-                    
                     location: item.querySelector('.workex-location')?.value || '',
                     from_date: item.querySelector('.workex-from-date')?.value || '',
                     to_date: item.querySelector('.workex-to-date')?.value || '',

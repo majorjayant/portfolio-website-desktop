@@ -195,14 +195,11 @@ async function getWorkExperience() {
     const [rows] = await connection.execute('SELECT * FROM workex ORDER BY from_date DESC');
     console.log(`Retrieved ${rows.length} work experience entries from the database`);
     
-    // Format the data for response
+    // Format the data for response with correct field names
     const workExperience = rows.map(row => ({
       id: row.id,
-      // Include both naming conventions for better compatibility
-      title: row.title,
-      company: row.company,
-      job_title: row.title, // Add job_title field that maps to title
-      company_name: row.company, // Add company_name field that maps to company
+      job_title: row.title, // Map database title field to job_title
+      company_name: row.company, // Map database company field to company_name
       location: row.location,
       from_date: row.from_date ? row.from_date.toISOString().split('T')[0] : null,
       to_date: row.to_date ? row.to_date.toISOString().split('T')[0] : null,
@@ -302,12 +299,6 @@ async function saveWorkExperience(workExperienceData) {
     for (const item of workExperienceData) {
       console.log(`Processing work experience item:`, item);
       
-      // Handle different field naming conventions
-      const title = item.title || item.job_title || '';
-      const company = item.company || item.company_name || '';
-      const location = item.location || '';
-      const description = item.description || '';
-      
       // Format date fields
       const fromDate = item.from_date || null;
       const toDate = item.is_current ? null : (item.to_date || null);
@@ -327,13 +318,13 @@ async function saveWorkExperience(workExperienceData) {
             description = ?
            WHERE id = ?`,
           [
-            title, 
-            company, 
-            location, 
+            item.job_title, // Use job_title field
+            item.company_name, // Use company_name field 
+            item.location || '', 
             fromDate, 
             toDate, 
             item.is_current ? 1 : 0, 
-            description,
+            item.description,
             item.id
           ]
         );
@@ -345,13 +336,13 @@ async function saveWorkExperience(workExperienceData) {
             title, company, location, from_date, to_date, is_current, description
           ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [
-            title, 
-            company, 
-            location, 
+            item.job_title, // Use job_title field
+            item.company_name, // Use company_name field
+            item.location || '', 
             fromDate, 
             toDate, 
             item.is_current ? 1 : 0, 
-            description
+            item.description
           ]
         );
         
