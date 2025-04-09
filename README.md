@@ -112,3 +112,119 @@ The dashboard is divided into several sections:
 8.  **Refresh After Save:** Upon successful save, `saveSiteConfig` calls `fetchConfiguration` (similar to `loadSiteConfig`) to reload the dashboard with the newly saved data.
 
 This detailed flow ensures that the dashboard reflects the current state of the database and allows seamless content management for the portfolio website.
+
+---
+
+## Developer Guide: Adding New Manageable Fields
+
+This section outlines the steps required to add a new field that can be managed via the Admin Dashboard and displayed on the frontend portfolio.
+
+**Example Scenario:** Adding a `skills_used` text field to the Work Experience section.
+
+**1. Database Modification:**
+   *   Add the new column to your MySQL `workex` table.
+      ```sql
+      ALTER TABLE workex
+      ADD COLUMN skills_used TEXT NULL DEFAULT NULL AFTER description;
+      ```
+   *   _Choose appropriate data types (TEXT, VARCHAR, INT, etc.) and constraints (NULL, DEFAULT)._
+
+**2. Lambda Function (`lambda-no-mysql/index.js`):**
+   *   **`getWorkExperience` Function:**
+      *   Ensure your `SELECT * ...` statement implicitly fetches the new column. If you selected specific columns, add `skills_used` to the list.
+      *   In the `rows.map(...)` section, add the new field to the `expObj` being returned:
+         ```javascript
+         const expObj = {
+           // ... existing fields ...
+           description: row.description,
+           skills_used: row.skills_used || '' // Add the new field
+         };
+         ```
+   *   **`saveWorkExperience` Function:**
+      *   Add the new field (`skills_used`) to the parameters extracted from the `item` payload at the beginning of the `for...of` loop:
+         ```javascript
+         const skillsUsed = item.skills_used || '';
+         ```
+      *   Add the new field and its corresponding placeholder (`?`) to the `UPDATE workex SET ...` SQL statement:
+         ```sql
+         `UPDATE workex SET 
+            ..., 
+            description = ?, 
+            skills_used = ?, -- Add new field
+            updated_date = NOW(), 
+            is_deleted = 0 
+          WHERE id = ?`,
+         // Add the variable to the parameter array in the correct position:
+         [..., description, skillsUsed, itemIdInt] 
+         ```
+      *   Add the new column name and its corresponding placeholder (`?`) to the `INSERT INTO workex (...) VALUES (...)` SQL statement:
+         ```sql
+         `INSERT INTO workex (... description, skills_used, is_deleted, created_date, updated_date) 
+          VALUES (?, ..., ?, ?, 0, NOW(), NOW())`, // Add placeholder
+         // Add the variable to the parameter array in the correct position:
+         [..., description, skillsUsed]
+         ```
+      *   _**Important:** Make sure the order of placeholders (`?`) exactly matches the order of variables in the parameter array for both UPDATE and INSERT._
+
+**3. Admin Dashboard (`app/static/admin/dashboard.html`):**
+   *   **`addWorkExperienceItem` Function:**
+      *   Within this function, create the HTML elements (label, input/textarea) for the new field (`skills_used`). Assign appropriate classes (e.g., `workex-skills-used`) and attributes (`type`, `placeholder`, `rows` if textarea).
+         ```javascript
+         // Create skills field
+         const skillsLabel = document.createElement('label');
+         skillsLabel.textContent = 'Skills Used:';
+         const skillsInput = document.createElement('textarea');
+         skillsInput.className = 'workex-skills-used'; // Assign a class
+         skillsInput.value = data.skills_used || ''; // Populate from loaded data
+         skillsInput.placeholder = 'e.g., JavaScript, React, Node.js';
+         skillsInput.rows = 2;
+         ```
+      *   Append these new elements to the `workExItem` div in the desired visual order:
+         ```javascript
+         // Add fields to work experience item
+         // ... append other fields ...
+         workExItem.appendChild(descLabel);
+         workExItem.appendChild(descInput);
+         workExItem.appendChild(skillsLabel); // Append new label
+         workExItem.appendChild(skillsInput); // Append new input
+         workExItem.appendChild(deleteBtn);
+         ```
+   *   **`getWorkExperienceData` Function:**
+      *   Inside the `workExItems.forEach(...)` loop, retrieve the value from the new input field using its class.
+         ```javascript
+         const skillsUsed = item.querySelector('.workex-skills-used')?.value || '';
+         ```
+      *   Add the new field to the `workExData` object being created:
+         ```javascript
+         const workExData = {
+           // ... existing fields ...
+           description: item.querySelector('.workex-description')?.value || '',
+           skills_used: skillsUsed // Add the new field
+         };
+         ```
+   *   **(Optional) CSS Styling:** Add any necessary CSS rules in the `<style>` block or external CSS file for the new elements (e.g., `.workex-skills-used`) if needed.
+
+**4. Frontend Portfolio Display (`app/static/js/main.js` or similar):**
+   *   **`updateWorkExperienceTimeline` Function (or equivalent):**
+      *   Ensure the data received from the API (via `loadSiteConfig`) includes the new field (`skills_used`). You might need to check the `processConfigData` function.
+      *   Inside the loop that creates timeline items (`sortedWorkExperience.forEach(...)`), access the new field:
+         ```javascript
+         const skillsUsed = experience.skills_used || '';
+         ```
+      *   Modify the `innerHTML` for the `timelineItem` to display the `skillsUsed` data where desired. You might add a new paragraph or list.
+         ```html
+         <div class="timeline-content">
+             <h3 class="job-title">${jobTitle}</h3>
+             <h4 class="company-info">${company} ${location ? `| ${location}` : ''}</h4>
+             <span class="date">${period}</span>
+             <p class="timeline-description">${description}</p>
+             ${skillsUsed ? `<p class="timeline-skills"><strong>Skills:</strong> ${skillsUsed}</p>` : ''} <!-- Display skills -->
+         </div>
+         ```
+   *   **(Optional) CSS Styling:** Add CSS rules (e.g., in `app/static/css/style.css`) for the new element (e.g., `.timeline-skills`).
+
+**5. Deployment:**
+   *   Deploy the updated Lambda function package (`.zip`).
+   *   Deploy the updated frontend files (`dashboard.html`, `main.js`, potentially CSS files) to your hosting provider (e.g., Amplify).
+
+By following these steps, you can systematically add new manageable content fields to your portfolio system.
