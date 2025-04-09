@@ -77,6 +77,13 @@ frontend:
     - source: '/api/get-content/'
       target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
       status: '200'
+    # Add specific route for html/index.html
+    - source: '/static/html/index.html'
+      target: '/html/index.html'
+      status: '200'
+    - source: '/html/index.html'
+      target: '/html/index.html'
+      status: '200'
     # Catch-all route for SPA - this needs to be last
     - source: '/<*>'
       target: '/index.html'
