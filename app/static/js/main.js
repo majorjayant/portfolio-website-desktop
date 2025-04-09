@@ -481,6 +481,12 @@ function updateWorkExperienceTimeline(workExperienceData) {
     sortedWorkExperience.forEach((experience, index) => {
         console.log(`📋 Processing experience #${index}:`, experience);
         
+        // Get title and company values (handle both naming conventions)
+        const jobTitle = experience.title || experience.job_title || '';
+        const company = experience.company || experience.company_name || '';
+        const location = experience.location || '';
+        const description = experience.description || '';
+        
         // Format the period string
         let period = '';
         if (experience.from_date) {
@@ -508,10 +514,10 @@ function updateWorkExperienceTimeline(workExperienceData) {
         timelineItem.innerHTML = `
             <div class="timeline-marker"></div>
             <div class="timeline-content">
-                <h3 class="job-title">${experience.title || ''}</h3>
-                <h4 class="company-info">${experience.company || ''} ${experience.location ? `| ${experience.location}` : ''}</h4>
+                <h3 class="job-title">${jobTitle}</h3>
+                <h4 class="company-info">${company} ${location ? `| ${location}` : ''}</h4>
                 <span class="date">${period}</span>
-                <p class="timeline-description">${experience.description || ''}</p>
+                <p class="timeline-description">${description}</p>
             </div>
         `;
         
@@ -527,4 +533,4 @@ function updateWorkExperienceTimeline(workExperienceData) {
     } else {
         console.warn('⚠️ AOS not available, animations may not work');
     }
-} 
+}

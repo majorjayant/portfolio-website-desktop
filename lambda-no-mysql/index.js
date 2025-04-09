@@ -299,6 +299,12 @@ async function saveWorkExperience(workExperienceData) {
     for (const item of workExperienceData) {
       console.log(`Processing work experience item:`, item);
       
+      // Handle different field naming conventions
+      const title = item.title || item.job_title || '';
+      const company = item.company || item.company_name || '';
+      const location = item.location || '';
+      const description = item.description || '';
+      
       // Format date fields
       const fromDate = item.from_date || null;
       const toDate = item.is_current ? null : (item.to_date || null);
@@ -318,13 +324,13 @@ async function saveWorkExperience(workExperienceData) {
             description = ?
            WHERE id = ?`,
           [
-            item.title, 
-            item.company, 
-            item.location || '', 
+            title, 
+            company, 
+            location, 
             fromDate, 
             toDate, 
             item.is_current ? 1 : 0, 
-            item.description,
+            description,
             item.id
           ]
         );
@@ -336,13 +342,13 @@ async function saveWorkExperience(workExperienceData) {
             title, company, location, from_date, to_date, is_current, description
           ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [
-            item.title, 
-            item.company, 
-            item.location || '', 
+            title, 
+            company, 
+            location, 
             fromDate, 
             toDate, 
             item.is_current ? 1 : 0, 
-            item.description
+            description
           ]
         );
         

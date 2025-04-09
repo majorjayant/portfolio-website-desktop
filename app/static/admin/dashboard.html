@@ -730,7 +730,11 @@
                 
                 // Refresh work experience data if available
                 if (data.work_experience) {
+                    console.log('Work experience data found in API response:', data.work_experience);
                     loadWorkExperienceData(data.work_experience);
+                } else {
+                    console.log('No work experience data in API response, fetching separately');
+                    loadWorkExperienceData();
                 }
                 
                 return true;
@@ -757,95 +761,227 @@
             initCurrentCheckboxBehavior();
         }
         
-        function loadWorkExperienceData(workExperienceData) {
-            console.log('Loading work experience data:', workExperienceData);
-            
-            // Clear existing work experience items
+        async function loadWorkExperienceData(existingData = null) {
+            console.log('Loading work experience data...');
             const container = document.getElementById('work-experience-container');
-            if (container) {
-                container.innerHTML = '';
-            }
+            const loadingMsg = document.getElementById('work-experience-loading');
             
-            // Check if we have any work experience data
-            if (Array.isArray(workExperienceData) && workExperienceData.length > 0) {
-                // Create a work experience item for each data entry
-                workExperienceData.forEach(experience => {
-                    addWorkExperienceItem(null, experience);
-                });
-            } else {
-                // If no work experience data, add an empty item
-                console.log('No work experience data found, adding empty item');
-                addWorkExperienceItem();
-            }
-        }
-        
-        function addWorkExperienceItem(event, data = null) {
-            console.log('Adding work experience item', data);
-            
-            // Get template and container
-            const template = document.getElementById('work-experience-template');
-            const container = document.getElementById('work-experience-container');
-            
-            if (!template || !container) {
-                console.error('Work experience template or container not found');
+            if (!container || !loadingMsg) {
+                console.error('Work experience container or loading message element not found');
                 return;
             }
             
-            // Clone template content
-            const clone = document.importNode(template.content, true);
-            const item = clone.querySelector('.work-experience-item');
+            // Show loading message
+            loadingMsg.style.display = 'block';
             
-            // If we have data, populate the item
-            if (data) {
-                item.querySelector('.workex-id').value = data.id || '';
-                item.querySelector('.workex-title').value = data.title || '';
-                item.querySelector('.workex-company').value = data.company || '';
-                item.querySelector('.workex-location').value = data.location || '';
-                item.querySelector('.workex-description').value = data.description || '';
+            try {
+                // Clear existing items
+                container.innerHTML = '';
                 
-                // Handle dates
-                const fromDate = data.from_date ? data.from_date.substring(0, 7) : ''; // YYYY-MM format
-                item.querySelector('.workex-from-date').value = fromDate;
+                let experienceData = existingData;
                 
-                const currentCheckbox = item.querySelector('.workex-current');
-                const toDateInput = item.querySelector('.workex-to-date');
-                
-                // Check if this is a current job
-                if (data.is_current) {
-                    currentCheckbox.checked = true;
-                    toDateInput.disabled = true;
-                    toDateInput.value = '';
-                } else {
-                    currentCheckbox.checked = false;
-                    const toDate = data.to_date ? data.to_date.substring(0, 7) : ''; // YYYY-MM format
-                    toDateInput.value = toDate;
-                    toDateInput.disabled = false;
-                }
-            }
-            
-            // Add event listeners
-            const deleteBtn = item.querySelector('.delete-work-experience');
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', deleteWorkExperienceItem);
-            }
-            
-            // Set up current checkbox behavior
-            const currentCheckbox = item.querySelector('.workex-current');
-            const toDateInput = item.querySelector('.workex-to-date');
-            
-            if (currentCheckbox && toDateInput) {
-                currentCheckbox.addEventListener('change', function() {
-                    if (this.checked) {
-                        toDateInput.disabled = true;
-                        toDateInput.value = '';
-                    } else {
-                        toDateInput.disabled = false;
+                // If no existing data was provided, try to fetch it
+                if (!experienceData) {
+                    try {
+                        // Use the same API endpoint as the site config but with work_experience type
+                        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=work_experience';
+                        
+                        const response = await fetch(apiEndpoint, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            mode: 'cors',
+                            credentials: 'omit'
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`API request failed with status ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        console.log('Received work experience data from separate API call:', data);
+                        experienceData = data.work_experience || data;
+                    } catch (fetchError) {
+                        console.error('Error fetching work experience data:', fetchError);
                     }
-                });
+                }
+                
+                if (experienceData && Array.isArray(experienceData.items || experienceData)) {
+                    // Normalize data structure
+                    const items = experienceData.items || experienceData;
+                    
+                    // Sort items by from_date in descending order (newest first)
+                    items.sort((a, b) => {
+                        const dateA = a.from_date ? new Date(a.from_date) : new Date(0);
+                        const dateB = b.from_date ? new Date(b.from_date) : new Date(0);
+                        return dateB - dateA;
+                    });
+                    
+                    // Add each work experience item to the container
+                    items.forEach(item => {
+                        console.log('Adding work experience item:', item);
+                        addWorkExperienceItem(null, item);
+                    });
+                    
+                    if (items.length === 0) {
+                        console.log('No work experience items found, adding empty item');
+                        addWorkExperienceItem(null);
+                    }
+                } else {
+                    console.log('No work experience data found, adding empty item');
+                    addWorkExperienceItem(null);
+                }
+            } catch (error) {
+                console.error('Error loading work experience data:', error);
+                // Add an empty item if there's an error
+                addWorkExperienceItem(null);
+                // Show error message
+                const errorMsg = document.createElement('p');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'Failed to load work experience data. Please try again later.';
+                container.appendChild(errorMsg);
+            } finally {
+                // Hide loading message
+                loadingMsg.style.display = 'none';
+            }
+        }
+        
+        function addWorkExperienceItem(e, data = {}) {
+            if (e) e.preventDefault();
+            
+            console.log('Adding work experience item with data:', data);
+            
+            const container = document.getElementById('work-experience-container');
+            if (!container) {
+                console.error('Work experience container not found');
+                return;
             }
             
-            // Add item to container
-            container.appendChild(item);
+            const workExItem = document.createElement('div');
+            workExItem.className = 'workex-item';
+            workExItem.dataset.id = data.id || '';
+            
+            // Debug log to see what's in the job_title field
+            console.log('Job title from data:', data.job_title);
+            console.log('Company name from data:', data.company_name);
+            
+            // Create job title field
+            const titleLabel = document.createElement('label');
+            titleLabel.textContent = 'Job Title*:';
+            const titleInput = document.createElement('input');
+            titleInput.type = 'text';
+            titleInput.className = 'workex-title';
+            titleInput.required = true;
+            titleInput.value = data.job_title || '';
+            titleInput.placeholder = 'e.g. Software Engineer';
+            
+            // Create company name field
+            const companyLabel = document.createElement('label');
+            companyLabel.textContent = 'Company*:';
+            const companyInput = document.createElement('input');
+            companyInput.type = 'text';
+            companyInput.className = 'workex-company';
+            companyInput.required = true;
+            companyInput.value = data.company_name || '';
+            companyInput.placeholder = 'e.g. Tech Company Inc.';
+            
+            // Create location field
+            const locationLabel = document.createElement('label');
+            locationLabel.textContent = 'Location:';
+            const locationInput = document.createElement('input');
+            locationInput.type = 'text';
+            locationInput.className = 'workex-location';
+            locationInput.value = data.location || '';
+            locationInput.placeholder = 'e.g. New York, NY';
+            
+            // Create dates container
+            const datesContainer = document.createElement('div');
+            datesContainer.className = 'workex-dates';
+            
+            // From date field
+            const fromLabel = document.createElement('label');
+            fromLabel.textContent = 'From:';
+            const fromInput = document.createElement('input');
+            fromInput.type = 'date';
+            fromInput.className = 'workex-from-date';
+            fromInput.value = data.from_date || '';
+            
+            // To date field
+            const toLabel = document.createElement('label');
+            toLabel.textContent = 'To:';
+            const toInput = document.createElement('input');
+            toInput.type = 'date';
+            toInput.className = 'workex-to-date';
+            toInput.value = data.to_date || '';
+            
+            // Current job checkbox
+            const currentContainer = document.createElement('div');
+            currentContainer.className = 'workex-current';
+            const currentLabel = document.createElement('label');
+            currentLabel.textContent = 'Current Job:';
+            const currentInput = document.createElement('input');
+            currentInput.type = 'checkbox';
+            currentInput.className = 'workex-is-current';
+            currentInput.checked = !!data.is_current;
+            
+            // Add event listener to disable to_date if current job is checked
+            currentInput.addEventListener('change', function() {
+                toInput.disabled = this.checked;
+                if (this.checked) {
+                    toInput.value = '';
+                }
+            });
+            
+            // Set initial state of to_date based on is_current
+            toInput.disabled = currentInput.checked;
+            
+            // Add date fields to date container
+            datesContainer.appendChild(fromLabel);
+            datesContainer.appendChild(fromInput);
+            datesContainer.appendChild(toLabel);
+            datesContainer.appendChild(toInput);
+            currentContainer.appendChild(currentLabel);
+            currentContainer.appendChild(currentInput);
+            datesContainer.appendChild(currentContainer);
+            
+            // Create description field
+            const descLabel = document.createElement('label');
+            descLabel.textContent = 'Description:';
+            const descInput = document.createElement('textarea');
+            descInput.className = 'workex-description';
+            descInput.value = data.description || '';
+            descInput.placeholder = 'Describe your responsibilities and achievements...';
+            descInput.rows = 4;
+            
+            // Create delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'workex-delete-btn';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to delete this work experience item?')) {
+                    workExItem.remove();
+                }
+            });
+            
+            // Add fields to work experience item
+            workExItem.appendChild(titleLabel);
+            workExItem.appendChild(titleInput);
+            workExItem.appendChild(companyLabel);
+            workExItem.appendChild(companyInput);
+            workExItem.appendChild(locationLabel);
+            workExItem.appendChild(locationInput);
+            workExItem.appendChild(datesContainer);
+            workExItem.appendChild(descLabel);
+            workExItem.appendChild(descInput);
+            workExItem.appendChild(deleteBtn);
+            
+            // Add work experience item to container
+            container.appendChild(workExItem);
+            
+            return workExItem;
         }
         
         function deleteWorkExperienceItem(event) {
@@ -886,92 +1022,43 @@
         }
         
         function getWorkExperienceData() {
-            const workExperienceItems = document.querySelectorAll('.work-experience-item');
-            const workExperienceData = [];
+            const workExItems = document.querySelectorAll('.workex-item');
+            const data = [];
             
-            workExperienceItems.forEach(item => {
-                const id = item.querySelector('.workex-id').value;
-                const title = item.querySelector('.workex-title').value;
-                const company = item.querySelector('.workex-company').value;
-                const location = item.querySelector('.workex-location').value;
-                const fromDate = item.querySelector('.workex-from-date').value;
-                const toDate = item.querySelector('.workex-to-date').value;
-                const isCurrent = item.querySelector('.workex-current').checked;
-                const description = item.querySelector('.workex-description').value;
+            workExItems.forEach(item => {
+                const jobTitle = item.querySelector('.workex-title')?.value || '';
+                const company = item.querySelector('.workex-company')?.value || '';
                 
-                // Only add if required fields are filled out
-                if (title && company && fromDate && description) {
-                    workExperienceData.push({
-                        id: id || null,
-                        title,
-                        company,
-                        location,
-                        from_date: fromDate ? `${fromDate}-01` : '', // Add day for full date format
-                        to_date: !isCurrent && toDate ? `${toDate}-01` : null,
-                        is_current: isCurrent,
-                        description
-                    });
+                // Skip if required fields are empty
+                if (!jobTitle.trim() || !company.trim()) {
+                    console.log('Skipping work experience item with empty required fields');
+                    return;
                 }
+                
+                const workExData = {
+                    id: item.dataset.id || '',
+                    job_title: jobTitle,
+                    company_name: company,
+                    // Also include title and company for consistency
+                    title: jobTitle,
+                    company: company,
+                    location: item.querySelector('.workex-location')?.value || '',
+                    from_date: item.querySelector('.workex-from-date')?.value || '',
+                    to_date: item.querySelector('.workex-to-date')?.value || '',
+                    is_current: item.querySelector('.workex-is-current')?.checked || false,
+                    description: item.querySelector('.workex-description')?.value || ''
+                };
+                
+                data.push(workExData);
             });
             
-            return workExperienceData;
+            console.log('Collected work experience data:', data);
+            return data;
         }
 
         // Initialize work experience function on load
         initWorkExperience();
 
-        // Function to fetch work experience data separately
-        function fetchWorkExperienceData() {
-            console.log('Fetching work experience data');
-            
-            const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=workex';
-            
-            fetch(apiEndpoint, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                mode: 'cors',
-                credentials: 'omit'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`API response not OK: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Successfully loaded work experience from API:', data);
-                
-                // Process data
-                if (data.work_experience && Array.isArray(data.work_experience)) {
-                    loadWorkExperienceData(data.work_experience);
-                } else {
-                    console.log('No work experience data in API response');
-                    // Add empty work experience item
-                    addWorkExperienceItem();
-                }
-            })
-            .catch(error => {
-                console.error('Error loading work experience from API:', error);
-                
-                // Try loading from local JSON file as fallback
-                console.log('Trying to load work experience from local JSON file');
-                fetch('/data/experience.json')
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Loaded work experience from local JSON:', data);
-                        loadWorkExperienceData(data);
-                    })
-                    .catch(localError => {
-                        console.error('Error loading work experience from local JSON:', localError);
-                        // Add empty work experience item
-                        addWorkExperienceItem();
-                    });
-            });
-        }
-        
         // Add refresh button event listener
         const refreshButton = document.getElementById('refresh-button');
         if (refreshButton) {
