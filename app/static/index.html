@@ -1420,8 +1420,20 @@
                     // Try direct S3 URL if the current URL fails
                     if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
                         // Extract the photo number from the container's position
-                        const containers = Array.from(document.querySelectorAll('.snap-container'));
-                        const index = containers.indexOf(container);
+                         // Find the container associated with the modal image (this might be tricky)
+                         // Assuming the container that was clicked is still relevant or can be found
+                         // Let's refine this: we need the original clicked element's context
+                         // Storing the clicked element or its index globally might be needed
+                         // For now, try to find the corresponding snap container based on the failed src
+                         let containerIndex = -1;
+                         const failedSrc = this.src;
+                         const allContainers = Array.from(document.querySelectorAll('.snap-container'));
+                         const clickedContainer = allContainers.find(cont => cont.getAttribute('data-photo') === failedSrc);
+                         if (clickedContainer) {
+                              containerIndex = allContainers.indexOf(clickedContainer);
+                         }
+
+                        // Ensure these S3 URLs are correct
                         const s3Urls = [
                             'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
                             'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
@@ -1429,15 +1441,18 @@
                             'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
                         ];
                         
-                        if (index < s3Urls.length) {
-                            this.src = s3Urls[index];
+                        if (containerIndex >= 0 && containerIndex < s3Urls.length) {
+                            console.log(`Modal image failed, attempting S3 fallback: ${s3Urls[containerIndex]}`);
+                            this.src = s3Urls[containerIndex];
                         } else {
-                            // If S3 URL also fails, use placeholder
-                                this.src = '/static/img/placeholder.png';
+                            // If S3 URL also fails or index is invalid, use placeholder
+                            console.log("Modal image failed (no matching container found or index out of bounds), using placeholder.");
+                            this.src = '/static/img/placeholder.png'; // Ensure placeholder exists
                         }
                     } else {
-                        // If S3 URL also fails, use placeholder
-                        this.src = '/static/img/placeholder.png';
+                        // If the S3 URL itself failed, use placeholder
+                        console.log("Modal S3 image failed, using placeholder.");
+                        this.src = '/static/img/placeholder.png'; // Ensure placeholder exists
                     }
                 };
                     }
@@ -1750,10 +1765,11 @@
                 const img = document.createElement('img');
                 img.src = photo.url;
                 img.alt = photo.alt || 'Photo';
+                img.loading = 'lazy'; // Add lazy loading to carousel images
                 img.onerror = function() {
                     console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
                     this.onerror = null;
-                    this.src = '/static/img/placeholder.png';
+                    this.src = '/static/img/placeholder.png'; // Ensure placeholder exists
                 };
                 
                 frontBox.appendChild(img);
