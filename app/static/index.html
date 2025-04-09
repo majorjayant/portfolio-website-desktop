@@ -619,195 +619,9 @@
 
     /* Reduce space between carousel and work experience section */
     .experience-section {
-        position: relative; /* Keep relative positioning */
-        /* Remove forced display, visibility, opacity, z-index, overflow, padding, background */
-        padding: 70px 0; /* Keep padding or adjust as needed */
-        background-color: #f8f8f8; /* Keep background or adjust */
-        margin-top: 40px; /* Add margin if padding is removed/reduced */
-        margin-bottom: 40px;
-    }
-
-    /* NEW Experience Drawer Styles */
-    .experience-drawer-container {
-        position: relative; /* Keep relative positioning */
-        /* Remove forced display, visibility, opacity, z-index, overflow, margin, width */
-        max-width: 900px; /* Keep max-width */
-        margin: 40px auto 0; /* Adjust margin */
-    }
-
-    .experience-item {
-        position: relative; /* Keep relative positioning */
-        /* Remove forced display, visibility, z-index */
-        margin-bottom: 15px;
-        border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        overflow: hidden; /* Keep overflow hidden */
-        background-color: white;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border-left: 5px solid var(--item-color, #4285F4); /* Add CSS variable use */
-    }
-
-    .experience-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 25px rgba(0,0,0,0.1);
-    }
-
-    .experience-item.active {
-        transform: translateY(-2px); /* Remove !important */
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Remove !important */
-        z-index: 2; /* Remove !important */
-    }
-
-    .experience-header {
-        position: relative; /* Keep relative positioning */
-        /* Remove forced display, visibility, z-index */
-        display: flex; /* Keep display flex */
-        flex-wrap: wrap;
-        align-items: center;
-        padding: 20px 25px; /* Keep padding */
-        transition: all 0.3s ease; /* Keep transition */
-        background-color: #f8f9fa; /* Add default background */
-    }
-
-    .experience-item.active .experience-header::after {
-       /* Remove this pseudo-element rule entirely */
-    }
-
-    .experience-item.active .experience-header {
-        color: white; /* Keep text color */
-        padding-bottom: 25px; /* Keep padding */
-        background-color: var(--item-color, #4285F4); /* Use CSS var for background */
-    }
-
-    .experience-item.active .experience-header * {
-        color: white; /* Keep text color */
-    }
-
-    .experience-item.active .experience-header .expand-icon i {
-        transform: rotate(180deg); /* Remove !important */
-    }
-
-    .experience-date {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-right: 20px;
-        flex: 0 0 auto;
-    }
-
-    .experience-title {
-        font-size: 1.1rem;
-        margin: 0;
-        color: var(--text-primary);
-        font-weight: 600;
-        flex: 1;
-    }
-
-    .experience-city {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-left: auto;
-        margin-right: 20px;
-        text-align: right;
-        flex: 0 0 auto;
-    }
-
-    .experience-header .expand-icon {
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        flex: 0 0 auto;
-    }
-
-    .experience-details {
-        position: relative; /* Keep relative positioning */
-        /* Remove forced display, visibility, z-index */
-        overflow: hidden; /* Keep overflow hidden */
-        /* Use max-height and opacity for transitions */
-        max-height: 0;
-        opacity: 0;
-        padding: 0 25px; /* Horizontal padding */
-        background-color: #ffffff; /* Ensure background */
-        transition: max-height 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), /* Smoother transition */
-                    opacity 0.3s ease-in-out 0.1s, /* Delay opacity transition slightly */
-                    padding-top 0.5s ease,
-                    padding-bottom 0.5s ease;
-    }
-
-    .experience-details::before {
-        /* Remove this pseudo-element rule entirely */
-    }
-
-    .experience-item.active .experience-details {
-        /* Remove forced padding, opacity */
-        /* max-height is set by JS */
-        opacity: 1; /* Fade in */
-        padding-top: 15px; /* Add padding when open */
-        padding-bottom: 25px; /* Add padding when open */
-    }
-
-    .experience-details p {
-        margin-top: 0;
-        line-height: 1.6;
-    }
-
-    .experience-details ul {
-        padding-left: 20px;
-    }
-
-    .experience-details li {
-        margin-bottom: 8px;
-    }
-
-    /* Responsive adjustments for drawer */
-    @media (max-width: 768px) {
-        .experience-drawer-container {
-            max-width: 100%;
-        }
-        
-        .experience-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .experience-header .experience-title {
-            margin-top: 5px;
-            margin-bottom: 5px;
-            font-size: 1rem;
-        }
-        
-        .experience-header .expand-icon {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        
-        .experience-header .experience-date {
-            margin-right: 0;
-            font-size: 0.8rem;
-        }
-        
-        .experience-header .experience-city {
-            margin-left: 0;
-            margin-right: 0;
-            text-align: left;
-            font-size: 0.8rem;
-        }
-        
-        .experience-details {
-            padding: 0 20px;
-        }
-        
-        .experience-item.active .experience-details {
-            padding: 5px 20px 20px;
-        }
-        
-        .experience-details p {
-            font-size: 0.9rem;
-        }
+        margin-top: -100px;
+        position: relative;
+        z-index: 1;
     }
 
     /* Styles for Transparent Header Text/Icons */
@@ -835,8 +649,90 @@
 
     
     <!-- Netlify deployment fix -->
-    <!-- REMOVED this script block as it's being combined -->
-
+    <script>
+        // Handle case when SiteConfig not available (static sites)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if any of the image elements failed to load
+            const fixBrokenImages = function() {
+                // S3 fallback URLs
+                const fallbacks = {
+                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
+                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'
+                };
+                
+                // Fix header logo
+                const headerLogo = document.querySelector('.navbar .logo img');
+                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
+                    headerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix footer logo 
+                const footerLogo = document.querySelector('.footer-logo img');
+                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
+                    footerLogo.src = fallbacks.logo;
+                }
+                
+                // Fix favicon
+                const favicon = document.querySelector('link[rel="icon"]');
+                if (favicon) {
+                    favicon.href = fallbacks.favicon;
+                }
+                
+                // Fix styles if needed
+                const fixStyles = function() {
+                    // Fix header styles
+                    const navbar = document.querySelector('.navbar');
+                    if (navbar) {
+                        navbar.style.backgroundColor = 'transparent';
+                        navbar.style.backdropFilter = 'none';
+                    }
+                    
+                    // Fix logo styles
+                    if (headerLogo) {
+                        headerLogo.style.height = '70px';
+                        headerLogo.style.width = 'auto';
+                        headerLogo.style.display = 'block';
+                    }
+                    
+                    // Fix navigation
+                    const navLinks = document.querySelector('.nav-links');
+                    if (navLinks) {
+                        navLinks.style.marginLeft = 'auto';
+                        navLinks.style.textAlign = 'right';
+                    }
+                    
+                    const navLinksList = document.querySelector('.nav-links ul');
+                    if (navLinksList) {
+                        navLinksList.style.display = 'flex';
+                        navLinksList.style.justifyContent = 'flex-end';
+                        navLinksList.style.padding = '0';
+                        navLinksList.style.margin = '0';
+                    }
+                    
+                    // Fix banner
+                    const bannerImage = document.getElementById('banner-image');
+                    if (bannerImage) {
+                        bannerImage.style.backgroundSize = 'contain';
+                        bannerImage.style.backgroundPosition = 'center';
+                        bannerImage.style.backgroundRepeat = 'no-repeat';
+                    }
+                    
+                    // Fix footer logo
+                    if (footerLogo) {
+                        footerLogo.style.maxWidth = '100px';
+                        footerLogo.style.maxHeight = '60px';
+                    }
+                };
+                
+                fixStyles();
+            };
+            
+            // Run immediately and also after a short delay to catch slow-loading elements
+            fixBrokenImages();
+            setTimeout(fixBrokenImages, 1000);
+        });
+    </script>
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -863,200 +759,183 @@
 
     <!-- Flash Messages -->
     
+        
+    
 
     <!-- Main Content -->
     <main>
-        <!-- Banner Section -->
-        <section class="banner" id="banner-section">
-            <div class="parallax-container">
-                <div class="parallax-layer layer-bg" id="banner-image" style="background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'); background-size: cover; background-position: center;"></div>
-                <div class="parallax-layer layer-1"></div>
-                <div class="parallax-layer layer-2"></div>
-                <div class="banner-content">
-                    <!-- Content removed as requested -->
-                </div>
-            </div>
-        </section>
-
-        <!-- About Me Section - New Design -->
-        <section class="about-section" id="about-section" data-aos="fade-up">
-            <div class="container">
-                <div class="about-container">
-                    <div id="text-main" class="text-main">
-                        <h1 id="about-title"></h1>
-                        <p id="about-subtitle" class="intro"></p>
-                        <p id="about-description" class="description"></p>
-                    </div>
-                    <div id="img-main" class="img-main">
-                        <img id="profile-image" class="profile-image" src="" alt="Profile Photo">
-                    </div>
-                </div>
-                
-                <div id="snaps" class="snaps">
-                    <!-- Photo containers will be dynamically added here -->
-                </div>
-            </div>
-        </section>
-
-        <!-- Photo Modal -->
-        <div id="photoModal" class="photo-modal">
-            <span class="close-modal">&times;</span>
-            <div class="modal-content">
-                <img id="modalImage" src="" alt="Full size image">
+        
+    <!-- Banner Section -->
+    <section class="banner" id="banner-section">
+        <div class="parallax-container">
+            <div class="parallax-layer layer-bg" id="banner-image" style="background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner'); background-size: cover; background-position: center;"></div>
+            <div class="parallax-layer layer-1"></div>
+            <div class="parallax-layer layer-2"></div>
+            <div class="banner-content">
+                <!-- Content removed as requested -->
             </div>
         </div>
+    </section>
 
-        <!-- Experience Section -->
-        <section class="experience-section" data-aos="fade-up">
-            <div class="container">
-                <h2 class="section-title">Career Journey</h2>
+    <!-- About Me Section - New Design -->
+    <section class="about-section" id="about-section" data-aos="fade-up">
+        <div class="container">
+            <div class="about-container">
+                <div id="text-main" class="text-main">
+                    <h1 id="about-title"></h1>
+                    <p id="about-subtitle" class="intro"></p>
+                    <p id="about-description" class="description"></p>
+                </div>
+                <div id="img-main" class="img-main">
+                    <img id="profile-image" class="profile-image" src="" alt="Profile Photo">
+                </div>
+            </div>
+            
+            <div id="snaps" class="snaps">
+                <!-- Photo containers will be dynamically added here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Photo Modal -->
+    <div id="photoModal" class="photo-modal">
+        <span class="close-modal">&times;</span>
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Full size image">
+        </div>
+    </div>
+
+    <!-- Experience Section -->
+    <section class="experience-section" data-aos="fade-up">
+        <div class="container">
+            <h2 class="section-title">Career Journey</h2>
+            
+            <div class="timeline-vertical">
                 
-                <div class="experience-drawer-container">
-                    <!-- Experience Item 1 (Most Recent) -->
-                    <div class="experience-item" data-color="#4285F4">
-                        <div class="experience-header">
-                            <span class="experience-date">Jan 2020 - Present</span>
-                            <h3 class="experience-title">Senior Product Manager</h3>
-                            <span class="experience-city">New York, NY</span>
-                            <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
-                            </div>
-                        <div class="experience-details">
-                            <p>Leading product development for enterprise SaaS solutions with a focus on scalability and user adoption. Driving innovation through strategic planning and cross-functional team leadership.</p>
-                            <ul>
-                                <li>Led the development and launch of 3 major product features, resulting in 40% increase in user engagement</li>
-                                <li>Managed a cross-functional team of 12 engineers, designers, and QA specialists</li>
-                                <li>Established product metrics and KPIs that improved decision-making and prioritization</li>
-                            </ul>
-                            </div>
+                <!-- Timeline Item 1 (Most Recent) -->
+                <div class="timeline-item" data-aos="fade-left">
+                    <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                        <h3 class="job-title">Senior Product Manager</h3>
+                        <h4 class="company-info">Tech Solutions Inc. | Jan 2020 - Present</h4>
+                        <p class="timeline-description">Leading product development for enterprise SaaS solutions. Managing cross-functional teams and driving roadmap execution.</p>
                         </div>
-                    
-                    <!-- Experience Item 2 -->
-                    <div class="experience-item" data-color="#34A853">
-                        <div class="experience-header">
-                            <span class="experience-date">Mar 2017 - Dec 2019</span>
-                            <h3 class="experience-title">Product Manager</h3>
-                            <span class="experience-city">Boston, MA</span>
-                            <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
-                            </div>
-                        <div class="experience-details">
-                            <p>Managed the development lifecycle of mobile applications for key financial services clients, focusing on user experience and market fit.</p>
-                            <ul>
-                                <li>Oversaw the successful launch of 5 mobile applications with 100,000+ downloads</li>
-                                <li>Implemented agile methodologies that reduced development time by 30%</li>
-                                <li>Conducted user research and competitive analysis to identify market opportunities</li>
-                            </ul>
-                            </div>
+                    </div>
+                
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item" data-aos="fade-right">
+                    <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                        <h3 class="job-title">Product Manager</h3>
+                        <h4 class="company-info">Digital Innovations Co. | Mar 2017 - Dec 2019</h4>
+                        <p class="timeline-description">Managed the development lifecycle of mobile applications for key financial services clients, focusing on user experience and market fit.</p>
                         </div>
-                    
-                    <!-- Experience Item 3 (Oldest) -->
-                    <div class="experience-item" data-color="#FBBC05">
-                        <div class="experience-header">
-                            <span class="experience-date">Jun 2015 - Feb 2017</span>
-                            <h3 class="experience-title">Associate Product Manager</h3>
-                            <span class="experience-city">San Francisco, CA</span>
-                            <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
-                            </div>
-                        <div class="experience-details">
-                            <p>Assisted in the ideation, development, and successful launch of three B2C web applications in the e-commerce space.</p>
-                            <ul>
-                                <li>Collaborated with designers to create intuitive user interfaces that increased conversion rates by 25%</li>
-                                <li>Gathered and analyzed customer feedback to identify pain points and improvement opportunities</li>
-                                <li>Participated in sprint planning and daily stand-ups to ensure project progress</li>
-                            </ul>
-                            </div>
+                    </div>
+                
+                <!-- Timeline Item 3 (Oldest) -->
+                <div class="timeline-item" data-aos="fade-left">
+                    <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                        <h3 class="job-title">Associate Product Manager</h3>
+                        <h4 class="company-info">StartupHub | Jun 2015 - Feb 2017</h4>
+                        <p class="timeline-description">Assisted in the ideation, development, and successful launch of three B2C web applications in the e-commerce space.</p>
                         </div>
-                </div>
+                    </div>
+                
+                <!-- Add more items here in reverse chronological order (most recent first) -->
+                
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Education Section -->
-        <section class="education-section">
-            <div class="container">
-                <h2 class="section-title">Education</h2>
-                <div class="education-container">
-                    
-                        <div class="education-item">
-                            <div class="edu-icon">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <div class="edu-content">
-                                <h3>Master of Business Administration</h3>
-                                <h4>Business University</h4>
-                                <p class="edu-date">2014 - 2015</p>
-                                <p class="edu-description">Specialized in Technology Management with focus on Product Development.</p>
-                            </div>
+    <!-- Education Section -->
+    <section class="education-section">
+        <div class="container">
+            <h2 class="section-title">Education</h2>
+            <div class="education-container">
+                
+                    <div class="education-item">
+                        <div class="edu-icon">
+                            <i class="fas fa-graduation-cap"></i>
                         </div>
-                    
-                        <div class="education-item">
-                            <div class="edu-icon">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <div class="edu-content">
-                                <h3>Bachelor of Science in Computer Science</h3>
-                                <h4>Tech Institute</h4>
-                                <p class="edu-date">2010 - 2014</p>
-                                <p class="edu-description">Graduated with honors. Focused on software engineering and UI/UX design.</p>
-                            </div>
+                        <div class="edu-content">
+                            <h3>Master of Business Administration</h3>
+                            <h4>Business University</h4>
+                            <p class="edu-date">2014 - 2015</p>
+                            <p class="edu-description">Specialized in Technology Management with focus on Product Development.</p>
                         </div>
-                    
-                </div>
+                    </div>
+                
+                    <div class="education-item">
+                        <div class="edu-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="edu-content">
+                            <h3>Bachelor of Science in Computer Science</h3>
+                            <h4>Tech Institute</h4>
+                            <p class="edu-date">2010 - 2014</p>
+                            <p class="edu-description">Graduated with honors. Focused on software engineering and UI/UX design.</p>
+                        </div>
+                    </div>
+                
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Certifications Section -->
-        <section class="certifications-section">
-            <div class="container">
-                <h2 class="section-title">Certifications</h2>
-                <div class="certifications-container">
-                    
-                        <div class="cert-item">
-                            <div class="cert-icon">
-                                <i class="fas fa-certificate"></i>
-                            </div>
-                            <div class="cert-content">
-                                <h3>Certified Product Manager</h3>
-                                <h4>Product Management Institute</h4>
-                                <p class="cert-date">Issued: Jun 2019</p>
-                                <p class="cert-expiry">Expires: Jun 2022</p>
-                                
-                                <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                                
-                            </div>
+    <!-- Certifications Section -->
+    <section class="certifications-section">
+        <div class="container">
+            <h2 class="section-title">Certifications</h2>
+            <div class="certifications-container">
+                
+                    <div class="cert-item">
+                        <div class="cert-icon">
+                            <i class="fas fa-certificate"></i>
                         </div>
-                    
-                        <div class="cert-item">
-                            <div class="cert-icon">
-                                <i class="fas fa-certificate"></i>
-                            </div>
-                            <div class="cert-content">
-                                <h3>Certified Scrum Master</h3>
-                                <h4>Scrum Alliance</h4>
-                                <p class="cert-date">Issued: Mar 2018</p>
-                                <p class="cert-expiry">Expires: Mar 2020</p>
-                                
-                                <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                                
-                            </div>
+                        <div class="cert-content">
+                            <h3>Certified Product Manager</h3>
+                            <h4>Product Management Institute</h4>
+                            <p class="cert-date">Issued: Jun 2019</p>
+                            <p class="cert-expiry">Expires: Jun 2022</p>
+                            
+                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
+                            
                         </div>
-                    
-                        <div class="cert-item">
-                            <div class="cert-icon">
-                                <i class="fas fa-certificate"></i>
-                            </div>
-                            <div class="cert-content">
-                                <h3>Advanced UX Design</h3>
-                                <h4>Design Academy</h4>
-                                <p class="cert-date">Issued: Nov 2017</p>
-                                <p class="cert-expiry">No Expiration</p>
-                                
-                                <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                                
-                            </div>
+                    </div>
+                
+                    <div class="cert-item">
+                        <div class="cert-icon">
+                            <i class="fas fa-certificate"></i>
                         </div>
-                    
-                </div>
+                        <div class="cert-content">
+                            <h3>Certified Scrum Master</h3>
+                            <h4>Scrum Alliance</h4>
+                            <p class="cert-date">Issued: Mar 2018</p>
+                            <p class="cert-expiry">Expires: Mar 2020</p>
+                            
+                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
+                            
+                        </div>
+                    </div>
+                
+                    <div class="cert-item">
+                        <div class="cert-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="cert-content">
+                            <h3>Advanced UX Design</h3>
+                            <h4>Design Academy</h4>
+                            <p class="cert-date">Issued: Nov 2017</p>
+                            <p class="cert-expiry">No Expiration</p>
+                            
+                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
+                            
+                        </div>
+                    </div>
+                
             </div>
-        </section>
+        </div>
+    </section>
 
     </main>
 
@@ -1065,596 +944,756 @@
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <!-- Removed separate script.js include as functions seem local -->
-    <!-- <script src="/js/script.js"></script> --> 
-
-    <script>
-        // --- Global Scope Variables --- 
-        let modal, modalImg, closeModalBtn;
-        let carouselInterval;
-        const S3_BASE_URL = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/';
-        const FALLBACKS = {
-            favicon: S3_BASE_URL + 'FavIcon',
-            logo: S3_BASE_URL + 'Logo',
-            banner: S3_BASE_URL + 'Banner',
-            placeholder: '/static/img/placeholder.png' // Make sure this exists
-        };
-        const FALLBACK_ABOUT_PHOTOS = [
-            S3_BASE_URL + 'about_photo1.jpg',
-            S3_BASE_URL + 'about_photo2.jpg',
-            S3_BASE_URL + 'about_photo3.jpg',
-            S3_BASE_URL + 'about_photo4.jpg'
-        ];
-
-        // --- Initialization on DOMContentLoaded --- 
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("DOM fully loaded and parsed.");
-
-            // Initialize Core Components
-            setupModalElements();
-            setupHeaderTransparency();
-            loadFooter();
-            fetchLatestAboutContent(); // Fetches config and updates page elements
-            initSmoothScroll();
-            initScrollEffects(); // Handles parallax and about section transition
-            initExperienceDrawer(); // Setup experience section interactivity
-            setupLogoEffect(); // Add dynamic effect to logo background
-            setupBanner3dEffect(); // Add mouse-move effect to banner
-
-            // Initial Check for Broken Images (essential ones)
-            fixEssentialBrokenImages();
-            // Run again after a delay to catch slow loads
-            setTimeout(fixEssentialBrokenImages, 1500);
-        });
-
-        // --- Core Functions --- 
-
+    <script src="/js/script.js"></script>
+    
+<script>
+        // Function to load footer
         function loadFooter() {
-            fetch('/html/_footer.html')
-                .then(response => {
-                    if (!response.ok) throw new Error('Footer not found');
+            fetch('/html/_footer.html') // Path relative to the static root
+            .then(response => {
+                if (!response.ok) {
+                        throw new Error('Footer not found');
+                    }
                     return response.text();
                 })
                 .then(html => {
                     const placeholder = document.getElementById('footer-placeholder');
                     if (placeholder) {
                         placeholder.innerHTML = html;
-                        updateFooterLogo(); // Update logo once footer HTML is loaded
+                        // Re-run any script needed for the footer content, e.g., update footer logo
+                        const config = window.siteConfig; // Assuming siteConfig is global
+                        if (config && config.image_logo_url) {
+                            const footerLogo = placeholder.querySelector('.footer-logo img');
+                            if (footerLogo) {
+                                footerLogo.src = config.image_logo_url;
+                                footerLogo.alt = config.about_title || 'Logo';
+                            }
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Error loading footer:', error);
                     const placeholder = document.getElementById('footer-placeholder');
-                    if (placeholder) placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer.</p>';
+                    if (placeholder) {
+                        placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer content.</p>';
+                    }
                 });
         }
 
-        function updateFooterLogo() {
-            const config = window.siteConfig;
-            const footerLogo = document.querySelector('#footer-placeholder .footer-logo img');
-            if (footerLogo && config && config.image_logo_url) {
-                footerLogo.src = config.image_logo_url;
-                footerLogo.alt = config.about_title || 'Logo';
-                // Add error handler for footer logo
-                footerLogo.onerror = function() {
-                    console.warn('Footer logo failed to load, using fallback.');
-                    this.onerror = null;
-                    this.src = FALLBACKS.logo;
-                };
-            }
-        }
-
-        function setupModalElements() {
+        // Global variables for modal elements
+        let modal, modalImg, closeModalBtn;
+        
+        // Initialize modal elements and attach event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up modal elements
             modal = document.getElementById('photoModal');
             modalImg = document.getElementById('modalImage');
             closeModalBtn = document.querySelector('.close-modal');
-
+            
+            // Add click event to close button if it exists
             if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', () => closeModal());
+                closeModalBtn.addEventListener('click', function() {
+                    closeModal();
+                });
             }
-            window.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
+            
+            // Close modal when clicking outside the image
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
             });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal && modal.style.display === 'block') closeModal();
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+                    closeModal();
+                }
             });
-        }
-
-        function closeModal() {
-            if (modal) modal.style.display = 'none';
-            // Resume carousel if it exists and was paused
-            const carouselSlider = document.getElementById('photoCarouselSlider');
-            if (carouselSlider && carouselSlider.style.animationPlayState === 'paused') {
-                carouselSlider.style.animationPlayState = 'running';
+            
+            // Initialize banner image
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                // Set background image from S3 or use the default one set in HTML
+                if (!bannerImage.style.backgroundImage || bannerImage.style.backgroundImage === 'none') {
+                bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                }
+                bannerImage.style.backgroundSize = "cover";
+                bannerImage.style.backgroundPosition = "center";
+                // Transform is now handled by the parallax effect code
             }
-        }
 
-        function initializeModalClickListeners() {
-             // Should be called AFTER updateCarousel creates the items
-             console.log("Initializing modal click listeners for carousel items.");
-            const snapContainers = document.querySelectorAll('.snap-container'); // These are the carousel items
-            snapContainers.forEach((container) => {
-                container.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const photoUrl = this.getAttribute('data-photo');
-                    if (modal) modal.style.display = 'block';
-                    if (modalImg) {
-                         modalImg.src = photoUrl; // Set the image source
+            // Try to fetch the latest content from our AWS Lambda endpoint
+            fetchLatestAboutContent();
+            
+            // Initialize NEW scroll effects
+            initScrollEffects();
+            
+            // Smooth scroll (keep this)
+            initSmoothScroll();
+            
+            // Set initial state for about section (safer than CSS for JS control)
+            const aboutSection = document.getElementById('about-section');
+            if (aboutSection) {
+                aboutSection.style.opacity = '0';
+                aboutSection.style.transform = 'scale(0.95)';
+            }
 
-                         // Set error handler *before* setting src could fail
-                         modalImg.onerror = handleModalImageError;
+            // Add header transparency on banner hover and scroll
+            const header = document.querySelector('header');
+            const bannerSection = document.getElementById('banner-section');
+            
+            if (header && bannerSection) {
+                // Make header transparent when hovering over banner
+                bannerSection.addEventListener('mouseenter', function() {
+                    header.classList.add('transparent-header');
+                });
+                
+                bannerSection.addEventListener('mouseleave', function() {
+                    if (window.scrollY < 100) {
+                        header.classList.add('transparent-header');
+                    } else {
+                        header.classList.remove('transparent-header');
                     }
+                });
+                
+                // Make header more transparent at the top of the page
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY < 100) {
+                        header.classList.add('transparent-header');
+                    } else {
+                        header.classList.remove('transparent-header');
+                    }
+                });
+                
+                // Initial state
+                if (window.scrollY < 100) {
+                    header.classList.add('transparent-header');
+                }
+            }
 
-                    // Pause carousel rotation (if applicable)
-                    const carouselSlider = document.getElementById('photoCarouselSlider');
-                    if (carouselSlider) carouselSlider.style.animationPlayState = 'paused';
+            // Call loadFooter after DOM is ready and potentially after config is loaded
+            loadFooter(); 
+            // If siteConfig loads later, you might call loadFooter() again 
+            // within updatePageWithConfig or ensure footer logo update happens there.
+        });
+        
+        // NEW function to handle scroll-based effects
+        function initScrollEffects() {
+            window.addEventListener('scroll', handleScrollEffects);
+            // Run once on load
+            handleScrollEffects(); 
+        }
+        
+        function handleScrollEffects() {
+            const scrollTop = window.scrollY;
+            const bannerSection = document.getElementById('banner-section');
+            const bannerImage = document.getElementById('banner-image');
+            const layer1 = document.querySelector('.parallax-layer.layer-1');
+            const layer2 = document.querySelector('.parallax-layer.layer-2');
+            const aboutSection = document.getElementById('about-section');
+            const viewportHeight = window.innerHeight;
+            const bannerHeight = viewportHeight; // Since banner is 100vh
+
+            if (!bannerSection || !bannerImage || !aboutSection) return;
+
+            // --- 1. Banner Parallax on Scroll --- 
+            const scrollPercentInBanner = Math.min(scrollTop / bannerHeight, 1); // 0 to 1 within banner scroll
+            
+            // Apply scroll-based transformations to parallax layers
+            if (bannerImage) {
+                // The background image moves up slightly as we scroll
+                bannerImage.style.transform = `translateZ(-50px) scale(1.265) translateY(${scrollPercentInBanner * 50}px)`;
+            }
+            
+            if (layer1) {
+                // Layer 1 moves at a different rate
+                layer1.style.transform = `translateY(${scrollPercentInBanner * 30}px)`;
+                // Increase opacity as we scroll
+                layer1.style.opacity = 0.25 + (scrollPercentInBanner * 0.2);
+            }
+            
+            if (layer2) {
+                // Layer 2 moves at a different rate
+                layer2.style.transform = `translateY(${scrollPercentInBanner * 20}px)`;
+                // Increase opacity as we scroll
+                layer2.style.opacity = 0.1 + (scrollPercentInBanner * 0.3);
+            }
+
+            // --- 2. Transition between Banner and About --- 
+            const transitionStart = bannerHeight * 0.5; // Start transition earlier (50% scroll)
+            const transitionEnd = bannerHeight;         // End transition at 100% scroll
+            const transitionDuration = transitionEnd - transitionStart;
+
+            let transitionProgress = 0;
+            if (scrollTop >= transitionStart && scrollTop <= transitionEnd) {
+                transitionProgress = (scrollTop - transitionStart) / transitionDuration;
+            } else if (scrollTop > transitionEnd) {
+                transitionProgress = 1;
+            }
+            
+            // Clamp progress between 0 and 1
+            transitionProgress = Math.max(0, Math.min(1, transitionProgress));
+
+            // Apply transition effects
+            // Fade out banner (starts fading after 60% progress)
+            bannerSection.style.opacity = 1 - Math.max(0, (transitionProgress - 0.6) / 0.4);
+            
+            // Fade in and scale up About section
+            aboutSection.style.opacity = transitionProgress;
+            aboutSection.style.transform = `scale(${0.95 + transitionProgress * 0.05})`;
+        }
+        
+        // Initialize smooth scroll for navigation (Keep this)
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 70, // Offset for fixed header
+                            behavior: 'smooth'
+                        });
+                    }
                 });
             });
         }
 
-        function handleModalImageError() {
-             console.error("Error loading modal image: " + this.src);
-             this.onerror = null; // Prevent infinite loop
-
-             const failedSrc = this.src;
-
-             // If it wasn't an S3 URL already, try the S3 fallbacks
-             if (!failedSrc.includes('s3.eu-north-1.amazonaws.com')) {
-                 let containerIndex = -1;
-                 // Find the index based on the failed URL within the original data if possible
-                 // This relies on the carousel items still having the data-photo attribute set correctly
-                 const allContainers = Array.from(document.querySelectorAll('.snap-container'));
-                 const clickedContainer = allContainers.find(cont => cont.getAttribute('data-photo') === failedSrc);
-                 if (clickedContainer) {
-                     containerIndex = allContainers.indexOf(clickedContainer);
-                 }
-
-                 if (containerIndex >= 0 && containerIndex < FALLBACK_ABOUT_PHOTOS.length) {
-                     const fallbackUrl = FALLBACK_ABOUT_PHOTOS[containerIndex];
-                     console.log(`Modal image failed, attempting S3 fallback: ${fallbackUrl}`);
-                     this.src = fallbackUrl;
-                     // Re-attach error handler in case the S3 URL *also* fails
-                     this.onerror = handleModalImageError; 
-                     return; // Exit early, attempt S3 load
-                 } else {
-                     console.log("Modal image failed (no matching container or index), using placeholder.");
-                 }
-             } else {
-                 console.log("Modal S3 image failed, using placeholder.");
-             }
-
-             // Final fallback to placeholder
-             this.src = FALLBACKS.placeholder;
+        // Function to close the modal
+        function closeModal() {
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+    
+    // Modal functionality for about photos
+    function initializeModalFunctionality() {
+            // Make sure modal elements are defined
+            if (!modal) modal = document.getElementById('photoModal');
+            if (!modalImg) modalImg = document.getElementById('modalImage');
+            
+        const snapContainers = document.querySelectorAll('.snap-container');
+        
+        // Open modal when clicking on a photo
+        snapContainers.forEach(function(container) {
+            container.addEventListener('click', function(e) {
+                e.preventDefault();
+                const photoUrl = this.getAttribute('data-photo');
+                    if (modal) modal.style.display = 'block';
+                    if (modalImg) modalImg.src = photoUrl;
+                    
+                    // Pause carousel rotation when modal is open
+                    const carousel = document.getElementById('photoCarousel');
+                    if (carousel) {
+                        carousel.style.animationPlayState = 'paused';
+                    }
+                
+                // If the modal image fails to load, try to use a direct S3 URL or fallback
+                    if (modalImg) {
+                modalImg.onerror = function() {
+                    console.error("Error loading modal image: " + this.src);
+                    this.onerror = null;
+                    
+                    // Try direct S3 URL if the current URL fails
+                    if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
+                        // Extract the photo number from the container's position
+                        const containers = Array.from(document.querySelectorAll('.snap-container'));
+                        const index = containers.indexOf(container);
+                        const s3Urls = [
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo1.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo2.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo3.jpg',
+                            'https://website-majorjayant.s3.eu-north-1.amazonaws.com/about_photo4.jpg'
+                        ];
+                        
+                        if (index < s3Urls.length) {
+                            this.src = s3Urls[index];
+                        } else {
+                            // If S3 URL also fails, use placeholder
+                            this.src = '/static/img/placeholder.png';
+                        }
+                    } else {
+                        // If S3 URL also fails, use placeholder
+                        this.src = '/static/img/placeholder.png';
+                    }
+                };
+                    }
+            });
+        });
+            
+            // Resume carousel rotation when modal is closed
+            if (modal && closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    closeModal();
+                    
+                    const carousel = document.getElementById('photoCarousel');
+                    if (carousel) {
+                        carousel.style.animationPlayState = 'running';
+                    }
+                });
+            }
         }
 
-
-        function setupHeaderTransparency() {
-            const header = document.querySelector('header');
-            const bannerSection = document.getElementById('banner-section');
-
-            if (!header || !bannerSection) return;
-
-            const checkTransparency = () => {
-                if (window.scrollY < 100) {
-                    header.classList.add('transparent-header');
-                } else {
-                    header.classList.remove('transparent-header');
-                }
-            };
-
-            bannerSection.addEventListener('mouseenter', () => header.classList.add('transparent-header'));
-            bannerSection.addEventListener('mouseleave', checkTransparency); // Re-check based on scroll pos
-            window.addEventListener('scroll', checkTransparency);
-            checkTransparency(); // Initial check
-        }
-
+        // Function to fetch the latest content from our API
         function fetchLatestAboutContent() {
-            console.log('Fetching latest site config from API...');
+            console.log('Checking for latest content from API');
+            
+            // For AWS API Gateway endpoint
             const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
-
+            
             fetch(apiUrl)
                 .then(response => {
-                    if (!response.ok) throw new Error(`API response not OK (${response.status})`);
+                    console.log('API response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('API response not OK');
+                    }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Site config loaded successfully.');
+                    console.log('Successfully loaded site config from API:', data);
+                    // Process data - directly pass the data to the update function
                     updatePageWithConfig(data);
                 })
                 .catch(error => {
-                    console.error('Error loading site config from API:', error);
-                    showErrorMessage('Error loading configuration. Please refresh.');
-                    // Optionally load static fallbacks if API fails
-                    // updatePageWithConfig({ site_config: {} }); // Update with empty config to use fallbacks
+                    console.error('Error loading from API:', error);
+                    showErrorMessage('Error loading configuration. Please refresh or try again later.');
                 });
         }
 
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '20px';
+            errorDiv.style.right = '20px';
+            errorDiv.style.backgroundColor = '#f44336';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '15px';
+            errorDiv.style.borderRadius = '5px';
+            errorDiv.style.zIndex = '1000';
+            errorDiv.textContent = message;
+            
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                errorDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => document.body.removeChild(errorDiv), 500);
+            }, 5000);
+        }
+
         function updatePageWithConfig(data) {
-            console.log('Applying site config to page elements...');
-            const config = data.site_config || {}; // Use empty object if missing
-            window.siteConfig = config; // Store globally
-
-            // Update Title
-            document.title = config.about_title || 'Portfolio | majorjayant';
-
-            // Update Favicon
-            const favicon = document.querySelector('link[rel="icon"]');
-            if (favicon) {
-                 favicon.href = config.image_favicon_url || FALLBACKS.favicon;
-                 favicon.onerror = () => { favicon.href = FALLBACKS.favicon; };
-            }
-
-            // Update Header Logo
-            const headerLogo = document.querySelector('.navbar .logo img');
-            if (headerLogo) {
-                headerLogo.src = config.image_logo_url || FALLBACKS.logo;
-                headerLogo.alt = config.about_title || 'Logo';
-                headerLogo.onerror = function() {
-                     console.warn("Header Logo failed, using fallback.");
-                     this.onerror = null; 
-                     this.src = FALLBACKS.logo;
-                };
+            console.log('Updating page with config data:', data);
+            
+            const config = data.site_config;
+            window.siteConfig = config; // Assign the extracted config
+            
+            if (!config) {
+                console.error('site_config not found in API response:', data);
+                showErrorMessage('Configuration data is missing in the response.');
+                return;
             }
             
-            // Update Footer Logo (if footer is already loaded)
-            updateFooterLogo();
-
-            // Update Banner Image (handling mobile/desktop)
-            updateBannerImage(); // Call function that uses window.siteConfig
-            window.addEventListener('resize', updateBannerImage); // Re-check on resize
-
-            // Update About Section Content
-            updateAboutContent(config);
-
-            // Update Carousel Photos
+            // Update title & metadata
+            document.title = config.about_title || 'Portfolio';
+            
+            // Update all favicon instances
+            const allFavicons = document.querySelectorAll('link[rel="icon"]');
+            if (config.image_favicon_url) {
+                allFavicons.forEach(favicon => {
+                    favicon.href = config.image_favicon_url;
+                    console.log('Updated favicon to:', config.image_favicon_url);
+                });
+            }
+            
+            // Update all header logo instances
+            const allLogoImages = document.querySelectorAll('.navbar .logo img, .navbar-brand img, .logo img');
+            if (config.image_logo_url) {
+                allLogoImages.forEach(logo => {
+                    logo.src = config.image_logo_url;
+                    logo.alt = config.about_title || 'Logo';
+                    console.log('Updated logo to:', config.image_logo_url);
+                });
+            }
+            
+            // Update banner image
+            const bannerImage = document.getElementById('banner-image');
+            if (bannerImage) {
+                // Function to update banner image based on screen size
+                function updateBannerImage() {
+                    const isMobile = window.innerWidth <= 600;
+                    const mobileUrl = config.image_mobile_banner_url;
+                    const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+                    
+                    if (isMobile && mobileUrl) {
+                        bannerImage.style.backgroundImage = `url('${mobileUrl}')`;
+                    } else {
+                        bannerImage.style.backgroundImage = desktopUrl.startsWith('url') ? desktopUrl : `url('${desktopUrl}')`;
+                    }
+                    // Always use contain to prevent cropping, and maintain center alignment
+                    bannerImage.style.backgroundSize = "contain";
+                    bannerImage.style.backgroundPosition = "center";
+                    bannerImage.style.backgroundRepeat = "no-repeat";
+                }
+                
+                // Update banner image on load and resize
+                updateBannerImage();
+                window.addEventListener('resize', updateBannerImage);
+            }
+            
+            // Update footer logo if present
+            const footerLogo = document.querySelector('.footer-logo img');
+            if (footerLogo && config.image_logo_url) {
+                footerLogo.src = config.image_logo_url;
+                footerLogo.alt = config.about_title || 'Logo';
+                console.log('Updated footer logo to:', config.image_logo_url);
+            }
+            
+            // Update about section
+            const aboutTitle = document.getElementById('about-title');
+            const aboutSubtitle = document.getElementById('about-subtitle');
+            const aboutDescription = document.getElementById('about-description');
+            const profileImage = document.getElementById('profile-image');
+                        
+                        if (aboutTitle) {
+                aboutTitle.innerHTML = config.about_title || '';
+                        }
+                        
+                        if (aboutSubtitle) {
+                aboutSubtitle.innerHTML = config.about_subtitle || '';
+                        }
+                        
+                        if (aboutDescription) {
+                aboutDescription.innerHTML = config.about_description || '';
+                    aboutDescription.style.textAlign = 'left';
+                        }
+                        
+            if (profileImage) {
+                profileImage.src = config.image_about_profile_url || '';
+                profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
+            }
+            
+            // Create photos array from config
             const photos = [
                 { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
                 { url: config.image_about_photo2_url, alt: config.about_photo2_alt },
                 { url: config.image_about_photo3_url, alt: config.about_photo3_alt },
                 { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
-            ].filter(p => p.url); // Filter out photos without URLs
+            ];
             
-            updateCarousel(photos); // Build and initialize the carousel
-
-            console.log('Page elements updated with config.');
+            // Update photos in the "snaps" section with ENHANCED carousel effect
+            updateCarousel(photos);
+            
+            // Update work experience timeline if data is available
+            if (data.work_experience && Array.isArray(data.work_experience)) {
+                updateWorkExperienceTimeline(data.work_experience);
+            }
+                        
+            // Show content once loaded
+            document.body.classList.add('content-loaded');
         }
         
-        function updateBannerImage() {
-            const bannerDiv = document.getElementById('banner-image');
-            const config = window.siteConfig || {}; // Use global config
-            if (!bannerDiv) return;
-
-            const isMobile = window.innerWidth <= 768; // Use 768px breakpoint
-            const mobileUrl = config.image_mobile_banner_url;
-            const desktopUrl = config.image_banner_url;
-            let targetUrl = FALLBACKS.banner; // Start with ultimate fallback
-
-            if (isMobile && mobileUrl) {
-                targetUrl = mobileUrl;
-            } else if (desktopUrl) {
-                targetUrl = desktopUrl;
+        // Function to update the work experience timeline
+        function updateWorkExperienceTimeline(workExperienceData) {
+            console.log('Updating work experience timeline with:', workExperienceData);
+            
+            // Get the timeline container
+            const timelineContainer = document.querySelector('.timeline-vertical');
+            if (!timelineContainer) {
+                console.error('Timeline container not found');
+                return;
             }
             
-            console.log(`Updating banner. Mobile: ${isMobile}. Target URL: ${targetUrl}`);
+            // Clear existing timeline items
+            timelineContainer.innerHTML = '';
             
-            bannerDiv.style.backgroundImage = `url('${targetUrl}')`;
-            // Check if image loaded, if not use fallback
-            const img = new Image();
-            img.onload = () => { 
-                bannerDiv.style.backgroundImage = `url('${targetUrl}')`;
-                 bannerDiv.style.backgroundSize = "cover"; 
-                 bannerDiv.style.backgroundPosition = "center";
-                 bannerDiv.style.backgroundRepeat = "no-repeat";
-            };
-            img.onerror = () => {
-                console.warn(`Failed to load banner image: ${targetUrl}. Using fallback: ${FALLBACKS.banner}`);
-                bannerDiv.style.backgroundImage = `url('${FALLBACKS.banner}')`;
-                bannerDiv.style.backgroundSize = "cover"; 
-                bannerDiv.style.backgroundPosition = "center";
-                bannerDiv.style.backgroundRepeat = "no-repeat";
-            };
-            img.src = targetUrl;
-        }
-
-        function updateAboutContent(config) {
-            const aboutTitle = document.getElementById('about-title');
-            const aboutSubtitle = document.getElementById('about-subtitle');
-            const aboutDescription = document.getElementById('about-description');
-            const profileImage = document.getElementById('profile-image');
-
-            if (aboutTitle) aboutTitle.innerHTML = config.about_title || '';
-            if (aboutSubtitle) aboutSubtitle.innerHTML = config.about_subtitle || '';
-            if (aboutDescription) {
-                 aboutDescription.innerHTML = config.about_description || '';
-                 aboutDescription.style.textAlign = 'left'; // Ensure alignment
+            // Sort work experience by from_date (most recent first)
+            const sortedWorkExperience = [...workExperienceData].sort((a, b) => {
+                // Compare dates (assuming format is YYYY-MM-DD)
+                const dateA = new Date(a.from_date);
+                const dateB = new Date(b.from_date);
+                return dateB - dateA; // Most recent first
+            });
+            
+            // Add timeline items
+            sortedWorkExperience.forEach((experience, index) => {
+                // Format the period string
+                let period = '';
+                if (experience.from_date) {
+                    const fromDate = new Date(experience.from_date);
+                    const fromMonth = fromDate.toLocaleString('default', { month: 'short' });
+                    const fromYear = fromDate.getFullYear();
+                    
+                    period = `${fromMonth} ${fromYear} - `;
+                    
+                    if (experience.is_current) {
+                        period += 'Present';
+                    } else if (experience.to_date) {
+                        const toDate = new Date(experience.to_date);
+                        const toMonth = toDate.toLocaleString('default', { month: 'short' });
+                        const toYear = toDate.getFullYear();
+                        period += `${toMonth} ${toYear}`;
+                    }
+                }
+                
+                // Create the timeline item
+                const timelineItem = document.createElement('div');
+                timelineItem.className = `timeline-item ${index % 2 === 0 ? 'timeline-item-left' : 'timeline-item-right'}`;
+                timelineItem.setAttribute('data-aos', index % 2 === 0 ? 'fade-right' : 'fade-left');
+                
+                timelineItem.innerHTML = `
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 class="job-title">${experience.title || ''}</h3>
+                        <h4 class="company-info">${experience.company || ''} ${experience.location ? `| ${experience.location}` : ''}</h4>
+                        <span class="date">${period}</span>
+                        <p class="timeline-description">${experience.description || ''}</p>
+                    </div>
+                `;
+                
+                timelineContainer.appendChild(timelineItem);
+            });
+            
+            // Initialize AOS for new elements if AOS is available
+            if (typeof AOS !== 'undefined' && AOS.refresh) {
+                AOS.refresh();
             }
-            if (profileImage) {
-                profileImage.src = config.image_about_profile_url || '';
-                profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
-                profileImage.onerror = function() {
-                    console.warn('Profile image failed to load, hiding element.');
-                    this.onerror = null;
-                    this.style.display = 'none'; // Hide if broken
-                };
-            }
-        }
-
-        function showErrorMessage(message) {
-            // ... (keep existing implementation)
-        }
-
-        // --- Scroll & Animation Functions --- 
-
-        function initSmoothScroll() {
-            // ... (keep existing implementation)
-        }
-
-        function initScrollEffects() {
-            window.addEventListener('scroll', handleScrollEffects);
-            handleScrollEffects(); // Run once on load
-        }
-
-        function handleScrollEffects() {
-            // ... (keep existing parallax/transition logic)
         }
         
-        function setupBanner3dEffect() {
-             const bannerSection = document.getElementById('banner-section');
-             const bannerImage = document.getElementById('banner-image');
-             const layer1 = document.querySelector('.parallax-layer.layer-1');
-             const layer2 = document.querySelector('.parallax-layer.layer-2');
-             
-             if (!bannerSection || !bannerImage || !layer1 || !layer2) return;
+        // Initialize carousel controls - Remove button related variables
+        let carousel, slider, items,
+            width, height, totalWidth, margin = 20, 
+            currIndex = 0,
+            interval, intervalTime = 4000;
 
-             // Set initial transform for background layer if not already set by parallax scroll
-             if (!bannerImage.style.transform.includes('translateZ')) {
-                  bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
-             }
-             
-             bannerSection.addEventListener('mousemove', function(e) {
-                 const rect = bannerSection.getBoundingClientRect();
-                 const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
-                 const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
-                 
-                 // Combine mouse move with existing Z translation and scale
-                 // Get current Z and scale (might be complex if scroll parallax is also active)
-                 // Simpler approach: Apply mouse move translations additively? Might conflict.
-                 // Let's prioritize scroll parallax and skip mouse move if scroll parallax is active.
-                 if (window.scrollY === 0) { // Only apply mouse move if at the top
-                     bannerImage.style.transform = `translateZ(-50px) scale(1.265) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
-                     layer1.style.transform = `translate(${mouseX * 15}px, ${mouseY * 15}px)`;
-                     layer2.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
-                 } else {
-                      // If scrolled, let scroll parallax handle transforms
-                      handleScrollEffects(); // Ensure scroll effects are applied
-                 }
-             });
-             
-             bannerSection.addEventListener('mouseleave', function() {
-                 // Reset transformations - let scroll parallax take over if scrolled
-                 if (window.scrollY === 0) {
-                      bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
-                      layer1.style.transform = 'translate(0, 0)';
-                      layer2.style.transform = 'translate(0, 0)';
-                 } else {
-                      handleScrollEffects(); // Apply scroll effect transforms
-                 }
-             });
+        function initCarousel() { 
+            console.log("Initializing carousel (no buttons)...");
+            carousel = document.querySelector('.carousel'); 
+            slider = document.querySelector('.carousel__slider');
+            items = document.querySelectorAll('.carousel__slider__item'); 
+            
+            if (!carousel || !slider || items.length === 0) {
+                console.error("Carousel core elements not found.");
+                return;
+            }
+            
+            console.log(`Found ${items.length} items.`);
+            
+            resize();
+            move(Math.floor(items.length / 2), false); 
+            bindEvents(); // Will now only bind resize
+            timer(); 
+            console.log("Carousel initialized successfully (no buttons).");
         }
 
-        // --- Carousel Functions --- 
+        function resize() {
+            if (!items || items.length === 0 || !slider) return;
+            
+            // Calculate width based on viewport, aiming for wider carousel
+            // Adjust multiplier (e.g., 0.35 or 0.4) and minimum (e.g., 300 or 320) as needed
+            width = Math.max(window.innerWidth * 0.35, 320); // Increased width influence
+            height = window.innerHeight * 0.5; // Keep height reference
+            totalWidth = width * items.length;
+            
+            console.log(`Resizing carousel: item width=${width - (margin * 2)}, total width=${totalWidth}`);
+            
+            slider.style.width = totalWidth + "px";
+            
+            for(let i = 0; i < items.length; i++) {
+                let item = items[i];
+                item.style.width = (width - (margin * 2)) + "px";
+                item.style.height = height + "px";
+            }
+            move(currIndex, false); 
+        }
+
+        function move(index, resetTimer = true) {
+            if (!items || items.length === 0 || !slider) return;
+
+            // Loop index
+            if (index < 1) index = items.length;
+            if (index > items.length) index = 1;
+            currIndex = index;
+
+            console.log(`Moving to index: ${currIndex}`);
+
+            // Apply transformations to items for 3D effect
+            for (let i = 0; i < items.length; i++) {
+                let item = items[i];
+                let box = item.querySelector('.item__3d-frame');
+                if (box) {
+                    if (i === (index - 1)) {
+                        item.classList.add('carousel__slider__item--active');
+                        box.style.transform = "perspective(1200px)"; // Active item faces forward
+                    } else {
+                        item.classList.remove('carousel__slider__item--active');
+                        // Apply rotation based on position relative to current index
+                        const rotation = i < (index - 1) ? 40 : -40; // Reference rotation
+                        box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
+                    }
+                }
+            }
+
+            // Move the entire slider element
+            // Calculation from reference: (index * -width) + (width / 2) + window.innerWidth / 2
+            const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
+            console.log(`Slider target transform: translateX(${targetTranslateX}px)`);
+            slider.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
+
+            if (resetTimer) {
+                timer(); // Reset timer only if specified (e.g., on manual nav)
+            }
+        }
+
+        function timer() {
+            clearInterval(interval);
+            console.log(`Starting auto-rotation timer (${intervalTime}ms)`);
+            interval = setInterval(() => {
+                // console.log("Timer advancing carousel"); // Can be verbose
+                move(++currIndex);
+            }, intervalTime);
+        }
+
+        function bindEvents() {
+            console.log("Binding window resize event...");
+            
+            window.onresize = resize;
+            
+            console.log("Window resize event bound.");
+        }
         
         function updateCarousel(photos) {
-            console.log(`Updating carousel with ${photos.length} photos.`);
             const snapsContainer = document.getElementById('snaps');
-            if (!snapsContainer) return;
-            
-            clearInterval(carouselInterval); // Clear previous timer
-            snapsContainer.innerHTML = ''; // Clear previous items
-            
-            if (photos.length === 0) {
-                 snapsContainer.innerHTML = '<p>No photos available.</p>'; // Handle empty case
-                 return;
+            if (!snapsContainer) {
+                console.error("Snaps container not found!");
+                return;
             }
-
+            clearInterval(interval);
+            snapsContainer.innerHTML = '';
+            
             const carouselContainer = document.createElement('div');
             carouselContainer.className = 'carousel';
+            
             const carouselBody = document.createElement('div');
             carouselBody.className = 'carousel__body';
+            
             const sliderDiv = document.createElement('div');
             sliderDiv.className = 'carousel__slider';
-            sliderDiv.id = 'photoCarouselSlider';
-
-            photos.forEach((photo) => {
+            sliderDiv.id = 'photoCarouselSlider'; 
+            
+            const validPhotos = photos.filter(photo => photo && photo.url);
+            console.log(`Creating carousel HTML with ${validPhotos.length} valid photos`);
+            
+            validPhotos.forEach((photo, index) => {
                 const item = document.createElement('div');
-                item.className = 'carousel__slider__item snap-container'; // Combine classes
+                item.className = 'carousel__slider__item';
                 item.setAttribute('data-photo', photo.url);
+                item.classList.add('snap-container');
                 
                 const frame = document.createElement('div');
                 frame.className = 'item__3d-frame';
+                
                 const frontBox = document.createElement('div');
                 frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
+                    
                 const img = document.createElement('img');
                 img.src = photo.url;
                 img.alt = photo.alt || 'Photo';
-                img.loading = 'lazy';
                 img.onerror = function() {
-                    console.warn(`Carousel image failed: ${this.src}. Using placeholder.`);
+                    console.warn(`Failed to load image: ${this.src}. Replacing with placeholder.`);
                     this.onerror = null;
-                    this.src = FALLBACKS.placeholder;
+                    this.src = '/static/img/placeholder.png';
                 };
+                    
                 frontBox.appendChild(img);
                 
                 const leftBox = document.createElement('div');
                 leftBox.className = 'item__3d-frame__box item__3d-frame__box--left';
+                
                 const rightBox = document.createElement('div');
                 rightBox.className = 'item__3d-frame__box item__3d-frame__box--right';
                 
-                frame.appendChild(frontBox); frame.appendChild(leftBox); frame.appendChild(rightBox);
+                frame.appendChild(frontBox);
+                frame.appendChild(leftBox);
+                frame.appendChild(rightBox);
                 item.appendChild(frame);
                 sliderDiv.appendChild(item);
             });
-
+            
             carouselBody.appendChild(sliderDiv);
+            
             carouselContainer.appendChild(carouselBody);
+            
             snapsContainer.appendChild(carouselContainer);
-
-            // Initialize carousel logic AFTER elements are in the DOM
+            
             setTimeout(() => {
-                initCarouselLogic(); 
-                initializeModalClickListeners(); // Attach listeners to the new items
+                initCarousel(); 
+                initializeModalFunctionality(); 
             }, 50); 
         }
-        
-        // Separated Carousel Logic Init
-        function initCarouselLogic() {
-            console.log("Initializing carousel logic...");
-            const carouselEl = document.querySelector('.carousel'); 
-            const sliderEl = document.querySelector('.carousel__slider');
-            const itemsEl = document.querySelectorAll('.carousel__slider__item'); 
-            
-            if (!carouselEl || !sliderEl || itemsEl.length === 0) {
-                console.error("Carousel elements missing for logic init.");
-                return;
-            }
+</script>
 
-            let width, height, totalWidth, currIndex = 0, intervalTime = 4000;
-            const margin = 20; // Defined locally
 
-            function resizeCarousel() {
-                 width = Math.max(window.innerWidth * 0.35, 320);
-                 height = window.innerHeight * 0.5;
-                 totalWidth = width * itemsEl.length;
-                 sliderEl.style.width = totalWidth + "px";
-                 itemsEl.forEach(item => {
-                     item.style.width = (width - (margin * 2)) + "px";
-                     item.style.height = height + "px";
-                 });
-                 moveCarousel(currIndex, false);
-            }
-
-            function moveCarousel(index, resetTimer = true) {
-                 if (index < 1) index = itemsEl.length;
-                 if (index > itemsEl.length) index = 1;
-                 currIndex = index;
-
-                 itemsEl.forEach((item, i) => {
-                     const box = item.querySelector('.item__3d-frame');
-                     if (box) {
-                         if (i === (index - 1)) {
-                             item.classList.add('carousel__slider__item--active');
-                             box.style.transform = "perspective(1200px)";
-                         } else {
-                             item.classList.remove('carousel__slider__item--active');
-                             const rotation = i < (index - 1) ? 40 : -40;
-                             box.style.transform = `perspective(1200px) rotateY(${rotation}deg)`;
-                         }
-                     }
-                 });
-                 const targetTranslateX = (currIndex * -width) + (width / 2) + (window.innerWidth / 2);
-                 sliderEl.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
-                 if (resetTimer) startCarouselTimer();
-            }
-
-            function startCarouselTimer() {
-                 clearInterval(carouselInterval);
-                 carouselInterval = setInterval(() => { moveCarousel(++currIndex); }, intervalTime);
-            }
-
-            // Bind Events
-            window.addEventListener('resize', resizeCarousel);
-            
-            // Initial setup
-            resizeCarousel(); 
-            moveCarousel(Math.floor(itemsEl.length / 2), false);
-            startCarouselTimer();
-            console.log("Carousel logic initialized.");
-        }
-
-        // --- Experience Drawer Functions --- 
-
-        function initExperienceDrawer() {
-             console.log("Initializing experience drawer...");
-             const experienceItems = document.querySelectorAll('.experience-item');
-             if (experienceItems.length === 0) return;
-
-             experienceItems.forEach((item, index) => {
-                 const header = item.querySelector('.experience-header');
-                 const details = item.querySelector('.experience-details');
-                 const color = item.getAttribute('data-color') || '#4285F4';
-                 if (!header || !details) return;
-
-                 item.style.setProperty('--item-color', color); // Use CSS variable
-
-                 header.addEventListener('click', function() {
-                     const currentItem = this.closest('.experience-item');
-                     const isActive = currentItem.classList.contains('active');
-
-                     // Close others
-                     experienceItems.forEach(otherItem => {
-                         if (otherItem !== currentItem && otherItem.classList.contains('active')) {
-                             otherItem.classList.remove('active');
-                             const otherDetails = otherItem.querySelector('.experience-details');
-                             if (otherDetails) otherDetails.style.maxHeight = null;
-                         }
-                     });
-
-                     // Toggle current
-                     if (!isActive) {
-                         currentItem.classList.add('active');
-                         details.style.maxHeight = details.scrollHeight + 'px';
-                     } else {
-                         currentItem.classList.remove('active');
-                         details.style.maxHeight = null;
-                     }
-                 });
-             });
-
-             // Open first item by default
-             const firstItem = experienceItems[0];
-             const firstDetails = firstItem.querySelector('.experience-details');
-             if (!firstItem.classList.contains('active') && firstDetails) {
-                 setTimeout(() => { 
-                     firstItem.classList.add('active');
-                     firstDetails.style.maxHeight = firstDetails.scrollHeight + 'px';
-                     console.log("Opened first experience item by default.");
-                 }, 100);
-             }
-             console.log("Experience drawer initialization complete.");
-        }
-        
-        // --- Utility & Minor Effect Functions --- 
-
-        function fixEssentialBrokenImages() {
-            // Simplified: Only check header logo and favicon initially
-            console.log("Checking essential images (logo, favicon)...");
-            const headerLogo = document.querySelector('.navbar .logo img');
-            if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0) && headerLogo.src !== FALLBACKS.logo) {
-                console.warn("Header logo broken, applying fallback.");
-                headerLogo.src = FALLBACKS.logo;
-            }
-
-            const favicon = document.querySelector('link[rel="icon"]');
-            // No easy way to check favicon load status, rely on config update
-        }
-
-        function setupLogoEffect() {
-            // Add the pseudo-element effect dynamically
+    <!-- Add script for logo background that can't be done with inline styles -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add the pseudo-element effect that can't be done with inline styles
             const logoElement = document.querySelector('.logo');
-            if (logoElement && !logoElement.querySelector('.logo-bg-effect')) { // Prevent adding multiple times
+            if (logoElement) {
+                // Create a div that will act as our :before pseudo-element
                 const beforeElement = document.createElement('div');
-                beforeElement.className = 'logo-bg-effect'; // Add class for identification
-                beforeElement.style.cssText = `
-                    position: absolute; top: -6px; left: -3px; right: -3px; bottom: -6px;
-                    background-color: transparent; border-radius: 8px; z-index: -1;
-                `;
+                beforeElement.style.position = 'absolute';
+                beforeElement.style.top = '-6px';
+                beforeElement.style.left = '-3px';
+                beforeElement.style.right = '-3px';
+                beforeElement.style.bottom = '-6px';
+                beforeElement.style.backgroundColor = 'transparent';
+                beforeElement.style.borderRadius = '8px';
+                beforeElement.style.zIndex = '-1';
+                
+                // Insert as first child to be below the logo
                 logoElement.insertBefore(beforeElement, logoElement.firstChild);
             }
-        }
-
+        });
     </script>
 
-    <!-- Removed individual script blocks for logo and banner effects -->
-
+    <!-- Add 3D banner effect -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bannerSection = document.getElementById('banner-section');
+            const bannerImage = document.getElementById('banner-image');
+            const layer1 = document.querySelector('.parallax-layer.layer-1');
+            const layer2 = document.querySelector('.parallax-layer.layer-2');
+            
+            // Set initial scale to ensure image covers the area even with movement
+            if (bannerImage) {
+                bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
+            }
+            
+            if (bannerSection && bannerImage && layer1 && layer2) {
+                bannerSection.addEventListener('mousemove', function(e) {
+                    // Calculate mouse position relative to the center of the section
+                    const rect = bannerSection.getBoundingClientRect();
+                    const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+                    const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+                    
+                    // Apply transformations with different intensities
+                    bannerImage.style.transform = `translateZ(-50px) scale(1.265) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
+                    layer1.style.transform = `translate(${mouseX * 15}px, ${mouseY * 15}px)`;
+                    layer2.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
+                });
+                
+                bannerSection.addEventListener('mouseleave', function() {
+                    // Reset transformations smoothly
+                    bannerImage.style.transform = 'translateZ(-50px) scale(1.265)';
+                    layer1.style.transform = 'translate(0, 0)';
+                    layer2.style.transform = 'translate(0, 0)';
+                });
+            }
+        });
+    </script>
 </body>
 </html> 

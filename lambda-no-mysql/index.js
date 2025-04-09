@@ -59,6 +59,8 @@ async function ensureTableExists() {
   let connection;
   try {
     connection = await getConnection();
+    
+    // Ensure site_config table exists
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS site_config (
         config_key VARCHAR(100) PRIMARY KEY,
@@ -67,8 +69,24 @@ async function ensureTableExists() {
       )
     `);
     console.log('Verified site_config table exists');
+    
+    // Ensure workex table exists
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS workex (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(100) NOT NULL,
+        company VARCHAR(100) NOT NULL,
+        location VARCHAR(100),
+        from_date DATE NOT NULL,
+        to_date DATE,
+        is_current BOOLEAN DEFAULT FALSE,
+        description TEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Verified workex table exists');
   } catch (error) {
-    console.error('Error ensuring table exists:', error);
+    console.error('Error ensuring tables exist:', error);
     throw error;
   } finally {
     if (connection) await connection.end();
@@ -166,6 +184,39 @@ async function getSiteConfig() {
   }
 }
 
+// Function to get work experience data from the database
+async function getWorkExperience() {
+  let connection;
+  try {
+    // Create a connection to the database
+    connection = await getConnection();
+    
+    // Query all work experience entries ordered by from_date (most recent first)
+    const [rows] = await connection.execute('SELECT * FROM workex ORDER BY from_date DESC');
+    console.log(`Retrieved ${rows.length} work experience entries from the database`);
+    
+    // Format the data for response
+    const workExperience = rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      company: row.company,
+      location: row.location,
+      from_date: row.from_date ? row.from_date.toISOString().split('T')[0] : null,
+      to_date: row.to_date ? row.to_date.toISOString().split('T')[0] : null,
+      is_current: row.is_current === 1, // Convert MySQL tinyint to boolean
+      description: row.description
+    }));
+    
+    return workExperience;
+  } catch (error) {
+    console.error('Error retrieving work experience from database:', error);
+    console.log('Returning empty work experience array');
+    return [];
+  } finally {
+    if (connection) await connection.end();
+  }
+}
+
 // Function to save site configuration to the database
 async function saveSiteConfig(configData) {
   let connection;
@@ -224,6 +275,118 @@ async function saveSiteConfig(configData) {
   }
 }
 
+// Function to save work experience data to the database
+async function saveWorkExperience(workExperienceData) {
+  let connection;
+  try {
+    // First ensure the table exists
+    await ensureTableExists();
+    
+    // Create a connection to the database
+    connection = await getConnection();
+    
+    // Start a transaction for atomicity
+    await connection.beginTransaction();
+    
+    // Get existing work experience IDs from database to determine which records to update/delete
+    const [existingRows] = await connection.execute('SELECT id FROM workex');
+    const existingIds = existingRows.map(row => row.id);
+    
+    // Track provided IDs to determine which records to delete
+    const providedIds = [];
+    
+    // Process each work experience item
+    for (const item of workExperienceData) {
+      console.log(`Processing work experience item:`, item);
+      
+      // Format date fields
+      const fromDate = item.from_date || null;
+      const toDate = item.is_current ? null : (item.to_date || null);
+      
+      if (item.id) {
+        // Update existing record
+        providedIds.push(parseInt(item.id, 10));
+        
+        await connection.execute(
+          `UPDATE workex SET 
+            title = ?,
+            company = ?,
+            location = ?,
+            from_date = ?,
+            to_date = ?,
+            is_current = ?,
+            description = ?
+           WHERE id = ?`,
+          [
+            item.title, 
+            item.company, 
+            item.location || '', 
+            fromDate, 
+            toDate, 
+            item.is_current ? 1 : 0, 
+            item.description,
+            item.id
+          ]
+        );
+        console.log(`Updated work experience ID ${item.id}`);
+      } else {
+        // Insert new record
+        const [result] = await connection.execute(
+          `INSERT INTO workex (
+            title, company, location, from_date, to_date, is_current, description
+          ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            item.title, 
+            item.company, 
+            item.location || '', 
+            fromDate, 
+            toDate, 
+            item.is_current ? 1 : 0, 
+            item.description
+          ]
+        );
+        
+        const newId = result.insertId;
+        providedIds.push(newId);
+        console.log(`Inserted new work experience with ID ${newId}`);
+      }
+    }
+    
+    // Determine which records to delete (IDs in the database but not in the provided data)
+    const idsToDelete = existingIds.filter(id => !providedIds.includes(id));
+    
+    // Delete records that weren't included in the provided data
+    if (idsToDelete.length > 0) {
+      console.log(`Deleting work experience IDs: ${idsToDelete.join(', ')}`);
+      await connection.execute(
+        `DELETE FROM workex WHERE id IN (?)`,
+        [idsToDelete]
+      );
+    }
+    
+    // Commit the transaction
+    await connection.commit();
+    
+    console.log('Work experience saved to database successfully');
+    return {
+      success: true,
+      message: "Work experience updated successfully"
+    };
+  } catch (error) {
+    console.error('Error saving work experience to database:', error);
+    
+    // Rollback in case of error
+    if (connection) await connection.rollback();
+    
+    return {
+      success: false,
+      message: "Failed to update work experience: " + error.message
+    };
+  } finally {
+    if (connection) await connection.end();
+  }
+}
+
 // Lambda handler
 exports.handler = async (event, context) => {
   // Log detailed information about the request
@@ -271,16 +434,36 @@ exports.handler = async (event, context) => {
     if (event.httpMethod === 'GET') {
       console.log('Processing GET request');
       
+      // Check for work experience request
+      if (requestType === 'workex') {
+        console.log('GET request for work experience detected');
+        const workExperience = await getWorkExperience();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            work_experience: workExperience,
+            _version: "2.1.14",
+            source: "GET handler for work experience",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
       // Prioritize site_config requests
       if (requestType === 'site_config' || actionType === 'get_site_config') {
         console.log('GET request for site_config detected');
         const siteConfig = await getSiteConfig();
+        // Also get work experience data to include in response
+        const workExperience = await getWorkExperience();
         
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
+            work_experience: workExperience,
             _version: "2.1.14",
             source: "GET handler with query params",
             timestamp: new Date().toISOString()
@@ -291,12 +474,15 @@ exports.handler = async (event, context) => {
       // General GET request handling
       console.log('Processing general GET request');
       const siteConfig = await getSiteConfig();
+      // Also get work experience data to include in response
+      const workExperience = await getWorkExperience();
       
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
           site_config: siteConfig,
+          work_experience: workExperience,
           _version: "2.1.14",
           source: "GET general handler",
           timestamp: new Date().toISOString()
@@ -324,11 +510,15 @@ exports.handler = async (event, context) => {
     if (actionType === 'get_site_config' || requestType === 'site_config') {
         console.log('Processing site_config request from query parameters');
         const siteConfig = await getSiteConfig();
+        // Also get work experience data to include in response
+        const workExperience = await getWorkExperience();
+        
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
                 site_config: siteConfig,
+                work_experience: workExperience,
                 _version: "2.1.14",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
@@ -450,29 +640,49 @@ exports.handler = async (event, context) => {
           };
         }
         
-        // Extract config data
+        // Extract config data and work experience data
         const configData = parsedBody.site_config || {};
-        if (Object.keys(configData).length === 0) {
-          console.error('No configuration data provided');
+        const workExperienceData = parsedBody.work_experience || [];
+        
+        let updateResult = { success: true, message: "No data provided to update" };
+        
+        // Save the site configuration data if provided
+        if (Object.keys(configData).length > 0) {
+          console.log('Updating site configuration with:', configData);
+          updateResult = await saveSiteConfig(configData);
+        }
+        
+        // Save the work experience data if provided
+        let workExperienceResult = { success: true, message: "No work experience data provided" };
+        if (workExperienceData.length > 0) {
+          console.log('Updating work experience with:', workExperienceData);
+          workExperienceResult = await saveWorkExperience(workExperienceData);
+        }
+        
+        // If either update fails, return error
+        if (!updateResult.success || !workExperienceResult.success) {
           return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
               success: false,
-              message: 'No configuration data provided',
-              timestamp: new Date().toISOString()
+              message: !updateResult.success ? updateResult.message : workExperienceResult.message,
+              site_config_result: updateResult,
+              work_experience_result: workExperienceResult,
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.14'
             })
           };
         }
-        
-        // Save the configuration data
-        const updateResult = await saveSiteConfig(configData);
         
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
-            ...updateResult,
+            success: true,
+            message: "Updates completed successfully",
+            site_config_result: updateResult,
+            work_experience_result: workExperienceResult,
             timestamp: new Date().toISOString(),
             lambda_version: '2.1.14'
           })
@@ -486,11 +696,15 @@ exports.handler = async (event, context) => {
         // Get site configuration from the database
         const siteConfig = await getSiteConfig();
         
+        // Also get work experience data
+        const workExperience = await getWorkExperience();
+        
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
+            work_experience: workExperience,
             _version: "2.1.14",
             from: "post_body",
             timestamp: new Date().toISOString(),
