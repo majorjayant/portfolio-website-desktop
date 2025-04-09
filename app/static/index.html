@@ -619,28 +619,41 @@
 
     /* Reduce space between carousel and work experience section */
     .experience-section {
-        padding: 70px 0;
-        background-color: var(--bg-light);
+        position: relative !important;
+        z-index: 10 !important;
+        visibility: visible !important;
+        display: block !important;
+        overflow: visible !important;
+        padding: 70px 0 !important;
+        background-color: #f8f8f8 !important;
     }
 
     /* NEW Experience Drawer Styles */
     .experience-drawer-container {
-        margin-top: 40px;
-        width: 100%;
-        max-width: 900px;
-        margin-left: auto;
-        margin-right: auto;
+        position: relative !important;
+        z-index: 5 !important;
+        visibility: visible !important;
+        display: block !important;
+        overflow: visible !important;
+        margin-top: 40px !important;
+        width: 100% !important;
+        max-width: 900px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
 
     .experience-item {
-        margin-bottom: 15px;
-        border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        overflow: hidden;
-        background-color: white;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        position: relative;
+        position: relative !important;
+        z-index: 1 !important;
+        display: block !important;
+        visibility: visible !important;
+        margin-bottom: 15px !important;
+        border-radius: 10px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important;
+        overflow: hidden !important;
+        background-color: white !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
     }
 
     .experience-item:hover {
@@ -649,43 +662,45 @@
     }
 
     .experience-item.active {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+        z-index: 2 !important;
     }
 
     .experience-header {
-        padding: 20px 25px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        position: relative;
-        transition: all 0.3s ease;
-        z-index: 2;
+        position: relative !important;
+        z-index: 2 !important;
+        display: flex !important;
+        visibility: visible !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        padding: 20px 25px !important;
+        transition: all 0.3s ease !important;
     }
 
     .experience-item.active .experience-header::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: currentColor;
-        opacity: 0.9;
-        z-index: -1;
+        content: '' !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background-color: currentColor !important;
+        opacity: 0.9 !important;
+        z-index: -1 !important;
     }
 
     .experience-item.active .experience-header {
-        color: white;
-        padding-bottom: 25px;
+        color: white !important;
+        padding-bottom: 25px !important;
     }
 
     .experience-item.active .experience-header * {
-        color: white;
+        color: white !important;
     }
 
     .experience-item.active .experience-header .expand-icon i {
-        transform: rotate(180deg);
+        transform: rotate(180deg) !important;
     }
 
     .experience-date {
@@ -723,29 +738,28 @@
     }
 
     .experience-details {
-        height: 0;
-        overflow: hidden;
-        padding: 0 25px;
-        transition: all 0.3s ease;
-        position: relative;
-        opacity: 0;
-        z-index: 1;
+        position: relative !important;
+        z-index: 1 !important;
+        display: block !important;
+        visibility: visible !important;
+        overflow: hidden !important;
+        transition: height 0.3s ease, opacity 0.3s ease, padding 0.3s ease !important;
     }
 
     .experience-details::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 5px;
-        height: 100%;
-        background-color: currentColor;
-        opacity: 0.7;
+        content: '' !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 5px !important;
+        height: 100% !important;
+        background-color: currentColor !important;
+        opacity: 0.7 !important;
     }
 
     .experience-item.active .experience-details {
-        padding: 5px 25px 25px;
-        opacity: 1;
+        padding: 5px 25px 25px !important;
+        opacity: 1 !important;
     }
 
     .experience-details p {
@@ -1003,7 +1017,7 @@
                         <h3 class="experience-title">Senior Product Manager</h3>
                         <span class="experience-city">New York, NY</span>
                         <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
-                    </div>
+                        </div>
                     <div class="experience-details">
                         <p>Leading product development for enterprise SaaS solutions with a focus on scalability and user adoption. Driving innovation through strategic planning and cross-functional team leadership.</p>
                         <ul>
@@ -1011,8 +1025,8 @@
                             <li>Managed a cross-functional team of 12 engineers, designers, and QA specialists</li>
                             <li>Established product metrics and KPIs that improved decision-making and prioritization</li>
                         </ul>
+                        </div>
                     </div>
-                </div>
                 
                 <!-- Experience Item 2 -->
                 <div class="experience-item" data-color="#34A853">
@@ -1021,7 +1035,7 @@
                         <h3 class="experience-title">Product Manager</h3>
                         <span class="experience-city">Boston, MA</span>
                         <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
-                    </div>
+                        </div>
                     <div class="experience-details">
                         <p>Managed the development lifecycle of mobile applications for key financial services clients, focusing on user experience and market fit.</p>
                         <ul>
@@ -1029,9 +1043,9 @@
                             <li>Implemented agile methodologies that reduced development time by 30%</li>
                             <li>Conducted user research and competitive analysis to identify market opportunities</li>
                         </ul>
+                        </div>
                     </div>
-                </div>
-
+                
                 <!-- Experience Item 3 (Oldest) -->
                 <div class="experience-item" data-color="#FBBC05">
                     <div class="experience-header">
@@ -1039,7 +1053,7 @@
                         <h3 class="experience-title">Associate Product Manager</h3>
                         <span class="experience-city">San Francisco, CA</span>
                         <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
-                    </div>
+                        </div>
                     <div class="experience-details">
                         <p>Assisted in the ideation, development, and successful launch of three B2C web applications in the e-commerce space.</p>
                         <ul>
@@ -1047,8 +1061,8 @@
                             <li>Gathered and analyzed customer feedback to identify pain points and improvement opportunities</li>
                             <li>Participated in sprint planning and daily stand-ups to ensure project progress</li>
                         </ul>
+                        </div>
                     </div>
-                </div>
             </div>
         </div>
     </section>
@@ -1189,7 +1203,7 @@
         let modal, modalImg, closeModalBtn;
         
         // Initialize modal elements and attach event listeners
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
             // Set up modal elements
             modal = document.getElementById('photoModal');
             modalImg = document.getElementById('modalImage');
@@ -1217,20 +1231,20 @@
             });
             
             // Initialize banner image
-            const bannerImage = document.getElementById('banner-image');
-            if (bannerImage) {
+        const bannerImage = document.getElementById('banner-image');
+        if (bannerImage) {
                 // Set background image from S3 or use the default one set in HTML
                 if (!bannerImage.style.backgroundImage || bannerImage.style.backgroundImage === 'none') {
-                bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
+            bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Banner')";
                 }
                 bannerImage.style.backgroundSize = "cover";
                 bannerImage.style.backgroundPosition = "center";
                 // Transform is now handled by the parallax effect code
-            }
+        }
 
-            // Try to fetch the latest content from our AWS Lambda endpoint
-            fetchLatestAboutContent();
-            
+        // Try to fetch the latest content from our AWS Lambda endpoint
+        fetchLatestAboutContent();
+        
             // Initialize NEW scroll effects
             initScrollEffects();
             
@@ -1401,7 +1415,7 @@
                     if (modalImg) {
                 modalImg.onerror = function() {
                     console.error("Error loading modal image: " + this.src);
-                    this.onerror = null;
+                                this.onerror = null;
                     
                     // Try direct S3 URL if the current URL fails
                     if (!this.src.includes('s3.eu-north-1.amazonaws.com')) {
@@ -1419,7 +1433,7 @@
                             this.src = s3Urls[index];
                         } else {
                             // If S3 URL also fails, use placeholder
-                            this.src = '/static/img/placeholder.png';
+                                this.src = '/static/img/placeholder.png';
                         }
                     } else {
                         // If S3 URL also fails, use placeholder
@@ -1451,14 +1465,14 @@
             const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
             
             fetch(apiUrl)
-                .then(response => {
+            .then(response => {
                     console.log('API response status:', response.status);
-                    if (!response.ok) {
+                if (!response.ok) {
                         throw new Error('API response not OK');
-                    }
-                    return response.json();
-                })
-                .then(data => {
+                }
+                return response.json();
+            })
+            .then(data => {
                     console.log('Successfully loaded site config from API:', data);
                     // Process data - directly pass the data to the update function
                     updatePageWithConfig(data);
@@ -1563,20 +1577,20 @@
             const aboutSubtitle = document.getElementById('about-subtitle');
             const aboutDescription = document.getElementById('about-description');
             const profileImage = document.getElementById('profile-image');
-                        
-                        if (aboutTitle) {
+                    
+                    if (aboutTitle) {
                 aboutTitle.innerHTML = config.about_title || '';
-                        }
-                        
-                        if (aboutSubtitle) {
+                    }
+                    
+                    if (aboutSubtitle) {
                 aboutSubtitle.innerHTML = config.about_subtitle || '';
-                        }
-                        
-                        if (aboutDescription) {
+                    }
+                    
+                    if (aboutDescription) {
                 aboutDescription.innerHTML = config.about_description || '';
-                    aboutDescription.style.textAlign = 'left';
-                        }
-                        
+                        aboutDescription.style.textAlign = 'left';
+                    }
+                    
             if (profileImage) {
                 profileImage.src = config.image_about_profile_url || '';
                 profileImage.alt = config.about_title ? `${config.about_title}'s Profile` : 'Profile Photo';
@@ -1700,7 +1714,7 @@
         }
         
         function updateCarousel(photos) {
-            const snapsContainer = document.getElementById('snaps');
+        const snapsContainer = document.getElementById('snaps');
             if (!snapsContainer) {
                 console.error("Snaps container not found!");
                 return;
@@ -1732,7 +1746,7 @@
                 
                 const frontBox = document.createElement('div');
                 frontBox.className = 'item__3d-frame__box item__3d-frame__box--front';
-                    
+                
                 const img = document.createElement('img');
                 img.src = photo.url;
                 img.alt = photo.alt || 'Photo';
@@ -1741,7 +1755,7 @@
                     this.onerror = null;
                     this.src = '/static/img/placeholder.png';
                 };
-                    
+                
                 frontBox.appendChild(img);
                 
                 const leftBox = document.createElement('div');
@@ -1771,29 +1785,75 @@
 
         // Initialize Experience Drawer
         function initExperienceDrawer() {
+            console.log("Initializing experience drawer...");
             const experienceItems = document.querySelectorAll('.experience-item');
+            console.log(`Found ${experienceItems.length} experience items`);
             
-            experienceItems.forEach(item => {
-                const header = item.querySelector('.experience-header'); // Use header for click
-                const details = item.querySelector('.experience-details');
-                const color = item.getAttribute('data-color') || '#4285F4'; // Get color
-                
-                if (!header || !details) return; // Skip if elements missing
+            // Force critical CSS properties on experience section to ensure visibility
+            const experienceSection = document.querySelector('.experience-section');
+            if (experienceSection) {
+                experienceSection.style.position = 'relative';
+                experienceSection.style.zIndex = '10';
+                experienceSection.style.visibility = 'visible';
+                experienceSection.style.display = 'block';
+                console.log("Applied visibility fixes to experience section");
+            }
+            
+            const experienceContainer = document.querySelector('.experience-drawer-container');
+            if (experienceContainer) {
+                experienceContainer.style.position = 'relative';
+                experienceContainer.style.zIndex = '5';
+                experienceContainer.style.visibility = 'visible';
+                experienceContainer.style.display = 'block';
+                experienceContainer.style.overflow = 'visible';
+                console.log("Applied visibility fixes to experience container");
+            }
 
-                // Set initial color
-                item.style.color = color; 
+            // Apply fixes to each item
+            experienceItems.forEach((item, index) => {
+                const header = item.querySelector('.experience-header');
+                const details = item.querySelector('.experience-details');
+                const color = item.getAttribute('data-color') || '#4285F4';
                 
-                header.addEventListener('click', function() { // Attach listener to header
-                    const currentItem = this.closest('.experience-item'); // Get parent item
+                if (!header || !details) {
+                    console.warn(`Experience item ${index} missing header or details`);
+                    return;
+                }
+
+                // Force critical CSS properties
+                item.style.display = 'block';
+                item.style.visibility = 'visible';
+                item.style.position = 'relative';
+                item.style.zIndex = '1';
+                item.style.overflow = 'hidden'; // Only the item should hide overflow
+                
+                // Make sure details are initially properly set
+                details.style.position = 'relative';
+                details.style.visibility = 'visible';
+                details.style.display = 'block';
+                details.style.height = '0';
+                details.style.opacity = '0';
+                details.style.paddingTop = '0';
+                details.style.paddingBottom = '0';
+                details.style.overflow = 'hidden';
+                details.style.transition = 'height 0.3s ease, opacity 0.3s ease, padding 0.3s ease';
+                
+                // Set color for item
+                item.style.color = color;
+                
+                // Add click handler to header
+                header.addEventListener('click', function() {
+                    console.log(`Clicked item ${index}`);
+                    const currentItem = this.closest('.experience-item');
                     const isActive = currentItem.classList.contains('active');
                     
-                    // Close other active items
+                    // Close all items first
                     experienceItems.forEach(otherItem => {
                         if (otherItem !== currentItem && otherItem.classList.contains('active')) {
                             otherItem.classList.remove('active');
                             const otherDetails = otherItem.querySelector('.experience-details');
                             if (otherDetails) {
-                                otherDetails.style.height = '0px';
+                                otherDetails.style.height = '0';
                                 otherDetails.style.opacity = '0';
                                 otherDetails.style.paddingTop = '0';
                                 otherDetails.style.paddingBottom = '0';
@@ -1801,51 +1861,67 @@
                         }
                     });
                     
-                    // Toggle the current item
+                    // Toggle current item
                     currentItem.classList.toggle('active');
                     
                     if (currentItem.classList.contains('active')) {
-                        // Open the current item
+                        console.log(`Opening item ${index} with scroll height ${details.scrollHeight}px`);
+                        // Ensure proper z-index when active
+                        currentItem.style.zIndex = '2';
+                        // Open current item
                         details.style.height = details.scrollHeight + 'px';
                         details.style.opacity = '1';
-                        // Restore padding with transition (optional, adjust timing if needed)
                         setTimeout(() => {
-                             details.style.paddingTop = '5px'; 
-                             details.style.paddingBottom = '25px';
-                        }, 50); // Small delay matches transition start
+                            details.style.paddingTop = '5px';
+                            details.style.paddingBottom = '25px';
+                        }, 50);
                     } else {
-                        // Close the current item
-                        details.style.height = '0px';
+                        console.log(`Closing item ${index}`);
+                        // Reset z-index when not active
+                        currentItem.style.zIndex = '1';
+                        // Close current item
+                        details.style.height = '0';
                         details.style.opacity = '0';
                         details.style.paddingTop = '0';
                         details.style.paddingBottom = '0';
                     }
                 });
-
-                // Initialize details padding for transition
-                details.style.paddingTop = '0';
-                details.style.paddingBottom = '0';
-                details.style.transition = 'height 0.3s ease, opacity 0.3s ease, padding 0.3s ease'; // Include padding in transition
-
             });
             
-            // Open the first item by default if it exists
+            // Open first item by default with a delay to ensure DOM is fully ready
             if (experienceItems.length > 0) {
-                const firstHeader = experienceItems[0].querySelector('.experience-header');
-                if (firstHeader) {
-                    // Use timeout to ensure layout is complete for scrollHeight calculation
-                    setTimeout(() => {
-                         firstHeader.click();
-                    }, 100);
-                }
+                console.log("Setting first item to open by default");
+                setTimeout(() => {
+                    const firstHeader = experienceItems[0].querySelector('.experience-header');
+                    if (firstHeader) {
+                        firstHeader.click();
+                        // Force the first item to be open if click doesn't work
+                        setTimeout(() => {
+                            const firstItem = experienceItems[0];
+                            const firstDetails = firstItem.querySelector('.experience-details');
+                            if (firstDetails && firstDetails.scrollHeight === 0) {
+                                console.log("Force opening first item");
+                                firstItem.classList.add('active');
+                                firstDetails.style.height = 'auto';
+                                const actualHeight = firstDetails.scrollHeight;
+                                firstDetails.style.height = actualHeight + 'px';
+                                firstDetails.style.opacity = '1';
+                                firstDetails.style.paddingTop = '5px';
+                                firstDetails.style.paddingBottom = '25px';
+                            }
+                        }, 200);
+                    }
+                }, 500);
             }
+            
+            console.log("Experience drawer initialization complete");
         }
 
         // Call init functions when the page loads
         document.addEventListener('DOMContentLoaded', function() {
             // ... existing init calls ...
             initExperienceDrawer();
-        });
+    });
 </script>
 
 
@@ -1905,6 +1981,125 @@
                     layer2.style.transform = 'translate(0, 0)';
                 });
             }
+        });
+    </script>
+    
+    <!-- Safety script to ensure experience drawer is visible -->
+    <script>
+        // Last resort safety script to force experience drawer visibility
+        window.addEventListener('load', function() {
+            // Give the page time to fully render and other scripts to run
+            setTimeout(function() {
+                console.log("Running safety check for experience drawer...");
+                
+                // Force show the experience section
+                const experienceSection = document.querySelector('.experience-section');
+                if (experienceSection) {
+                    experienceSection.style.cssText = `
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        position: relative !important;
+                        z-index: 10 !important;
+                        overflow: visible !important;
+                    `;
+                }
+                
+                // Force show the drawer container
+                const drawerContainer = document.querySelector('.experience-drawer-container');
+                if (drawerContainer) {
+                    drawerContainer.style.cssText = `
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        position: relative !important;
+                        z-index: 5 !important;
+                        overflow: visible !important;
+                    `;
+                }
+                
+                // Force show each experience item
+                const items = document.querySelectorAll('.experience-item');
+                items.forEach((item, index) => {
+                    item.style.cssText = `
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        position: relative !important;
+                        z-index: ${item.classList.contains('active') ? 2 : 1} !important;
+                        overflow: hidden !important;
+                        background-color: white !important;
+                    `;
+                    
+                    // Ensure headers are visible
+                    const header = item.querySelector('.experience-header');
+                    if (header) {
+                        header.style.cssText = `
+                            display: flex !important;
+                            visibility: visible !important;
+                            opacity: 1 !important;
+                            position: relative !important;
+                            z-index: 2 !important;
+                        `;
+                    }
+                    
+                    // Make sure active items are properly expanded
+                    if (item.classList.contains('active')) {
+                        const details = item.querySelector('.experience-details');
+                        if (details) {
+                            // Temporarily set to auto to get real height
+                            const originalHeight = details.style.height;
+                            details.style.height = 'auto';
+                            const autoHeight = details.scrollHeight;
+                            details.style.height = originalHeight;
+                            
+                            // Force reflow
+                            details.offsetHeight;
+                            
+                            // Set proper values
+                            details.style.cssText = `
+                                display: block !important;
+                                visibility: visible !important;
+                                opacity: 1 !important;
+                                height: ${autoHeight}px !important;
+                                padding: 5px 25px 25px !important;
+                                position: relative !important;
+                                z-index: 1 !important;
+                                overflow: visible !important;
+                            `;
+                            
+                            console.log(`Forced item ${index} details to height ${autoHeight}px`);
+                        }
+                    }
+                });
+                
+                // Force first item open if no items are active
+                const activeItems = document.querySelectorAll('.experience-item.active');
+                if (activeItems.length === 0 && items.length > 0) {
+                    console.log("No active items found, forcing first item open");
+                    const firstItem = items[0];
+                    firstItem.classList.add('active');
+                    
+                    const details = firstItem.querySelector('.experience-details');
+                    if (details) {
+                        details.style.height = 'auto';
+                        const autoHeight = details.scrollHeight;
+                        
+                        details.style.cssText = `
+                            display: block !important;
+                            visibility: visible !important;
+                            opacity: 1 !important;
+                            height: ${autoHeight}px !important;
+                            padding: 5px 25px 25px !important;
+                            position: relative !important;
+                            z-index: 1 !important;
+                            overflow: visible !important;
+                        `;
+                    }
+                }
+                
+                console.log("Safety check for experience drawer complete");
+            }, 1000);
         });
     </script>
 </body>
