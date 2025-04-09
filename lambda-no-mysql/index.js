@@ -195,17 +195,30 @@ async function getWorkExperience() {
     const [rows] = await connection.execute('SELECT * FROM workex ORDER BY from_date DESC');
     console.log(`Retrieved ${rows.length} work experience entries from the database`);
     
-    // Format the data for response with correct field names
-    const workExperience = rows.map(row => ({
-      id: row.id,
-      job_title: row.title, // Map database title field to job_title
-      company_name: row.company, // Map database company field to company_name
-      location: row.location,
-      from_date: row.from_date ? row.from_date.toISOString().split('T')[0] : null,
-      to_date: row.to_date ? row.to_date.toISOString().split('T')[0] : null,
-      is_current: row.is_current === 1, // Convert MySQL tinyint to boolean
-      description: row.description
-    }));
+    // Debug - log the first row to see what fields are actually present
+    if (rows.length > 0) {
+      console.log('First raw DB row:', JSON.stringify(rows[0]));
+    }
+    
+    // Format the data for response using the correct DB column names
+    const workExperience = rows.map(row => {
+      // Create the base object with all fields from row
+      const expObj = {
+        id: row.id,
+        job_title: row.job_title || '', // Use the correct DB column name: job_title
+        company_name: row.company_name || '', // Use the correct DB column name: company_name
+        location: row.location,
+        from_date: row.from_date ? row.from_date.toISOString().split('T')[0] : null,
+        to_date: row.to_date ? row.to_date.toISOString().split('T')[0] : null,
+        is_current: row.is_current === 1, // Convert MySQL tinyint to boolean
+        description: row.description
+      };
+      
+      // Log the mapped object for debugging
+      console.log(`Mapped work experience item ${row.id}:`, JSON.stringify(expObj));
+      
+      return expObj;
+    });
     
     return workExperience;
   } catch (error) {
@@ -309,8 +322,8 @@ async function saveWorkExperience(workExperienceData) {
         
         await connection.execute(
           `UPDATE workex SET 
-            title = ?,
-            company = ?,
+            job_title = ?,
+            company_name = ?,
             location = ?,
             from_date = ?,
             to_date = ?,
@@ -318,8 +331,8 @@ async function saveWorkExperience(workExperienceData) {
             description = ?
            WHERE id = ?`,
           [
-            item.job_title, // Use job_title field
-            item.company_name, // Use company_name field 
+            item.job_title, // Use correct field
+            item.company_name, // Use correct field 
             item.location || '', 
             fromDate, 
             toDate, 
@@ -333,11 +346,11 @@ async function saveWorkExperience(workExperienceData) {
         // Insert new record
         const [result] = await connection.execute(
           `INSERT INTO workex (
-            title, company, location, from_date, to_date, is_current, description
+            job_title, company_name, location, from_date, to_date, is_current, description
           ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [
-            item.job_title, // Use job_title field
-            item.company_name, // Use company_name field
+            item.job_title, // Use correct field
+            item.company_name, // Use correct field
             item.location || '', 
             fromDate, 
             toDate, 
