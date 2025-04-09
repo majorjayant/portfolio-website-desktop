@@ -301,100 +301,84 @@ async function saveWorkExperience(workExperienceData) {
     // Start a transaction for atomicity
     await connection.beginTransaction();
     
-    // Get existing work experience IDs from database to determine which records to update/delete
+    // Get existing work experience IDs from database
     const [existingRows] = await connection.execute('SELECT id FROM workex');
-    const existingIds = existingRows.map(row => row.id);
+    const existingIds = existingRows.map(row => row.id); // These should be numbers
+    console.log('Existing DB IDs:', existingIds);
     
-    // Track provided IDs to determine which records to delete
+    // Track provided IDs from the payload (ensure they are numbers)
     const providedIds = [];
     
-    // Process each work experience item
+    // Process each work experience item for update/insert
     for (const item of workExperienceData) {
-      console.log(`Processing work experience item:`, item);
+      console.log(`Processing item from payload: ID=${item.id}, Type=${typeof item.id}`);
       
-      // Format date fields
       const fromDate = item.from_date || null;
       const toDate = item.is_current ? null : (item.to_date || null);
       
-      if (item.id) {
-        // Update existing record
-        providedIds.push(parseInt(item.id, 10));
-        
-        await connection.execute(
-          `UPDATE workex SET 
-            job_title = ?,
-            company_name = ?,
-            location = ?,
-            from_date = ?,
-            to_date = ?,
-            is_current = ?,
-            description = ?
-           WHERE id = ?`,
-          [
-            item.job_title, // Use correct field
-            item.company_name, // Use correct field 
-            item.location || '', 
-            fromDate, 
-            toDate, 
-            item.is_current ? 1 : 0, 
-            item.description,
-            item.id
-          ]
-        );
-        console.log(`Updated work experience ID ${item.id}`);
+      if (item.id && String(item.id).trim() !== '') {
+          // Update existing record - Ensure ID is parsed as integer
+          const itemIdInt = parseInt(String(item.id).trim(), 10);
+          if (!isNaN(itemIdInt)) {
+              providedIds.push(itemIdInt);
+              await connection.execute(
+                `UPDATE workex SET job_title = ?, company_name = ?, location = ?, from_date = ?, to_date = ?, is_current = ?, description = ? WHERE id = ?`,
+                [item.job_title || '', item.company_name || '', item.location || '', fromDate, toDate, item.is_current ? 1 : 0, item.description || '', itemIdInt]
+              );
+              console.log(`Updated work experience ID ${itemIdInt}`);
+          } else {
+              console.warn(`Skipping update for invalid ID: ${item.id}`);
+          }
       } else {
-        // Insert new record
-        const [result] = await connection.execute(
-          `INSERT INTO workex (
-            job_title, company_name, location, from_date, to_date, is_current, description
-          ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-          [
-            item.job_title, // Use correct field
-            item.company_name, // Use correct field
-            item.location || '', 
-            fromDate, 
-            toDate, 
-            item.is_current ? 1 : 0, 
-            item.description
-          ]
-        );
-        
-        const newId = result.insertId;
-        providedIds.push(newId);
-        console.log(`Inserted new work experience with ID ${newId}`);
+          // Insert new record
+          const [result] = await connection.execute(
+            `INSERT INTO workex (job_title, company_name, location, from_date, to_date, is_current, description) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [item.job_title || '', item.company_name || '', item.location || '', fromDate, toDate, item.is_current ? 1 : 0, item.description || '']
+          );
+          const newId = result.insertId; // This should be a number
+          providedIds.push(newId);
+          console.log(`Inserted new work experience with ID ${newId}`);
       }
     }
     
-    // Determine which records to delete (IDs in the database but not in the provided data)
+    console.log('Provided IDs (after processing payload, should be numbers):', providedIds);
+    
+    // Determine which records to delete (IDs in DB but not in payload)
     const idsToDelete = existingIds.filter(id => !providedIds.includes(id));
+    console.log('IDs calculated for deletion:', idsToDelete);
     
     // Delete records that weren't included in the provided data
     if (idsToDelete.length > 0) {
-      console.log(`Deleting work experience IDs: ${idsToDelete.join(', ')}`);
-      await connection.execute(
-        `DELETE FROM workex WHERE id IN (?)`,
-        [idsToDelete]
-      );
+      console.log(`Attempting to delete work experience IDs: ${idsToDelete.join(', ')}`);
+      try {
+          const [deleteResult] = await connection.execute(
+            `DELETE FROM workex WHERE id IN (?)`,
+            [idsToDelete] // Pass array directly
+          );
+          console.log('Delete execution result (affectedRows):', deleteResult.affectedRows);
+      } catch (deleteError) {
+          console.error('ERROR during DELETE execution:', deleteError);
+          // Decide if we should rollback or allow partial success
+          await connection.rollback(); 
+          return { success: false, message: "Failed during DELETE operation: " + deleteError.message };
+      }
+    } else {
+      console.log('No IDs marked for deletion.');
     }
     
     // Commit the transaction
     await connection.commit();
+    console.log('Transaction committed successfully.');
     
-    console.log('Work experience saved to database successfully');
-    return {
-      success: true,
-      message: "Work experience updated successfully"
-    };
+    return { success: true, message: "Work experience updated successfully" };
+    
   } catch (error) {
-    console.error('Error saving work experience to database:', error);
-    
-    // Rollback in case of error
+    console.error('Error in saveWorkExperience function:', error);
+    // Rollback in case of any error during the process
     if (connection) await connection.rollback();
+    console.log('Transaction rolled back due to error.');
+    return { success: false, message: "Failed to update work experience: " + error.message };
     
-    return {
-      success: false,
-      message: "Failed to update work experience: " + error.message
-    };
   } finally {
     if (connection) await connection.end();
   }
