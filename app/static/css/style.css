@@ -1794,37 +1794,31 @@ footer {
 .experience-drawer .drawer-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 20px;
 }
 
 .experience-drawer .drawer-date {
     font-size: 14px;
-    color: #666;
-    background-color: #f0f0f0;
+    color: var(--text-dark);
     padding: 5px 10px;
     border-radius: 15px;
-    display: inline-block;
     font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transform: translateZ(5px);
-}
-
-.experience-drawer:hover .drawer-date {
-    color: #333;
-    background-color: #e0e0e0;
+    width: 25%; /* Set fixed width */
+    text-align: left;
 }
 
 .experience-drawer .drawer-title-company {
     flex-grow: 1;
-    padding: 0 20px;
+    text-align: center;
+    width: 50%; /* Set fixed width */
 }
 
 .experience-drawer .drawer-title-company h3 {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: #222;
+    color: var(--text-dark);
     margin-bottom: 5px;
     transition: color 0.3s ease;
     transform: translateZ(10px);
@@ -1837,15 +1831,17 @@ footer {
 .experience-drawer .drawer-title-company p {
     margin: 0;
     font-size: 16px;
-    color: #555;
+    color: var(--text-dark);
     transform: translateZ(5px);
 }
 
 .experience-drawer .drawer-location {
     font-size: 14px;
-    color: #777;
+    color: var(--text-dark);
     font-style: italic;
     transform: translateZ(5px);
+    width: 25%; /* Set fixed width */
+    text-align: right;
 }
 
 .experience-drawer .drawer-description {
@@ -1853,7 +1849,7 @@ footer {
     transform: translateY(20px) translateZ(0);
     transition: opacity 0.4s ease, transform 0.4s ease;
     font-size: 16px;
-    color: #444;
+    color: var(--text-dark);
     line-height: 1.6;
 }
 
@@ -1874,16 +1870,42 @@ footer {
     margin-bottom: 8px;
 }
 
-/* Remove expanded class styles as we're using hover now */
-/* .experience-drawer.expanded {
-    height: 300px;
-    z-index: 100 !important;
+/* New color classes with the provided hex values */
+.color-0 {
+    background-color: #d1b38a;
 }
 
-.experience-drawer.expanded .drawer-description {
-    opacity: 1;
-    transform: translateY(0);
-} */
+.color-1 {
+    background-color: #e9dac1;
+}
+
+.color-2 {
+    background-color: #6c584c;
+    color: #ffffff; /* White text for dark background */
+}
+.color-2 .drawer-title-company h3,
+.color-2 .drawer-title-company p,
+.color-2 .drawer-date,
+.color-2 .drawer-location,
+.color-2 .drawer-description {
+    color: #ffffff;
+}
+
+.color-3 {
+    background-color: #8f9bb3;
+}
+
+.color-4 {
+    background-color: #a38566;
+    color: #ffffff; /* White text for dark background */
+}
+.color-4 .drawer-title-company h3,
+.color-4 .drawer-title-company p,
+.color-4 .drawer-date,
+.color-4 .drawer-location,
+.color-4 .drawer-description {
+    color: #ffffff;
+}
 
 @media screen and (max-width: 768px) {
     .experience-drawer {
@@ -1903,14 +1925,19 @@ footer {
     
     .experience-drawer .drawer-date {
         margin-bottom: 10px;
+        width: 100%;
     }
     
     .experience-drawer .drawer-title-company {
         padding: 0;
         margin-bottom: 10px;
+        width: 100%;
+        text-align: left;
     }
     
     .experience-drawer .drawer-location {
         align-self: flex-start;
+        width: 100%;
+        text-align: left;
     }
 } 

@@ -65,6 +65,48 @@
             grid-column: span 2;
         }
         
+        /* Rich text toolbar styling */
+        .rich-text-toolbar {
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            padding: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip:hover::before {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.25rem 0.5rem;
+            background-color: #374151;
+            color: white;
+            font-size: 0.75rem;
+            border-radius: 0.25rem;
+            white-space: nowrap;
+            z-index: 10;
+            margin-bottom: 5px;
+        }
+        
+        .tooltip:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #374151 transparent transparent transparent;
+            z-index: 10;
+        }
+        
+        /* Other styles ... */
         .workex-current label {
             display: inline;
             margin-right: 0.5rem;
@@ -192,36 +234,18 @@
                                             <!-- Site Title -->
                                             <div>
                                                 <label for="about_title" class="block text-sm font-medium text-gray-700">Site Title</label>
-                                                <div class="flex items-center space-x-1 mb-1">
-                                                    <button type="button" onclick="insertTag('about_title', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
-                                                    <button type="button" onclick="insertTag('about_title', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
-                                                    <button type="button" onclick="insertTag('about_title', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
-                                                    <button type="button" onclick="insertTag('about_title', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
-                                                </div>
                                                 <input type="text" id="about_title" name="about_title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                             </div>
                                             
                                             <!-- Subtitle -->
                                             <div>
                                                 <label for="about_subtitle" class="block text-sm font-medium text-gray-700">Subtitle</label>
-                                                <div class="flex items-center space-x-1 mb-1">
-                                                    <button type="button" onclick="insertTag('about_subtitle', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
-                                                    <button type="button" onclick="insertTag('about_subtitle', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
-                                                    <button type="button" onclick="insertTag('about_subtitle', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
-                                                    <button type="button" onclick="insertTag('about_subtitle', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
-                                                </div>
                                                 <input type="text" id="about_subtitle" name="about_subtitle" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                             </div>
                                             
                                             <!-- Description -->
                                             <div class="sm:col-span-2">
                                                 <label for="about_description" class="block text-sm font-medium text-gray-700">Description</label>
-                                                <div class="flex items-center space-x-1 mb-1">
-                                                    <button type="button" onclick="insertTag('about_description', 'b')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300">B</button>
-                                                    <button type="button" onclick="insertTag('about_description', 'i')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300">I</button>
-                                                    <button type="button" onclick="insertTag('about_description', 'u')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300">U</button>
-                                                    <button type="button" onclick="insertTag('about_description', 'br')" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">↵</button>
-                                                </div>
                                                 <textarea id="about_description" name="about_description" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                                             </div>
                                         </div>
@@ -460,8 +484,62 @@
                 // Insert <br> tag at cursor position
                 newValue = currentValue.substring(0, start) + '<br>' + currentValue.substring(end);
                 cursorPosition = start + 4; // Move cursor after <br>
+            } else if (tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4' || tag === 'p') {
+                // Block level elements
+                const openTag = `<${tag}>`;
+                const closeTag = `</${tag}>`;
+                if (selectedText) {
+                    // Wrap selection
+                    newValue = currentValue.substring(0, start) + openTag + selectedText + closeTag + currentValue.substring(end);
+                    cursorPosition = end + openTag.length + closeTag.length; // Move cursor after the wrapped text
+                } else {
+                    // Insert empty tags at cursor
+                    newValue = currentValue.substring(0, start) + openTag + closeTag + currentValue.substring(end);
+                    cursorPosition = start + openTag.length; // Move cursor between the tags
+                }
+            } else if (tag === 'color') {
+                // Insert color tag with a default color
+                const colorCode = prompt('Enter a color code (hex, rgb, or color name):', '#3366cc');
+                if (colorCode) {
+                    const openTag = `<span style="color:${colorCode};">`;
+                    const closeTag = `</span>`;
+                    if (selectedText) {
+                        // Wrap selection with color
+                        newValue = currentValue.substring(0, start) + openTag + selectedText + closeTag + currentValue.substring(end);
+                        cursorPosition = end + openTag.length + closeTag.length;
+                    } else {
+                        // Insert empty color tags
+                        newValue = currentValue.substring(0, start) + openTag + closeTag + currentValue.substring(end);
+                        cursorPosition = start + openTag.length;
+                    }
+                } else {
+                    return; // User canceled color input
+                }
+            } else if (tag === 'link') {
+                // Insert link tag
+                const url = prompt('Enter the URL:', 'https://');
+                if (url) {
+                    const linkText = selectedText || 'link text';
+                    const fullLink = `<a href="${url}" target="_blank">${linkText}</a>`;
+                    newValue = currentValue.substring(0, start) + fullLink + currentValue.substring(end);
+                    cursorPosition = start + fullLink.length;
+                } else {
+                    return; // User canceled URL input
+                }
+            } else if (tag === 'ul' || tag === 'ol') {
+                // Handle lists
+                const openTag = `<${tag}>`;
+                const closeTag = `</${tag}>`;
+                const liText = selectedText || 'List item';
+                const liItems = liText.split('\n').map(item => `<li>${item.trim()}</li>`).join('\n  ');
+                
+                newValue = currentValue.substring(0, start) + 
+                          openTag + '\n  ' + liItems + '\n' + closeTag + 
+                          currentValue.substring(end);
+                          
+                cursorPosition = start + openTag.length + 1;
             } else {
-                // Wrap selected text or insert empty tags
+                // Inline elements (b, i, u, etc.)
                 const openTag = `<${tag}>`;
                 const closeTag = `</${tag}>`;
                 if (selectedText) {
@@ -481,6 +559,97 @@
             field.selectionStart = cursorPosition;
             field.selectionEnd = cursorPosition;
         }
+        
+        // Function to create a rich text toolbar for any element
+        function createRichTextToolbar(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const toolbar = document.createElement('div');
+            toolbar.className = 'flex flex-wrap items-center space-x-1 mb-1 rich-text-toolbar';
+            
+            // Text formatting
+            toolbar.innerHTML = `
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300 tooltip" data-tag="b" title="Bold">B</button>
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs italic rounded hover:bg-gray-300 tooltip" data-tag="i" title="Italic">I</button>
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs underline rounded hover:bg-gray-300 tooltip" data-tag="u" title="Underline">U</button>
+                <span class="mx-1 text-gray-300">|</span>
+                
+                <!-- Headings and paragraph -->
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300 tooltip" data-tag="h1" title="Heading 1">H1</button>
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300 tooltip" data-tag="h2" title="Heading 2">H2</button>
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded hover:bg-gray-300 tooltip" data-tag="h3" title="Heading 3">H3</button>
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300 tooltip" data-tag="p" title="Paragraph">¶</button>
+                <span class="mx-1 text-gray-300">|</span>
+                
+                <!-- Lists -->
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300 tooltip" data-tag="ul" title="Bullet List">• List</button>
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300 tooltip" data-tag="ol" title="Numbered List">1. List</button>
+                <span class="mx-1 text-gray-300">|</span>
+                
+                <!-- Additional formatting -->
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300 tooltip" data-tag="color" title="Text Color">
+                    <span style="color: #3366cc">A</span>
+                </button>
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300 tooltip" data-tag="link" title="Insert Link">
+                    <span style="text-decoration: underline; color: blue;">🔗</span>
+                </button>
+                <button type="button" class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300 tooltip" data-tag="br" title="Line Break">↵</button>
+            `;
+            
+            // Add event listeners to buttons
+            toolbar.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tag = this.dataset.tag;
+                    if (tag) {
+                        insertTag(containerId, tag);
+                    }
+                });
+            });
+            
+            // Replace any existing toolbar
+            const existingToolbar = container.parentNode.querySelector('.rich-text-toolbar');
+            if (existingToolbar) {
+                existingToolbar.replaceWith(toolbar);
+            } else {
+                // Insert the toolbar before the container
+                container.parentNode.insertBefore(toolbar, container);
+            }
+        }
+        
+        // Initialize rich text toolbars for specific fields when the page loads
+        function initRichTextToolbars() {
+            const richTextFields = [
+                'about_title', 
+                'about_subtitle', 
+                'about_description'
+            ];
+            
+            richTextFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    createRichTextToolbar(fieldId);
+                }
+            });
+            
+            // Also initialize work experience fields that may already exist
+            setTimeout(() => {
+                document.querySelectorAll('.workex-title, .workex-company, .workex-location, .workex-description').forEach(field => {
+                    if (field.id && !field.parentNode.querySelector('.rich-text-toolbar')) {
+                        createRichTextToolbar(field.id);
+                    } else if (!field.id) {
+                        // Generate an ID if missing
+                        field.id = `workex-field-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                        createRichTextToolbar(field.id);
+                    }
+                });
+            }, 1000); // Slight delay to ensure work experience fields are loaded
+        }
+        
+        // Call after document loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initRichTextToolbars();
+        });
         
         function checkAuth() {
             console.log('Checking authentication');
@@ -992,6 +1161,7 @@
             const titleInput = document.createElement('input');
             titleInput.type = 'text';
             titleInput.className = 'workex-title';
+            titleInput.id = `workex-title-${Date.now()}`; // Unique ID for toolbar
             titleInput.required = true;
             titleInput.value = data.job_title || '';
             titleInput.placeholder = 'e.g. Software Engineer';
@@ -1002,6 +1172,7 @@
             const companyInput = document.createElement('input');
             companyInput.type = 'text';
             companyInput.className = 'workex-company';
+            companyInput.id = `workex-company-${Date.now()}`; // Unique ID for toolbar
             companyInput.required = true;
             companyInput.value = data.company_name || '';
             companyInput.placeholder = 'e.g. Tech Company Inc.';
@@ -1012,6 +1183,7 @@
             const locationInput = document.createElement('input');
             locationInput.type = 'text';
             locationInput.className = 'workex-location';
+            locationInput.id = `workex-location-${Date.now()}`; // Unique ID for toolbar
             locationInput.value = data.location || '';
             locationInput.placeholder = 'e.g. New York, NY';
             
@@ -1070,6 +1242,7 @@
             descLabel.textContent = 'Description:';
             const descInput = document.createElement('textarea');
             descInput.className = 'workex-description';
+            descInput.id = `workex-desc-${Date.now()}`; // Unique ID for toolbar
             descInput.value = data.description || '';
             descInput.placeholder = 'Describe your responsibilities and achievements...';
             descInput.rows = 4;
@@ -1123,6 +1296,12 @@
             
             // Add work experience item to container
             container.appendChild(workExItem);
+            
+            // Create formatting toolbars for rich text fields
+            createRichTextToolbar(titleInput.id);
+            createRichTextToolbar(companyInput.id);
+            createRichTextToolbar(locationInput.id);
+            createRichTextToolbar(descInput.id);
             
             return workExItem;
         }

@@ -460,11 +460,11 @@ function updateWorkExperienceTimeline(workExperienceData) {
 
     const totalItems = sortedExperience.length;
     const colorSchemes = [
-        'color-0', // olive green
-        'color-1', // terracotta
-        'color-2', // slate blue
-        'color-3', // golden
-        'color-4'  // taupe
+        'color-0', // #d1b38a - sandy beige
+        'color-1', // #e9dac1 - light cream
+        'color-2', // #6c584c - dark brown
+        'color-3', // #8f9bb3 - slate blue
+        'color-4'  // #a38566 - medium brown
     ];
 
     sortedExperience.forEach((exp, index) => {
