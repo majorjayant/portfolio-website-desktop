@@ -478,7 +478,6 @@ function updateWorkExperienceTimeline(workExperienceData) {
     });
 
     const totalItems = sortedExperience.length;
-    // Updated color schemes with requested colors
     const colorSchemes = [
         'color-1',    // #6c584c
         'color-2',    // #a38566
@@ -491,7 +490,10 @@ function updateWorkExperienceTimeline(workExperienceData) {
         const drawer = document.createElement('div');
         drawer.classList.add('experience-drawer', colorSchemes[index % colorSchemes.length]);
         drawer.setAttribute('data-index', index);
-        drawer.style.zIndex = totalItems - index; // Stacking order
+        
+        // Set initial position based on index (stacked effect)
+        drawer.style.zIndex = totalItems - index;
+        drawer.style.transform = `translateY(${index * 20}px)`;
         
         // Format dates
         let dateString = 'Date N/A';
@@ -539,95 +541,100 @@ function updateWorkExperienceTimeline(workExperienceData) {
     // Handle drawer interactions
     const drawers = container.querySelectorAll('.experience-drawer');
     let activeIndex = -1;
+    let isAnyHovered = false;
     
-    // Function to activate a drawer
-    function activateDrawer(index) {
-        // Deactivate all drawers
-        drawers.forEach(d => d.classList.remove('active'));
-        
-        // Activate the selected drawer
-        if (index >= 0 && index < drawers.length) {
-            activeIndex = index;
-            drawers[index].classList.add('active');
+    // Function to update all cards based on hover state
+    function updateCardPositions(hoveredIndex) {
+        drawers.forEach((d, i) => {
+            // Base transform
+            let yOffset = i * 20;
             
-            // Restore z-index based on original order
-            drawers.forEach((d, i) => {
-                d.style.zIndex = i === activeIndex ? 100 : (totalItems - i);
-            });
-        }
-    }
-    
-    // Add click event to each drawer for mobile
-    drawers.forEach((drawer, index) => {
-        drawer.addEventListener('click', (event) => {
-            // Check if we're on mobile
-            const isMobile = window.innerWidth <= 768;
-            
-            if (isMobile) {
-                // On mobile, toggle the current drawer
-                if (drawer.classList.contains('active')) {
-                    drawer.classList.remove('active');
-                    activeIndex = -1;
+            if (hoveredIndex !== null) {
+                // If a card is hovered, adjust positions
+                if (hoveredIndex === i) {
+                    // Keep the hovered card at its position
+                    d.style.zIndex = 30;
+                    d.style.transform = `translateY(${yOffset}px) scale(1.02)`;
+                } else if (hoveredIndex < i) {
+                    // Push down cards below the hovered one
+                    d.style.zIndex = totalItems - i;
+                    d.style.transform = `translateY(${yOffset + 20}px)`;
                 } else {
-                    activateDrawer(index);
+                    // Pull up cards above the hovered one
+                    d.style.zIndex = totalItems - i;
+                    d.style.transform = `translateY(${yOffset - 10}px)`;
                 }
-                
-                event.stopPropagation(); // Prevent event bubbling
+            } else {
+                // Reset to original position when nothing is hovered
+                d.style.zIndex = totalItems - i;
+                d.style.transform = `translateY(${yOffset}px)`;
             }
         });
-        
-        // On desktop, add hover interaction
+    }
+    
+    // Add event listeners to each drawer
+    drawers.forEach((drawer, index) => {
         drawer.addEventListener('mouseenter', () => {
             if (window.innerWidth > 768) {
-                // Set a flag indicating we're actively hovering
-                window.activelyHovering = true;
-                
-                // Set the new active index
                 activeIndex = index;
-                
-                // First, ensure all other drawers are deactivated
-                drawers.forEach((d, i) => {
-                    if (i !== index) {
-                        d.classList.remove('active');
-                    }
-                    
-                    // Set z-index based on position with current drawer having highest
-                    if (i === index) {
-                        d.style.zIndex = 100;
-                    } else {
-                        d.style.zIndex = totalItems - i;
-                    }
-                });
-                
-                // Then activate the current drawer
+                isAnyHovered = true;
                 drawer.classList.add('active');
+                updateCardPositions(index);
             }
         });
         
         drawer.addEventListener('mouseleave', () => {
             if (window.innerWidth > 768) {
-                // Set flag indicating we're no longer actively hovering this card
-                window.activelyHovering = false;
-                
-                // Use a longer delay before closing to allow moving between cards
+                drawer.classList.remove('active');
+                // Only reset if we're not entering another card
                 setTimeout(() => {
-                    // Only close if we're not actively hovering any drawer now
-                    if (!window.activelyHovering) {
-                        drawer.classList.remove('active');
+                    if (!isAnyHovered) {
                         activeIndex = -1;
+                        updateCardPositions(null);
                     }
-                }, 300); // Longer delay to allow mouse to move between cards
+                }, 100);
+            }
+        });
+        
+        drawer.addEventListener('click', (event) => {
+            // Mobile handling
+            if (window.innerWidth <= 768) {
+                if (drawer.classList.contains('active')) {
+                    drawer.classList.remove('active');
+                    activeIndex = -1;
+                } else {
+                    // Deactivate all drawers
+                    drawers.forEach(d => d.classList.remove('active'));
+                    // Activate this drawer
+                    drawer.classList.add('active');
+                    activeIndex = index;
+                }
+                event.stopPropagation();
             }
         });
     });
     
+    // Handle container mouse leave
+    container.addEventListener('mouseleave', () => {
+        isAnyHovered = false;
+        setTimeout(() => {
+            if (!isAnyHovered) {
+                activeIndex = -1;
+                updateCardPositions(null);
+                drawers.forEach(d => d.classList.remove('active'));
+            }
+        }, 100);
+    });
+    
     // Close drawers when clicking outside
     document.addEventListener('click', (event) => {
-        const isClickInsideDrawer = event.target.closest('.experience-drawer');
-        
-        if (!isClickInsideDrawer && activeIndex !== -1) {
-            drawers.forEach(d => d.classList.remove('active'));
-            activeIndex = -1;
+        if (window.innerWidth <= 768) {
+            const isClickInsideDrawer = event.target.closest('.experience-drawer');
+            
+            if (!isClickInsideDrawer && activeIndex !== -1) {
+                drawers.forEach(d => d.classList.remove('active'));
+                activeIndex = -1;
+            }
         }
     });
 

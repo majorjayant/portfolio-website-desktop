@@ -1762,104 +1762,116 @@ footer {
 
 .experience-drawers {
     padding-top: 40px; 
-    padding-bottom: 60px;
+    padding-bottom: 120px; /* Increased to accommodate the stacked cards */
     perspective: 1200px;
     position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Skeleton background effect */
+.experience-drawers:before,
+.experience-drawers:after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-color: rgba(26, 26, 26, 0.3); /* #1A1A1A with opacity */
+    border-radius: 24px;
+    z-index: -1;
+    transform: rotate(1deg) scale(1.05);
+}
+
+.experience-drawers:after {
+    transform: rotate(-1deg) scale(1.05);
 }
 
 .experience-drawer {
     position: relative;
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 10px;
-    margin-bottom: -10px; /* Create overlap between cards */
-    height: 90px;
+    border-radius: 24px; /* Rounded corners like in the reference */
+    margin-bottom: -60px; /* Creates the stacked effect */
+    height: 120px; /* Taller initial height */
     overflow: hidden;
     cursor: pointer;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); /* Made transition faster */
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); /* Slowed down for smoother animation */
     z-index: 1;
-    transform-style: preserve-3d;
-    perspective: 1000px;
     transform: translateZ(0);
+    transform-origin: center top;
 }
 
-.experience-drawer:hover, .experience-drawer.active {
+.experience-drawer:hover, 
+.experience-drawer.active {
     height: auto;
     min-height: 300px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    transform: translateY(-100px) rotateX(2deg); /* Pull upward on hover */
-    z-index: 100 !important;
-    margin-bottom: 80px; /* Add space below when expanded */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    transform: scale(1.02); /* Slight scale up on hover */
+    z-index: 30 !important;
 }
 
 .experience-drawer .drawer-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .experience-drawer .drawer-date {
     font-size: 14px;
-    color: var(--text-dark);
-    padding: 5px 10px;
-    border-radius: 15px;
+    color: rgba(255, 255, 255, 0.9);
     font-weight: 500;
-    width: 25%; /* Set fixed width */
+    width: 25%;
     text-align: left;
 }
 
 .experience-drawer .drawer-title-company {
     flex-grow: 1;
     text-align: center;
-    width: 50%; /* Set fixed width */
+    width: 50%;
 }
 
 .experience-drawer .drawer-title-company h3 {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 5px;
-    transition: color 0.3s ease;
-    transform: translateZ(10px);
-}
-
-.experience-drawer:hover .drawer-title-company h3, 
-.experience-drawer.active .drawer-title-company h3 {
-    color: var(--accent-color);
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 6px;
 }
 
 .experience-drawer .drawer-title-company p {
     margin: 0;
     font-size: 16px;
-    color: var(--text-dark);
-    transform: translateZ(5px);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .experience-drawer .drawer-location {
     font-size: 14px;
-    color: var(--text-dark);
-    font-style: italic;
-    transform: translateZ(5px);
-    width: 25%; /* Set fixed width */
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    width: 25%;
     text-align: right;
 }
 
 .experience-drawer .drawer-description {
     opacity: 0;
-    transform: translateY(20px) translateZ(0);
-    transition: opacity 0.5s ease, transform 0.5s ease; /* Faster transition */
-    font-size: 16px;
-    color: var(--text-dark);
+    height: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s, height 0.5s ease; /* Delay to match the reference */
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
     line-height: 1.6;
+    overflow: hidden;
+    margin-top: 16px;
 }
 
 .experience-drawer:hover .drawer-description,
 .experience-drawer.active .drawer-description {
     opacity: 1;
-    transform: translateY(0) translateZ(5px);
+    height: auto;
+    transform: translateY(0);
 }
 
 .experience-drawer .drawer-description p {
@@ -1877,74 +1889,50 @@ footer {
 /* Color classes with the specified hex values */
 .color-1 {
     background-color: #6c584c;
-    color: #ffffff; /* White text for dark background */
-}
-.color-1 .drawer-title-company h3,
-.color-1 .drawer-title-company p,
-.color-1 .drawer-date,
-.color-1 .drawer-location,
-.color-1 .drawer-description {
-    color: #ffffff;
 }
 
 .color-2 {
     background-color: #a38566;
-    color: #ffffff; /* White text for dark background */
-}
-.color-2 .drawer-title-company h3,
-.color-2 .drawer-title-company p,
-.color-2 .drawer-date,
-.color-2 .drawer-location,
-.color-2 .drawer-description {
-    color: #ffffff;
 }
 
 .color-3 {
     background-color: #d1b38a;
-    color: #333333; /* Dark text for light background */
-}
-.color-3 .drawer-title-company h3,
-.color-3 .drawer-title-company p,
-.color-3 .drawer-date,
-.color-3 .drawer-location,
-.color-3 .drawer-description {
-    color: #333333;
 }
 
 .color-4 {
     background-color: #e9dac1;
-    color: #333333; /* Dark text for light background */
+    color: rgba(0, 0, 0, 0.8); /* Darker text for light background */
 }
+
 .color-4 .drawer-title-company h3,
 .color-4 .drawer-title-company p,
 .color-4 .drawer-date,
 .color-4 .drawer-location,
 .color-4 .drawer-description {
-    color: #333333;
+    color: rgba(0, 0, 0, 0.8);
 }
 
 @media screen and (max-width: 768px) {
     .experience-drawer {
-        height: 120px;
-        padding: 15px;
-        margin-bottom: -5px; /* Less overlap on mobile */
+        height: 140px;
+        padding: 20px;
+        margin-bottom: -40px; /* Less overlap on mobile */
     }
     
     .experience-drawer:hover {
         /* Remove hover effect on mobile */
         transform: none;
-        height: 120px;
+        height: 140px;
         min-height: auto;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: -5px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
 
     .experience-drawer.active {
         height: auto;
-        min-height: 350px;
-        transform: translateY(-50px);
-        margin-bottom: 35px;
+        min-height: 300px;
+        transform: scale(1.02);
         z-index: 100 !important;
+        margin-bottom: 16px;
     }
     
     .experience-drawer .drawer-header {
@@ -1953,13 +1941,13 @@ footer {
     }
     
     .experience-drawer .drawer-date {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         width: 100%;
     }
     
     .experience-drawer .drawer-title-company {
         padding: 0;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         width: 100%;
         text-align: left;
     }
@@ -1980,9 +1968,16 @@ footer {
 }
 
 /* Make sure the "Career Journey" header is above other elements */
+.experience-section {
+    background-color: #2a2a2a; /* Dark background to match reference */
+    padding: 60px 0;
+}
+
 .experience-section .section-title {
     position: relative;
     z-index: 5;
     margin-bottom: 2rem;
     display: block;
+    color: #ffffff;
+    text-align: center;
 } 
