@@ -366,7 +366,7 @@ function updateWebsiteElements(config) {
     if (config.about_title) {
         const aboutTitle = document.getElementById('about-title');
         if (aboutTitle) {
-            aboutTitle.textContent = config.about_title;
+            aboutTitle.innerHTML = config.about_title;
             console.log('Updated about title:', config.about_title);
         }
     }
@@ -374,7 +374,7 @@ function updateWebsiteElements(config) {
     if (config.about_subtitle) {
         const aboutSubtitle = document.getElementById('about-subtitle');
         if (aboutSubtitle) {
-            aboutSubtitle.textContent = config.about_subtitle;
+            aboutSubtitle.innerHTML = config.about_subtitle;
             console.log('Updated about subtitle:', config.about_subtitle);
         }
     }
@@ -382,8 +382,8 @@ function updateWebsiteElements(config) {
     if (config.about_description) {
         const aboutDescription = document.getElementById('about-description');
         if (aboutDescription) {
-            aboutDescription.textContent = config.about_description;
-            console.log('Updated about description');
+            aboutDescription.innerHTML = config.about_description;
+            console.log('Updated about description with HTML formatting');
         }
     }
     
@@ -443,6 +443,12 @@ function updateWorkExperienceTimeline(workExperienceData) {
         return;
     }
     
+    // Add "Career Journey" header above the container
+    const headerElement = document.createElement('h2');
+    headerElement.className = 'section-title text-center mb-6';
+    headerElement.textContent = 'Career Journey';
+    container.parentNode.insertBefore(headerElement, container);
+    
     container.innerHTML = ''; // Clear previous content (e.g., old timeline)
     
     if (!workExperienceData || !Array.isArray(workExperienceData) || workExperienceData.length === 0) {
@@ -459,12 +465,14 @@ function updateWorkExperienceTimeline(workExperienceData) {
     });
 
     const totalItems = sortedExperience.length;
+    // Updated color schemes with requested colors
     const colorSchemes = [
-        'color-0', // #d1b38a - sandy beige
-        'color-1', // #e9dac1 - light cream
-        'color-2', // #6c584c - dark brown
-        'color-3', // #8f9bb3 - slate blue
-        'color-4'  // #a38566 - medium brown
+        'olive-green',    // Olive Green
+        'terracotta',     // Terracotta
+        'slate-blue',     // Slate Blue
+        'taupe',          // Taupe
+        'sand-beige',     // Sand Beige
+        'medium-brown'    // Medium Brown
     ];
 
     // Create drawers
@@ -516,23 +524,6 @@ function updateWorkExperienceTimeline(workExperienceData) {
         
         container.appendChild(drawer);
     });
-    
-    // Add navigation controls
-    const navControls = document.createElement('div');
-    navControls.className = 'drawer-nav';
-    navControls.innerHTML = `
-        <button class="drawer-nav-btn prev-drawer" aria-label="Previous experience">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-            </svg>
-        </button>
-        <button class="drawer-nav-btn next-drawer" aria-label="Next experience">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-        </button>
-    `;
-    container.appendChild(navControls);
     
     // Handle drawer interactions
     const drawers = container.querySelectorAll('.experience-drawer');
@@ -594,38 +585,11 @@ function updateWorkExperienceTimeline(workExperienceData) {
         });
     });
     
-    // Add navigation button listeners
-    const prevButton = container.querySelector('.prev-drawer');
-    const nextButton = container.querySelector('.next-drawer');
-    
-    if (prevButton && nextButton) {
-        prevButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (activeIndex > 0) {
-                activateDrawer(activeIndex - 1);
-            } else if (activeIndex === -1 && drawers.length > 0) {
-                // If no drawer is active, activate the first one
-                activateDrawer(drawers.length - 1);
-            }
-        });
-        
-        nextButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (activeIndex < drawers.length - 1) {
-                activateDrawer(activeIndex + 1);
-            } else if (activeIndex === -1 && drawers.length > 0) {
-                // If no drawer is active, activate the first one
-                activateDrawer(0);
-            }
-        });
-    }
-    
     // Close drawers when clicking outside
     document.addEventListener('click', (event) => {
         const isClickInsideDrawer = event.target.closest('.experience-drawer');
-        const isClickInsideNav = event.target.closest('.drawer-nav');
         
-        if (!isClickInsideDrawer && !isClickInsideNav && activeIndex !== -1) {
+        if (!isClickInsideDrawer && activeIndex !== -1) {
             drawers.forEach(d => d.classList.remove('active'));
             activeIndex = -1;
         }

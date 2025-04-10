@@ -1788,9 +1788,9 @@ footer {
     height: auto;
     min-height: 300px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    transform: translateY(-100px) rotateX(2deg); /* Move upward instead of downward */
+    transform: translateY(0) rotateX(0deg); /* Modified to open downward instead of upward */
     z-index: 100 !important;
-    margin-bottom: 80px; /* Add space below when expanded */
+    margin-bottom: 0; /* Remove the extra space below */
 }
 
 .experience-drawer .drawer-header {
@@ -1874,70 +1874,80 @@ footer {
     margin-bottom: 8px;
 }
 
-/* New color classes with the provided hex values */
-.color-0 {
-    background-color: #d1b38a;
+/* New color classes with the requested colors */
+.olive-green {
+    background-color: #556B2F;
+    color: #ffffff; /* White text for better readability */
 }
-
-.color-1 {
-    background-color: #e9dac1;
-}
-
-.color-2 {
-    background-color: #6c584c;
-    color: #ffffff; /* White text for dark background */
-}
-.color-2 .drawer-title-company h3,
-.color-2 .drawer-title-company p,
-.color-2 .drawer-date,
-.color-2 .drawer-location,
-.color-2 .drawer-description {
+.olive-green .drawer-title-company h3,
+.olive-green .drawer-title-company p,
+.olive-green .drawer-date,
+.olive-green .drawer-location,
+.olive-green .drawer-description {
     color: #ffffff;
 }
 
-.color-3 {
-    background-color: #8f9bb3;
+.terracotta {
+    background-color: #E2725B;
+    color: #ffffff;
 }
-
-.color-4 {
-    background-color: #a38566;
-    color: #ffffff; /* White text for dark background */
-}
-.color-4 .drawer-title-company h3,
-.color-4 .drawer-title-company p,
-.color-4 .drawer-date,
-.color-4 .drawer-location,
-.color-4 .drawer-description {
+.terracotta .drawer-title-company h3,
+.terracotta .drawer-title-company p,
+.terracotta .drawer-date,
+.terracotta .drawer-location,
+.terracotta .drawer-description {
     color: #ffffff;
 }
 
-/* Drawer navigation */
-.drawer-nav {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 10px;
+.slate-blue {
+    background-color: #6A7B93;
+    color: #ffffff;
+}
+.slate-blue .drawer-title-company h3,
+.slate-blue .drawer-title-company p,
+.slate-blue .drawer-date,
+.slate-blue .drawer-location,
+.slate-blue .drawer-description {
+    color: #ffffff;
 }
 
-.drawer-nav-btn {
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+.taupe {
+    background-color: #8B7D6B;
+    color: #ffffff;
+}
+.taupe .drawer-title-company h3,
+.taupe .drawer-title-company p,
+.taupe .drawer-date,
+.taupe .drawer-location,
+.taupe .drawer-description {
+    color: #ffffff;
 }
 
-.drawer-nav-btn:hover {
-    background-color: var(--primary-color);
-    transform: scale(1.1);
+.sand-beige {
+    background-color: #D1B38A;
+    color: #333333;
 }
+.sand-beige .drawer-title-company h3,
+.sand-beige .drawer-title-company p,
+.sand-beige .drawer-date,
+.sand-beige .drawer-location,
+.sand-beige .drawer-description {
+    color: #333333;
+}
+
+.medium-brown {
+    background-color: #A38566;
+    color: #ffffff;
+}
+.medium-brown .drawer-title-company h3,
+.medium-brown .drawer-title-company p,
+.medium-brown .drawer-date,
+.medium-brown .drawer-location,
+.medium-brown .drawer-description {
+    color: #ffffff;
+}
+
+/* Removed drawer-nav styles since arrows are removed */
 
 @media screen and (max-width: 768px) {
     .experience-drawer {
