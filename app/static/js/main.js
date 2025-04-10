@@ -522,7 +522,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
         const location = experience.location || 'Remote';
         const description = experience.description || '';
         
-        // Create drawer content
+        // Create drawer content with improved structure
         drawer.innerHTML += `
             <div class="drawer-header">
                 <div class="drawer-date">${dateString}</div>
@@ -532,7 +532,9 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 </div>
                 <div class="drawer-location">${location}</div>
             </div>
-            <div class="drawer-description">${description}</div>
+            <div class="drawer-description">
+                <div class="description-content">${description}</div>
+            </div>
         `;
         
         // Extract potential skills from the description
@@ -550,8 +552,8 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 skillsContainer.appendChild(skillTag);
             });
             
-            // Append skills after description
-            drawer.querySelector('.drawer-description').appendChild(skillsContainer);
+            // Append skills after description content
+            drawer.querySelector('.description-content').appendChild(skillsContainer);
         }
         
         // Add to container
@@ -617,7 +619,28 @@ function updateWorkExperienceTimeline(workExperienceData) {
         
         // Toggle active state on click
         drawer.addEventListener('click', () => {
-            drawer.classList.toggle('active');
+            const wasActive = drawer.classList.contains('active');
+            
+            // First close all drawers
+            drawers.forEach(d => {
+                d.classList.remove('active');
+                const desc = d.querySelector('.drawer-description');
+                if (desc) {
+                    desc.style.display = 'none';
+                    setTimeout(() => {
+                        desc.style.removeProperty('display');
+                    }, 50);
+                }
+            });
+            
+            // Then toggle this drawer (if it wasn't active before)
+            if (!wasActive) {
+                drawer.classList.add('active');
+                const description = drawer.querySelector('.drawer-description');
+                if (description) {
+                    description.style.display = 'block';
+                }
+            }
         });
     });
     
