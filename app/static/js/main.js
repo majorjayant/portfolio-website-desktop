@@ -519,8 +519,8 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 </div>
                 <div class="drawer-location">${location}</div>
             </div>
-            <div class="drawer-description" style="display: none;">
-                <div class="description-content">${description}</div>
+            <div class="drawer-description">
+                <div class="description-content">${description.replace(/\n/g, '<br>')}</div>
             </div>
         `;
         
@@ -605,9 +605,9 @@ function updateWorkExperienceTimeline(workExperienceData) {
         });
         
         // Toggle active state on click
-        drawer.addEventListener('click', () => {
+        drawer.addEventListener('click', function() {
             // Check if this drawer is currently active
-            const wasActive = drawer.classList.contains('active');
+            const wasActive = this.classList.contains('active');
             
             // Close all drawers first
             drawers.forEach(d => {
@@ -620,21 +620,19 @@ function updateWorkExperienceTimeline(workExperienceData) {
             
             // If this drawer wasn't active before, make it active
             if (!wasActive) {
-                drawer.classList.add('active');
-                const description = drawer.querySelector('.drawer-description');
+                this.classList.add('active');
+                const description = this.querySelector('.drawer-description');
                 if (description) {
                     description.style.display = 'block';
                     
-                    // Make super sure the description content is visible by forcing style
-                    const content = description.querySelector('.description-content');
-                    if (content) {
-                        content.style.display = 'block';
-                        content.style.visibility = 'visible';
-                        content.style.opacity = '1';
-                    }
+                    // Force a reflow to ensure the display change takes effect
+                    void description.offsetHeight;
                     
-                    // Force a reflow to ensure changes are applied
-                    description.offsetHeight;
+                    // Log the state for debugging
+                    console.log('Drawer activated, description visible:', 
+                                description.style.display, 
+                                'Content:', 
+                                description.textContent.substring(0, 50) + '...');
                 }
             }
         });
