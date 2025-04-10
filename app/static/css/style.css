@@ -489,9 +489,9 @@ header {
   background-color: #f8f8f8 !important;
   padding: 60px 0;
   overflow: hidden;
-  z-index: 10;
-  margin-top: 10px; /* Increased from 3rem to 240px to move section down */
-  position: relative;
+  z-index: 30;
+  margin-top: 5rem; /* Increased margin-top to create more space after carousel */
+  position: relative; /* Ensure proper stacking context */
 }
 
 /* Decorative elements - remove or set to 0 opacity */
@@ -502,15 +502,20 @@ header {
 }
 
 .experience-section .section-title {
-  color: #333333; /* Darker color for better visibility */
-  text-align: left; /* Align left instead of center */
+  color: #7a6b5f ; /* Darker color for better visibility */
+  text-align: left !important; /* Force left alignment */
   margin-bottom: 4rem;
-  margin-left: 1rem; /* Add left margin */
+  margin-left: 2rem; /* Increased left margin */
   font-size: 2.75rem;
   font-weight: 700;
   position: relative;
   z-index: 5;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: block; /* Ensure block display */
+  width: 100%; /* Full width */
+  max-width: 900px; /* Align with drawer container */
+  border-bottom: 3px solid #6c584c; /* Add underline for emphasis */
+  padding-bottom: 0.5rem; /* Space for underline */
 }
 
 .experience-drawers {
@@ -530,7 +535,7 @@ header {
   padding: 2rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
-  overflow: visible; /* Changed from hidden to visible to ensure description can be seen */
+  overflow: hidden;
   cursor: pointer;
   transform-origin: center top;
   backface-visibility: hidden;
@@ -553,83 +558,44 @@ header {
   border-color: #e9dac1;
 }
 
-/* Hover effects */
-.experience-drawer:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
-}
-
-/* Active/open state */
-.experience-drawer.active {
-  background: #fafafa;
-  margin-top: 0.75rem;
-  margin-bottom: 2.25rem;
-  transform: translateY(-5px);
-}
-
-/* Lighting effect */
-.experience-drawer .lighting-effect {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0;
-  z-index: 1;
-  transition: opacity 0.4s ease;
-}
-
-.experience-drawer:hover .lighting-effect {
-  opacity: 0.8;
-}
-
-.experience-drawer > div {
-  position: relative;
-  z-index: 2;
-}
-
+/* Drawer header */
 .drawer-header {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 15px;
+  width: 100%;
+  gap: 1.5rem;
 }
 
 .drawer-date {
-  font-size: 0.9rem;
-  color: #a38566;
+  flex: 0 0 20%;
+  color: #6c584c;
   font-weight: 500;
-  padding-left: 1.5rem;
+  font-size: 0.9rem;
   position: relative;
-  margin-bottom: 0;
-  flex: 0 0 auto;
+  padding-left: 28px;
 }
 
-.drawer-date::before {
+.drawer-date:before {
   content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1rem;
-  height: 1rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a38566'%3E%3Cpath d='M19,4H17V3a1,1,0,0,0-2,0V4H9V3A1,1,0,0,0,7,3V4H5A3,3,0,0,0,2,7V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V7A3,3,0,0,0,19,4Zm1,15a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V10H20Zm0-11H4V7A1,1,0,0,1,5,6H7V7A1,1,0,0,0,9,7V6h6V7a1,1,0,0,0,2,0V6h2a1,1,0,0,1,1,1Z'/%3E%3C/svg%3E");
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236c584c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'%3E%3C/path%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .drawer-title-company {
   flex: 1;
-  margin-bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  padding-left: 28px;
+  position: relative;
 }
 
-.drawer-title-company::before {
+.drawer-title-company:before {
   content: '';
   display: inline-block;
   width: 20px;
@@ -668,25 +634,17 @@ header {
   position: relative;
   color: #555;
   line-height: 1.6;
-  overflow: visible !important; /* Force visibility */
   border-top: 1px solid rgba(108, 88, 76, 0.2);
-  padding: 0;
-  margin: 0;
-  display: none; /* Initially hidden, will be shown on click */
-}
-
-.description-content {
-  padding-top: 1.5rem;
-  display: block;
-  visibility: visible !important;
+  padding-top: 1.5rem !important;
+  margin-top: 1.5rem !important;
+  transition: all 0.5s ease;
 }
 
 .experience-drawer.active .drawer-description {
   display: block !important;
   visibility: visible !important;
-  max-height: none !important; /* Remove max-height constraint */
-  padding-top: 1.5rem !important;
-  margin-top: 0.5rem !important;
+  max-height: 2000px !important;
+  opacity: 1 !important;
   overflow: visible !important;
   height: auto !important;
 }
@@ -710,24 +668,17 @@ header {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 1.5rem;
-  visibility: visible !important;
 }
 
 .skill-tag {
   display: inline-block;
-  padding: 0.3rem 0.75rem;
-  border-radius: 30px;
-  background: rgba(209, 179, 138, 0.15);
+  padding: 0.35rem 0.75rem;
+  background-color: rgba(108, 88, 76, 0.1);
   color: #6c584c;
-  font-size: 0.85rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
   font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.skill-tag:hover {
-  background: rgba(209, 179, 138, 0.25);
-  transform: translateY(-2px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 /* Mobile responsiveness */
@@ -2123,8 +2074,8 @@ footer {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,3,7V19a1,1,0,0,0,1,1H20a1,1,0,0,0,1-1V7A1,1,0,0,0,20,6ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10ZM19,18H5V8H19Z'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
-    margin: 0 auto 10px;
-    opacity: 0.7;
+    background-position: center;
+    flex-shrink: 0;
 }
 
 .experience-drawer .drawer-title-company h3 {

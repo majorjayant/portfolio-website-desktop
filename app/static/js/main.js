@@ -451,14 +451,6 @@ function updateWorkExperienceTimeline(workExperienceData) {
     // Fix background color in case CSS is not applied properly
     experienceSection.style.backgroundColor = '#f8f8f8';
     
-    // Update section title to match requirements
-    const sectionTitle = experienceSection.querySelector('.section-title');
-    if (sectionTitle) {
-        sectionTitle.textContent = "Professional Experience";
-        sectionTitle.style.color = '#7a6b5f';
-        sectionTitle.style.textAlign = 'left';
-    }
-    
     // Get the container for the drawers
     const drawersContainer = document.querySelector('.experience-drawers');
     if (!drawersContainer) {
@@ -500,7 +492,6 @@ function updateWorkExperienceTimeline(workExperienceData) {
         const drawer = document.createElement('div');
         drawer.className = `experience-drawer color-${(index % 4) + 1}`;
         drawer.style.opacity = '0';
-        drawer.style.transform = 'translateY(20px)';
         drawer.style.transitionDelay = `${index * 0.1}s`;
         drawer.style.borderLeftColor = colors[index % 4];
         
@@ -537,16 +528,29 @@ function updateWorkExperienceTimeline(workExperienceData) {
         `;
         drawer.appendChild(headerContent);
         
-        // Create description container
+        // Create description container with correct initial styling
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'drawer-description';
+        // Fix: Make sure it's not hidden by default
+        descriptionContainer.style.display = 'none'; // Will be shown on click
         
         // Create description content
         const descriptionContent = document.createElement('div');
         descriptionContent.className = 'description-content';
         
-        // Set innerHTML for description - this preserves HTML formatting
-        descriptionContent.innerHTML = description;
+        // Create proper HTML for description - if it contains newlines, convert to list items
+        if (description.includes('\n')) {
+            // Split by newlines and filter out empty items
+            const descriptionItems = description.split('\n').filter(item => item.trim() !== '');
+            descriptionContent.innerHTML = `
+                <ul>
+                    ${descriptionItems.map(item => `<li>${item.trim()}</li>`).join('')}
+                </ul>
+            `;
+        } else {
+            // Set innerHTML for description - this preserves HTML formatting
+            descriptionContent.innerHTML = description;
+        }
         
         // Append content to container
         descriptionContainer.appendChild(descriptionContent);
@@ -567,7 +571,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 skillsContainer.appendChild(skillTag);
             });
             
-            // Append skills to description content
+            // Append skills directly to description content
             descriptionContent.appendChild(skillsContainer);
         }
         
@@ -651,15 +655,18 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 drawer.classList.add('active');
                 const description = drawer.querySelector('.drawer-description');
                 if (description) {
-                    // Show the description immediately with improved visibility
-                    description.style.display = 'block';
-                    description.style.visibility = 'visible';
-                    description.style.overflow = 'visible';
-                    description.style.height = 'auto';
-                    description.style.opacity = '1';
-                    
-                    // Force browser reflow to ensure styles are applied
-                    void description.offsetWidth;
+                    // Add a slight delay before showing the description to ensure proper rendering
+                    setTimeout(() => {
+                        // Force display block style
+                        description.style.display = 'block';
+                        description.style.visibility = 'visible';
+                        description.style.overflow = 'visible';
+                        description.style.height = 'auto';
+                        description.style.maxHeight = '2000px';
+                        
+                        // Force repaint to ensure visibility
+                        void description.offsetWidth;
+                    }, 50);
                 }
             }
         });

@@ -8,9 +8,8 @@ frontend:
         - "python -c \"import sys; print('Python executable:', sys.executable)\""
         - "echo \"Installing pip and dependencies...\""
         - "python -m pip install --upgrade pip"
-        - "if [ -f requirements-dev.txt ]; then python -m pip install -r requirements-dev.txt; else echo \"No requirements-dev.txt found, installing core dependencies.\"; python -m pip install Flask==2.3.3 Jinja2==3.1.2 python-dotenv==1.0.0 boto3 botocore; fi"
-        - "echo \"Running build requirements check...\""
-        - "if [ -f check-build-requirements.py ]; then python check-build-requirements.py || echo \"Requirements check failed but continuing build.\"; else echo \"No check-build-requirements.py found, skipping check.\"; fi"
+        - "python -m pip install -r requirements-dev.txt"
+        - "python -m pip install --no-cache-dir Flask==2.3.3 Jinja2==3.1.2 python-dotenv==1.0.0 boto3 botocore"
     build:
       commands:
         - "echo \"Environment info and checking files...\""
@@ -25,17 +24,18 @@ frontend:
         - "export AWS_REGION=eu-north-1"
         - "export STATIC_DEPLOYMENT=true"
         - "echo \"Copying admin files...\""
-        - "if [ -d app/admin ]; then cp -f app/admin/dashboard.html app/static/admin/dashboard.html || echo \"dashboard.html not found\"; else echo \"No admin directory found.\"; fi"
-        - "if [ -d app/admin ]; then cp -f app/admin/index.html app/static/admin/index.html || echo \"admin index.html not found\"; else echo \"No admin directory found.\"; fi"
-        - "if [ -d app/admin-direct ]; then cp -f app/admin-direct/index.html app/static/admin-direct/index.html || echo \"admin-direct/index.html not found\"; else echo \"No admin-direct directory found.\"; fi"
+        - "cp -f app/admin/dashboard.html app/static/admin/dashboard.html || echo \"dashboard.html not found\""
+        - "cp -f app/admin/index.html app/static/admin/index.html || echo \"admin index.html not found\""
+        - "cp -f app/admin-direct/index.html app/static/admin-direct/index.html || echo \"admin-direct/index.html not found\""
         - "if [ ! -f app/static/data/site_config.json ]; then echo '{\"site_configs\":{}}' > app/static/data/site_config.json; fi"
         - "echo \"Building static site...\""
-        - "if [ -f build_static_site.py ]; then python build_static_site.py || echo \"Main build script failed, using fallback\"; else echo \"No build script found, using fallback\"; python app/index_standalone.py || echo \"Standalone index generator failed. Creating minimal index.html\"; echo '<html><head><title>Portfolio</title></head><body><h1>Portfolio Website</h1><p>This is a fallback page.</p></body></html>' > app/static/index.html; fi"
+        - "if [ -f build_static_site.py ]; then python build_static_site.py; else echo \"No build script found, using fallback\"; python app/index_standalone.py; fi"
         - "echo \"Checking build output:\""
-        - "ls -la app/static/ || echo \"Static directory does not exist\""
+        - "ls -la app/static/"
         - "echo \"Verifying index.html exists:\""
-        - "if [ ! -f app/static/index.html ]; then echo \"WARNING: index.html not found! Creating minimal index\"; echo '<html><head><title>Portfolio</title></head><body><h1>Portfolio Website</h1><p>This is a fallback page.</p></body></html>' > app/static/index.html; fi"
-        - "if [ -f amplify-debug.sh ]; then chmod +x amplify-debug.sh && ./amplify-debug.sh; else echo \"No debug script found, skipping.\"; fi"
+        - "ls -la app/static/index.html || echo \"WARNING: index.html not found!\""
+        - "chmod +x amplify-debug.sh"
+        - "./amplify-debug.sh"
   artifacts:
     baseDirectory: app/static
     files:
