@@ -653,25 +653,32 @@ function updateWorkExperienceTimeline(workExperienceData) {
             // Check if this drawer is currently active
             const wasActive = drawer.classList.contains('active');
             
-            // Close all drawers first
-            drawers.forEach(d => {
+            // Close all drawers first with staggered animation
+            drawers.forEach((d, i) => {
+                // Remove active class
                 d.classList.remove('active');
+                
                 // Only hide descriptions on mobile
                 if (isMobile) {
                     const desc = d.querySelector('.drawer-description');
                     if (desc) {
-                        desc.style.display = 'none';
+                        // Add a slight delay between each drawer closing for a smoother effect
+                        setTimeout(() => {
+                            desc.style.display = 'none';
+                        }, i * 50); // 50ms delay between each drawer
                     }
                 }
             });
             
             // If this drawer wasn't active before, make it active
             if (!wasActive) {
-                drawer.classList.add('active');
-                const description = drawer.querySelector('.drawer-description');
-                if (description && isMobile) { // Only toggle visibility on mobile
-                    // Add a slight delay before showing the description to ensure proper rendering
-                    setTimeout(() => {
+                // Add a slight delay before showing to ensure animations complete
+                setTimeout(() => {
+                    drawer.classList.add('active');
+                    
+                    // Handle description visibility
+                    const description = drawer.querySelector('.drawer-description');
+                    if (description && isMobile) { // Only toggle visibility on mobile
                         // Force display block style
                         description.style.display = 'block';
                         description.style.visibility = 'visible';
@@ -681,8 +688,11 @@ function updateWorkExperienceTimeline(workExperienceData) {
                         
                         // Force repaint to ensure visibility
                         void description.offsetWidth;
-                    }, 50);
-                }
+                        
+                        // Scroll the drawer into view for better UX
+                        drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }, 100); // 100ms delay before showing
             }
         });
     });

@@ -525,48 +525,74 @@ header {
 
 .experience-drawers {
   padding-top: 40px; 
-  padding-bottom: 80px; /* Reduced from 120px to tighten the layout */
+  padding-bottom: 80px;
   perspective: 1200px;
   position: relative;
-  max-width: 1200px; /* Match the updated max-width */
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  /* Reduce the staggered effect */
+  --drawer-overlap: 10px; /* Decreased from ~40px */
 }
 
-/* Skeleton background effect */
-.experience-drawers:before,
-.experience-drawers:after {
-    content: '';
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    background-color: rgba(26, 26, 26, 0.3); /* Dark background with opacity */
-    border-radius: 24px;
-    z-index: -1;
-    transform: rotate(1deg) scale(1.05);
-}
-
-.experience-drawers:after {
-    transform: rotate(-1deg) scale(1.05);
-}
-
+/* Adjust drawer overlap and animation */
 .experience-drawer {
   position: relative;
   background: #ffffff;
   border-radius: 16px;
   padding: 2rem;
-  margin-bottom: 1.5rem;
+  /* Reduce overlap between items */
+  margin-bottom: var(--drawer-overlap);
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: pointer;
   transform-origin: center top;
   backface-visibility: hidden;
   border-left: 5px solid;
-  transition: all 0.5s cubic-bezier(0.2, 0.85, 0.4, 1.275);
-  min-height: 110px; /* Increased minimum height */
-  width: 100%; /* Full width of container */
+  /* Adjust animation timing for smoother effect */
+  transition: all 0.3s ease-out; /* Changed from 0.5s cubic-bezier */
+  min-height: 110px;
+  width: 100%;
+}
+
+/* Improve hover animation and control speed */
+.experience-drawer:hover {
+  transform: translateY(-5px);
+  z-index: 10;
+  box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2);
+  /* Shorter animation time for more responsive feel */
+  transition: all 0.2s ease-out;
+}
+
+/* Control the slide-in animation speed of the description */
+.experience-drawer .drawer-description {
+  /* Make the animation faster */
+  transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease;
+}
+
+/* Make the drawer expansion smoother */
+.experience-drawer.active {
+  /* Specific animation for active state */
+  transition: all 0.3s ease-out;
+  z-index: 20; /* Ensure active drawer is on top */
+}
+
+/* Media queries for mobile */
+@media screen and (max-width: 768px) {
+  .experience-drawer {
+    /* Reset margin to avoid overlapping in mobile */
+    margin-bottom: 15px;
+  }
+  
+  .experience-drawer.active {
+    margin-top: 10px;
+    margin-bottom: 25px;
+  }
+
+  /* Faster animation on mobile */
+  .experience-drawer .drawer-description {
+    transition: opacity 0.2s ease, height 0.2s ease;
+  }
 }
 
 /* Color variations */
@@ -616,11 +642,23 @@ header {
 
 .drawer-title-company {
   flex: 1;
-  padding-left: 28px;
   position: relative;
 }
 
 .drawer-title-company:before {
+  display: none; /* Hide the original icon */
+}
+
+.drawer-title-company h3 {
+  font-size: 1.4rem;
+  color: #3a3a3a;
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+  position: relative;
+  padding-left: 28px; /* Add space for the icon */
+}
+
+.drawer-title-company h3:before {
   content: '';
   display: inline-block;
   width: 20px;
@@ -629,14 +667,10 @@ header {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  flex-shrink: 0;
-}
-
-.drawer-title-company h3 {
-  font-size: 1.4rem;
-  color: #3a3a3a;
-  margin: 0 0 0.25rem 0;
-  font-weight: 600;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .drawer-title-company p {
@@ -752,8 +786,14 @@ header {
     text-align: left;
   }
   
-  .drawer-title-company:before {
-    margin: 0 0 5px 0;
+  .drawer-title-company h3 {
+    padding-left: 28px; /* Keep padding on mobile */
+  }
+  
+  .drawer-title-company h3:before {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
   }
   
   .drawer-location {
@@ -1998,60 +2038,6 @@ footer {
 /*          Experience Drawers Section           */
 /* ============================================= */
 
-.experience-drawers {
-    padding-top: 40px; 
-    padding-bottom: 80px; /* Reduced from 120px to tighten the layout */
-    perspective: 1200px;
-    position: relative;
-    max-width: 1200px; /* Match the updated max-width */
-    margin: 0 auto;
-    width: 100%;
-}
-
-/* Skeleton background effect */
-.experience-drawers:before,
-.experience-drawers:after {
-    content: '';
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    background-color: rgba(26, 26, 26, 0.3); /* Dark background with opacity */
-    border-radius: 24px;
-    z-index: -1;
-    transform: rotate(1deg) scale(1.05);
-}
-
-.experience-drawers:after {
-    transform: rotate(-1deg) scale(1.05);
-}
-
-.experience-drawer {
-    position: relative;
-    border-radius: 24px;
-    margin-bottom: -60px; /* Creates the stacked effect */
-    height: 120px;
-    overflow: hidden;
-    cursor: pointer;
-    padding: 24px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-    transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-    z-index: 1;
-    transform: translateZ(0);
-    transform-origin: center top;
-    background-color: rgba(108, 88, 76, 0.95); /* Base color with transparency */
-}
-
-.experience-drawer:hover, 
-.experience-drawer.active {
-    height: auto;
-    min-height: 300px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-    transform: scale(1.02); /* Slight scale up on hover */
-    z-index: 30 !important;
-}
-
 /* Card dynamic lighting effect */
 .experience-drawer .lighting-effect {
     position: absolute;
@@ -2134,15 +2120,7 @@ footer {
 }
 
 .experience-drawer .drawer-title-company:before {
-    content: '';
-    display: block;
-    width: 20px;
-    height: 20px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,3,7V19a1,1,0,0,0,1,1H20a1,1,0,0,0,1-1V7A1,1,0,0,0,20,6ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10ZM19,18H5V8H19Z'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    flex-shrink: 0;
+    display: none;
 }
 
 .experience-drawer .drawer-title-company h3 {
@@ -2151,6 +2129,21 @@ footer {
     font-weight: 700;
     color: #ffffff;
     margin-bottom: 6px;
+}
+
+.experience-drawer .drawer-title-company h3:before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,3,7V19a1,1,0,0,0,1,1H20a1,1,0,0,0,1-1V7A1,1,0,0,0,20,6ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10ZM19,18H5V8H19Z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .experience-drawer .drawer-title-company p {
@@ -2186,7 +2179,7 @@ footer {
     opacity: 1;
     height: auto;
     transform: translateY(0);
-    transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s, height 0.5s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease;
     font-size: 14px;
     color: rgba(255, 255, 255, 0.9);
     line-height: 1.6;
@@ -2303,8 +2296,14 @@ footer {
         text-align: left;
     }
     
-    .experience-drawer .drawer-title-company:before {
-        margin: 0 0 5px 0;
+    .experience-drawer .drawer-title-company h3 {
+        padding-left: 28px; /* Keep padding on mobile */
+    }
+    
+    .experience-drawer .drawer-title-company h3:before {
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
     }
     
     .experience-drawer .drawer-location {
