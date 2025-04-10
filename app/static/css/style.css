@@ -2341,10 +2341,10 @@ footer {
 .experience-section .section-title {
     position: relative;
     z-index: 5;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     display: block;
-    color: #ffffff;
-    text-align: center;
+    color: #7a6b5f;
+    text-align: left;
 }
 
 /* Fix for older browsers */
