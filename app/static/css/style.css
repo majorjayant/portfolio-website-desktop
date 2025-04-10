@@ -72,7 +72,7 @@ img {
   position: absolute;
   bottom: -10px;
   left: 0;
-  width: 50px;
+  width: 10px;
   height: 3px;
   background-color: var(--accent-color);
 }
