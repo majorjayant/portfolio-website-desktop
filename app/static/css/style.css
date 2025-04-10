@@ -1784,7 +1784,8 @@ footer {
 }
 
 .experience-drawer:hover {
-    height: 300px;
+    height: auto;
+    min-height: 300px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
     transform: translateY(-5px) rotateX(2deg);
     z-index: 100 !important;
@@ -1830,7 +1831,7 @@ footer {
 }
 
 .experience-drawer:hover .drawer-title-company h3 {
-    color: #007bff;
+    color: var(--accent-color);
 }
 
 .experience-drawer .drawer-title-company p {
@@ -1891,7 +1892,8 @@ footer {
     }
     
     .experience-drawer:hover {
-        height: 350px;
+        height: auto;
+        min-height: 350px;
     }
     
     .experience-drawer .drawer-header {
