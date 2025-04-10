@@ -555,19 +555,27 @@ function updateWorkExperienceTimeline(workExperienceData) {
                     // Keep the hovered card at its position
                     d.style.zIndex = 30;
                     d.style.transform = `translateY(${yOffset}px) scale(1.02)`;
+                    // Ensure transition is applied
+                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
                 } else if (hoveredIndex < i) {
                     // Push down cards below the hovered one
                     d.style.zIndex = totalItems - i;
                     d.style.transform = `translateY(${yOffset + 20}px)`;
+                    // Apply slower transition
+                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
                 } else {
                     // Pull up cards above the hovered one
                     d.style.zIndex = totalItems - i;
                     d.style.transform = `translateY(${yOffset - 10}px)`;
+                    // Apply slower transition
+                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
                 }
             } else {
                 // Reset to original position when nothing is hovered
                 d.style.zIndex = totalItems - i;
                 d.style.transform = `translateY(${yOffset}px)`;
+                // Apply slower transition for return animation
+                d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
             }
         });
     }
@@ -580,6 +588,11 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 isAnyHovered = true;
                 drawer.classList.add('active');
                 updateCardPositions(index);
+                
+                // Add visibility class to all drawers to ensure smoother transitions
+                drawers.forEach(d => {
+                    d.style.visibility = 'visible';
+                });
             }
         });
         
@@ -588,11 +601,12 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 drawer.classList.remove('active');
                 // Only reset if we're not entering another card
                 setTimeout(() => {
-                    if (!isAnyHovered) {
+                    if (!document.querySelector('.experience-drawer:hover')) {
+                        isAnyHovered = false;
                         activeIndex = -1;
                         updateCardPositions(null);
                     }
-                }, 100);
+                }, 150); // Slightly longer delay for smoother transitions
             }
         });
         
@@ -623,7 +637,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 updateCardPositions(null);
                 drawers.forEach(d => d.classList.remove('active'));
             }
-        }, 100);
+        }, 250); // Increased delay for smoother transitions when leaving the container
     });
     
     // Close drawers when clicking outside

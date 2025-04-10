@@ -486,10 +486,23 @@ header {
 
 /* ===== Experience Section ===== */
 .experience-section {
-  padding: 2rem 0; /* Adjust padding as needed */
-  background-color: #ffffff; /* Slightly different background */
+  background-color: var(--background-light); /* Change to match site theme */
+  padding: 80px 0 60px; /* Increased top padding to move section down */
+  margin-top: 30px; /* Add margin to create more space from carousel */
+}
+
+.experience-section .section-title {
   position: relative;
-  margin-top: 50px; /* Changed from -100px to 50px to prevent overlap */
+  z-index: 5;
+  margin-bottom: 2.5rem;
+  display: block;
+  color: var(--text-dark); /* Change to match theme */
+  text-align: left; /* Left align the title */
+  margin-left: 20px; /* Add some margin from the left edge */
+}
+
+.experience-section .section-title:after {
+  left: 0; /* Ensure the title underline is aligned with left-aligned text */
 }
 
 /* Vertical Timeline Styles */
@@ -1765,7 +1778,7 @@ footer {
     padding-bottom: 120px; /* Increased to accommodate the stacked cards */
     perspective: 1200px;
     position: relative;
-    max-width: 900px;
+    max-width: 1100px; /* Increased from 900px for wider cards */
     margin: 0 auto;
 }
 
@@ -1778,7 +1791,7 @@ footer {
     left: -20px;
     right: -20px;
     bottom: -20px;
-    background-color: rgba(26, 26, 26, 0.3); /* #1A1A1A with opacity */
+    background-color: rgba(26, 26, 26, 0.2); /* Reduced opacity for lighter effect */
     border-radius: 24px;
     z-index: -1;
     transform: rotate(1deg) scale(1.05);
@@ -1790,24 +1803,25 @@ footer {
 
 .experience-drawer {
     position: relative;
-    border-radius: 24px; /* Rounded corners like in the reference */
+    border-radius: 24px;
     margin-bottom: -60px; /* Creates the stacked effect */
-    height: 120px; /* Taller initial height */
+    height: 120px;
     overflow: hidden;
     cursor: pointer;
     padding: 24px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); /* Slowed down for smoother animation */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); /* Slowed down to 1s */
     z-index: 1;
     transform: translateZ(0);
     transform-origin: center top;
+    background-color: rgba(108, 88, 76, 0.9); /* Base color with transparency */
 }
 
 .experience-drawer:hover, 
 .experience-drawer.active {
     height: auto;
     min-height: 300px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
     transform: scale(1.02); /* Slight scale up on hover */
     z-index: 30 !important;
 }
@@ -1859,7 +1873,7 @@ footer {
     opacity: 0;
     height: 0;
     transform: translateY(20px);
-    transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s, height 0.5s ease; /* Delay to match the reference */
+    transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s, height 0.8s ease; /* Slowed down transitions */
     font-size: 14px;
     color: rgba(255, 255, 255, 0.9);
     line-height: 1.6;
@@ -1886,21 +1900,21 @@ footer {
     margin-bottom: 8px;
 }
 
-/* Color classes with the specified hex values */
+/* Color classes with the specified hex values and transparency */
 .color-1 {
-    background-color: #6c584c;
+    background-color: rgba(108, 88, 76, 0.9); /* #6c584c with transparency */
 }
 
 .color-2 {
-    background-color: #a38566;
+    background-color: rgba(163, 133, 102, 0.9); /* #a38566 with transparency */
 }
 
 .color-3 {
-    background-color: #d1b38a;
+    background-color: rgba(209, 179, 138, 0.9); /* #d1b38a with transparency */
 }
 
 .color-4 {
-    background-color: #e9dac1;
+    background-color: rgba(233, 218, 193, 0.9); /* #e9dac1 with transparency */
     color: rgba(0, 0, 0, 0.8); /* Darker text for light background */
 }
 
