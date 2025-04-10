@@ -558,7 +558,7 @@ header {
   position: relative;
   background: #ffffff;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 0rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
