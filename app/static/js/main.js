@@ -214,12 +214,12 @@ function filterProjects(category) {
  * Load site configuration from API
  */
 function loadSiteConfig() {
-    console.log('Starting to load site configuration');
+    console.log('[CONFIG] Starting to load site configuration');
     
     // Use the confirmed working API endpoint
     const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
     
-    console.log('Fetching from API endpoint:', apiEndpoint);
+    console.log('[CONFIG] Fetching from API endpoint:', apiEndpoint);
     
     fetch(apiEndpoint, {
         method: 'GET',
@@ -229,49 +229,50 @@ function loadSiteConfig() {
         }
     })
     .then(response => {
-        console.log('API response status:', response.status);
+        console.log('[CONFIG] API response status:', response.status);
         if (!response.ok) {
             throw new Error(`API response not OK: ${response.status}`);
         }
         return response.json();
     })
     .then(data => {
-        console.log('Successfully loaded from API:', data);
+        console.log('[CONFIG] Successfully loaded from API:', data);
         processConfigData(data);
     })
     .catch(error => {
-        console.error('Failed to load from API:', error);
+        console.error('[CONFIG] Failed to load from API:', error);
         // Show error notification on the page
         showErrorNotification('Failed to load configuration. Please refresh the page or contact support.');
     });
     
     function processConfigData(data) {
-        console.log('Processing configuration data', data);
+        console.log('[CONFIG] Processing configuration data', data);
         
         // Handle nested data structure if present
         let configData = data;
         if (data.site_configs) {
-            console.log('Detected nested site_configs structure');
+            console.log('[CONFIG] Detected nested site_configs structure');
             configData = data.site_configs;
         }
         
         if (data.site_config) {
-            console.log('Detected site_config object');
+            console.log('[CONFIG] Detected site_config object');
             configData = data.site_config;
         }
         
-        console.log('Final config data to apply:', configData);
+        console.log('[CONFIG] Final config data to apply:', configData);
         
         // Apply configuration to the website
         updateWebsiteElements(configData);
         
         // Check for work experience data and update timeline
         if (data.work_experience && Array.isArray(data.work_experience)) {
-            console.log('Found work experience data:', data.work_experience);
+            console.log('[EXPERIENCE] Found work experience data in site config:', data.work_experience.length, 'items');
             // Call the function to update the work experience timeline
             updateWorkExperienceTimeline(data.work_experience);
         } else {
-            console.warn('No work experience data found in API response');
+            console.warn('[EXPERIENCE] No work experience data found in API response, will try to fetch separately');
+            // We'll let the dedicated fetchWorkExperienceData function handle this
         }
     }
 }
@@ -435,10 +436,51 @@ function updateGalleryPhoto(selector, photoUrl, altText) {
  * Update work experience section with a stacked drawer UI
  */
 function updateWorkExperienceTimeline(workExperienceData) {
-    console.log("Updating work experience timeline with data:", workExperienceData);
+    // Check if experience has already been initialized
+    if (window.experienceInitialized) {
+        console.log("[EXPERIENCE] Experience section already initialized, skipping update");
+        return;
+    }
+    
+    console.log("[EXPERIENCE] Updating work experience timeline with data:", workExperienceData ? workExperienceData.length : 0, "items");
     
     // Get the experience section
     const experienceSection = document.querySelector('.experience-section');
+    if (!experienceSection) {
+        console.error('[EXPERIENCE] Experience section not found');
+        return;
+    }
+    
+    // Remove any existing decorative elements and titles to prevent duplication
+    const existingDecorations = experienceSection.querySelectorAll('.decoration-1, .decoration-2');
+    existingDecorations.forEach(el => el.remove());
+    
+    // Only remove the existing title if we're going to add a new one
+    const existingTitle = experienceSection.querySelector('.section-title');
+    if (existingTitle) {
+        console.log('Using existing section title');
+    } else {
+        // Create a new section title with animation
+        const sectionTitle = document.createElement('h2');
+        sectionTitle.className = 'section-title';
+        sectionTitle.textContent = 'Professional Experience';
+        sectionTitle.style.opacity = '0';
+        sectionTitle.style.transform = 'translateY(20px)';
+        
+        // Insert at the beginning of the section
+        if (experienceSection.firstChild) {
+            experienceSection.insertBefore(sectionTitle, experienceSection.firstChild);
+        } else {
+            experienceSection.appendChild(sectionTitle);
+        }
+        
+        // Animate the title
+        setTimeout(() => {
+            sectionTitle.style.transition = 'all 0.8s ease';
+            sectionTitle.style.opacity = '1';
+            sectionTitle.style.transform = 'translateY(0)';
+        }, 100);
+    }
     
     // Add decorative elements
     const decoration1 = document.createElement('div');
@@ -449,23 +491,12 @@ function updateWorkExperienceTimeline(workExperienceData) {
     decoration2.className = 'decoration-2';
     experienceSection.appendChild(decoration2);
     
-    // Create a new section title with animation
-    const sectionTitle = document.createElement('h2');
-    sectionTitle.className = 'section-title';
-    sectionTitle.textContent = 'Professional Experience';
-    sectionTitle.style.opacity = '0';
-    sectionTitle.style.transform = 'translateY(20px)';
-    experienceSection.appendChild(sectionTitle);
-    
-    // Animate the title
-    setTimeout(() => {
-        sectionTitle.style.transition = 'all 0.8s ease';
-        sectionTitle.style.opacity = '1';
-        sectionTitle.style.transform = 'translateY(0)';
-    }, 100);
-    
     // Get the container for the drawers
     const drawersContainer = document.querySelector('.experience-drawers');
+    if (!drawersContainer) {
+        console.error('Experience drawers container not found');
+        return;
+    }
     
     // Clear previous content
     drawersContainer.innerHTML = '';
@@ -474,7 +505,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
     if (!workExperienceData || workExperienceData.length === 0) {
         const noExperience = document.createElement('p');
         noExperience.textContent = 'No work experience data available.';
-        noExperience.style.color = '#fff';
+        noExperience.style.color = '#333';
         noExperience.style.textAlign = 'center';
         drawersContainer.appendChild(noExperience);
         return;
@@ -482,11 +513,20 @@ function updateWorkExperienceTimeline(workExperienceData) {
     
     // Sort work experience by date (most recent first)
     workExperienceData.sort((a, b) => {
+        // Handle null or undefined dates
+        if (!a.start_date) return 1;
+        if (!b.start_date) return -1;
         return new Date(b.start_date) - new Date(a.start_date);
     });
     
     // Create a drawer for each work experience
     workExperienceData.forEach((experience, index) => {
+        // Handle different API field names
+        const jobTitle = experience.job_title || experience.title || '';
+        const company = experience.company || experience.company_name || '';
+        const location = experience.location || '';
+        const description = experience.description || '';
+        
         // Create a drawer with staggered animation
         const drawer = document.createElement('div');
         drawer.className = `experience-drawer color-${(index % 4) + 1}`;
@@ -500,27 +540,41 @@ function updateWorkExperienceTimeline(workExperienceData) {
         drawer.appendChild(lightingEffect);
         
         // Format dates
-        const startDate = new Date(experience.start_date);
-        const endDate = experience.end_date ? new Date(experience.end_date) : null;
-        const dateString = endDate 
-            ? `${getMonthName(startDate.getMonth())} ${startDate.getFullYear()} - ${getMonthName(endDate.getMonth())} ${endDate.getFullYear()}`
-            : `${getMonthName(startDate.getMonth())} ${startDate.getFullYear()} - Present`;
+        let dateString = 'Date not available';
+        
+        try {
+            if (experience.start_date) {
+                const startDate = new Date(experience.start_date);
+                
+                if (experience.end_date) {
+                    const endDate = new Date(experience.end_date);
+                    dateString = `${getMonthName(startDate.getMonth())} ${startDate.getFullYear()} - ${getMonthName(endDate.getMonth())} ${endDate.getFullYear()}`;
+                } else {
+                    dateString = `${getMonthName(startDate.getMonth())} ${startDate.getFullYear()} - Present`;
+                }
+            } else if (experience.period) {
+                // Fallback to period field if present
+                dateString = experience.period;
+            }
+        } catch (error) {
+            console.error('Error formatting dates:', error);
+        }
         
         // Create drawer content
         drawer.innerHTML += `
             <div class="drawer-header">
                 <div class="drawer-date">${dateString}</div>
                 <div class="drawer-title-company">
-                    <h3>${experience.job_title}</h3>
-                    <p>${experience.company}</p>
+                    <h3>${jobTitle}</h3>
+                    <p>${company}</p>
                 </div>
-                <div class="drawer-location">${experience.location}</div>
+                ${location ? `<div class="drawer-location">${location}</div>` : ''}
             </div>
-            <div class="drawer-description">${experience.description}</div>
+            <div class="drawer-description">${description}</div>
         `;
         
         // Extract potential skills from the description
-        let skills = extractSkillsFromDescription(experience.description);
+        let skills = extractSkillsFromDescription(description);
         
         // Add skills container if there are skills
         if (skills.length > 0) {
@@ -557,6 +611,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
         drawer.style.zIndex = drawers.length - index;
         
         const lightingEffect = drawer.querySelector('.lighting-effect');
+        if (!lightingEffect) return;
         
         drawer.addEventListener('mousemove', (e) => {
             // Get position relative to the drawer
@@ -569,7 +624,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
             const yPercent = y / rect.height * 100;
             
             // Create radial gradient based on mouse position
-            lightingEffect.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%)`;
+            lightingEffect.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 60%)`;
         });
         
         // Handle hover state for card stack effect
@@ -584,7 +639,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
             
             // Move current card up
             drawer.style.transform = 'translateY(-5px) scale(1.02)';
-            drawer.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.4)';
+            drawer.style.boxShadow = '0 20px 30px -8px rgba(0, 0, 0, 0.15)';
             drawer.style.zIndex = 100;
         });
         
@@ -605,7 +660,9 @@ function updateWorkExperienceTimeline(workExperienceData) {
         });
     });
     
-    console.log("Work experience UI created successfully");
+    // Mark as initialized at the end
+    window.experienceInitialized = true;
+    console.log("[EXPERIENCE] Work experience UI created successfully and marked as initialized");
 }
 
 // Helper function to extract skills from job description

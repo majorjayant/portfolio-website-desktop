@@ -176,7 +176,13 @@ if (menuToggle) {
 
 // Fetch work experience data and initialize the timeline
 async function fetchWorkExperienceData() {
-    console.log('Fetching work experience data');
+    // Check if experience has already been initialized
+    if (window.experienceInitialized) {
+        console.log("[EXPERIENCE] Experience section already initialized, skipping fetch");
+        return;
+    }
+    
+    console.log('[EXPERIENCE] Fetching work experience data');
     
     try {
         // Try to fetch from API first
@@ -197,34 +203,26 @@ async function fetchWorkExperienceData() {
         }
         
         const data = await response.json();
-        console.log('Successfully loaded work experience from API:', data);
+        console.log('[EXPERIENCE] Successfully loaded work experience from API:', data);
         
         // Initialize the work experience timeline with the fetched data
         const workExperience = data.work_experience || data;
         updateWorkExperienceTimeline(workExperience);
         
     } catch (apiError) {
-        console.error('Error fetching work experience from API:', apiError);
-        console.log('Falling back to local JSON file');
+        console.error('[EXPERIENCE] Error fetching work experience from API:', apiError);
+        console.log('[EXPERIENCE] Falling back to local JSON file');
         
         // Fallback to local JSON
         try {
             const localResponse = await fetch('/data/experience.json');
             const localData = await localResponse.json();
-            console.log('Successfully loaded work experience from local JSON:', localData);
+            console.log('[EXPERIENCE] Successfully loaded work experience from local JSON:', localData);
             updateWorkExperienceTimeline(localData);
         } catch (localError) {
-            console.error('Error loading from local JSON:', localError);
+            console.error('[EXPERIENCE] Error loading from local JSON:', localError);
             // Show empty state
             updateWorkExperienceTimeline([]);
         }
     }
-}
-
-// Initialize the page
-document.addEventListener('DOMContentLoaded', function() {
-    // Fetch and load work experience data
-    fetchWorkExperienceData();
-    
-    // Other initialization code...
-}); 
+} 
