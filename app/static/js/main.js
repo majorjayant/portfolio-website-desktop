@@ -40,6 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize animations for elements when they come into view
     initScrollAnimations();
+
+    initExperienceCards();
+    
+    // Reposition cards on window resize
+    window.addEventListener('resize', positionCards);
 });
 
 // Initialize chatbot functionality
@@ -435,222 +440,342 @@ function updateGalleryPhoto(selector, photoUrl, altText) {
  * Update work experience section with a stacked drawer UI
  */
 function updateWorkExperienceTimeline(workExperienceData) {
-    console.log('Creating drawer UI for work experience:', workExperienceData);
+    console.log('Updating work experience timeline with data:', workExperienceData);
     
-    const container = document.getElementById('experience-drawers-container');
-    if (!container) {
-        console.error('Experience drawers container (#experience-drawers-container) not found.');
+    const experienceSection = document.getElementById('experience-section');
+    if (!experienceSection) {
+        console.error('Experience section not found');
         return;
     }
     
-    // Check if a section title already exists
-    const existingTitle = container.parentNode.querySelector('.section-title');
+    // Create section title if it doesn't exist
+    let sectionTitle = experienceSection.querySelector('.section-title');
+    if (!sectionTitle) {
+        sectionTitle = document.createElement('h2');
+        sectionTitle.className = 'section-title';
+        sectionTitle.textContent = 'Career Journey';
+        experienceSection.prepend(sectionTitle);
+    }
     
-    // Only create a new title if one doesn't already exist
-    if (!existingTitle) {
-        const headerElement = document.createElement('h2');
-        headerElement.className = 'section-title text-center mb-6';
-        headerElement.textContent = 'Career Journey';
-        container.parentNode.insertBefore(headerElement, container);
-        console.log('Added "Career Journey" header above container');
+    // Find or create container for experience drawers
+    let drawersContainer = document.querySelector('.experience-drawers');
+    if (!drawersContainer) {
+        drawersContainer = document.createElement('div');
+        drawersContainer.className = 'experience-drawers';
+        experienceSection.appendChild(drawersContainer);
     } else {
-        console.log('Using existing section title:', existingTitle.textContent);
-        // Make sure the existing title is visible
-        existingTitle.style.display = 'block';
-        existingTitle.style.position = 'relative';
-        existingTitle.style.zIndex = '5';
-        existingTitle.style.marginBottom = '2rem';
+        drawersContainer.innerHTML = ''; // Clear existing drawers
     }
     
-    container.innerHTML = ''; // Clear previous content (e.g., old timeline)
-    
-    if (!workExperienceData || !Array.isArray(workExperienceData) || workExperienceData.length === 0) {
-        console.warn('No work experience data provided. Displaying placeholder.');
-        container.innerHTML = '<p>No work experience details available at this time.</p>'; 
+    if (!workExperienceData || workExperienceData.length === 0) {
+        console.log('No work experience data provided');
         return;
     }
     
-    // Sort by date (most recent first)
-    const sortedExperience = [...workExperienceData].sort((a, b) => {
-        const dateA = new Date(a.from_date || '1970-01-01');
-        const dateB = new Date(b.from_date || '1970-01-01');
+    // Sort experiences by date (most recent first)
+    const sortedExperiences = [...workExperienceData].sort((a, b) => {
+        const dateA = new Date(a.start_date);
+        const dateB = new Date(b.start_date);
         return dateB - dateA;
     });
-
-    const totalItems = sortedExperience.length;
-    const colorSchemes = [
-        'color-1',    // #6c584c
-        'color-2',    // #a38566
-        'color-3',    // #d1b38a
-        'color-4'     // #e9dac1
-    ];
-
-    // Create drawers
-    sortedExperience.forEach((exp, index) => {
+    
+    console.log('Sorted experiences:', sortedExperiences);
+    
+    // Color scheme for the cards
+    const colors = ['color-1', 'color-2', 'color-3', 'color-4'];
+    
+    // Create experience drawers
+    sortedExperiences.forEach((experience, index) => {
         const drawer = document.createElement('div');
-        drawer.classList.add('experience-drawer', colorSchemes[index % colorSchemes.length]);
+        drawer.className = `experience-drawer ${colors[index % colors.length]}`;
         drawer.setAttribute('data-index', index);
         
-        // Set initial position based on index (stacked effect)
-        drawer.style.zIndex = totalItems - index;
-        drawer.style.transform = `translateY(${index * 20}px)`;
-        
         // Format dates
-        let dateString = 'Date N/A';
-        if (exp.from_date) {
-            const fromDate = new Date(exp.from_date);
-            const fromMonth = fromDate.toLocaleString('default', { month: 'short' });
-            const fromYear = fromDate.getFullYear();
+        const startDate = new Date(experience.start_date);
+        const startDateFormatted = startDate.toLocaleDateString('en-US', { 
+            month: 'short', 
+            year: 'numeric' 
+        });
+        
+        let endDateFormatted = 'Present';
+        if (experience.end_date && experience.end_date !== 'Present') {
+            const endDate = new Date(experience.end_date);
+            endDateFormatted = endDate.toLocaleDateString('en-US', { 
+                month: 'short', 
+                year: 'numeric' 
+            });
+        }
+        
+        // Create drawer header
+        const header = document.createElement('div');
+        header.className = 'drawer-header';
+        
+        const dateSpan = document.createElement('span');
+        dateSpan.className = 'drawer-date';
+        dateSpan.textContent = `${startDateFormatted} - ${endDateFormatted}`;
+        
+        const titleCompanyDiv = document.createElement('div');
+        titleCompanyDiv.className = 'drawer-title-company';
+        
+        const titleHeading = document.createElement('h3');
+        titleHeading.textContent = experience.job_title;
+        
+        const companyPara = document.createElement('p');
+        companyPara.textContent = experience.company;
+        
+        titleCompanyDiv.appendChild(titleHeading);
+        titleCompanyDiv.appendChild(companyPara);
+        
+        const locationSpan = document.createElement('span');
+        locationSpan.className = 'drawer-location';
+        locationSpan.textContent = experience.location || '';
+        
+        header.appendChild(dateSpan);
+        header.appendChild(titleCompanyDiv);
+        header.appendChild(locationSpan);
+        
+        // Create drawer description
+        const description = document.createElement('div');
+        description.className = 'drawer-description';
+        description.innerHTML = experience.description || '';
+        
+        // Create skills container if there are skills
+        if (experience.skills && experience.skills.length > 0) {
+            const skillsContainer = document.createElement('div');
+            skillsContainer.className = 'skills-container';
             
-            if (exp.is_current) {
-                dateString = `${fromMonth} ${fromYear} - Present`;
-            } else if (exp.to_date) {
-                const toDate = new Date(exp.to_date);
-                const toMonth = toDate.toLocaleString('default', { month: 'short' });
-                const toYear = toDate.getFullYear();
-                dateString = `${fromMonth} ${fromYear} - ${toMonth} ${toYear}`;
-            } else {
-                dateString = `${fromMonth} ${fromYear} - Date N/A`;
-            }
+            experience.skills.forEach(skill => {
+                const skillTag = document.createElement('span');
+                skillTag.className = 'skill-tag';
+                skillTag.textContent = skill;
+                skillsContainer.appendChild(skillTag);
+            });
+            
+            description.appendChild(skillsContainer);
         }
         
-        // Create description list (assuming description is newline-separated)
-        let descriptionHtml = '';
-        if (exp.description) {
-            const descriptionItems = exp.description.split('\n').filter(item => item.trim() !== '');
-            descriptionHtml = `<ul>${descriptionItems.map(item => `<li>${item.trim()}</li>`).join('')}</ul>`;
-        }
-
-        drawer.innerHTML = `
-            <div class="drawer-header">
-                <div class="drawer-date">${dateString}</div>
-                <div class="drawer-title-company">
-                    <h3>${exp.job_title || 'N/A'}</h3>
-                    <p>${exp.company_name || 'N/A'}</p>
-                </div>
-                <div class="drawer-location">${exp.location || 'Remote'}</div>
-            </div>
-            <div class="drawer-description">
-                ${descriptionHtml}
-            </div>
-        `;
+        drawer.appendChild(header);
+        drawer.appendChild(description);
         
-        container.appendChild(drawer);
+        // Set initial z-index based on position (higher for elements at the top)
+        drawer.style.zIndex = sortedExperiences.length - index;
+        
+        drawersContainer.appendChild(drawer);
     });
     
-    // Handle drawer interactions
-    const drawers = container.querySelectorAll('.experience-drawer');
+    // Variables to track active state
     let activeIndex = -1;
     let isAnyHovered = false;
     
-    // Function to update all cards based on hover state
-    function updateCardPositions(hoveredIndex) {
-        drawers.forEach((d, i) => {
-            // Base transform
-            let yOffset = i * 20;
+    // Function to update card positions
+    function updateCardPositions() {
+        const drawers = document.querySelectorAll('.experience-drawer');
+        
+        drawers.forEach((drawer, idx) => {
+            const drawerIndex = parseInt(drawer.getAttribute('data-index'));
             
-            if (hoveredIndex !== null) {
-                // If a card is hovered, adjust positions
-                if (hoveredIndex === i) {
-                    // Keep the hovered card at its position
-                    d.style.zIndex = 30;
-                    d.style.transform = `translateY(${yOffset}px) scale(1.02)`;
-                    // Ensure transition is applied
-                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
-                } else if (hoveredIndex < i) {
-                    // Push down cards below the hovered one
-                    d.style.zIndex = totalItems - i;
-                    d.style.transform = `translateY(${yOffset + 20}px)`;
-                    // Apply slower transition
-                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
+            if (isAnyHovered) {
+                if (drawerIndex === activeIndex) {
+                    // Keep the hovered card at its position and apply a slight scale
+                    drawer.style.transform = 'scale(1.02)';
+                    drawer.style.zIndex = '30';
+                    drawer.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                } else if (drawerIndex < activeIndex) {
+                    // Cards above the hovered one - move up slightly
+                    drawer.style.transform = 'translateY(-10px)';
+                    drawer.style.zIndex = (sortedExperiences.length + 10 - drawerIndex).toString();
+                    drawer.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
                 } else {
-                    // Pull up cards above the hovered one
-                    d.style.zIndex = totalItems - i;
-                    d.style.transform = `translateY(${yOffset - 10}px)`;
-                    // Apply slower transition
-                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
+                    // Cards below the hovered one - push down more
+                    drawer.style.transform = 'translateY(20px)';
+                    drawer.style.zIndex = (sortedExperiences.length - drawerIndex).toString();
+                    drawer.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
                 }
             } else {
-                // Reset to original position when nothing is hovered
-                d.style.zIndex = totalItems - i;
-                d.style.transform = `translateY(${yOffset}px)`;
-                // Apply slower transition for return animation
-                d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
+                // Reset all cards when none are hovered
+                drawer.style.transform = '';
+                drawer.style.zIndex = (sortedExperiences.length - drawerIndex).toString();
+                drawer.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
             }
         });
     }
     
-    // Add event listeners to each drawer
-    drawers.forEach((drawer, index) => {
+    // Add event listeners
+    const drawers = document.querySelectorAll('.experience-drawer');
+    
+    // For the container
+    drawersContainer.addEventListener('mouseleave', () => {
+        setTimeout(() => {
+            isAnyHovered = false;
+            activeIndex = -1;
+            
+            drawers.forEach(drawer => {
+                drawer.classList.remove('active');
+            });
+            
+            updateCardPositions();
+        }, 250);
+    });
+    
+    // For each drawer
+    drawers.forEach(drawer => {
+        const index = parseInt(drawer.getAttribute('data-index'));
+        
+        // Desktop hover
         drawer.addEventListener('mouseenter', () => {
-            if (window.innerWidth > 768) {
-                activeIndex = index;
-                isAnyHovered = true;
-                drawer.classList.add('active');
-                updateCardPositions(index);
-                
-                // Add visibility class to all drawers to ensure smoother transitions
-                drawers.forEach(d => {
-                    d.style.visibility = 'visible';
-                });
-            }
+            isAnyHovered = true;
+            activeIndex = index;
+            drawer.classList.add('active');
+            updateCardPositions();
         });
         
         drawer.addEventListener('mouseleave', () => {
-            if (window.innerWidth > 768) {
+            if (!isMobile()) {
                 drawer.classList.remove('active');
-                // Only reset if we're not entering another card
-                setTimeout(() => {
-                    if (!document.querySelector('.experience-drawer:hover')) {
-                        isAnyHovered = false;
-                        activeIndex = -1;
-                        updateCardPositions(null);
-                    }
-                }, 150); // Slightly longer delay for smoother transitions
             }
         });
         
-        drawer.addEventListener('click', (event) => {
-            // Mobile handling
-            if (window.innerWidth <= 768) {
+        // Mobile click
+        drawer.addEventListener('click', (e) => {
+            if (isMobile()) {
                 if (drawer.classList.contains('active')) {
                     drawer.classList.remove('active');
-                    activeIndex = -1;
                 } else {
-                    // Deactivate all drawers
+                    // Close other drawers first
                     drawers.forEach(d => d.classList.remove('active'));
-                    // Activate this drawer
                     drawer.classList.add('active');
-                    activeIndex = index;
                 }
-                event.stopPropagation();
+                e.stopPropagation();
             }
         });
     });
     
-    // Handle container mouse leave
-    container.addEventListener('mouseleave', () => {
-        isAnyHovered = false;
-        setTimeout(() => {
-            if (!isAnyHovered) {
-                activeIndex = -1;
-                updateCardPositions(null);
-                drawers.forEach(d => d.classList.remove('active'));
-            }
-        }, 250); // Increased delay for smoother transitions when leaving the container
-    });
+    // Close active drawer when clicking outside on mobile
+    if (isMobile()) {
+        document.addEventListener('click', () => {
+            drawers.forEach(drawer => drawer.classList.remove('active'));
+        });
+    }
     
-    // Close drawers when clicking outside
-    document.addEventListener('click', (event) => {
-        if (window.innerWidth <= 768) {
-            const isClickInsideDrawer = event.target.closest('.experience-drawer');
-            
-            if (!isClickInsideDrawer && activeIndex !== -1) {
-                drawers.forEach(d => d.classList.remove('active'));
-                activeIndex = -1;
-            }
-        }
-    });
+    console.log('Drawer UI creation finished');
+}
 
-    console.log('Finished creating drawer UI.');
+// Helper function to detect mobile
+function isMobile() {
+    return window.innerWidth < 768;
+}
+
+// Experience Cards 
+function initExperienceCards() {
+    const experienceContainer = document.querySelector('.experience-drawers');
+    if (!experienceContainer) return;
+    
+    let cards = document.querySelectorAll('.experience-card');
+    
+    // If no cards exist yet, fetch them via AJAX
+    if (cards.length === 0) {
+        fetch('/api/work-experience')
+            .then(response => response.json())
+            .then(data => {
+                renderExperienceCards(data, experienceContainer);
+                setupCardEventListeners();
+                positionCards();
+            })
+            .catch(error => {
+                console.error('Error fetching experience data:', error);
+            });
+    } else {
+        setupCardEventListeners();
+        positionCards();
+    }
+}
+
+function renderExperienceCards(experiences, container) {
+    experiences.forEach((exp, index) => {
+        const card = document.createElement('div');
+        card.className = 'experience-card';
+        card.dataset.index = index;
+        
+        // Create skills HTML if skills exist
+        let skillsHtml = '';
+        if (exp.skills && exp.skills.length > 0) {
+            skillsHtml = `
+                <div class="skills-list">
+                    ${exp.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                </div>
+            `;
+        }
+        
+        card.innerHTML = `
+            <div class="card-header">
+                <div class="company-info">
+                    <div class="date-range">${exp.start_date} - ${exp.end_date || 'Present'}</div>
+                    <h3 class="company-title">${exp.company}</h3>
+                    <p class="job-title">${exp.title}</p>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="experience-description">${exp.description}</div>
+                ${skillsHtml}
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+function setupCardEventListeners() {
+    const cards = document.querySelectorAll('.experience-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            const isActive = card.classList.contains('active');
+            
+            // Close all cards first
+            cards.forEach(c => c.classList.remove('active'));
+            
+            // If the clicked card wasn't active, make it active
+            if (!isActive) {
+                card.classList.add('active');
+            }
+            
+            // Reposition cards after animation
+            setTimeout(positionCards, 50);
+        });
+    });
+}
+
+function positionCards() {
+    const cards = document.querySelectorAll('.experience-card');
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) return; // Skip positioning for mobile
+    
+    // Base positioning values
+    const activeOffset = 0;
+    const cardGap = 20; // Gap between cards
+    let zIndex = cards.length + 10;
+    
+    cards.forEach((card, index) => {
+        const isActive = card.classList.contains('active');
+        card.style.zIndex = isActive ? zIndex + 10 : zIndex--;
+        
+        // Calculate top position
+        let topPosition;
+        const activeCard = document.querySelector('.experience-card.active');
+        const activeIndex = activeCard ? parseInt(activeCard.dataset.index) : 0;
+        
+        if (isActive) {
+            topPosition = activeOffset + 'px';
+        } else if (activeCard) {
+            // Calculate position based on relationship to active card
+            const offset = (index - activeIndex) * cardGap + 70;
+            topPosition = offset + 'px';
+        } else {
+            // Default positioning when no card is active
+            topPosition = (index * cardGap) + 'px';
+        }
+        
+        card.style.top = topPosition;
+    });
 }
