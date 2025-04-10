@@ -532,15 +532,11 @@ function updateWorkExperienceTimeline(workExperienceData) {
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'drawer-description';
         
-        // Check if we're on mobile or desktop view
+        // On mobile, we'll explicitly control display with JS
+        // On desktop, CSS hover effects will handle it
         const isMobile = window.innerWidth <= 768;
-        
-        // Only set display:none on mobile
         if (isMobile) {
             descriptionContainer.style.display = 'none'; // Will be shown on click on mobile
-        } else {
-            // On desktop, make sure it's visible
-            descriptionContainer.style.display = 'block';
         }
         
         // Create description content
