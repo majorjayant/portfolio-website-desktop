@@ -1777,7 +1777,7 @@ footer {
     cursor: pointer;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.65s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.5s ease; /* Slowed down by 60% */
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); /* Made transition faster */
     z-index: 1;
     transform-style: preserve-3d;
     perspective: 1000px;
@@ -1850,7 +1850,7 @@ footer {
 .experience-drawer .drawer-description {
     opacity: 0;
     transform: translateY(20px) translateZ(0);
-    transition: opacity 0.65s ease, transform 0.65s ease; /* Slowed down by 60% */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Faster transition */
     font-size: 16px;
     color: var(--text-dark);
     line-height: 1.6;
@@ -1977,4 +1977,12 @@ footer {
     .experience-drawer.active .drawer-description {
         display: block;
     }
+}
+
+/* Make sure the "Career Journey" header is above other elements */
+.experience-section .section-title {
+    position: relative;
+    z-index: 5;
+    margin-bottom: 2rem;
+    display: block;
 } 

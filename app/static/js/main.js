@@ -443,11 +443,24 @@ function updateWorkExperienceTimeline(workExperienceData) {
         return;
     }
     
-    // Add "Career Journey" header above the container
-    const headerElement = document.createElement('h2');
-    headerElement.className = 'section-title text-center mb-6';
-    headerElement.textContent = 'Career Journey';
-    container.parentNode.insertBefore(headerElement, container);
+    // Check if a section title already exists
+    const existingTitle = container.parentNode.querySelector('.section-title');
+    
+    // Only create a new title if one doesn't already exist
+    if (!existingTitle) {
+        const headerElement = document.createElement('h2');
+        headerElement.className = 'section-title text-center mb-6';
+        headerElement.textContent = 'Career Journey';
+        container.parentNode.insertBefore(headerElement, container);
+        console.log('Added "Career Journey" header above container');
+    } else {
+        console.log('Using existing section title:', existingTitle.textContent);
+        // Make sure the existing title is visible
+        existingTitle.style.display = 'block';
+        existingTitle.style.position = 'relative';
+        existingTitle.style.zIndex = '5';
+        existingTitle.style.marginBottom = '2rem';
+    }
     
     container.innerHTML = ''; // Clear previous content (e.g., old timeline)
     
@@ -566,35 +579,44 @@ function updateWorkExperienceTimeline(workExperienceData) {
         // On desktop, add hover interaction
         drawer.addEventListener('mouseenter', () => {
             if (window.innerWidth > 768) {
-                // When hovering a new drawer, activate it directly without closing others first
+                // Set a flag indicating we're actively hovering
+                window.activelyHovering = true;
+                
+                // Set the new active index
                 activeIndex = index;
-                drawer.classList.add('active');
                 
-                // Set a high z-index for the hovered drawer
-                drawer.style.zIndex = 100;
-                
-                // Lower the z-index of other drawers
+                // First, ensure all other drawers are deactivated
                 drawers.forEach((d, i) => {
                     if (i !== index) {
                         d.classList.remove('active');
+                    }
+                    
+                    // Set z-index based on position with current drawer having highest
+                    if (i === index) {
+                        d.style.zIndex = 100;
+                    } else {
                         d.style.zIndex = totalItems - i;
                     }
                 });
+                
+                // Then activate the current drawer
+                drawer.classList.add('active');
             }
         });
         
         drawer.addEventListener('mouseleave', () => {
             if (window.innerWidth > 768) {
-                // Don't immediately close on mouse leave to allow movement between drawers
-                // Use a small delay to check if user moved to another drawer
+                // Set flag indicating we're no longer actively hovering this card
+                window.activelyHovering = false;
+                
+                // Use a longer delay before closing to allow moving between cards
                 setTimeout(() => {
-                    // Only close if user hasn't entered another drawer
-                    if (!document.querySelector('.experience-drawer:hover')) {
+                    // Only close if we're not actively hovering any drawer now
+                    if (!window.activelyHovering) {
                         drawer.classList.remove('active');
-                        drawer.style.zIndex = totalItems - index;
                         activeIndex = -1;
                     }
-                }, 100);
+                }, 300); // Longer delay to allow mouse to move between cards
             }
         });
     });
