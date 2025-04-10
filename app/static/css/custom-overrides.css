@@ -134,10 +134,26 @@
 .experience-drawer {
   position: relative !important;
   z-index: 2 !important; /* Higher than the background but lower than hover state */
-  background: #ffffff !important;
+  background: transparent !important; /* Remove white background */
   border-radius: 16px !important;
   margin-bottom: 1.5rem !important;
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
+  border-left: 5px solid !important; /* Preserve the left border */
+  color: #333 !important; /* Default text color */
+  backdrop-filter: blur(4px) !important; /* Add slight blur effect */
+  background-color: rgba(255, 255, 255, 0.7) !important; /* Semi-transparent background */
+}
+
+/* Fix any text color issues due to transparent background */
+.experience-drawer h3 {
+  color: #333 !important;
+}
+
+.experience-drawer p,
+.experience-drawer .drawer-date,
+.experience-drawer .drawer-location,
+.experience-drawer .drawer-description {
+  color: #555 !important;
 }
 
 .experience-drawer:hover {
@@ -172,28 +188,42 @@
     padding: 15px !important;
     margin-bottom: 15px !important;
     border-radius: 10px !important;
+    height: auto !important; /* Remove fixed height */
+    min-height: auto !important;
   }
   
   /* Header layout for mobile */
   .drawer-header {
     flex-direction: column !important;
     align-items: flex-start !important;
+    gap: 8px !important; /* Reduce gap between header elements */
   }
   
   .drawer-date {
     width: 100% !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 5px !important;
+    font-size: 0.85rem !important;
   }
   
   .drawer-title-company {
     width: 100% !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 5px !important;
+  }
+  
+  .drawer-title-company h3 {
+    font-size: 1.1rem !important; /* Reduce font size for better fit */
+    line-height: 1.3 !important;
+  }
+  
+  .drawer-title-company p {
+    font-size: 0.9rem !important;
   }
   
   .drawer-location {
     width: 100% !important;
     text-align: left !important;
     padding-left: 0 !important;
+    font-size: 0.85rem !important;
   }
   
   /* Fix for drawer background on mobile */
@@ -209,6 +239,20 @@
   .experience-drawer.active {
     z-index: 100 !important; /* Ensure active drawer is on top */
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+    margin-bottom: 25px !important; /* Add more space after active drawer */
+  }
+  
+  /* Fix any potential overlapping issues */
+  .experience-drawer {
+    margin-bottom: 15px !important; /* Standard margin between drawers */
+  }
+  
+  /* Style specifically to ensure drawer headers are fully visible */
+  .experience-drawer .drawer-header {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    overflow: visible !important;
   }
 }
 

@@ -538,7 +538,8 @@ header {
 /* Adjust drawer overlap and animation */
 .experience-drawer {
   position: relative;
-  background: #ffffff;
+  /* Remove white background */
+  background: transparent;
   border-radius: 16px;
   padding: 2rem;
   /* Reduce overlap between items */
@@ -589,34 +590,215 @@ header {
 
 /* Media queries for mobile */
 @media screen and (max-width: 768px) {
-  .experience-drawer {
-    /* Reset margin to avoid overlapping in mobile */
-    margin-bottom: 15px;
+  .experience-section {
+    padding: 20px 0 40px 0;
+    margin-top: 1rem;
   }
   
-  .experience-drawer.active {
-    margin-top: 10px;
-    margin-bottom: 25px;
+  .experience-section .container {
+    width: 95%; /* Use more of the available width on mobile */
+    max-width: 100%; /* Allow full width on mobile */
+    padding: 0 10px;
+  }
+  
+  .experience-section .section-title {
+    font-size: 2rem;
+    margin-left: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .experience-drawers {
+    padding: 1rem 0.5rem;
+    max-width: 100%;
+  }
+  
+  .experience-drawer {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    min-height: auto; /* Remove fixed height */
+    height: auto;
+  }
+  
+  .drawer-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .drawer-date {
+    margin-bottom: 5px;
+    width: 100%;
+    font-size: 0.85rem;
+  }
+  
+  .drawer-title-company {
+    padding: 0;
+    margin-bottom: 5px;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .drawer-title-company h3 {
+    padding-left: 22px; /* Match desktop padding */
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+  
+  .drawer-title-company p {
+    font-size: 0.9rem;
+  }
+  
+  .drawer-title-company h3:before {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .drawer-location {
+    align-self: flex-start;
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start;
+    font-size: 0.85rem;
   }
 
-  /* Faster animation on mobile */
-  .experience-drawer .drawer-description {
-    transition: opacity 0.2s ease, height 0.2s ease;
+  .drawer-description {
+    margin-top: 1rem !important;
   }
+
+  .experience-drawer .drawer-description {
+    display: none;
+  }
+
+  .experience-drawer.active .drawer-description {
+    display: block;
+  }
+  
+  .experience-drawer .skills-container {
+    display: none;
+  }
+  
+  .experience-drawer.active .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .skill-tag {
+    margin-bottom: 0.25rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+    .experience-drawer {
+        padding: 20px;
+        margin-bottom: 15px; /* Standard spacing between items */
+        height: auto; /* Remove fixed height */
+        min-height: auto;
+    }
+    
+    .experience-drawer:hover {
+        /* Remove hover effect on mobile */
+        transform: none;
+        height: auto;
+        min-height: auto;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .experience-drawer.active {
+        height: auto;
+        min-height: auto;
+        transform: scale(1.02);
+        z-index: 100 !important;
+        margin-bottom: 25px;
+    }
+    
+    .experience-drawer .drawer-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+        overflow: visible;
+    }
+    
+    .experience-drawer .drawer-date {
+        margin-bottom: 5px;
+        width: 100%;
+        font-size: 0.85rem;
+    }
+    
+    .experience-drawer .drawer-title-company {
+        padding: 0;
+        margin-bottom: 5px;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .experience-drawer .drawer-title-company h3 {
+        padding-left: 22px; /* Match desktop padding */
+        font-size: 1.1rem;
+        line-height: 1.3;
+    }
+    
+    .experience-drawer .drawer-title-company p {
+        font-size: 0.9rem;
+    }
+    
+    .experience-drawer .drawer-title-company h3:before {
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .experience-drawer .drawer-location {
+        align-self: flex-start;
+        width: 100%;
+        text-align: left;
+        justify-content: flex-start;
+        font-size: 0.85rem;
+    }
+
+    .experience-drawer .drawer-description {
+        display: none;
+        opacity: 0;
+        height: 0;
+        transform: translateY(20px);
+        overflow: hidden;
+    }
+
+    .experience-drawer.active .drawer-description {
+        display: block;
+        opacity: 1;
+        height: auto;
+        transform: translateY(0);
+        overflow: visible;
+    }
+    
+    .experience-drawer .skills-container {
+        display: none;
+    }
+    
+    .experience-drawer.active .skills-container {
+        display: flex;
+    }
 }
 
 /* Color variations */
 .experience-drawer.color-1 {
   border-color: #6c584c;
+  background-color: transparent;
 }
 .experience-drawer.color-2 {
   border-color: #a38566;
+  background-color: transparent;
 }
 .experience-drawer.color-3 {
   border-color: #d1b38a;
+  background-color: transparent;
 }
 .experience-drawer.color-4 {
   border-color: #e9dac1;
+  background-color: transparent;
 }
 
 /* Drawer header */
@@ -760,6 +942,7 @@ header {
   .experience-section .container {
     width: 95%; /* Use more of the available width on mobile */
     max-width: 100%; /* Allow full width on mobile */
+    padding: 0 10px;
   }
   
   .experience-section .section-title {
@@ -776,28 +959,37 @@ header {
   .experience-drawer {
     padding: 1rem;
     margin-bottom: 1rem;
-    min-height: 100px;
+    min-height: auto; /* Remove fixed height */
+    height: auto;
   }
   
   .drawer-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
   }
   
   .drawer-date {
-    margin-bottom: 0.5rem;
+    margin-bottom: 5px;
     width: 100%;
+    font-size: 0.85rem;
   }
   
   .drawer-title-company {
     padding: 0;
-    margin-bottom: 0.5rem;
+    margin-bottom: 5px;
     width: 100%;
     text-align: left;
   }
   
   .drawer-title-company h3 {
     padding-left: 22px; /* Match desktop padding */
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+  
+  .drawer-title-company p {
+    font-size: 0.9rem;
   }
   
   .drawer-title-company h3:before {
@@ -811,6 +1003,7 @@ header {
     width: 100%;
     text-align: left;
     justify-content: flex-start;
+    font-size: 0.85rem;
   }
 
   .drawer-description {
@@ -2146,10 +2339,10 @@ footer {
     display: inline-block;
     width: 18px;
     height: 18px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,3,7V19a1,1,0,0,0,1,1H20a1,1,0,0,0,1-1V7A1,1,0,0,0,20,6ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10ZM19,18H5V8H19Z'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
-    position: relative;
+    background-position: center;
+    position: absolute;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
@@ -2267,46 +2460,57 @@ footer {
 
 @media screen and (max-width: 768px) {
     .experience-drawer {
-        height: 140px;
         padding: 20px;
-        margin-bottom: -40px; /* Less overlap on mobile */
+        margin-bottom: 15px; /* Standard spacing between items */
+        height: auto; /* Remove fixed height */
+        min-height: auto;
     }
     
     .experience-drawer:hover {
         /* Remove hover effect on mobile */
         transform: none;
-        height: 140px;
+        height: auto;
         min-height: auto;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
 
     .experience-drawer.active {
         height: auto;
-        min-height: 300px;
+        min-height: auto;
         transform: scale(1.02);
         z-index: 100 !important;
-        margin-bottom: 16px;
+        margin-bottom: 25px;
     }
     
     .experience-drawer .drawer-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+        overflow: visible;
     }
     
     .experience-drawer .drawer-date {
-        margin-bottom: 8px;
+        margin-bottom: 5px;
         width: 100%;
+        font-size: 0.85rem;
     }
     
     .experience-drawer .drawer-title-company {
         padding: 0;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
         width: 100%;
         text-align: left;
     }
     
     .experience-drawer .drawer-title-company h3 {
         padding-left: 22px; /* Match desktop padding */
+        font-size: 1.1rem;
+        line-height: 1.3;
+    }
+    
+    .experience-drawer .drawer-title-company p {
+        font-size: 0.9rem;
     }
     
     .experience-drawer .drawer-title-company h3:before {
@@ -2320,6 +2524,7 @@ footer {
         width: 100%;
         text-align: left;
         justify-content: flex-start;
+        font-size: 0.85rem;
     }
 
     .experience-drawer .drawer-description {
