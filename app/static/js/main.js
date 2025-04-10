@@ -531,8 +531,17 @@ function updateWorkExperienceTimeline(workExperienceData) {
         // Create description container with correct initial styling
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'drawer-description';
-        // Fix: Make sure it's not hidden by default
-        descriptionContainer.style.display = 'none'; // Will be shown on click
+        
+        // Check if we're on mobile or desktop view
+        const isMobile = window.innerWidth <= 768;
+        
+        // Only set display:none on mobile
+        if (isMobile) {
+            descriptionContainer.style.display = 'none'; // Will be shown on click on mobile
+        } else {
+            // On desktop, make sure it's visible
+            descriptionContainer.style.display = 'block';
+        }
         
         // Create description content
         const descriptionContent = document.createElement('div');
@@ -638,15 +647,21 @@ function updateWorkExperienceTimeline(workExperienceData) {
         
         // Toggle active state on click
         drawer.addEventListener('click', function() {
+            // Check if we're on mobile view
+            const isMobile = window.innerWidth <= 768;
+            
             // Check if this drawer is currently active
             const wasActive = drawer.classList.contains('active');
             
             // Close all drawers first
             drawers.forEach(d => {
                 d.classList.remove('active');
-                const desc = d.querySelector('.drawer-description');
-                if (desc) {
-                    desc.style.display = 'none';
+                // Only hide descriptions on mobile
+                if (isMobile) {
+                    const desc = d.querySelector('.drawer-description');
+                    if (desc) {
+                        desc.style.display = 'none';
+                    }
                 }
             });
             
@@ -654,7 +669,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
             if (!wasActive) {
                 drawer.classList.add('active');
                 const description = drawer.querySelector('.drawer-description');
-                if (description) {
+                if (description && isMobile) { // Only toggle visibility on mobile
                     // Add a slight delay before showing the description to ensure proper rendering
                     setTimeout(() => {
                         // Force display block style
