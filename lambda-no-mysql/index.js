@@ -54,7 +54,33 @@ async function getConnection() {
   }
 }
 
-// Ensure the site_config table exists
+// Function to ensure the education table exists
+async function ensureEducationTableExists(connection) {
+  try {
+    // Ensure education table exists
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS education (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        edu_title VARCHAR(100) NOT NULL,
+        edu_name VARCHAR(100) NOT NULL,
+        location VARCHAR(100),
+        from_date DATE NOT NULL,
+        to_date DATE,
+        is_current BOOLEAN DEFAULT FALSE,
+        is_deleted BOOLEAN DEFAULT FALSE,
+        created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Verified education table exists');
+    return true;
+  } catch (error) {
+    console.error('Error ensuring education table exists:', error);
+    throw error;
+  }
+}
+
+// Function to ensure the site_config table exists
 async function ensureTableExists() {
   let connection;
   try {
@@ -74,17 +100,23 @@ async function ensureTableExists() {
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS workex (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        title VARCHAR(100) NOT NULL,
-        company VARCHAR(100) NOT NULL,
+        job_title VARCHAR(100) NOT NULL,
+        company_name VARCHAR(100) NOT NULL,
         location VARCHAR(100),
         from_date DATE NOT NULL,
         to_date DATE,
         is_current BOOLEAN DEFAULT FALSE,
         description TEXT NOT NULL,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        is_deleted BOOLEAN DEFAULT FALSE,
+        created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
     console.log('Verified workex table exists');
+    
+    // Ensure education table exists
+    await ensureEducationTableExists(connection);
+    
   } catch (error) {
     console.error('Error ensuring tables exist:', error);
     throw error;
@@ -238,6 +270,10 @@ async function getEducation() {
   let connection;
   try {
     connection = await getConnection();
+    
+    // First, check if table exists and create it if it doesn't
+    await ensureEducationTableExists(connection);
+    
     // Query non-deleted education entries ordered by from_date (most recent first)
     const [rows] = await connection.execute(
       'SELECT * FROM education WHERE is_deleted = 0 ORDER BY from_date DESC'
