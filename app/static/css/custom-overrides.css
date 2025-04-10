@@ -150,4 +150,155 @@
 .experience-section {
   position: relative !important;
   z-index: 1 !important;
+}
+
+/* ===== MOBILE RESPONSIVENESS FIXES FOR EXPERIENCE SECTION ===== */
+/* Specifically targeting issues with work experience section on mobile */
+
+@media screen and (max-width: 768px) {
+  /* Mobile container fixes */
+  .experience-section {
+    padding: 20px 10px !important;
+    margin-top: 0 !important;
+  }
+  
+  .experience-section .container {
+    width: 95% !important;
+    padding: 0 !important;
+  }
+  
+  /* Drawer fixes for mobile */
+  .experience-drawer {
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+    border-radius: 10px !important;
+  }
+  
+  /* Header layout for mobile */
+  .drawer-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .drawer-date {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .drawer-title-company {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .drawer-location {
+    width: 100% !important;
+    text-align: left !important;
+    padding-left: 0 !important;
+  }
+  
+  /* Fix for drawer background on mobile */
+  .experience-drawers:before,
+  .experience-drawers:after {
+    top: -10px !important;
+    left: -10px !important;
+    right: -10px !important;
+    bottom: -10px !important;
+  }
+  
+  /* Active state for mobile */
+  .experience-drawer.active {
+    z-index: 100 !important; /* Ensure active drawer is on top */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+/* ===== RICH FORMATTING FIXES FOR WORK DESCRIPTION ===== */
+
+/* Fix formatting in description content */
+.description-content {
+  line-height: 1.6 !important;
+  color: inherit !important;
+}
+
+/* Paragraph spacing within description */
+.description-content p {
+  margin-bottom: 0.75rem !important;
+}
+
+/* Preserve HTML formatting */
+.description-content strong, 
+.description-content b {
+  font-weight: bold !important;
+}
+
+.description-content em,
+.description-content i {
+  font-style: italic !important;
+}
+
+.description-content ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5rem 0 1rem 0 !important;
+}
+
+.description-content ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5rem 0 1rem 0 !important;
+}
+
+.description-content li {
+  margin-bottom: 0.4rem !important;
+  display: list-item !important;
+}
+
+.description-content a {
+  color: #6c584c !important;
+  text-decoration: underline !important;
+}
+
+.description-content a:hover {
+  text-decoration: none !important;
+}
+
+/* Preserve additional HTML elements */
+.description-content h3, 
+.description-content h4 {
+  margin-top: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  font-weight: bold !important;
+}
+
+/* Fix color in all themes */
+.color-1 .description-content,
+.color-2 .description-content,
+.color-3 .description-content,
+.color-4 .description-content {
+  color: inherit !important;
+}
+
+@media screen and (max-width: 768px) {
+  /* Additional description fixes for mobile */
+  .drawer-description {
+    margin-top: 15px !important;
+    padding-top: 15px !important;
+    border-top: 1px solid rgba(0,0,0,0.1) !important;
+  }
+  
+  .experience-drawer.active .drawer-description {
+    padding: 15px !important;
+    margin-top: 15px !important;
+    background-color: rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+  }
+  
+  /* Fix description content on mobile */
+  .description-content ul {
+    padding-left: 20px !important;
+  }
+  
+  .description-content li {
+    margin-bottom: 8px !important;
+  }
 } 

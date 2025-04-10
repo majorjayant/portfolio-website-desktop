@@ -569,18 +569,27 @@ function updateWorkExperienceTimeline(workExperienceData) {
         const descriptionContent = document.createElement('div');
         descriptionContent.className = 'description-content';
         
-        // Create proper HTML for description - if it contains newlines, convert to list items
-        if (description.includes('\n')) {
-            // Split by newlines and filter out empty items
-            const descriptionItems = description.split('\n').filter(item => item.trim() !== '');
-            descriptionContent.innerHTML = `
-                <ul>
-                    ${descriptionItems.map(item => `<li>${item.trim()}</li>`).join('')}
-                </ul>
-            `;
+        // Create proper HTML for description 
+        if (description) {
+            // Check if description contains HTML
+            if (description.includes('<') && description.includes('>')) {
+                // If description already has HTML, use it directly
+                descriptionContent.innerHTML = description;
+            } else if (description.includes('\n')) {
+                // Convert newlines to list items
+                const descriptionItems = description.split('\n').filter(item => item.trim() !== '');
+                descriptionContent.innerHTML = `
+                    <ul>
+                        ${descriptionItems.map(item => `<li>${item.trim()}</li>`).join('')}
+                    </ul>
+                `;
+            } else {
+                // Set as paragraph if it's just plain text
+                descriptionContent.innerHTML = `<p>${description}</p>`;
+            }
         } else {
-            // Set innerHTML for description - this preserves HTML formatting
-            descriptionContent.innerHTML = description;
+            // If no description, show empty message
+            descriptionContent.innerHTML = '<p>No description provided.</p>';
         }
         
         // Append content to container
