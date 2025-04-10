@@ -808,7 +808,6 @@
     <!-- Experience Section -->
     <section class="experience-section" data-aos="fade-up">
         <div class="container">
-            <!-- Add a static section title to prevent JavaScript from creating multiple titles -->
             <h2 class="section-title">Professional Experience</h2>
             
             <div class="experience-drawers">
@@ -913,18 +912,10 @@
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    
-    <!-- Add a variable to prevent multiple initialization of experience data -->
-    <script>
-        // Global flag to track if work experience has been initialized
-        window.experienceInitialized = false;
-    </script>
-    
-    <!-- Main scripts -->
-    <script src="/js/main.js"></script>
     <script src="/js/script.js"></script>
+    <script src="/js/main.js"></script>
     
-    <script>
+<script>
         // Function to load footer
         function loadFooter() {
             fetch('/html/_footer.html') // Path relative to the static root
@@ -1546,7 +1537,7 @@
                 initializeModalFunctionality(); 
             }, 50); 
         }
-    </script>
+</script>
 
 
     <!-- Add script for logo background that can't be done with inline styles -->

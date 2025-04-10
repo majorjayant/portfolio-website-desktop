@@ -487,10 +487,10 @@ header {
 /* ===== Experience Section ===== */
 .experience-section {
   position: relative;
-  background-color: #f8f9fa;
+  background-color: #f8f5f0;
   padding: 6rem 1rem;
   overflow: hidden;
-  z-index: 10;
+  z-index: 12;
   margin-top: 3rem;
 }
 
@@ -502,10 +502,10 @@ header {
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #343a40, #495057);
-  opacity: 0.05;
+  background: linear-gradient(135deg, #6c584c, #a38566);
+  opacity: 0.1;
   filter: blur(120px);
-  z-index: 1;
+  z-index: 0;
   animation: float 25s ease-in-out infinite;
 }
 
@@ -516,10 +516,10 @@ header {
   width: 400px;
   height: 400px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #495057, #6c757d);
-  opacity: 0.05;
+  background: linear-gradient(135deg, #d1b38a, #e9dac1);
+  opacity: 0.15;
   filter: blur(100px);
-  z-index: 1;
+  z-index: 0;
   animation: float 30s ease-in-out infinite reverse;
 }
 
@@ -531,18 +531,19 @@ header {
 }
 
 .experience-section .section-title {
-  color: #212529;
+  color: #3a3a3a;
   text-align: center;
   margin-bottom: 4rem;
   font-size: 2.75rem;
   font-weight: 700;
   position: relative;
   z-index: 5;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .experience-drawers {
   position: relative;
-  z-index: 15;
+  z-index: 5;
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
@@ -552,42 +553,42 @@ header {
 
 .experience-drawer {
   position: relative;
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: #ffffff;
   border-radius: 16px;
   padding: 1.75rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: pointer;
   transform-origin: center top;
   backface-visibility: hidden;
   border-left: 5px solid;
-  transition: all 0.5s cubic-bezier(0.2, 0.85, 0.4,.9);
+  transition: all 0.5s cubic-bezier(0.2, 0.85, 0.4, 1.275);
 }
 
 /* Color variations */
 .experience-drawer.color-1 {
-  border-color: #343a40;
+  border-color: #6c584c;
 }
 .experience-drawer.color-2 {
-  border-color: #495057;
+  border-color: #a38566;
 }
 .experience-drawer.color-3 {
-  border-color: #6c757d;
+  border-color: #d1b38a;
 }
 .experience-drawer.color-4 {
-  border-color: #adb5bd;
+  border-color: #e9dac1;
 }
 
 /* Hover effects */
 .experience-drawer:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
 }
 
 /* Active/open state */
 .experience-drawer.active {
-  background: linear-gradient(145deg, #f8f9fa, #ffffff);
+  background: #fafafa;
   margin-top: 0.75rem;
   margin-bottom: 2.25rem;
   transform: translateY(-5px);
@@ -607,7 +608,7 @@ header {
 }
 
 .experience-drawer:hover .lighting-effect {
-  opacity: 1;
+  opacity: 0.8;
 }
 
 .experience-drawer > div {
@@ -625,7 +626,7 @@ header {
 
 .drawer-date {
   font-size: 0.9rem;
-  color: #6c757d;
+  color: #a38566;
   font-weight: 500;
   padding-left: 1.5rem;
   position: relative;
@@ -641,7 +642,7 @@ header {
   transform: translateY(-50%);
   width: 1rem;
   height: 1rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M19,4H17V3a1,1,0,0,0-2,0V4H9V3A1,1,0,0,0,7,3V4H5A3,3,0,0,0,2,7V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V7A3,3,0,0,0,19,4Zm1,15a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V10H20Zm0-11H4V7A1,1,0,0,1,5,6H7V7A1,1,0,0,0,9,7V6h6V7a1,1,0,0,0,2,0V6h2a1,1,0,0,1,1,1Z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a38566'%3E%3Cpath d='M19,4H17V3a1,1,0,0,0-2,0V4H9V3A1,1,0,0,0,7,3V4H5A3,3,0,0,0,2,7V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V7A3,3,0,0,0,19,4Zm1,15a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V10H20Zm0-11H4V7A1,1,0,0,1,5,6H7V7A1,1,0,0,0,9,7V6h6V7a1,1,0,0,0,2,0V6h2a1,1,0,0,1,1,1Z'/%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -652,20 +653,20 @@ header {
 
 .drawer-title-company h3 {
   font-size: 1.4rem;
-  color: #212529;
+  color: #3a3a3a;
   margin: 0 0 0.25rem 0;
   font-weight: 600;
 }
 
 .drawer-title-company p {
   font-size: 1.1rem;
-  color: #495057;
+  color: #6c584c;
   margin: 0;
 }
 
 .drawer-location {
   font-size: 0.9rem;
-  color: #6c757d;
+  color: #666;
   text-align: right;
   flex: 0 0 auto;
   background: rgba(0, 0, 0, 0.05);
@@ -675,7 +676,7 @@ header {
 }
 
 .drawer-description {
-  color: #495057;
+  color: #555;
   line-height: 1.6;
   max-height: 0;
   overflow: hidden;
@@ -685,7 +686,7 @@ header {
 .experience-drawer.active .drawer-description {
   max-height: 1000px;
   padding-top: 0.5rem;
-  border-top: 1px solid rgba(73, 80, 87, 0.1);
+  border-top: 1px solid rgba(108, 88, 76, 0.2);
 }
 
 /* Skills container and tags */
@@ -700,15 +701,15 @@ header {
   display: inline-block;
   padding: 0.3rem 0.75rem;
   border-radius: 30px;
-  background: rgba(73, 80, 87, 0.1);
-  color: #495057;
+  background: rgba(209, 179, 138, 0.15);
+  color: #6c584c;
   font-size: 0.85rem;
   font-weight: 500;
   transition: all 0.3s ease;
 }
 
 .skill-tag:hover {
-  background: rgba(73, 80, 87, 0.2);
+  background: rgba(209, 179, 138, 0.25);
   transform: translateY(-2px);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }

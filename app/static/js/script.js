@@ -176,13 +176,7 @@ if (menuToggle) {
 
 // Fetch work experience data and initialize the timeline
 async function fetchWorkExperienceData() {
-    // Check if experience has already been initialized
-    if (window.experienceInitialized) {
-        console.log("[EXPERIENCE] Experience section already initialized, skipping fetch");
-        return;
-    }
-    
-    console.log('[EXPERIENCE] Fetching work experience data');
+    console.log('Fetching work experience data');
     
     try {
         // Try to fetch from API first
@@ -203,26 +197,36 @@ async function fetchWorkExperienceData() {
         }
         
         const data = await response.json();
-        console.log('[EXPERIENCE] Successfully loaded work experience from API:', data);
+        console.log('Successfully loaded work experience from API:', data);
         
         // Initialize the work experience timeline with the fetched data
         const workExperience = data.work_experience || data;
-        updateWorkExperienceTimeline(workExperience);
+        if (typeof updateWorkExperienceTimeline === 'function') {
+            updateWorkExperienceTimeline(workExperience);
+        } else {
+            console.error('updateWorkExperienceTimeline function not found');
+        }
         
     } catch (apiError) {
-        console.error('[EXPERIENCE] Error fetching work experience from API:', apiError);
-        console.log('[EXPERIENCE] Falling back to local JSON file');
+        console.error('Error fetching work experience from API:', apiError);
+        console.log('Falling back to local JSON file');
         
         // Fallback to local JSON
         try {
             const localResponse = await fetch('/data/experience.json');
             const localData = await localResponse.json();
-            console.log('[EXPERIENCE] Successfully loaded work experience from local JSON:', localData);
-            updateWorkExperienceTimeline(localData);
+            console.log('Successfully loaded work experience from local JSON:', localData);
+            if (typeof updateWorkExperienceTimeline === 'function') {
+                updateWorkExperienceTimeline(localData);
+            } else {
+                console.error('updateWorkExperienceTimeline function not found');
+            }
         } catch (localError) {
-            console.error('[EXPERIENCE] Error loading from local JSON:', localError);
+            console.error('Error loading from local JSON:', localError);
             // Show empty state
-            updateWorkExperienceTimeline([]);
+            if (typeof updateWorkExperienceTimeline === 'function') {
+                updateWorkExperienceTimeline([]);
+            }
         }
     }
 } 
