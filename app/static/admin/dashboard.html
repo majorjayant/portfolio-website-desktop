@@ -425,8 +425,11 @@
                                         </div>
                                     </template>
                                     
-                                    <div class="flex justify-end">
-                                        <button type="button" id="refresh-button" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2">
+                                    <div class="mt-6 flex justify-between items-center">
+                                        <button type="button" id="refresh-button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                                            </svg>
                                             Refresh Data
                                         </button>
                                         <button type="submit" id="save-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -434,6 +437,31 @@
                                         </button>
                                     </div>
                                 </form>
+                                
+                                <!-- Ensure rich text editors are initialized -->
+                                <script>
+                                    // Initialize rich text toolbars when the form becomes visible
+                                    const observer = new MutationObserver(function(mutations) {
+                                        mutations.forEach(function(mutation) {
+                                            if (mutation.target.style.display !== 'none' && !mutation.target.classList.contains('hidden')) {
+                                                console.log('Form container visible, initializing rich text editors');
+                                                initRichTextToolbars();
+                                            }
+                                        });
+                                    });
+                                    
+                                    // Start observing the form container
+                                    const formContainer = document.getElementById('form-container');
+                                    if (formContainer) {
+                                        observer.observe(formContainer, { attributes: true, attributeFilter: ['style', 'class'] });
+                                    }
+                                    
+                                    // Also try to initialize on page load
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        console.log('DOM loaded, trying to initialize rich text editors');
+                                        setTimeout(initRichTextToolbars, 500);
+                                    });
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -563,10 +591,23 @@
         // Function to create a rich text toolbar for any element
         function createRichTextToolbar(containerId) {
             const container = document.getElementById(containerId);
-            if (!container) return;
+            if (!container) {
+                console.warn(`Container with ID ${containerId} not found for toolbar creation`);
+                return;
+            }
+            
+            // Check if a toolbar already exists
+            const existingToolbar = container.parentNode.querySelector('.rich-text-toolbar[data-for="' + containerId + '"]');
+            if (existingToolbar) {
+                console.log(`Toolbar already exists for ${containerId}, skipping creation`);
+                return;
+            }
+            
+            console.log(`Creating rich text toolbar for ${containerId}`);
             
             const toolbar = document.createElement('div');
             toolbar.className = 'flex flex-wrap items-center space-x-1 mb-1 rich-text-toolbar';
+            toolbar.setAttribute('data-for', containerId);
             
             // Text formatting
             toolbar.innerHTML = `
@@ -599,7 +640,8 @@
             
             // Add event listeners to buttons
             toolbar.querySelectorAll('button').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent form submission
                     const tag = this.dataset.tag;
                     if (tag) {
                         insertTag(containerId, tag);
@@ -607,18 +649,17 @@
                 });
             });
             
-            // Replace any existing toolbar
-            const existingToolbar = container.parentNode.querySelector('.rich-text-toolbar');
-            if (existingToolbar) {
-                existingToolbar.replaceWith(toolbar);
-            } else {
-                // Insert the toolbar before the container
-                container.parentNode.insertBefore(toolbar, container);
-            }
+            // Insert the toolbar right before the target element
+            container.parentNode.insertBefore(toolbar, container);
+            
+            console.log(`Toolbar created for ${containerId}`);
         }
         
         // Initialize rich text toolbars for specific fields when the page loads
         function initRichTextToolbars() {
+            console.log('Initializing rich text toolbars');
+            
+            // Main content fields
             const richTextFields = [
                 'about_title', 
                 'about_subtitle', 
@@ -628,28 +669,34 @@
             richTextFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (field) {
+                    console.log(`Creating toolbar for ${fieldId}`);
+                    // Remove any existing toolbar first
+                    const existingToolbar = field.parentNode.querySelector('.rich-text-toolbar');
+                    if (existingToolbar) {
+                        existingToolbar.remove();
+                    }
                     createRichTextToolbar(fieldId);
+                } else {
+                    console.warn(`Field ${fieldId} not found`);
                 }
             });
             
-            // Also initialize work experience fields that may already exist
-            setTimeout(() => {
-                document.querySelectorAll('.workex-title, .workex-company, .workex-location, .workex-description').forEach(field => {
-                    if (field.id && !field.parentNode.querySelector('.rich-text-toolbar')) {
-                        createRichTextToolbar(field.id);
-                    } else if (!field.id) {
-                        // Generate an ID if missing
-                        field.id = `workex-field-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-                        createRichTextToolbar(field.id);
-                    }
-                });
-            }, 1000); // Slight delay to ensure work experience fields are loaded
+            // Work experience fields
+            const workExFields = document.querySelectorAll('.workex-title, .workex-company, .workex-location, .workex-description');
+            workExFields.forEach(field => {
+                if (field.id && !field.parentNode.querySelector('.rich-text-toolbar')) {
+                    console.log(`Creating work ex toolbar for ${field.id}`);
+                    createRichTextToolbar(field.id);
+                } else if (!field.id) {
+                    // Generate an ID if missing
+                    field.id = `workex-field-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                    console.log(`Generated ID and creating toolbar: ${field.id}`);
+                    createRichTextToolbar(field.id);
+                }
+            });
+            
+            console.log('Rich text toolbar initialization complete');
         }
-        
-        // Call after document loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initRichTextToolbars();
-        });
         
         function checkAuth() {
             console.log('Checking authentication');
@@ -808,6 +855,11 @@
             document.getElementById('about_photo3_alt').value = config.about_photo3_alt || '';
             document.getElementById('image_about_photo4_url').value = config.image_about_photo4_url || '';
             document.getElementById('about_photo4_alt').value = config.about_photo4_alt || '';
+            
+            // Initialize rich text toolbars after form is populated
+            setTimeout(() => {
+                initRichTextToolbars();
+            }, 200);
         }
         
         // Form submission handler

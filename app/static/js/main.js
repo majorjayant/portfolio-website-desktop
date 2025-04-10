@@ -467,9 +467,11 @@ function updateWorkExperienceTimeline(workExperienceData) {
         'color-4'  // #a38566 - medium brown
     ];
 
+    // Create drawers
     sortedExperience.forEach((exp, index) => {
         const drawer = document.createElement('div');
         drawer.classList.add('experience-drawer', colorSchemes[index % colorSchemes.length]);
+        drawer.setAttribute('data-index', index);
         drawer.style.zIndex = totalItems - index; // Stacking order
         
         // Format dates
@@ -499,22 +501,134 @@ function updateWorkExperienceTimeline(workExperienceData) {
         }
 
         drawer.innerHTML = `
-            <div class=\"drawer-header\">
-                <div class=\"drawer-date\">${dateString}</div>
-                <div class=\"drawer-title-company\">
+            <div class="drawer-header">
+                <div class="drawer-date">${dateString}</div>
+                <div class="drawer-title-company">
                     <h3>${exp.job_title || 'N/A'}</h3>
                     <p>${exp.company_name || 'N/A'}</p>
                 </div>
-                <div class=\"drawer-location\">${exp.location || 'Remote'}</div>
+                <div class="drawer-location">${exp.location || 'Remote'}</div>
             </div>
-            <div class=\"drawer-description\">
+            <div class="drawer-description">
                 ${descriptionHtml}
             </div>
         `;
         
         container.appendChild(drawer);
+    });
+    
+    // Add navigation controls
+    const navControls = document.createElement('div');
+    navControls.className = 'drawer-nav';
+    navControls.innerHTML = `
+        <button class="drawer-nav-btn prev-drawer" aria-label="Previous experience">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+        </button>
+        <button class="drawer-nav-btn next-drawer" aria-label="Next experience">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+        </button>
+    `;
+    container.appendChild(navControls);
+    
+    // Handle drawer interactions
+    const drawers = container.querySelectorAll('.experience-drawer');
+    let activeIndex = -1;
+    
+    // Function to activate a drawer
+    function activateDrawer(index) {
+        // Deactivate all drawers
+        drawers.forEach(d => d.classList.remove('active'));
         
-        // No click event listener - using CSS hover instead
+        // Activate the selected drawer
+        if (index >= 0 && index < drawers.length) {
+            activeIndex = index;
+            drawers[index].classList.add('active');
+            
+            // Restore z-index based on original order
+            drawers.forEach((d, i) => {
+                d.style.zIndex = i === activeIndex ? 100 : (totalItems - i);
+            });
+        }
+    }
+    
+    // Add click event to each drawer for mobile
+    drawers.forEach((drawer, index) => {
+        drawer.addEventListener('click', (event) => {
+            // Check if we're on mobile
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // On mobile, toggle the current drawer
+                if (drawer.classList.contains('active')) {
+                    drawer.classList.remove('active');
+                    activeIndex = -1;
+                } else {
+                    activateDrawer(index);
+                }
+                
+                event.stopPropagation(); // Prevent event bubbling
+            }
+        });
+        
+        // On desktop, add hover interaction
+        drawer.addEventListener('mouseenter', () => {
+            if (window.innerWidth > 768) {
+                // Ensure other drawers are not active
+                drawers.forEach(d => {
+                    if (d !== drawer) d.classList.remove('active');
+                });
+                // Set a high z-index for the hovered drawer
+                drawer.style.zIndex = 100;
+            }
+        });
+        
+        drawer.addEventListener('mouseleave', () => {
+            if (window.innerWidth > 768) {
+                // Restore z-index based on original order
+                drawer.style.zIndex = totalItems - index;
+            }
+        });
+    });
+    
+    // Add navigation button listeners
+    const prevButton = container.querySelector('.prev-drawer');
+    const nextButton = container.querySelector('.next-drawer');
+    
+    if (prevButton && nextButton) {
+        prevButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (activeIndex > 0) {
+                activateDrawer(activeIndex - 1);
+            } else if (activeIndex === -1 && drawers.length > 0) {
+                // If no drawer is active, activate the first one
+                activateDrawer(drawers.length - 1);
+            }
+        });
+        
+        nextButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (activeIndex < drawers.length - 1) {
+                activateDrawer(activeIndex + 1);
+            } else if (activeIndex === -1 && drawers.length > 0) {
+                // If no drawer is active, activate the first one
+                activateDrawer(0);
+            }
+        });
+    }
+    
+    // Close drawers when clicking outside
+    document.addEventListener('click', (event) => {
+        const isClickInsideDrawer = event.target.closest('.experience-drawer');
+        const isClickInsideNav = event.target.closest('.drawer-nav');
+        
+        if (!isClickInsideDrawer && !isClickInsideNav && activeIndex !== -1) {
+            drawers.forEach(d => d.classList.remove('active'));
+            activeIndex = -1;
+        }
     });
 
     console.log('Finished creating drawer UI.');

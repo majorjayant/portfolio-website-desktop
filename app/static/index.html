@@ -658,7 +658,7 @@
                 const fallbacks = {
                     'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
                     'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
-                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Apr+8%2C+2025%2C+12_46_36+PM.png'
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'
                 };
                 
                 // Fix header logo
@@ -768,7 +768,7 @@
     <!-- Banner Section -->
     <section class="banner" id="banner-section">
         <div class="parallax-container">
-            <div class="parallax-layer layer-bg" id="banner-image" style="background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Apr+8%2C+2025%2C+12_46_36+PM.png'); background-size: cover; background-position: center;"></div>
+            <div class="parallax-layer layer-bg" id="banner-image" style="background-image: url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'); background-size: cover; background-position: center;"></div>
             <div class="parallax-layer layer-1"></div>
             <div class="parallax-layer layer-2"></div>
             <div class="banner-content">
@@ -986,7 +986,7 @@
             if (bannerImage) {
                 // Set background image from S3 or use the default one set in HTML
                 if (!bannerImage.style.backgroundImage || bannerImage.style.backgroundImage === 'none') {
-                bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Apr+8%2C+2025%2C+12_46_36+PM.png')";
+                bannerImage.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png')";
                 }
                 bannerImage.style.backgroundSize = "cover";
                 bannerImage.style.backgroundPosition = "center";
@@ -1296,7 +1296,7 @@
                 function updateBannerImage() {
                     const isMobile = window.innerWidth <= 600;
                     const mobileUrl = config.image_mobile_banner_url;
-                    const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/ChatGPT+Image+Apr+8%2C+2025%2C+12_46_36+PM.png')";
+                    const desktopUrl = config.image_banner_url || "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png')";
                     
                     if (isMobile && mobileUrl) {
                         bannerImage.style.backgroundImage = `url('${mobileUrl}')`;

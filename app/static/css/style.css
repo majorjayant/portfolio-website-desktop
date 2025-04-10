@@ -1761,34 +1761,36 @@ footer {
 /* ============================================= */
 
 .experience-drawers {
-    padding-top: 40px; /* Add some space above the drawers */
-    padding-bottom: 60px; /* Extra space at the bottom */
-    perspective: 1200px; /* Add perspective for 3D effects */
+    padding-top: 40px; 
+    padding-bottom: 60px;
+    perspective: 1200px;
+    position: relative;
 }
 
 .experience-drawer {
     position: relative;
     background-color: rgba(255, 255, 255, 0.95);
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: -10px; /* Create overlap between cards */
     height: 90px;
     overflow: hidden;
     cursor: pointer;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s ease;
+    transition: all 0.65s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.5s ease; /* Slowed down by 60% */
     z-index: 1;
     transform-style: preserve-3d;
     perspective: 1000px;
     transform: translateZ(0);
 }
 
-.experience-drawer:hover {
+.experience-drawer:hover, .experience-drawer.active {
     height: auto;
     min-height: 300px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    transform: translateY(-5px) rotateX(2deg);
+    transform: translateY(-100px) rotateX(2deg); /* Move upward instead of downward */
     z-index: 100 !important;
+    margin-bottom: 80px; /* Add space below when expanded */
 }
 
 .experience-drawer .drawer-header {
@@ -1824,7 +1826,8 @@ footer {
     transform: translateZ(10px);
 }
 
-.experience-drawer:hover .drawer-title-company h3 {
+.experience-drawer:hover .drawer-title-company h3, 
+.experience-drawer.active .drawer-title-company h3 {
     color: var(--accent-color);
 }
 
@@ -1847,13 +1850,14 @@ footer {
 .experience-drawer .drawer-description {
     opacity: 0;
     transform: translateY(20px) translateZ(0);
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition: opacity 0.65s ease, transform 0.65s ease; /* Slowed down by 60% */
     font-size: 16px;
     color: var(--text-dark);
     line-height: 1.6;
 }
 
-.experience-drawer:hover .drawer-description {
+.experience-drawer:hover .drawer-description,
+.experience-drawer.active .drawer-description {
     opacity: 1;
     transform: translateY(0) translateZ(5px);
 }
@@ -1907,15 +1911,56 @@ footer {
     color: #ffffff;
 }
 
+/* Drawer navigation */
+.drawer-nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.drawer-nav-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.drawer-nav-btn:hover {
+    background-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
 @media screen and (max-width: 768px) {
     .experience-drawer {
         height: 120px;
         padding: 15px;
+        margin-bottom: -5px; /* Less overlap on mobile */
     }
     
     .experience-drawer:hover {
+        /* Remove hover effect on mobile */
+        transform: none;
+        height: 120px;
+        min-height: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: -5px;
+    }
+
+    .experience-drawer.active {
         height: auto;
         min-height: 350px;
+        transform: translateY(-50px);
+        margin-bottom: 35px;
+        z-index: 100 !important;
     }
     
     .experience-drawer .drawer-header {
@@ -1939,5 +1984,13 @@ footer {
         align-self: flex-start;
         width: 100%;
         text-align: left;
+    }
+
+    .experience-drawer .drawer-description {
+        display: none;
+    }
+
+    .experience-drawer.active .drawer-description {
+        display: block;
     }
 } 
