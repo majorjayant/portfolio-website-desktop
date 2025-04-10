@@ -561,7 +561,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
         header.appendChild(titleCompanyDiv);
         header.appendChild(locationSpan);
         
-        // Create drawer description
+        // Create drawer description - use innerHTML to preserve HTML formatting
         const description = document.createElement('div');
         description.className = 'drawer-description';
         description.innerHTML = experience.description || '';
@@ -873,9 +873,32 @@ function updateEducationSection(educationData) {
         drawersContainer.innerHTML = ''; // Clear existing drawers
     }
     
+    // Use static data if no education data is provided
     if (!educationData || educationData.length === 0) {
-        console.log('No education data provided');
-        return;
+        console.log('No education data provided, using static data');
+        educationData = [
+            {
+                id: 1,
+                degree: "Master of Business Administration",
+                institution: "Harvard Business School",
+                period: "2016 - 2018",
+                description: "<p>Specialized in Technology Management with focus on Product Development and Strategic Innovation. Graduated with honors, achieving a perfect GPA of 4.0.</p><ul><li>Led a cross-functional team in the development of a comprehensive business strategy for a technology startup</li><li>Completed an award-winning thesis on emerging technologies in product management</li><li>Participated in the Harvard Innovation Lab incubator program</li></ul>"
+            },
+            {
+                id: 2,
+                degree: "Bachelor of Science in Computer Science",
+                institution: "Massachusetts Institute of Technology",
+                period: "2012 - 2016",
+                description: "<p>Graduated with high honors. Focused on software engineering, artificial intelligence, and UI/UX design principles.</p><ul><li>Developed multiple open-source projects that gained industry recognition</li><li>Research assistant for the MIT Media Lab on human-computer interaction</li><li>Recipient of the Outstanding Computer Science Student Award</li></ul>"
+            },
+            {
+                id: 3,
+                degree: "Advanced Certification in Product Management",
+                institution: "Stanford University",
+                period: "2019 - 2020",
+                description: "<p>Intensive one-year specialized program focusing on modern product management methodologies and leadership skills.</p><ul><li>Mastered agile and lean product development frameworks</li><li>Completed projects involving real-world product challenges from top tech companies</li><li>Recognized for innovative approaches to user-centered design thinking</li></ul>"
+            }
+        ];
     }
     
     // Sort education by date (most recent first)
@@ -920,10 +943,10 @@ function updateEducationSection(educationData) {
         header.appendChild(periodSpan);
         header.appendChild(degreeInstitutionDiv);
         
-        // Create drawer description
+        // Create drawer description with HTML support
         const description = document.createElement('div');
         description.className = 'drawer-description';
-        description.textContent = education.description || '';
+        description.innerHTML = education.description || '';
         
         drawer.appendChild(header);
         drawer.appendChild(description);
@@ -960,9 +983,59 @@ function updateCertificationsSection(certificationsData) {
         drawersContainer.innerHTML = ''; // Clear existing drawers
     }
     
+    // Use static data if no certification data is provided
     if (!certificationsData || certificationsData.length === 0) {
-        console.log('No certification data provided');
-        return;
+        console.log('No certification data provided, using static data');
+        certificationsData = [
+            {
+                id: 1,
+                title: "AWS Certified Solutions Architect - Professional",
+                issuer: "Amazon Web Services",
+                issue_date: "Jan 2023",
+                expiry_date: "Jan 2026",
+                certificate_url: "#"
+            },
+            {
+                id: 2,
+                title: "Certified Product Manager",
+                issuer: "Product Management Institute",
+                issue_date: "Jun 2022",
+                expiry_date: "Jun 2025",
+                certificate_url: "#"
+            },
+            {
+                id: 3,
+                title: "Certified Scrum Master",
+                issuer: "Scrum Alliance",
+                issue_date: "Mar 2021",
+                expiry_date: "Mar 2023",
+                certificate_url: "#"
+            },
+            {
+                id: 4,
+                title: "Google Professional Cloud Architect",
+                issuer: "Google Cloud",
+                issue_date: "Nov 2022",
+                expiry_date: "Nov 2024",
+                certificate_url: "#"
+            },
+            {
+                id: 5,
+                title: "Advanced UX Design Certification",
+                issuer: "Interaction Design Foundation",
+                issue_date: "May 2021",
+                expiry_date: null,
+                certificate_url: "#"
+            },
+            {
+                id: 6,
+                title: "Microsoft Certified: Azure Solutions Architect Expert",
+                issuer: "Microsoft",
+                issue_date: "Sep 2022",
+                expiry_date: "Sep 2024",
+                certificate_url: "#"
+            }
+        ];
     }
     
     // Sort certifications by date (most recent first)
@@ -1276,4 +1349,76 @@ function positionCertificationDrawers() {
             drawer.style.zIndex = (drawers.length - drawerIndex).toString();
         }
     });
+}
+
+/**
+ * Initialize experience drawers interactivity
+ */
+function initExperienceDrawers() {
+    const drawers = document.querySelectorAll('.experience-drawer');
+    if (!drawers.length) return;
+    
+    // Variables to track active state
+    let activeIndex = -1;
+    let isAnyHovered = false;
+    
+    // For the container
+    const container = document.querySelector('.experience-drawers');
+    if (container) {
+        container.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                isAnyHovered = false;
+                activeIndex = -1;
+                
+                drawers.forEach(drawer => {
+                    drawer.classList.remove('active');
+                });
+                
+                positionCards();
+            }, 250);
+        });
+    }
+    
+    // For each drawer
+    drawers.forEach(drawer => {
+        const index = parseInt(drawer.getAttribute('data-index'));
+        
+        // Desktop hover
+        drawer.addEventListener('mouseenter', () => {
+            isAnyHovered = true;
+            activeIndex = index;
+            drawer.classList.add('active');
+            positionCards();
+        });
+        
+        drawer.addEventListener('mouseleave', () => {
+            if (!isMobile()) {
+                drawer.classList.remove('active');
+            }
+        });
+        
+        // Mobile click
+        drawer.addEventListener('click', (e) => {
+            if (isMobile()) {
+                if (drawer.classList.contains('active')) {
+                    drawer.classList.remove('active');
+                } else {
+                    // Close other drawers first
+                    drawers.forEach(d => d.classList.remove('active'));
+                    drawer.classList.add('active');
+                }
+                e.stopPropagation();
+            }
+        });
+    });
+    
+    // Close active drawer when clicking outside on mobile
+    if (isMobile()) {
+        document.addEventListener('click', () => {
+            drawers.forEach(drawer => drawer.classList.remove('active'));
+        });
+    }
+    
+    // Initial positioning
+    positionCards();
 }

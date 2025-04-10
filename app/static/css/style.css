@@ -486,8 +486,10 @@ header {
 
 /* ===== Experience Section ===== */
 .experience-section {
-  background-color: #2A2A2A;
-  padding: 80px 0 100px;
+  background-color: transparent;
+  padding-top: 330px;
+  padding-bottom: 100px;
+  margin-top: 50px;
   position: relative;
   overflow: hidden;
 }
@@ -499,16 +501,17 @@ header {
   display: block;
   color: #ffffff;
   font-family: 'Nexa Light', 'Inter', sans-serif;
-  text-align: center;
+  text-align: left;
   font-size: 2rem;
+  padding-left: 50px;
 }
 
 .experience-section .section-title:after {
   content: '';
   position: absolute;
   bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 50px;
+  transform: none;
   width: 50px;
   height: 3px;
   background-color: #d1b38a;
@@ -728,6 +731,7 @@ header {
 
 .experience-drawer .drawer-description ul {
   padding-left: 20px;
+  margin: 10px 0;
 }
 
 .experience-drawer .drawer-description li {
@@ -840,7 +844,7 @@ header {
 
 /* ===== Education Section ===== */
 .education-section {
-  background-color: #2A2A2A;
+  background-color: transparent;
   padding: 80px 0 100px;
   position: relative;
   overflow: hidden;
@@ -853,16 +857,17 @@ header {
   display: block;
   color: #ffffff;
   font-family: 'Nexa Light', 'Inter', sans-serif;
-  text-align: center;
+  text-align: left;
   font-size: 2rem;
+  padding-left: 50px;
 }
 
 .education-section .section-title:after {
   content: '';
   position: absolute;
   bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 50px;
+  transform: none;
   width: 50px;
   height: 3px;
   background-color: #d1b38a;
@@ -1054,9 +1059,22 @@ header {
   transform: translateY(0);
 }
 
+.education-drawer .drawer-description p {
+  margin: 10px 0;
+}
+
+.education-drawer .drawer-description ul {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+
+.education-drawer .drawer-description li {
+  margin-bottom: 8px;
+}
+
 /* ===== Certifications Section ===== */
 .certifications-section {
-  background-color: #2D2D35;
+  background-color: transparent;
   padding: 80px 0 100px;
   position: relative;
   overflow: hidden;
@@ -1069,16 +1087,17 @@ header {
   display: block;
   color: #ffffff;
   font-family: 'Nexa Light', 'Inter', sans-serif;
-  text-align: center;
+  text-align: left;
   font-size: 2rem;
+  padding-left: 50px;
 }
 
 .certifications-section .section-title:after {
   content: '';
   position: absolute;
   bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 50px;
+  transform: none;
   width: 50px;
   height: 3px;
   background-color: #d1b38a;
@@ -2384,6 +2403,7 @@ footer {
 
 .experience-drawer .drawer-description ul {
     padding-left: 20px;
+    margin: 10px 0;
 }
 
 .experience-drawer .drawer-description li {
@@ -2490,6 +2510,7 @@ footer {
 .section {
   position: relative;
   overflow: hidden;
+  background-color: transparent;
 }
 
 .section-background {
