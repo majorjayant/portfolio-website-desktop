@@ -41,10 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize animations for elements when they come into view
     initScrollAnimations();
 
+    // Initialize experience, education, and certification sections
     initExperienceCards();
+    initEducationDrawers();
+    initCertificationDrawers();
     
     // Reposition cards on window resize
-    window.addEventListener('resize', positionCards);
+    window.addEventListener('resize', function() {
+        positionCards();
+        positionEducationDrawers();
+        positionCertificationDrawers();
+    });
 });
 
 // Initialize chatbot functionality
@@ -277,6 +284,26 @@ function loadSiteConfig() {
             updateWorkExperienceTimeline(data.work_experience);
         } else {
             console.warn('No work experience data found in API response');
+        }
+        
+        // Check for education data and update
+        if (data.education && Array.isArray(data.education)) {
+            console.log('Found education data:', data.education);
+            updateEducationSection(data.education);
+        } else {
+            console.warn('No education data found in API response');
+            // Try to load from static JSON file as fallback
+            loadEducationFromFile();
+        }
+        
+        // Check for certification data and update
+        if (data.certifications && Array.isArray(data.certifications)) {
+            console.log('Found certification data:', data.certifications);
+            updateCertificationsSection(data.certifications);
+        } else {
+            console.warn('No certification data found in API response');
+            // Try to load from static JSON file as fallback
+            loadCertificationsFromFile();
         }
     }
 }
@@ -777,5 +804,476 @@ function positionCards() {
         }
         
         card.style.top = topPosition;
+    });
+}
+
+/**
+ * Load education data from a static JSON file as fallback
+ */
+function loadEducationFromFile() {
+    console.log('Loading education data from static file as fallback');
+    
+    fetch('/static/data/education.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to load education data: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Loaded education data from file:', data);
+            updateEducationSection(data);
+        })
+        .catch(error => {
+            console.error('Error loading education data from file:', error);
+        });
+}
+
+/**
+ * Load certifications data from a static JSON file as fallback
+ */
+function loadCertificationsFromFile() {
+    console.log('Loading certifications data from static file as fallback');
+    
+    fetch('/static/data/certifications.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to load certifications data: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Loaded certifications data from file:', data);
+            updateCertificationsSection(data);
+        })
+        .catch(error => {
+            console.error('Error loading certifications data from file:', error);
+        });
+}
+
+/**
+ * Update education section with drawer UI
+ */
+function updateEducationSection(educationData) {
+    console.log('Updating education section with data:', educationData);
+    
+    const educationSection = document.getElementById('education-section');
+    if (!educationSection) {
+        console.error('Education section not found');
+        return;
+    }
+    
+    // Find or create container for education drawers
+    let drawersContainer = document.querySelector('.education-drawers');
+    if (!drawersContainer) {
+        drawersContainer = document.createElement('div');
+        drawersContainer.className = 'education-drawers';
+        educationSection.appendChild(drawersContainer);
+    } else {
+        drawersContainer.innerHTML = ''; // Clear existing drawers
+    }
+    
+    if (!educationData || educationData.length === 0) {
+        console.log('No education data provided');
+        return;
+    }
+    
+    // Sort education by date (most recent first)
+    const sortedEducation = [...educationData].sort((a, b) => {
+        // Extract years from period strings
+        const yearA = a.period.split(' - ')[1] || a.period;
+        const yearB = b.period.split(' - ')[1] || b.period;
+        return parseInt(yearB) - parseInt(yearA);
+    });
+    
+    console.log('Sorted education:', sortedEducation);
+    
+    // Color scheme
+    const colors = ['education-color-1', 'education-color-2'];
+    
+    // Create education drawers
+    sortedEducation.forEach((education, index) => {
+        const drawer = document.createElement('div');
+        drawer.className = `education-drawer ${colors[index % colors.length]}`;
+        drawer.setAttribute('data-index', index);
+        
+        // Create drawer header
+        const header = document.createElement('div');
+        header.className = 'drawer-header';
+        
+        const periodSpan = document.createElement('span');
+        periodSpan.className = 'drawer-period';
+        periodSpan.textContent = education.period;
+        
+        const degreeInstitutionDiv = document.createElement('div');
+        degreeInstitutionDiv.className = 'drawer-degree-institution';
+        
+        const degreeHeading = document.createElement('h3');
+        degreeHeading.textContent = education.degree;
+        
+        const institutionPara = document.createElement('p');
+        institutionPara.textContent = education.institution;
+        
+        degreeInstitutionDiv.appendChild(degreeHeading);
+        degreeInstitutionDiv.appendChild(institutionPara);
+        
+        header.appendChild(periodSpan);
+        header.appendChild(degreeInstitutionDiv);
+        
+        // Create drawer description
+        const description = document.createElement('div');
+        description.className = 'drawer-description';
+        description.textContent = education.description || '';
+        
+        drawer.appendChild(header);
+        drawer.appendChild(description);
+        
+        // Set initial z-index based on position
+        drawer.style.zIndex = sortedEducation.length - index;
+        
+        drawersContainer.appendChild(drawer);
+    });
+    
+    // Setup event listeners
+    initEducationDrawers();
+}
+
+/**
+ * Update certifications section with drawer UI
+ */
+function updateCertificationsSection(certificationsData) {
+    console.log('Updating certifications section with data:', certificationsData);
+    
+    const certificationsSection = document.getElementById('certifications-section');
+    if (!certificationsSection) {
+        console.error('Certifications section not found');
+        return;
+    }
+    
+    // Find or create container for certification drawers
+    let drawersContainer = document.querySelector('.certifications-drawers');
+    if (!drawersContainer) {
+        drawersContainer = document.createElement('div');
+        drawersContainer.className = 'certifications-drawers';
+        certificationsSection.appendChild(drawersContainer);
+    } else {
+        drawersContainer.innerHTML = ''; // Clear existing drawers
+    }
+    
+    if (!certificationsData || certificationsData.length === 0) {
+        console.log('No certification data provided');
+        return;
+    }
+    
+    // Sort certifications by date (most recent first)
+    const sortedCertifications = [...certificationsData].sort((a, b) => {
+        const dateA = new Date(parseDate(a.issue_date));
+        const dateB = new Date(parseDate(b.issue_date));
+        return dateB - dateA;
+    });
+    
+    console.log('Sorted certifications:', sortedCertifications);
+    
+    // Color scheme
+    const colors = ['cert-color-1', 'cert-color-2', 'cert-color-3'];
+    
+    // Create certification drawers
+    sortedCertifications.forEach((cert, index) => {
+        const drawer = document.createElement('div');
+        drawer.className = `certification-drawer ${colors[index % colors.length]}`;
+        drawer.setAttribute('data-index', index);
+        
+        // Format expiry date text
+        let expiryText = cert.expiry_date ? `Expires: ${cert.expiry_date}` : 'No Expiration';
+        
+        // Create drawer header
+        const header = document.createElement('div');
+        header.className = 'drawer-header';
+        
+        const datesSpan = document.createElement('span');
+        datesSpan.className = 'drawer-dates';
+        datesSpan.textContent = `Issued: ${cert.issue_date}`;
+        
+        const titleIssuerDiv = document.createElement('div');
+        titleIssuerDiv.className = 'drawer-title-issuer';
+        
+        const titleHeading = document.createElement('h3');
+        titleHeading.textContent = cert.title;
+        
+        const issuerPara = document.createElement('p');
+        issuerPara.textContent = cert.issuer;
+        
+        titleIssuerDiv.appendChild(titleHeading);
+        titleIssuerDiv.appendChild(issuerPara);
+        
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'drawer-actions';
+        
+        const viewCertLink = document.createElement('a');
+        viewCertLink.className = 'view-certificate';
+        viewCertLink.textContent = 'View Certificate';
+        viewCertLink.href = cert.certificate_url || '#';
+        viewCertLink.target = '_blank';
+        
+        actionsDiv.appendChild(viewCertLink);
+        
+        header.appendChild(datesSpan);
+        header.appendChild(titleIssuerDiv);
+        header.appendChild(actionsDiv);
+        
+        drawer.appendChild(header);
+        
+        // Set initial z-index based on position
+        drawer.style.zIndex = sortedCertifications.length - index;
+        
+        drawersContainer.appendChild(drawer);
+    });
+    
+    // Setup event listeners
+    initCertificationDrawers();
+}
+
+/**
+ * Helper function to parse dates in different formats
+ */
+function parseDate(dateStr) {
+    if (!dateStr) return new Date(0);
+    
+    // Handle format like "Mar 2018" or "Jun 2019"
+    const monthNames = {
+        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+    };
+    
+    const parts = dateStr.split(' ');
+    if (parts.length === 2 && monthNames[parts[0]]) {
+        return new Date(parseInt(parts[1]), monthNames[parts[0]], 1);
+    }
+    
+    // Fallback to standard date parsing
+    return new Date(dateStr);
+}
+
+/**
+ * Initialize education drawers interactivity
+ */
+function initEducationDrawers() {
+    const drawers = document.querySelectorAll('.education-drawer');
+    if (!drawers.length) return;
+    
+    // Variables to track active state
+    let activeIndex = -1;
+    let isAnyHovered = false;
+    
+    // For the container
+    const container = document.querySelector('.education-drawers');
+    if (container) {
+        container.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                isAnyHovered = false;
+                activeIndex = -1;
+                
+                drawers.forEach(drawer => {
+                    drawer.classList.remove('active');
+                });
+                
+                positionEducationDrawers();
+            }, 250);
+        });
+    }
+    
+    // For each drawer
+    drawers.forEach(drawer => {
+        const index = parseInt(drawer.getAttribute('data-index'));
+        
+        // Desktop hover
+        drawer.addEventListener('mouseenter', () => {
+            isAnyHovered = true;
+            activeIndex = index;
+            drawer.classList.add('active');
+            positionEducationDrawers();
+        });
+        
+        drawer.addEventListener('mouseleave', () => {
+            if (!isMobile()) {
+                drawer.classList.remove('active');
+            }
+        });
+        
+        // Mobile click
+        drawer.addEventListener('click', (e) => {
+            if (isMobile()) {
+                if (drawer.classList.contains('active')) {
+                    drawer.classList.remove('active');
+                } else {
+                    // Close other drawers first
+                    drawers.forEach(d => d.classList.remove('active'));
+                    drawer.classList.add('active');
+                }
+                e.stopPropagation();
+            }
+        });
+    });
+    
+    // Close active drawer when clicking outside on mobile
+    if (isMobile()) {
+        document.addEventListener('click', () => {
+            drawers.forEach(drawer => drawer.classList.remove('active'));
+        });
+    }
+    
+    // Initial positioning
+    positionEducationDrawers();
+}
+
+/**
+ * Position education drawers for stacked effect
+ */
+function positionEducationDrawers() {
+    const drawers = document.querySelectorAll('.education-drawer');
+    if (!drawers.length) return;
+    
+    let activeIndex = -1;
+    let isAnyHovered = false;
+    
+    // Find active drawer if any
+    drawers.forEach((drawer, idx) => {
+        if (drawer.classList.contains('active')) {
+            activeIndex = parseInt(drawer.getAttribute('data-index'));
+            isAnyHovered = true;
+        }
+    });
+    
+    // Update positions
+    drawers.forEach(drawer => {
+        const drawerIndex = parseInt(drawer.getAttribute('data-index'));
+        
+        if (isAnyHovered) {
+            if (drawerIndex === activeIndex) {
+                drawer.style.transform = 'scale(1.02)';
+                drawer.style.zIndex = '30';
+            } else if (drawerIndex < activeIndex) {
+                drawer.style.transform = 'translateY(-10px)';
+                drawer.style.zIndex = (drawers.length + 10 - drawerIndex).toString();
+            } else {
+                drawer.style.transform = 'translateY(20px)';
+                drawer.style.zIndex = (drawers.length - drawerIndex).toString();
+            }
+        } else {
+            drawer.style.transform = '';
+            drawer.style.zIndex = (drawers.length - drawerIndex).toString();
+        }
+    });
+}
+
+/**
+ * Initialize certification drawers interactivity
+ */
+function initCertificationDrawers() {
+    const drawers = document.querySelectorAll('.certification-drawer');
+    if (!drawers.length) return;
+    
+    // Variables to track active state
+    let activeIndex = -1;
+    let isAnyHovered = false;
+    
+    // For the container
+    const container = document.querySelector('.certifications-drawers');
+    if (container) {
+        container.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                isAnyHovered = false;
+                activeIndex = -1;
+                
+                drawers.forEach(drawer => {
+                    drawer.classList.remove('active');
+                });
+                
+                positionCertificationDrawers();
+            }, 250);
+        });
+    }
+    
+    // For each drawer
+    drawers.forEach(drawer => {
+        const index = parseInt(drawer.getAttribute('data-index'));
+        
+        // Desktop hover
+        drawer.addEventListener('mouseenter', () => {
+            isAnyHovered = true;
+            activeIndex = index;
+            drawer.classList.add('active');
+            positionCertificationDrawers();
+        });
+        
+        drawer.addEventListener('mouseleave', () => {
+            if (!isMobile()) {
+                drawer.classList.remove('active');
+            }
+        });
+        
+        // Mobile click
+        drawer.addEventListener('click', (e) => {
+            if (isMobile()) {
+                if (drawer.classList.contains('active')) {
+                    drawer.classList.remove('active');
+                } else {
+                    // Close other drawers first
+                    drawers.forEach(d => d.classList.remove('active'));
+                    drawer.classList.add('active');
+                }
+                e.stopPropagation();
+            }
+        });
+    });
+    
+    // Close active drawer when clicking outside on mobile
+    if (isMobile()) {
+        document.addEventListener('click', () => {
+            drawers.forEach(drawer => drawer.classList.remove('active'));
+        });
+    }
+    
+    // Initial positioning
+    positionCertificationDrawers();
+}
+
+/**
+ * Position certification drawers for stacked effect
+ */
+function positionCertificationDrawers() {
+    const drawers = document.querySelectorAll('.certification-drawer');
+    if (!drawers.length) return;
+    
+    let activeIndex = -1;
+    let isAnyHovered = false;
+    
+    // Find active drawer if any
+    drawers.forEach((drawer, idx) => {
+        if (drawer.classList.contains('active')) {
+            activeIndex = parseInt(drawer.getAttribute('data-index'));
+            isAnyHovered = true;
+        }
+    });
+    
+    // Update positions
+    drawers.forEach(drawer => {
+        const drawerIndex = parseInt(drawer.getAttribute('data-index'));
+        
+        if (isAnyHovered) {
+            if (drawerIndex === activeIndex) {
+                drawer.style.transform = 'scale(1.02)';
+                drawer.style.zIndex = '30';
+            } else if (drawerIndex < activeIndex) {
+                drawer.style.transform = 'translateY(-10px)';
+                drawer.style.zIndex = (drawers.length + 10 - drawerIndex).toString();
+            } else {
+                drawer.style.transform = 'translateY(20px)';
+                drawer.style.zIndex = (drawers.length - drawerIndex).toString();
+            }
+        } else {
+            drawer.style.transform = '';
+            drawer.style.zIndex = (drawers.length - drawerIndex).toString();
+        }
     });
 }
