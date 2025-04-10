@@ -1,5 +1,12 @@
 /* Custom Overrides CSS - Added to fix specific issues */
 
+/* 
+ * !!! IMPORTANT !!!
+ * This file contains the definitive styles for experience drawers.
+ * Any conflicting styles in style.css are overridden by these styles.
+ * All changes to drawer styles should be made HERE, not in style.css.
+ */
+
 /* ===== RESTORE BLACK BACKGROUND EFFECT FOR DRAWERS ===== */
 /* Add back the stacked dark background effect */
 
@@ -29,8 +36,46 @@
   transform: rotate(-1deg) scale(1.05) !important;
 }
 
+/* ===== PRIMARY DRAWER STYLES OVERRIDES ===== */
+/* These styles take precedence over anything in style.css */
+
+/* Adjust drawer appearance for proper stacking */
+.experience-drawer {
+  position: relative !important;
+  z-index: 2 !important; /* Higher than the background but lower than hover state */
+  background: transparent !important; /* Remove white background */
+  border-radius: 16px !important;
+  margin-bottom: 1.5rem !important;
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
+  border-left: 5px solid !important; /* Preserve the left border */
+  color: #333 !important; /* Default text color */
+  backdrop-filter: blur(4px) !important; /* Add slight blur effect */
+  background-color: rgba(255, 255, 255, 0.7) !important; /* Semi-transparent background */
+  transition: all 0.3s ease !important;
+  padding: 2rem !important;
+  cursor: pointer !important;
+}
+
+/* Fix any text color issues due to transparent background */
+.experience-drawer h3 {
+  color: #333 !important;
+}
+
+.experience-drawer p,
+.experience-drawer .drawer-date,
+.experience-drawer .drawer-location,
+.experience-drawer .drawer-description {
+  color: #555 !important;
+}
+
+.experience-drawer:hover {
+  z-index: 10 !important; /* Higher z-index when hovered */
+  transform: translateY(-5px) !important;
+  box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2) !important;
+}
+
 /* ===== JOB DESCRIPTION ANIMATION FIXES ===== */
-/* Ensure descriptions are only visible on hover */
+/* Ensure descriptions are only visible on hover/active */
 
 /* Base style - hidden by default */
 .experience-drawer .drawer-description {
@@ -69,18 +114,22 @@
   display: block !important;
 }
 
-/* Mobile-specific styles */
-@media screen and (max-width: 768px) {
-  /* Don't show on hover for mobile */
-  .experience-drawer:hover .drawer-description:not(.experience-drawer.active .drawer-description) {
-    opacity: 0 !important;
-    height: 0 !important;
-    max-height: 0 !important;
-    transform: translateY(20px) !important;
-    overflow: hidden !important;
-    visibility: hidden !important;
-    display: none !important;
-  }
+/* ===== DRAWER HEADER STYLES ===== */
+/* Contains all header elements */
+.drawer-header {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 1.5rem !important;
+}
+
+/* Date element */
+.drawer-date {
+  flex: 0 0 20% !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  position: relative !important;
+  padding-left: 28px !important;
 }
 
 /* ===== SUITCASE ICON POSITIONING FIXES ===== */
@@ -114,58 +163,11 @@
   display: none !important;
 }
 
-/* Consistent styling for mobile */
-@media screen and (max-width: 768px) {
-  .drawer-title-company h3 {
-    padding-left: 22px !important;
-  }
-  
-  .drawer-title-company h3:before {
-    width: 18px !important;
-    height: 18px !important;
-  }
-  
-  .drawer-title-company:before {
-    display: none !important;
-  }
-}
-
-/* Adjust drawer appearance for proper stacking */
-.experience-drawer {
-  position: relative !important;
-  z-index: 2 !important; /* Higher than the background but lower than hover state */
-  background: transparent !important; /* Remove white background */
-  border-radius: 16px !important;
-  margin-bottom: 1.5rem !important;
-  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
-  border-left: 5px solid !important; /* Preserve the left border */
-  color: #333 !important; /* Default text color */
-  backdrop-filter: blur(4px) !important; /* Add slight blur effect */
-  background-color: rgba(255, 255, 255, 0.7) !important; /* Semi-transparent background */
-}
-
-/* Fix any text color issues due to transparent background */
-.experience-drawer h3 {
-  color: #333 !important;
-}
-
-.experience-drawer p,
-.experience-drawer .drawer-date,
-.experience-drawer .drawer-location,
-.experience-drawer .drawer-description {
-  color: #555 !important;
-}
-
-.experience-drawer:hover {
-  z-index: 10 !important; /* Higher z-index when hovered */
-  transform: translateY(-5px) !important;
-  box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2) !important;
-}
-
 /* Make sure the bg sits behind all elements */
 .experience-section {
   position: relative !important;
   z-index: 1 !important;
+  background-color: #f8f8f8 !important; /* Ensure light background */
 }
 
 /* ===== MOBILE RESPONSIVENESS FIXES FOR EXPERIENCE SECTION ===== */
@@ -190,6 +192,22 @@
     border-radius: 10px !important;
     height: auto !important; /* Remove fixed height */
     min-height: auto !important;
+  }
+  
+  /* On mobile, don't show on hover */
+  .experience-drawer:hover {
+    transform: none !important;
+    box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .experience-drawer:hover .drawer-description:not(.experience-drawer.active .drawer-description) {
+    opacity: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    transform: translateY(20px) !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    display: none !important;
   }
   
   /* Header layout for mobile */
@@ -240,11 +258,7 @@
     z-index: 100 !important; /* Ensure active drawer is on top */
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
     margin-bottom: 25px !important; /* Add more space after active drawer */
-  }
-  
-  /* Fix any potential overlapping issues */
-  .experience-drawer {
-    margin-bottom: 15px !important; /* Standard margin between drawers */
+    transform: scale(1.02) !important;
   }
   
   /* Style specifically to ensure drawer headers are fully visible */
@@ -253,6 +267,29 @@
     flex-direction: column !important;
     width: 100% !important;
     overflow: visible !important;
+  }
+  
+  /* Additional description fixes for mobile */
+  .drawer-description {
+    margin-top: 15px !important;
+    padding-top: 15px !important;
+    border-top: 1px solid rgba(0,0,0,0.1) !important;
+  }
+  
+  .experience-drawer.active .drawer-description {
+    padding: 15px !important;
+    margin-top: 15px !important;
+    background-color: rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+  }
+  
+  /* Fix description content on mobile */
+  .description-content ul {
+    padding-left: 20px !important;
+  }
+  
+  .description-content li {
+    margin-bottom: 8px !important;
   }
 }
 
@@ -320,29 +357,4 @@
 .color-3 .description-content,
 .color-4 .description-content {
   color: inherit !important;
-}
-
-@media screen and (max-width: 768px) {
-  /* Additional description fixes for mobile */
-  .drawer-description {
-    margin-top: 15px !important;
-    padding-top: 15px !important;
-    border-top: 1px solid rgba(0,0,0,0.1) !important;
-  }
-  
-  .experience-drawer.active .drawer-description {
-    padding: 15px !important;
-    margin-top: 15px !important;
-    background-color: rgba(255,255,255,0.1) !important;
-    border-radius: 8px !important;
-  }
-  
-  /* Fix description content on mobile */
-  .description-content ul {
-    padding-left: 20px !important;
-  }
-  
-  .description-content li {
-    margin-bottom: 8px !important;
-  }
 } 
