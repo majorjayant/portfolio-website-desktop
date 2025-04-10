@@ -1763,158 +1763,152 @@ footer {
 .experience-drawers {
     padding-top: 40px; /* Add some space above the drawers */
     padding-bottom: 60px; /* Extra space at the bottom */
+    perspective: 1200px; /* Add perspective for 3D effects */
 }
 
 .experience-drawer {
     position: relative;
-    border-radius: 15px; /* Matches reference */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); 
-    margin-bottom: -20px; /* Overlap effect */
-    padding: 1.5rem; /* 24px padding */
-    color: #ffffff; /* Default text color, assuming backgrounds are dark enough */
-    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    height: 90px;
     overflow: hidden;
-    height: 100px; /* Initial collapsed height */
-    transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1), /* Smooth height change */
-                transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1.0), /* Smooth transform */
-                margin-bottom 0.5s ease; /* Smooth margin change for expansion */
-    transform-origin: bottom center;
+    cursor: pointer;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s ease;
+    z-index: 1;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transform: translateZ(0);
 }
 
-.experience-drawer.expanded {
-    height: auto; /* Auto height when expanded */
-    min-height: 100px; /* Ensure it doesn't collapse too small */
-    cursor: default;
-    z-index: 100 !important; /* Bring expanded card to front */
-    margin-bottom: 15px; /* Add space below when expanded */
-    transform: scale(1.01); /* Slight scale increase when expanded */
+.experience-drawer:hover {
+    height: 300px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px) rotateX(2deg);
+    z-index: 100 !important;
 }
 
-/* Color scheme */
-.experience-drawer.color-0 { background-color: #9A9A78; } /* olive green */
-.experience-drawer.color-1 { background-color: #C26E4E; } /* terracotta */
-.experience-drawer.color-2 { background-color: #8A9AA9; } /* slate blue */
-.experience-drawer.color-3 { background-color: #E0A458; } /* golden */
-.experience-drawer.color-4 { background-color: #BEB699; } /* taupe */
-
-/* Content inside the drawer */
-.drawer-header {
+.experience-drawer .drawer-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    height: 68px; /* 100px total height - 2*1.5rem padding */
-    transition: opacity 0.3s ease;
+    align-items: flex-start;
+    margin-bottom: 20px;
 }
 
-.drawer-date {
-    flex: 0 0 150px; /* Fixed width for date */
-    text-align: left;
-    font-weight: 600;
+.experience-drawer .drawer-date {
+    font-size: 14px;
+    color: #666;
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: inline-block;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transform: translateZ(5px);
 }
 
-.drawer-title-company {
+.experience-drawer:hover .drawer-date {
+    color: #333;
+    background-color: #e0e0e0;
+}
+
+.experience-drawer .drawer-title-company {
     flex-grow: 1;
-    text-align: center;
-    padding: 0 1rem;
+    padding: 0 20px;
 }
 
-.drawer-title-company h3 {
-    font-size: 1.5rem; /* 24px */
-    font-weight: 700;
-    margin: 0 0 0.25rem 0;
-    color: inherit;
-}
-
-.drawer-title-company p {
-    font-size: 1.125rem; /* 18px */
+.experience-drawer .drawer-title-company h3 {
     margin: 0;
-    color: inherit;
-    opacity: 0.9;
-}
-
-.drawer-location {
-    flex: 0 0 150px; /* Fixed width for location */
-    text-align: right;
+    font-size: 18px;
     font-weight: 600;
+    color: #222;
+    margin-bottom: 5px;
+    transition: color 0.3s ease;
+    transform: translateZ(10px);
 }
 
-/* Description section */
-.drawer-description {
-    margin-top: 1.5rem; /* Space above description */
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.3); /* Separator */
-    max-height: 0;
+.experience-drawer:hover .drawer-title-company h3 {
+    color: #007bff;
+}
+
+.experience-drawer .drawer-title-company p {
+    margin: 0;
+    font-size: 16px;
+    color: #555;
+    transform: translateZ(5px);
+}
+
+.experience-drawer .drawer-location {
+    font-size: 14px;
+    color: #777;
+    font-style: italic;
+    transform: translateZ(5px);
+}
+
+.experience-drawer .drawer-description {
     opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
-    will-change: max-height, opacity;
-    color: inherit; /* Inherit text color */
-    font-size: 0.95rem;
+    transform: translateY(20px) translateZ(0);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    font-size: 16px;
+    color: #444;
     line-height: 1.6;
 }
 
-.experience-drawer.expanded .drawer-description {
-    max-height: 500px; /* Allow description to expand */
+.experience-drawer:hover .drawer-description {
     opacity: 1;
+    transform: translateY(0) translateZ(5px);
 }
 
-.drawer-description ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
+.experience-drawer .drawer-description p {
+    margin: 10px 0;
 }
 
-.drawer-description li {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 0.5rem;
+.experience-drawer .drawer-description ul {
+    padding-left: 20px;
 }
 
-.drawer-description li::before {
-    content: '\2022'; /* Bullet point */
-    display: inline-block;
-    margin-right: 0.75em;
-    font-weight: bold;
+.experience-drawer .drawer-description li {
+    margin-bottom: 8px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/* Remove expanded class styles as we're using hover now */
+/* .experience-drawer.expanded {
+    height: 300px;
+    z-index: 100 !important;
+}
+
+.experience-drawer.expanded .drawer-description {
+    opacity: 1;
+    transform: translateY(0);
+} */
+
+@media screen and (max-width: 768px) {
     .experience-drawer {
-        padding: 1rem;
-        height: 120px; /* Slightly taller for mobile */
-        margin-bottom: -15px;
+        height: 120px;
+        padding: 15px;
     }
-    .experience-drawer.expanded {
-        min-height: 120px;
+    
+    .experience-drawer:hover {
+        height: 350px;
     }
-    .drawer-header {
+    
+    .experience-drawer .drawer-header {
         flex-direction: column;
         align-items: flex-start;
-        height: auto;
-        gap: 0.5rem;
     }
-    .drawer-date, .drawer-location {
-        flex-basis: auto;
-        width: 100%;
-        text-align: left;
-        font-size: 0.9rem;
+    
+    .experience-drawer .drawer-date {
+        margin-bottom: 10px;
     }
-    .drawer-location {
-        order: 3; /* Move location below title */
-    }
-    .drawer-title-company {
-        text-align: left;
+    
+    .experience-drawer .drawer-title-company {
         padding: 0;
-        order: 2; /* Title comes second */
+        margin-bottom: 10px;
     }
-    .drawer-title-company h3 {
-        font-size: 1.25rem;
-    }
-    .drawer-title-company p {
-        font-size: 1rem;
-    }
-    .drawer-description {
-        margin-top: 1rem;
-        font-size: 0.9rem;
+    
+    .experience-drawer .drawer-location {
+        align-self: flex-start;
     }
 } 

@@ -511,30 +511,10 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 ${descriptionHtml}
             </div>
         `;
-
-        // Add click listener to toggle expansion
-        drawer.addEventListener('click', () => {
-            // If already expanded, do nothing on click (user must click another)
-            if (drawer.classList.contains('expanded')) {
-                return;
-            }
-
-            // Close any other expanded drawers
-            const currentlyExpanded = container.querySelector('.experience-drawer.expanded');
-            if (currentlyExpanded && currentlyExpanded !== drawer) {
-                currentlyExpanded.classList.remove('expanded');
-                // Reset z-index based on original position
-                const originalIndex = Array.from(container.children).indexOf(currentlyExpanded);
-                currentlyExpanded.style.zIndex = totalItems - originalIndex;
-            }
-            
-            // Expand the clicked drawer
-            drawer.classList.add('expanded');
-            // Bring to front (CSS already handles this with !important, but setting it can be backup)
-            // drawer.style.zIndex = totalItems + 1; 
-        });
         
         container.appendChild(drawer);
+        
+        // No click event listener - using CSS hover instead
     });
 
     console.log('Finished creating drawer UI.');
