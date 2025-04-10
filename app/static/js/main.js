@@ -455,7 +455,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
     const sectionTitle = experienceSection.querySelector('.section-title');
     if (sectionTitle) {
         sectionTitle.textContent = "Professional Experience";
-        sectionTitle.style.color = '#333333';
+        sectionTitle.style.color = '#7a6b5f';
         sectionTitle.style.textAlign = 'left';
     }
     

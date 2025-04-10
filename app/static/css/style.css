@@ -490,7 +490,7 @@ header {
   padding: 60px 0;
   overflow: hidden;
   z-index: 30;
-  margin-top: 240px; /* Increased from 3rem to 240px to move section down */
+  margin-top: 100px; /* Increased from 3rem to 240px to move section down */
   position: relative;
 }
 
