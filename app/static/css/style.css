@@ -1788,9 +1788,9 @@ footer {
     height: auto;
     min-height: 300px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    transform: translateY(0) rotateX(0deg); /* Modified to open downward instead of upward */
+    transform: translateY(-100px) rotateX(2deg); /* Pull upward on hover */
     z-index: 100 !important;
-    margin-bottom: 0; /* Remove the extra space below */
+    margin-bottom: 80px; /* Add space below when expanded */
 }
 
 .experience-drawer .drawer-header {
@@ -1874,80 +1874,54 @@ footer {
     margin-bottom: 8px;
 }
 
-/* New color classes with the requested colors */
-.olive-green {
-    background-color: #556B2F;
-    color: #ffffff; /* White text for better readability */
+/* Color classes with the specified hex values */
+.color-1 {
+    background-color: #6c584c;
+    color: #ffffff; /* White text for dark background */
 }
-.olive-green .drawer-title-company h3,
-.olive-green .drawer-title-company p,
-.olive-green .drawer-date,
-.olive-green .drawer-location,
-.olive-green .drawer-description {
+.color-1 .drawer-title-company h3,
+.color-1 .drawer-title-company p,
+.color-1 .drawer-date,
+.color-1 .drawer-location,
+.color-1 .drawer-description {
     color: #ffffff;
 }
 
-.terracotta {
-    background-color: #E2725B;
-    color: #ffffff;
+.color-2 {
+    background-color: #a38566;
+    color: #ffffff; /* White text for dark background */
 }
-.terracotta .drawer-title-company h3,
-.terracotta .drawer-title-company p,
-.terracotta .drawer-date,
-.terracotta .drawer-location,
-.terracotta .drawer-description {
-    color: #ffffff;
-}
-
-.slate-blue {
-    background-color: #6A7B93;
-    color: #ffffff;
-}
-.slate-blue .drawer-title-company h3,
-.slate-blue .drawer-title-company p,
-.slate-blue .drawer-date,
-.slate-blue .drawer-location,
-.slate-blue .drawer-description {
+.color-2 .drawer-title-company h3,
+.color-2 .drawer-title-company p,
+.color-2 .drawer-date,
+.color-2 .drawer-location,
+.color-2 .drawer-description {
     color: #ffffff;
 }
 
-.taupe {
-    background-color: #8B7D6B;
-    color: #ffffff;
+.color-3 {
+    background-color: #d1b38a;
+    color: #333333; /* Dark text for light background */
 }
-.taupe .drawer-title-company h3,
-.taupe .drawer-title-company p,
-.taupe .drawer-date,
-.taupe .drawer-location,
-.taupe .drawer-description {
-    color: #ffffff;
-}
-
-.sand-beige {
-    background-color: #D1B38A;
-    color: #333333;
-}
-.sand-beige .drawer-title-company h3,
-.sand-beige .drawer-title-company p,
-.sand-beige .drawer-date,
-.sand-beige .drawer-location,
-.sand-beige .drawer-description {
+.color-3 .drawer-title-company h3,
+.color-3 .drawer-title-company p,
+.color-3 .drawer-date,
+.color-3 .drawer-location,
+.color-3 .drawer-description {
     color: #333333;
 }
 
-.medium-brown {
-    background-color: #A38566;
-    color: #ffffff;
+.color-4 {
+    background-color: #e9dac1;
+    color: #333333; /* Dark text for light background */
 }
-.medium-brown .drawer-title-company h3,
-.medium-brown .drawer-title-company p,
-.medium-brown .drawer-date,
-.medium-brown .drawer-location,
-.medium-brown .drawer-description {
-    color: #ffffff;
+.color-4 .drawer-title-company h3,
+.color-4 .drawer-title-company p,
+.color-4 .drawer-date,
+.color-4 .drawer-location,
+.color-4 .drawer-description {
+    color: #333333;
 }
-
-/* Removed drawer-nav styles since arrows are removed */
 
 @media screen and (max-width: 768px) {
     .experience-drawer {

@@ -467,12 +467,10 @@ function updateWorkExperienceTimeline(workExperienceData) {
     const totalItems = sortedExperience.length;
     // Updated color schemes with requested colors
     const colorSchemes = [
-        'olive-green',    // Olive Green
-        'terracotta',     // Terracotta
-        'slate-blue',     // Slate Blue
-        'taupe',          // Taupe
-        'sand-beige',     // Sand Beige
-        'medium-brown'    // Medium Brown
+        'color-1',    // #6c584c
+        'color-2',    // #a38566
+        'color-3',    // #d1b38a
+        'color-4'     // #e9dac1
     ];
 
     // Create drawers
@@ -568,19 +566,35 @@ function updateWorkExperienceTimeline(workExperienceData) {
         // On desktop, add hover interaction
         drawer.addEventListener('mouseenter', () => {
             if (window.innerWidth > 768) {
-                // Ensure other drawers are not active
-                drawers.forEach(d => {
-                    if (d !== drawer) d.classList.remove('active');
-                });
+                // When hovering a new drawer, activate it directly without closing others first
+                activeIndex = index;
+                drawer.classList.add('active');
+                
                 // Set a high z-index for the hovered drawer
                 drawer.style.zIndex = 100;
+                
+                // Lower the z-index of other drawers
+                drawers.forEach((d, i) => {
+                    if (i !== index) {
+                        d.classList.remove('active');
+                        d.style.zIndex = totalItems - i;
+                    }
+                });
             }
         });
         
         drawer.addEventListener('mouseleave', () => {
             if (window.innerWidth > 768) {
-                // Restore z-index based on original order
-                drawer.style.zIndex = totalItems - index;
+                // Don't immediately close on mouse leave to allow movement between drawers
+                // Use a small delay to check if user moved to another drawer
+                setTimeout(() => {
+                    // Only close if user hasn't entered another drawer
+                    if (!document.querySelector('.experience-drawer:hover')) {
+                        drawer.classList.remove('active');
+                        drawer.style.zIndex = totalItems - index;
+                        activeIndex = -1;
+                    }
+                }, 100);
             }
         });
     });
