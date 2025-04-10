@@ -1356,80 +1356,14 @@
             // Update photos in the "snaps" section with ENHANCED carousel effect
             updateCarousel(photos);
             
-            // Update work experience timeline if data is available
+            // Update work experience section with drawer UI (using function from main.js)
             if (data.work_experience && Array.isArray(data.work_experience)) {
+                console.log('Updating work experience with drawer UI');
                 updateWorkExperienceTimeline(data.work_experience);
             }
-                        
+            
             // Show content once loaded
             document.body.classList.add('content-loaded');
-        }
-        
-        // Function to update the work experience timeline
-        function updateWorkExperienceTimeline(workExperienceData) {
-            console.log('Updating work experience timeline with:', workExperienceData);
-            
-            // Get the timeline container
-            const timelineContainer = document.querySelector('.timeline-vertical');
-            if (!timelineContainer) {
-                console.error('Timeline container not found');
-                return;
-            }
-            
-            // Clear existing timeline items
-            timelineContainer.innerHTML = '';
-            
-            // Sort work experience by from_date (most recent first)
-            const sortedWorkExperience = [...workExperienceData].sort((a, b) => {
-                // Compare dates (assuming format is YYYY-MM-DD)
-                const dateA = new Date(a.from_date);
-                const dateB = new Date(b.from_date);
-                return dateB - dateA; // Most recent first
-            });
-            
-            // Add timeline items
-            sortedWorkExperience.forEach((experience, index) => {
-                // Format the period string
-                let period = '';
-                if (experience.from_date) {
-                    const fromDate = new Date(experience.from_date);
-                    const fromMonth = fromDate.toLocaleString('default', { month: 'short' });
-                    const fromYear = fromDate.getFullYear();
-                    
-                    period = `${fromMonth} ${fromYear} - `;
-                    
-                    if (experience.is_current) {
-                        period += 'Present';
-                    } else if (experience.to_date) {
-                        const toDate = new Date(experience.to_date);
-                        const toMonth = toDate.toLocaleString('default', { month: 'short' });
-                        const toYear = toDate.getFullYear();
-                        period += `${toMonth} ${toYear}`;
-                    }
-                }
-                
-                // Create the timeline item
-                const timelineItem = document.createElement('div');
-                timelineItem.className = `timeline-item ${index % 2 === 0 ? 'timeline-item-left' : 'timeline-item-right'}`;
-                timelineItem.setAttribute('data-aos', index % 2 === 0 ? 'fade-right' : 'fade-left');
-                
-                timelineItem.innerHTML = `
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <h3 class="job-title">${experience.title || ''}</h3>
-                        <h4 class="company-info">${experience.company || ''} ${experience.location ? `| ${experience.location}` : ''}</h4>
-                        <span class="date">${period}</span>
-                        <p class="timeline-description">${experience.description || ''}</p>
-                    </div>
-                `;
-                
-                timelineContainer.appendChild(timelineItem);
-            });
-            
-            // Initialize AOS for new elements if AOS is available
-            if (typeof AOS !== 'undefined' && AOS.refresh) {
-                AOS.refresh();
-            }
         }
         
         // Initialize carousel controls - Remove button related variables
