@@ -77,7 +77,9 @@ img {
   background-color: var(--accent-color);
 }
 
-
+.highlight {
+  color: var(--accent-color);
+}
 
 .button {
   display: inline-block;
@@ -519,9 +521,7 @@ header {
   display: block; /* Ensure block display */
   width: 100%; /* Full width */
   max-width: 1200px; /* Increased max-width to match wider container */
-  border-bottom: 3px solid #6c584c; /* Add underline for emphasis */
-  padding-bottom: 0.5rem; /* Space for underline */
-}
+  }
 
 .experience-drawers {
   padding-top: 40px; 
