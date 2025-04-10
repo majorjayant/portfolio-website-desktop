@@ -624,6 +624,17 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 const description = drawer.querySelector('.drawer-description');
                 if (description) {
                     description.style.display = 'block';
+                    
+                    // Make super sure the description content is visible by forcing style
+                    const content = description.querySelector('.description-content');
+                    if (content) {
+                        content.style.display = 'block';
+                        content.style.visibility = 'visible';
+                        content.style.opacity = '1';
+                    }
+                    
+                    // Force a reflow to ensure changes are applied
+                    description.offsetHeight;
                 }
             }
         });

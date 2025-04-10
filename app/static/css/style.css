@@ -513,6 +513,30 @@ header {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.drawer-description {
+  color: #555;
+  line-height: 1.6;
+  overflow: hidden;
+  padding-top: 0;
+  border-top: 1px solid rgba(108, 88, 76, 0.2);
+  display: none; /* Initially hidden */
+  transition: none; /* Remove transitions that might be causing issues */
+}
+
+.description-content {
+  padding: 0.5rem 0;
+  display: block; /* Make sure content is displayed */
+}
+
+.experience-drawer.active .drawer-description {
+  display: block !important; /* Force display with !important */
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+  max-height: none; /* Remove max-height restriction */
+  opacity: 1;
+  overflow: visible;
+}
+
 .experience-drawers {
   position: relative;
   z-index: 5;
@@ -668,7 +692,6 @@ header {
   color: #555;
   line-height: 1.6;
   overflow: hidden;
-  display: none; /* Initially hidden */
   padding-top: 0;
   border-top: 1px solid rgba(108, 88, 76, 0.2);
 }
@@ -2306,4 +2329,6 @@ footer {
     display: block;
     color: #ffffff;
     text-align: center;
-} 
+}
+
+/* End of styles */ 
