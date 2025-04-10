@@ -489,8 +489,7 @@ header {
   padding: 2rem 0; /* Adjust padding as needed */
   background-color: #ffffff; /* Slightly different background */
   position: relative;
-  /* Remove negative margin if it exists from previous edits */
-  margin-top: 0; 
+  margin-top: 50px; /* Changed from -100px to 50px to prevent overlap */
 }
 
 /* Vertical Timeline Styles */
