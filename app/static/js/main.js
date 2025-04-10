@@ -432,111 +432,110 @@ function updateGalleryPhoto(selector, photoUrl, altText) {
 }
 
 /**
- * Update work experience timeline with data from API
- * Enhanced with debugging to identify issues
+ * Update work experience section with a stacked drawer UI
  */
 function updateWorkExperienceTimeline(workExperienceData) {
-    console.log('🔍 DEBUG: updateWorkExperienceTimeline called with data:', workExperienceData);
+    console.log('Creating drawer UI for work experience:', workExperienceData);
     
-    // Get the timeline container
-    const timelineContainer = document.querySelector('.timeline-vertical');
-    if (!timelineContainer) {
-        console.error('❌ ERROR: Timeline container (.timeline-vertical) not found in the DOM');
+    const container = document.getElementById('experience-drawers-container');
+    if (!container) {
+        console.error('Experience drawers container (#experience-drawers-container) not found.');
         return;
     }
     
-    console.log('✅ Found timeline container:', timelineContainer);
+    container.innerHTML = ''; // Clear previous content (e.g., old timeline)
     
-    // Clear existing timeline items
-    timelineContainer.innerHTML = '';
-    
-    // Check if we have valid data
     if (!workExperienceData || !Array.isArray(workExperienceData) || workExperienceData.length === 0) {
-        console.error('❌ ERROR: No valid work experience data to display:', workExperienceData);
-        // Add a placeholder item for debugging
-        timelineContainer.innerHTML = `
-            <div class="timeline-item timeline-item-debug">
-                <div class="timeline-marker"></div>
-                <div class="timeline-content">
-                    <h3 class="job-title">Debug: No Timeline Data</h3>
-                    <h4 class="company-info">Check Lambda Function | Debug Mode</h4>
-                    <p class="timeline-description">No work experience data was received from the API. Check the Lambda function response and ensure work_experience array is included.</p>
-                </div>
-            </div>
-        `;
+        console.warn('No work experience data provided. Displaying placeholder.');
+        container.innerHTML = '<p>No work experience details available at this time.</p>'; 
         return;
     }
     
-    console.log(`✅ Processing ${workExperienceData.length} work experience items`);
-    
-    // Sort work experience by from_date (most recent first)
-    const sortedWorkExperience = [...workExperienceData].sort((a, b) => {
-        // Compare dates (assuming format is YYYY-MM-DD)
-        const dateA = new Date(a.from_date || '2000-01-01');
-        const dateB = new Date(b.from_date || '2000-01-01');
-        return dateB - dateA; // Most recent first
+    // Sort by date (most recent first)
+    const sortedExperience = [...workExperienceData].sort((a, b) => {
+        const dateA = new Date(a.from_date || '1970-01-01');
+        const dateB = new Date(b.from_date || '1970-01-01');
+        return dateB - dateA;
     });
-    
-    // Add timeline items
-    sortedWorkExperience.forEach((experience, index) => {
-        console.log(`📋 Processing experience #${index}:`, experience);
+
+    const totalItems = sortedExperience.length;
+    const colorSchemes = [
+        'color-0', // olive green
+        'color-1', // terracotta
+        'color-2', // slate blue
+        'color-3', // golden
+        'color-4'  // taupe
+    ];
+
+    sortedExperience.forEach((exp, index) => {
+        const drawer = document.createElement('div');
+        drawer.classList.add('experience-drawer', colorSchemes[index % colorSchemes.length]);
+        drawer.style.zIndex = totalItems - index; // Stacking order
         
-        // Debug each field to identify issues
-        Object.keys(experience).forEach(key => {
-            console.log(`  - ${key}: ${experience[key]}`);
-        });
-        
-        const jobTitle = experience.job_title || '';
-        const company = experience.company_name || '';
-        const location = experience.location || '';
-        const description = experience.description || '';
-        
-        console.log(`  → Using job title: "${jobTitle}", company: "${company}"`);
-        
-        // Format the period string
-        let period = '';
-        if (experience.from_date) {
-            const fromDate = new Date(experience.from_date);
+        // Format dates
+        let dateString = 'Date N/A';
+        if (exp.from_date) {
+            const fromDate = new Date(exp.from_date);
             const fromMonth = fromDate.toLocaleString('default', { month: 'short' });
             const fromYear = fromDate.getFullYear();
             
-            period = `${fromMonth} ${fromYear} - `;
-            
-            if (experience.is_current) {
-                period += 'Present';
-            } else if (experience.to_date) {
-                const toDate = new Date(experience.to_date);
+            if (exp.is_current) {
+                dateString = `${fromMonth} ${fromYear} - Present`;
+            } else if (exp.to_date) {
+                const toDate = new Date(exp.to_date);
                 const toMonth = toDate.toLocaleString('default', { month: 'short' });
                 const toYear = toDate.getFullYear();
-                period += `${toMonth} ${toYear}`;
+                dateString = `${fromMonth} ${fromYear} - ${toMonth} ${toYear}`;
+            } else {
+                dateString = `${fromMonth} ${fromYear} - Date N/A`;
             }
         }
         
-        // Create the timeline item
-        const timelineItem = document.createElement('div');
-        timelineItem.className = `timeline-item ${index % 2 === 0 ? 'timeline-item-left' : 'timeline-item-right'}`;
-        timelineItem.setAttribute('data-aos', index % 2 === 0 ? 'fade-right' : 'fade-left');
-        
-        timelineItem.innerHTML = `
-            <div class="timeline-marker"></div>
-            <div class="timeline-content">
-                <h3 class="job-title">${jobTitle}</h3>
-                <h4 class="company-info">${company} ${location ? `| ${location}` : ''}</h4>
-                <span class="date">${period}</span>
-                <p class="timeline-description">${description}</p>
+        // Create description list (assuming description is newline-separated)
+        let descriptionHtml = '';
+        if (exp.description) {
+            const descriptionItems = exp.description.split('\n').filter(item => item.trim() !== '');
+            descriptionHtml = `<ul>${descriptionItems.map(item => `<li>${item.trim()}</li>`).join('')}</ul>`;
+        }
+
+        drawer.innerHTML = `
+            <div class=\"drawer-header\">
+                <div class=\"drawer-date\">${dateString}</div>
+                <div class=\"drawer-title-company\">
+                    <h3>${exp.job_title || 'N/A'}</h3>
+                    <p>${exp.company_name || 'N/A'}</p>
+                </div>
+                <div class=\"drawer-location\">${exp.location || 'Remote'}</div>
+            </div>
+            <div class=\"drawer-description\">
+                ${descriptionHtml}
             </div>
         `;
+
+        // Add click listener to toggle expansion
+        drawer.addEventListener('click', () => {
+            // If already expanded, do nothing on click (user must click another)
+            if (drawer.classList.contains('expanded')) {
+                return;
+            }
+
+            // Close any other expanded drawers
+            const currentlyExpanded = container.querySelector('.experience-drawer.expanded');
+            if (currentlyExpanded && currentlyExpanded !== drawer) {
+                currentlyExpanded.classList.remove('expanded');
+                // Reset z-index based on original position
+                const originalIndex = Array.from(container.children).indexOf(currentlyExpanded);
+                currentlyExpanded.style.zIndex = totalItems - originalIndex;
+            }
+            
+            // Expand the clicked drawer
+            drawer.classList.add('expanded');
+            // Bring to front (CSS already handles this with !important, but setting it can be backup)
+            // drawer.style.zIndex = totalItems + 1; 
+        });
         
-        timelineContainer.appendChild(timelineItem);
+        container.appendChild(drawer);
     });
-    
-    console.log('✅ Timeline updated successfully with', sortedWorkExperience.length, 'items');
-    
-    // Initialize AOS for new elements if AOS is available
-    if (typeof AOS !== 'undefined' && AOS.refresh) {
-        AOS.refresh();
-        console.log('✅ AOS refresh called for animations');
-    } else {
-        console.warn('⚠️ AOS not available, animations may not work');
-    }
+
+    console.log('Finished creating drawer UI.');
 }

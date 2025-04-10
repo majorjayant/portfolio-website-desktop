@@ -1755,4 +1755,167 @@ footer {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* ============================================= */
+/*          Experience Drawers Section           */
+/* ============================================= */
+
+.experience-drawers {
+    padding-top: 40px; /* Add some space above the drawers */
+    padding-bottom: 60px; /* Extra space at the bottom */
+}
+
+.experience-drawer {
+    position: relative;
+    border-radius: 15px; /* Matches reference */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); 
+    margin-bottom: -20px; /* Overlap effect */
+    padding: 1.5rem; /* 24px padding */
+    color: #ffffff; /* Default text color, assuming backgrounds are dark enough */
+    cursor: pointer;
+    overflow: hidden;
+    height: 100px; /* Initial collapsed height */
+    transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1), /* Smooth height change */
+                transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1.0), /* Smooth transform */
+                margin-bottom 0.5s ease; /* Smooth margin change for expansion */
+    transform-origin: bottom center;
+}
+
+.experience-drawer.expanded {
+    height: auto; /* Auto height when expanded */
+    min-height: 100px; /* Ensure it doesn't collapse too small */
+    cursor: default;
+    z-index: 100 !important; /* Bring expanded card to front */
+    margin-bottom: 15px; /* Add space below when expanded */
+    transform: scale(1.01); /* Slight scale increase when expanded */
+}
+
+/* Color scheme */
+.experience-drawer.color-0 { background-color: #9A9A78; } /* olive green */
+.experience-drawer.color-1 { background-color: #C26E4E; } /* terracotta */
+.experience-drawer.color-2 { background-color: #8A9AA9; } /* slate blue */
+.experience-drawer.color-3 { background-color: #E0A458; } /* golden */
+.experience-drawer.color-4 { background-color: #BEB699; } /* taupe */
+
+/* Content inside the drawer */
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 68px; /* 100px total height - 2*1.5rem padding */
+    transition: opacity 0.3s ease;
+}
+
+.drawer-date {
+    flex: 0 0 150px; /* Fixed width for date */
+    text-align: left;
+    font-weight: 600;
+}
+
+.drawer-title-company {
+    flex-grow: 1;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.drawer-title-company h3 {
+    font-size: 1.5rem; /* 24px */
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+    color: inherit;
+}
+
+.drawer-title-company p {
+    font-size: 1.125rem; /* 18px */
+    margin: 0;
+    color: inherit;
+    opacity: 0.9;
+}
+
+.drawer-location {
+    flex: 0 0 150px; /* Fixed width for location */
+    text-align: right;
+    font-weight: 600;
+}
+
+/* Description section */
+.drawer-description {
+    margin-top: 1.5rem; /* Space above description */
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3); /* Separator */
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
+    will-change: max-height, opacity;
+    color: inherit; /* Inherit text color */
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.experience-drawer.expanded .drawer-description {
+    max-height: 500px; /* Allow description to expand */
+    opacity: 1;
+}
+
+.drawer-description ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.drawer-description li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.drawer-description li::before {
+    content: '\2022'; /* Bullet point */
+    display: inline-block;
+    margin-right: 0.75em;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .experience-drawer {
+        padding: 1rem;
+        height: 120px; /* Slightly taller for mobile */
+        margin-bottom: -15px;
+    }
+    .experience-drawer.expanded {
+        min-height: 120px;
+    }
+    .drawer-header {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        gap: 0.5rem;
+    }
+    .drawer-date, .drawer-location {
+        flex-basis: auto;
+        width: 100%;
+        text-align: left;
+        font-size: 0.9rem;
+    }
+    .drawer-location {
+        order: 3; /* Move location below title */
+    }
+    .drawer-title-company {
+        text-align: left;
+        padding: 0;
+        order: 2; /* Title comes second */
+    }
+    .drawer-title-company h3 {
+        font-size: 1.25rem;
+    }
+    .drawer-title-company p {
+        font-size: 1rem;
+    }
+    .drawer-description {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
 } 
