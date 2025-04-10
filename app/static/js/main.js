@@ -451,6 +451,14 @@ function updateWorkExperienceTimeline(workExperienceData) {
     // Fix background color in case CSS is not applied properly
     experienceSection.style.backgroundColor = '#f8f8f8';
     
+    // Update section title to match requirements
+    const sectionTitle = experienceSection.querySelector('.section-title');
+    if (sectionTitle) {
+        sectionTitle.textContent = "Professional Experience";
+        sectionTitle.style.color = '#333333';
+        sectionTitle.style.textAlign = 'left';
+    }
+    
     // Get the container for the drawers
     const drawersContainer = document.querySelector('.experience-drawers');
     if (!drawersContainer) {
@@ -529,11 +537,9 @@ function updateWorkExperienceTimeline(workExperienceData) {
         `;
         drawer.appendChild(headerContent);
         
-        // Create description container - NOT using innerHTML for this part
+        // Create description container
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'drawer-description';
-        // Remove inline style that might be causing issues
-        // descriptionContainer.style.display = 'none';
         
         // Create description content
         const descriptionContent = document.createElement('div');
@@ -561,7 +567,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 skillsContainer.appendChild(skillTag);
             });
             
-            // Append skills directly to description content
+            // Append skills to description content
             descriptionContent.appendChild(skillsContainer);
         }
         
@@ -645,23 +651,15 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 drawer.classList.add('active');
                 const description = drawer.querySelector('.drawer-description');
                 if (description) {
-                    // Add a slight delay before showing the description to ensure proper rendering
-                    setTimeout(() => {
-                        // Force display block style
-                        description.style.display = 'block';
-                        description.style.visibility = 'visible';
-                        description.style.overflow = 'visible';
-                        description.style.height = 'auto';
-                        description.style.maxHeight = '2000px';
-                        
-                        // Force repaint to ensure visibility
-                        void description.offsetWidth;
-                        
-                        // Log for debugging
-                        console.log('Showing description:', description);
-                        console.log('Description innerHTML:', description.innerHTML);
-                        console.log('Description display style:', description.style.display);
-                    }, 50);
+                    // Show the description immediately with improved visibility
+                    description.style.display = 'block';
+                    description.style.visibility = 'visible';
+                    description.style.overflow = 'visible';
+                    description.style.height = 'auto';
+                    description.style.opacity = '1';
+                    
+                    // Force browser reflow to ensure styles are applied
+                    void description.offsetWidth;
                 }
             }
         });

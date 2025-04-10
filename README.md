@@ -26,6 +26,12 @@ The codebase has undergone several important improvements to enhance maintainabi
    - Improved image loading with fallback paths
    - Enhanced error notifications for user experience
 
+5. **Work Experience Timeline Enhancement**:
+   - Fixed description and skills visibility issues in work experience cards
+   - Improved positioning to avoid overlap with other sections
+   - Enhanced color scheme and visual presentation of timeline sections
+   - Ensured proper display of skills extracted from descriptions
+
 To use this improved codebase:
 
 1. Set up AWS resources as described in the deployment section
@@ -38,6 +44,40 @@ To use this improved codebase:
 - **Admin Dashboard**: Located at `app/static/admin/dashboard.html` for managing site content.
 - **Backend**: AWS Lambda function in the `lambda-no-mysql` directory (using MySQL for storage via RDS). Implements soft delete for work experience items using an `is_deleted` flag in the database.
 - **Database**: MySQL database on AWS RDS (configuration in the Lambda function and `.env`). Assumes `workex` table includes `is_deleted` (TINYINT DEFAULT 0), `created_date` (DATETIME/TIMESTAMP), `updated_date` (DATETIME/TIMESTAMP) columns.
+
+## Work Experience Implementation
+
+The work experience timeline implementation has several key features:
+
+1. **Data Structure**:
+   - Each entry contains: job title, company, location, date range, description, and auto-extracted skills
+   - Supports both current jobs and past positions with proper date formatting
+   - Uses soft delete pattern via `is_deleted` flag in database
+
+2. **Admin Dashboard Controls**:
+   - Add/edit/delete experience entries via intuitive form interface
+   - Form validation ensures required fields (job title, company) are completed
+   - Soft delete functionality marks items for deletion without immediate removal
+   - Rich text description field supports formatting
+
+3. **Frontend Display**:
+   - Interactive timeline with expandable cards showing job details
+   - Color-coded entries with consistent brown/beige color scheme
+   - Staggered animations for visual appeal on page load
+   - Hover effects with lighting and card stacking for depth
+   - Click interactions to expand/collapse detailed descriptions
+
+4. **Visual Effects**:
+   - Mouse-following lighting effect inside each card
+   - Card stacking effect on hover for visual depth
+   - Automatic skills extraction with tag display
+   - Responsive design that adapts to different screen sizes
+
+5. **Technical Implementation**:
+   - JavaScript dynamically creates DOM elements for each work experience
+   - CSS transitions and transforms for smooth animations
+   - Intersection Observer API for scroll-based animations
+   - Skills extraction with RegExp pattern matching
 
 ## Key Files
 

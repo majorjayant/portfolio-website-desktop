@@ -490,7 +490,8 @@ header {
   padding: 60px 0;
   overflow: hidden;
   z-index: 30;
-  margin-top: 3rem;
+  margin-top: 240px; /* Increased from 3rem to 240px to move section down */
+  position: relative;
 }
 
 /* Decorative elements - remove or set to 0 opacity */
@@ -501,7 +502,7 @@ header {
 }
 
 .experience-section .section-title {
-  color: #3a3a3a;
+  color: #333333; /* Darker color for better visibility */
   text-align: left; /* Align left instead of center */
   margin-bottom: 4rem;
   margin-left: 1rem; /* Add left margin */
@@ -529,7 +530,7 @@ header {
   padding: 2rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden to visible to ensure description can be seen */
   cursor: pointer;
   transform-origin: center top;
   backface-visibility: hidden;
@@ -667,18 +668,23 @@ header {
   position: relative;
   color: #555;
   line-height: 1.6;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.5s ease-in-out;
+  overflow: visible !important; /* Force visibility */
   border-top: 1px solid rgba(108, 88, 76, 0.2);
   padding: 0;
   margin: 0;
+  display: none; /* Initially hidden, will be shown on click */
+}
+
+.description-content {
+  padding-top: 1.5rem;
+  display: block;
+  visibility: visible !important;
 }
 
 .experience-drawer.active .drawer-description {
   display: block !important;
   visibility: visible !important;
-  max-height: 2000px !important;
+  max-height: none !important; /* Remove max-height constraint */
   padding-top: 1.5rem !important;
   margin-top: 0.5rem !important;
   overflow: visible !important;
@@ -704,6 +710,7 @@ header {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 1.5rem;
+  visibility: visible !important;
 }
 
 .skill-tag {
