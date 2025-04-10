@@ -444,20 +444,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
         return;
     }
     
-    // Add decorative elements - only if they don't already exist
-    if (!experienceSection.querySelector('.decoration-1')) {
-        const decoration1 = document.createElement('div');
-        decoration1.className = 'decoration-1';
-        experienceSection.appendChild(decoration1);
-    }
-    
-    if (!experienceSection.querySelector('.decoration-2')) {
-        const decoration2 = document.createElement('div');
-        decoration2.className = 'decoration-2';
-        experienceSection.appendChild(decoration2);
-    }
-    
-    // Get the container for the drawers - use existing title instead of creating a new one
+    // Get the container for the drawers
     const drawersContainer = document.querySelector('.experience-drawers');
     if (!drawersContainer) {
         console.error('Experience drawers container not found');
@@ -522,7 +509,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
         const location = experience.location || 'Remote';
         const description = experience.description || '';
         
-        // Create drawer content with improved structure
+        // Create drawer content with improved structure - remove suitcase icon from date, add to title
         drawer.innerHTML += `
             <div class="drawer-header">
                 <div class="drawer-date">${dateString}</div>
@@ -532,7 +519,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 </div>
                 <div class="drawer-location">${location}</div>
             </div>
-            <div class="drawer-description">
+            <div class="drawer-description" style="display: none;">
                 <div class="description-content">${description}</div>
             </div>
         `;
@@ -619,21 +606,19 @@ function updateWorkExperienceTimeline(workExperienceData) {
         
         // Toggle active state on click
         drawer.addEventListener('click', () => {
+            // Check if this drawer is currently active
             const wasActive = drawer.classList.contains('active');
             
-            // First close all drawers
+            // Close all drawers first
             drawers.forEach(d => {
                 d.classList.remove('active');
                 const desc = d.querySelector('.drawer-description');
                 if (desc) {
                     desc.style.display = 'none';
-                    setTimeout(() => {
-                        desc.style.removeProperty('display');
-                    }, 50);
                 }
             });
             
-            // Then toggle this drawer (if it wasn't active before)
+            // If this drawer wasn't active before, make it active
             if (!wasActive) {
                 drawer.classList.add('active');
                 const description = drawer.querySelector('.drawer-description');
