@@ -444,6 +444,9 @@ function updateWorkExperienceTimeline(workExperienceData) {
         return;
     }
     
+    // Fix background color in case CSS is not applied properly
+    experienceSection.style.backgroundColor = '#f8f8f8';
+    
     // Get the container for the drawers
     const drawersContainer = document.querySelector('.experience-drawers');
     if (!drawersContainer) {
@@ -509,23 +512,35 @@ function updateWorkExperienceTimeline(workExperienceData) {
         const location = experience.location || 'Remote';
         const description = experience.description || '';
         
-        // Create drawer content with improved structure - remove suitcase icon from date, add to title
-        drawer.innerHTML += `
-            <div class="drawer-header">
-                <div class="drawer-date">${dateString}</div>
-                <div class="drawer-title-company">
-                    <h3>${jobTitle}</h3>
-                    <p>${company}</p>
-                </div>
-                <div class="drawer-location">${location}</div>
+        // Create header content
+        const headerContent = document.createElement('div');
+        headerContent.className = 'drawer-header';
+        headerContent.innerHTML = `
+            <div class="drawer-date">${dateString}</div>
+            <div class="drawer-title-company">
+                <h3>${jobTitle}</h3>
+                <p>${company}</p>
             </div>
-            <div class="drawer-description">
-                <div class="description-content"></div>
-            </div>
+            <div class="drawer-location">${location}</div>
         `;
+        drawer.appendChild(headerContent);
         
-        // Set the description content properly to handle HTML
-        drawer.querySelector('.description-content').innerHTML = description;
+        // Create description container - NOT using innerHTML for this part
+        const descriptionContainer = document.createElement('div');
+        descriptionContainer.className = 'drawer-description';
+        // Remove inline style that might be causing issues
+        // descriptionContainer.style.display = 'none';
+        
+        // Create description content
+        const descriptionContent = document.createElement('div');
+        descriptionContent.className = 'description-content';
+        
+        // Set innerHTML for description - this preserves HTML formatting
+        descriptionContent.innerHTML = description;
+        
+        // Append content to container
+        descriptionContainer.appendChild(descriptionContent);
+        drawer.appendChild(descriptionContainer);
         
         // Extract potential skills from the description
         let skills = extractSkillsFromDescription(description);
@@ -542,8 +557,8 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 skillsContainer.appendChild(skillTag);
             });
             
-            // Append skills after description content
-            drawer.querySelector('.description-content').appendChild(skillsContainer);
+            // Append skills directly to description content
+            descriptionContent.appendChild(skillsContainer);
         }
         
         // Add to container
@@ -608,20 +623,42 @@ function updateWorkExperienceTimeline(workExperienceData) {
         });
         
         // Toggle active state on click
-        drawer.addEventListener('click', () => {
+        drawer.addEventListener('click', function() {
             // Check if this drawer is currently active
             const wasActive = drawer.classList.contains('active');
             
             // Close all drawers first
             drawers.forEach(d => {
                 d.classList.remove('active');
+                const desc = d.querySelector('.drawer-description');
+                if (desc) {
+                    desc.style.display = 'none';
+                }
             });
             
             // If this drawer wasn't active before, make it active
             if (!wasActive) {
                 drawer.classList.add('active');
-                // Force browser reflow to properly render the drawer content
-                drawer.offsetHeight;
+                const description = drawer.querySelector('.drawer-description');
+                if (description) {
+                    // Add a slight delay before showing the description to ensure proper rendering
+                    setTimeout(() => {
+                        // Force display block style
+                        description.style.display = 'block';
+                        description.style.visibility = 'visible';
+                        description.style.overflow = 'visible';
+                        description.style.height = 'auto';
+                        description.style.maxHeight = '2000px';
+                        
+                        // Force repaint to ensure visibility
+                        void description.offsetWidth;
+                        
+                        // Log for debugging
+                        console.log('Showing description:', description);
+                        console.log('Description innerHTML:', description.innerHTML);
+                        console.log('Description display style:', description.style.display);
+                    }, 50);
+                }
             }
         });
     });
