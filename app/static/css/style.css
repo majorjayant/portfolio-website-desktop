@@ -25,14 +25,11 @@
   box-sizing: border-box;
 }
 
-/* Apply a consistent background for the whole page */
 body {
-  background-color: #f8f8f8;
-  color: #333;
   font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
   line-height: 1.6;
+  color: var(--text-dark);
+  background-color: var(--background-light);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -64,27 +61,20 @@ img {
 }
 
 .section-title {
-  position: relative;
-  z-index: 5;
-  margin-bottom: 2.5rem;
-  display: block;
-  color: #ffffff;
-  font-family: 'Nexa Light', 'Inter', sans-serif;
-  text-align: left;
   font-size: 2rem;
-  padding-left: 50px;
-  font-weight: 500;
+  margin-bottom: 2rem;
+  position: relative;
+  display: inline-block;
 }
 
 .section-title:after {
   content: '';
   position: absolute;
   bottom: -10px;
-  left: 50px;
-  transform: none;
+  left: 0;
   width: 50px;
   height: 3px;
-  background-color: #d1b38a;
+  background-color: var(--accent-color);
 }
 
 .highlight {
@@ -496,826 +486,397 @@ header {
 
 /* ===== Experience Section ===== */
 .experience-section {
-  padding: 50px 20px 100px;
-  position: relative;
-  background-color: transparent;
-  z-index: 2;
+  background-color: var(--background-light); /* Change to match site theme */
+  padding: 80px 0 60px; /* Increased top padding to move section down */
+  margin-top: 30px; /* Add margin to create more space from carousel */
 }
 
 .experience-section .section-title {
   position: relative;
   z-index: 5;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   display: block;
-  color: var(--text-dark); /* Changed from #ffffff to dark text */
-  text-align: left; /* Changed from center to left */
-  font-size: 2rem; /* Adjusted size for consistency */
-  padding-left: 50px; /* Keep existing padding */
+  color: var(--text-dark); /* Change to match theme */
+  text-align: left; /* Left align the title */
+  margin-left: 20px; /* Add some margin from the left edge */
+}
+
+.experience-section .section-title:after {
+  left: 0; /* Ensure the title underline is aligned with left-aligned text */
+}
+
+/* Vertical Timeline Styles */
+.timeline-vertical {
+  position: relative;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Center line */
+.timeline-vertical::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  background-color: var(--accent-color);
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  margin-left: -2px;
+  border-radius: 2px;
+}
+
+/* Container for timeline items */
+.timeline-item {
+  position: relative;
+  width: 50%;
+  padding: 0 2.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Left and right timeline items */
+.timeline-item-left {
+  left: 0;
+}
+
+.timeline-item-right {
+  left: 50%;
+}
+
+/* Timeline markers */
+.timeline-marker {
+  position: absolute;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.timeline-item-left .timeline-marker {
+  right: -10px;
+}
+
+.timeline-item-right .timeline-marker {
+  left: -10px;
+}
+
+/* Arrow pointers */
+.timeline-content {
+  position: relative;
+  padding: 1.5rem;
+  background-color: var(--background-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.timeline-content::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+}
+
+.timeline-item-left .timeline-content::before {
+  right: -20px;
+  border-left-color: var(--background-light);
+}
+
+.timeline-item-right .timeline-content::before {
+  left: -20px;
+  border-right-color: var(--background-light);
+}
+
+/* Timeline content styling */
+.timeline-content .job-title {
+  color: var(--primary-color);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content .company-info {
+  color: var(--accent-color);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.timeline-content .date {
+  display: block;
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content .timeline-description {
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Hover effects */
+.timeline-item:hover .timeline-marker {
+  transform: scale(1.3);
+  background-color: var(--menu-hover);
+}
+
+.timeline-item:hover .timeline-content {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Debug styles */
+.timeline-item-debug .timeline-content {
+  background-color: #fff9c4;
+  border: 1px dashed #fbc02d;
+}
+
+.timeline-item-debug .timeline-content::before {
+  border-left-color: #fff9c4;
+  border-right-color: #fff9c4;
+}
+
+/* Responsive adjustments for timeline */
+@media (max-width: 768px) {
+  .timeline-vertical::after {
+    left: 40px;
+  }
+
+  .timeline-item {
+    width: 100%;
+    padding-left: 70px;
+    padding-right: 25px;
+  }
+
+  .timeline-item-left,
+  .timeline-item-right {
+    left: 0;
+  }
+
+  .timeline-item-left .timeline-marker,
+  .timeline-item-right .timeline-marker {
+    left: 30px;
+    right: auto;
+  }
+
+  .timeline-item-left .timeline-content::before,
+  .timeline-item-right .timeline-content::before {
+    left: -20px;
+    right: auto;
+    border-right-color: var(--background-light);
+    border-left-color: transparent;
+  }
+  
+  .timeline-item-debug .timeline-content::before {
+    border-right-color: #fff9c4;
+    border-left-color: transparent;
+  }
+}
+
+/* Container for horizontal scrolling */
+.storyboard-container {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: hidden; /* Hide vertical scrollbar */
+  white-space: nowrap; /* Prevent items from wrapping */
+  padding: 1.5rem 0 1.5rem 5px; /* Padding for visual spacing and scrollbar room */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--menu-hover) var(--background-light); /* Firefox - thumb track */
+}
+
+/* Webkit scrollbar styling */
+.storyboard-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.storyboard-container::-webkit-scrollbar-track {
+  background: var(--background-light); 
+  border-radius: 4px;
+}
+
+.storyboard-container::-webkit-scrollbar-thumb {
+  background-color: var(--menu-hover); 
+  border-radius: 4px;
+  border: 2px solid var(--background-light); 
+}
+
+/* Track containing the cards */
+.storyboard-track {
+  display: inline-flex; /* Use inline-flex for nowrap behavior */
+  gap: 1.5rem; /* Space between cards */
+}
+
+/* Individual experience card */
+.storyboard-card {
+  display: inline-block; /* Required for nowrap */
+  flex-shrink: 0; /* Prevent cards from shrinking */
+  width: 350px; /* Fixed width for cards */
+  background: var(--background-light); /* Use light background */
+  border-radius: 10px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  white-space: normal; /* Allow text inside card to wrap */
+  vertical-align: top; /* Align cards to the top */
+}
+
+.storyboard-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.storyboard-card .card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Optional logo styling 
+.storyboard-card .company-logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 1rem;
+  border-radius: 50%;
+  object-fit: contain;
+}*/
+
+.storyboard-card .job-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.25rem;
+}
+
+.storyboard-card .company-info {
+  font-size: 0.9rem;
+  color: var(--accent-color); 
+  margin-bottom: 1rem;
   font-weight: 500;
 }
 
-/* Remove the centered :after rule */
-/*
-.experience-section .section-title:after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50px;
-  height: 3px;
-  background-color: #d1b38a;
-} 
-*/
-
-/* Add the left-aligned :after rule */
-.experience-section .section-title:after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50px; /* Align with padding */
-  transform: none;
-  width: 50px;
-  height: 3px;
-  background-color: #d1b38a;
-}
-
-.experience-drawers {
-    padding-top: 40px;
-    padding-bottom: 120px; /* Increased to accommodate the stacked cards */
-    perspective: 1200px;
-    position: relative;
-    /* max-width: 1100px; Remove fixed max-width to allow full width */
-    width: 100%; /* Ensure container uses full width */
-    margin: 0 auto;
-}
-
-.experience-drawer {
-    position: relative;
-    border-radius: 24px;
-    margin-bottom: -60px; /* Creates the stacked effect */
-    height: 150px; /* Increased height */
-    overflow: hidden;
-    cursor: pointer;
-    padding: 24px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); /* Slowed down to 1s */
-    z-index: 1;
-    transform: translateZ(0);
-    transform-origin: center top;
-    background-color: rgba(108, 88, 76, 0.9); /* Base color with transparency */
-    color: var(--text-light); /* Default text color for dark backgrounds */
-    width: 100%; /* Ensure drawer takes full width */
-    box-sizing: border-box; /* Include padding in width calculation */
-}
-
-.experience-drawer:hover, 
-.experience-drawer.active {
-    height: auto;
-    min-height: 300px; /* Increased min-height */
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
-    transform: scale(1.02); /* Slight scale up on hover */
-    z-index: 30 !important;
-}
-
-.experience-drawer .drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.experience-drawer .drawer-date {
-    font-size: 14px;
-    color: #6c584c;
-    font-weight: 600;
-    width: 25%;
-    text-align: left;
-}
-
-.experience-drawer .drawer-title-company {
-    flex-grow: 1;
-    text-align: center;
-    width: 50%;
-}
-
-.experience-drawer .drawer-title-company h3 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-    /* color: #333; Inherit color */
-    margin-bottom: 6px;
-}
-
-.experience-drawer .drawer-title-company p {
-    margin: 0;
-    font-size: 16px;
-    /* color: #555; Inherit color */
-}
-
-.experience-drawer .drawer-location {
-    font-size: 14px;
-    /* color: #6c584c; Inherit color */
-    font-weight: 600;
-    width: 25%;
-    text-align: right;
-}
-
-.experience-drawer .drawer-description {
-    opacity: 0;
-    height: 0;
-    transform: translateY(20px);
-    transition: opacity 1s ease 0.3s, transform 1s ease 0.3s, height 1s ease;
-    font-size: 14px;
-    /* color: #444; Inherit color */
-    line-height: 1.6;
-    overflow: hidden;
-    margin-top: 16px;
-}
-
-.experience-drawer:hover .drawer-description,
-.experience-drawer.active .drawer-description {
-    opacity: 1;
-    height: auto;
-    transform: translateY(0);
-}
-
-.experience-drawer .drawer-description p {
-    margin: 10px 0;
-}
-
-.experience-drawer .drawer-description ul {
-    padding-left: 20px;
-    margin: 10px 0;
-}
-
-.experience-drawer .drawer-description li {
-    margin-bottom: 8px;
-}
-
-/* Color classes with the specified hex values and transparency */
-.color-1 {
-    background-color: rgba(108, 88, 76, 0.9); /* #6c584c with transparency */
-    color: var(--text-light); /* Explicitly set light text */
-}
-
-.color-2 {
-    background-color: rgba(163, 133, 102, 0.9); /* #a38566 with transparency */
-    color: var(--text-light); /* Explicitly set light text */
-}
-
-.color-3 {
-    background-color: rgba(209, 179, 138, 0.9); /* #d1b38a with transparency */
-    color: var(--text-light); /* Explicitly set light text */
-}
-
-.color-4 {
-    background-color: rgba(233, 218, 193, 0.9); /* #e9dac1 with transparency */
-    color: var(--text-dark); /* Explicitly set dark text */
-}
-
-/* Remove redundant rules inside color-4 block */
-/*
-.color-4 .drawer-title-company h3,
-.color-4 .drawer-title-company p,
-.color-4 .drawer-date,
-.color-4 .drawer-location,
-.color-4 .drawer-description {
-    color: rgba(0, 0, 0, 0.8);
-}
-*/
-
-@media screen and (max-width: 768px) {
-    .experience-drawer {
-        height: 140px;
-        padding: 20px;
-        margin-bottom: -40px; /* Less overlap on mobile */
-    }
-    
-    .experience-drawer:hover {
-        /* Remove hover effect on mobile */
-        transform: none;
-        height: 140px;
-        min-height: auto;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    .experience-drawer.active {
-        height: auto;
-        min-height: 300px;
-        transform: scale(1.02);
-        z-index: 100 !important;
-        margin-bottom: 16px;
-    }
-    
-    .experience-drawer .drawer-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .experience-drawer .drawer-date {
-        margin-bottom: 8px;
-        width: 100%;
-    }
-    
-    .experience-drawer .drawer-title-company {
-        padding: 0;
-        margin-bottom: 8px;
-        width: 100%;
-        text-align: left;
-    }
-    
-    .experience-drawer .drawer-location {
-        align-self: flex-start;
-        width: 100%;
-        text-align: left;
-    }
-
-    .experience-drawer .drawer-description {
-        display: none;
-    }
-
-    .experience-drawer.active .drawer-description {
-        display: block;
-    }
-}
-
-/* Make sure the "Career Journey" header is above other elements */
-.experience-section {
-    background-color: #f8f8f8; /* Use light background from root */
-    padding: 60px 0;
-}
-
-.experience-section .section-title {
-    position: relative;
-    z-index: 5;
-    margin-bottom: 2rem;
-    display: block;
-    color: #ffffff;
-    text-align: center;
-} 
-
-/* ===== Section Background Elements ===== */
-.section {
-  position: relative;
-  overflow: hidden;
-  background-color: transparent;
-}
-
-.section-background {
-  display: none; /* Hide individual section backgrounds */
-}
-
-.blur-element {
-  display: none; /* Hide blur elements for consistent background */
-}
-
-.experience-section .blur-element.blur-1 {
-  background-color: rgba(108, 88, 76, 0.8);
-  width: 300px;
-  height: 300px;
-  top: 10%;
-  left: 5%;
-}
-
-.experience-section .blur-element.blur-2 {
-  background-color: rgba(209, 179, 138, 0.8);
-  width: 400px;
-  height: 400px;
-  bottom: 15%;
-  right: 5%;
-}
-
-.education-section .blur-element.blur-1 {
-  background-color: rgba(108, 88, 76, 0.8);
-  width: 350px;
-  height: 350px;
-  top: 15%;
-  right: 10%;
-}
-
-.education-section .blur-element.blur-2 {
-  background-color: rgba(163, 133, 102, 0.8);
-  width: 300px;
-  height: 300px;
-  bottom: 10%;
-  left: 8%;
-}
-
-.certifications-section .blur-element.blur-1 {
-  background-color: rgba(90, 80, 110, 0.8);
-  width: 400px;
-  height: 400px;
-  top: 5%;
-  left: 10%;
-}
-
-.certifications-section .blur-element.blur-2 {
-  background-color: rgba(150, 140, 190, 0.8);
-  width: 300px;
-  height: 300px;
-  bottom: 5%;
-  right: 10%;
+.storyboard-card .card-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555;
 }
 
 /* ===== Education Section ===== */
 .education-section {
-  background-color: transparent;
-  padding: 80px 0 100px;
-  position: relative;
-  overflow: hidden;
+  padding: 4rem 0;
+  background-color: #fff;
 }
 
-.education-section .section-title {
-  font-size: 3rem;
-  font-weight: 500;
-  color: #333;
-  padding-left: 50px;
-  margin-bottom: 3rem;
-  text-align: left;
+.education-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
 }
 
-.education-section .section-title:after {
-  left: 50px;
-  margin-left: 0;
-}
-
-/* Background decorative elements */
-.education-section::before {
-  content: '';
-  position: absolute;
-  top: 10%;
-  left: 5%;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background-color: rgba(108, 88, 76, 0.1);
-  filter: blur(80px);
-  z-index: 1;
-}
-
-.education-section::after {
-  content: '';
-  position: absolute;
-  bottom: 20%;
-  right: 10%;
-  width: 350px;
-  height: 350px;
-  border-radius: 50%;
-  background-color: rgba(163, 133, 102, 0.1);
-  filter: blur(80px);
-  z-index: 1;
-}
-
-.education-drawers {
-  padding-top: 40px;
-  padding-bottom: 120px;
-  position: relative;
-  max-width: 900px;
-  margin: 0 auto;
-  z-index: 5;
-}
-
-/* Skeleton background effect */
-.education-drawers:before,
-.education-drawers:after {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
-  background-color: rgba(26, 26, 26, 0.3);
-  border-radius: 24px;
-  z-index: -1;
-}
-
-.education-drawers:before {
-  transform: rotate(1deg) scale(1.05);
-}
-
-.education-drawers:after {
-  transform: rotate(-1deg) scale(1.05);
-}
-
-.education-drawer {
-  position: relative;
-  border-radius: 24px;
-  margin-bottom: -60px;
-  height: 150px; /* Increased height */
-  overflow: hidden;
-  cursor: pointer;
-  padding: 24px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-  transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-  z-index: 1;
-  transform-origin: center top;
-}
-
-.education-drawer:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 120px;
-  height: 120px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 50%;
-  transform: translate(40px, -40px);
-}
-
-.education-drawer:after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100px;
-  height: 100px;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 50%;
-  transform: translate(-40px, 40px);
-}
-
-.education-drawer:hover, 
-.education-drawer.active {
-  height: auto;
-  min-height: 300px; /* Increased min-height */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  transform: scale(1.02);
-  z-index: 30 !important;
-}
-
-.education-drawer .drawer-header {
+.education-item {
+  background-color: var(--background-light);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  flex-direction: column;
 }
 
-.education-drawer .drawer-period {
-  font-size: 14px;
-  color: #d1b38a; /* Match website accent color */
-  font-weight: 500;
-  width: 25%;
-  text-align: left;
+.edu-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
   display: flex;
   align-items: center;
-}
-
-.education-drawer .drawer-period:before {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
-  background-size: contain;
-  margin-right: 8px;
-  opacity: 0.7;
-}
-
-.education-drawer .drawer-degree-institution {
-  text-align: center;
-  padding: 0 10px;
-  flex-grow: 1;
-}
-
-.education-drawer .drawer-degree-institution h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 6px;
-  display: flex;
   justify-content: center;
-  align-items: center;
+  color: var(--text-light);
+  margin-bottom: 1rem;
 }
 
-.education-drawer .drawer-degree-institution h3:before {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 10v6M2 10l10-5 10 5-10 5z'%3E%3C/path%3E%3Cpath d='M6 12v5c3 3 9 3 12 0v-5'%3E%3C/path%3E%3C/svg%3E");
-  background-size: contain;
-  margin-right: 8px;
-  opacity: 0.7;
+.edu-content h3 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
 }
 
-.education-drawer .drawer-degree-institution p {
-  margin: 0;
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.9);
+.edu-content h4 {
+  color: var(--accent-color);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 
-.education-drawer .drawer-description {
-  opacity: 0;
-  height: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s, height 0.5s ease;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.6;
-  overflow: hidden;
-  margin-top: 16px;
-}
-
-.education-drawer:hover .drawer-description,
-.education-drawer.active .drawer-description {
-  opacity: 1;
-  height: auto;
-  transform: translateY(0);
-}
-
-.education-drawer .drawer-description p {
-  margin: 10px 0;
-}
-
-.education-drawer .drawer-description ul {
-  padding-left: 20px;
-  margin: 10px 0;
-}
-
-.education-drawer .drawer-description li {
-  margin-bottom: 8px;
+.edu-date {
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 /* ===== Certifications Section ===== */
 .certifications-section {
-  background-color: transparent;
-  padding: 80px 0 100px;
-  position: relative;
-  overflow: hidden;
+  padding: 4rem 0;
+  background-color: var(--background-light);
 }
 
-.certifications-section .section-title {
-  font-size: 3rem;
-  font-weight: 500;
-  color: #333;
-  padding-left: 50px;
-  margin-bottom: 3rem;
-  text-align: left;
+.certifications-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
-.certifications-section .section-title:after {
-  left: 50px;
-  margin-left: 0;
-}
-
-/* Background decorative elements */
-.certifications-section::before {
-  content: '';
-  position: absolute;
-  top: 15%;
-  right: 5%;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background-color: rgba(108, 88, 76, 0.1);
-  filter: blur(80px);
-  z-index: 1;
-}
-
-.certifications-section::after {
-  content: '';
-  position: absolute;
-  bottom: 15%;
-  left: 10%;
-  width: 350px;
-  height: 350px;
-  border-radius: 50%;
-  background-color: rgba(163, 133, 102, 0.1);
-  filter: blur(80px);
-  z-index: 1;
-}
-
-.certifications-drawers {
-  padding-top: 40px;
-  padding-bottom: 120px;
-  position: relative;
-  max-width: 900px;
-  margin: 0 auto;
-  z-index: 5;
-}
-
-/* Skeleton background effect */
-.certifications-drawers:before,
-.certifications-drawers:after {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
-  background-color: rgba(26, 26, 26, 0.3);
-  border-radius: 24px;
-  z-index: -1;
-}
-
-.certifications-drawers:before {
-  transform: rotate(-1deg) scale(1.05);
-}
-
-.certifications-drawers:after {
-  transform: rotate(1deg) scale(1.05);
-}
-
-.certification-drawer {
-  position: relative;
-  border-radius: 24px;
-  margin-bottom: -60px;
-  height: 150px; /* Increased height */
-  overflow: hidden;
-  cursor: pointer;
-  padding: 24px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-  transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-  z-index: 1;
-  transform-origin: center top;
-}
-
-.certification-drawer:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 120px;
-  height: 120px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 50%;
-  transform: translate(40px, -40px);
-}
-
-.certification-drawer:after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100px;
-  height: 100px;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 50%;
-  transform: translate(-40px, 40px);
-}
-
-.certification-drawer:hover, 
-.certification-drawer.active {
-  height: auto;
-  min-height: 250px; /* Increased min-height */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  transform: scale(1.02);
-  z-index: 30 !important;
-}
-
-.certification-drawer .drawer-header {
+.cert-item {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  flex-direction: column;
+  height: 100%;
 }
 
-.certification-drawer .drawer-dates {
-  font-size: 14px;
-  color: #d1b38a; /* Match website accent color */
-  font-weight: 500;
-  width: 25%;
-  text-align: left;
+.cert-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
   display: flex;
   align-items: center;
-}
-
-.certification-drawer .drawer-dates:before {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
-  background-size: contain;
-  margin-right: 8px;
-  opacity: 0.7;
-}
-
-.certification-drawer .drawer-title-issuer {
-  text-align: center;
-  padding: 0 10px;
-  flex-grow: 1;
-}
-
-.certification-drawer .drawer-title-issuer h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 6px;
-  display: flex;
   justify-content: center;
-  align-items: center;
+  color: var(--text-light);
+  margin-bottom: 1rem;
 }
 
-.certification-drawer .drawer-title-issuer h3:before {
-  content: '';
+.cert-content h3 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.cert-content h4 {
+  color: var(--accent-color);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.cert-date, .cert-expiry {
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.cert-link {
+  margin-top: auto;
+  padding-top: 1rem;
   display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.3 12.22A4.92 4.92 0 0 0 14 8.5a5 5 0 0 0-10 0 4.92 4.92 0 0 0 1.7 3.72A8 8 0 0 0 1 19.5a1 1 0 0 0 2 0 6 6 0 1 1 12 0 1 1 0 0 0 2 0 8 8 0 0 0-4.7-7.28z'%3E%3C/path%3E%3Cpath d='M16.53 12.22A5 5 0 0 0 16 10.5a1 1 0 1 0-2 0 3 3 0 0 1-2 2.83V14a3 3 0 0 1-3 3 1 1 0 0 0 0 2 5 5 0 0 0 5-5v-.3'%3E%3C/path%3E%3Cpath d='M17 10.5a7 7 0 1 0-14 0 7 7 0 0 0 14 0z'%3E%3C/path%3E%3C/svg%3E");
-  background-size: contain;
-  margin-right: 8px;
-  opacity: 0.7;
+  color: var(--accent-color);
+  font-weight: 500;
 }
 
-.certification-drawer .drawer-title-issuer p {
-  margin: 0;
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.certification-drawer .drawer-actions {
-  width: 25%;
-  text-align: right;
-}
-
-.certification-drawer .view-certificate {
-  display: inline-block;
-  background-color: rgba(209, 179, 138, 0.2);
-  color: #d1b38a;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
-}
-
-.certification-drawer:hover .view-certificate,
-.certification-drawer.active .view-certificate {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.certification-drawer .view-certificate:hover {
-  background-color: rgba(209, 179, 138, 0.3);
-  transform: translateY(-2px);
-}
-
-/* Color classes for cards - use consistent colors with transparency */
-.color-1 {
-  background-color: rgba(40, 40, 40, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-.color-2 {
-  background-color: rgba(50, 50, 50, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-.color-3 {
-  background-color: rgba(60, 60, 60, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-.color-4 {
-  background-color: rgba(70, 70, 70, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-/* Education color classes */
-.education-color-1 {
-  background-color: rgba(40, 40, 40, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-.education-color-2 {
-  background-color: rgba(50, 50, 50, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-/* Certification color classes */
-.cert-color-1 {
-  background-color: rgba(40, 40, 40, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-.cert-color-2 {
-  background-color: rgba(50, 50, 50, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-.cert-color-3 {
-  background-color: rgba(60, 60, 60, 0.7);
-  border: 1px solid rgba(209, 179, 138, 0.3);
-}
-
-/* Skills tags styling */
-.skill-tag {
-  background-color: rgba(209, 179, 138, 0.2);
-  color: #d1b38a;
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  display: inline-block;
+.cert-link:hover {
+  color: var(--primary-color);
 }
 
 /* ===== Projects Page ===== */
@@ -2213,20 +1774,38 @@ footer {
 /* ============================================= */
 
 .experience-drawers {
-    padding-top: 40px;
+    padding-top: 40px; 
     padding-bottom: 120px; /* Increased to accommodate the stacked cards */
     perspective: 1200px;
     position: relative;
-    /* max-width: 1100px; Remove fixed max-width to allow full width */
-    width: 100%; /* Ensure container uses full width */
+    max-width: 1100px; /* Increased from 900px for wider cards */
     margin: 0 auto;
+}
+
+/* Skeleton background effect */
+.experience-drawers:before,
+.experience-drawers:after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-color: rgba(26, 26, 26, 0.2); /* Reduced opacity for lighter effect */
+    border-radius: 24px;
+    z-index: -1;
+    transform: rotate(1deg) scale(1.05);
+}
+
+.experience-drawers:after {
+    transform: rotate(-1deg) scale(1.05);
 }
 
 .experience-drawer {
     position: relative;
     border-radius: 24px;
     margin-bottom: -60px; /* Creates the stacked effect */
-    height: 150px; /* Increased height */
+    height: 120px;
     overflow: hidden;
     cursor: pointer;
     padding: 24px;
@@ -2236,15 +1815,12 @@ footer {
     transform: translateZ(0);
     transform-origin: center top;
     background-color: rgba(108, 88, 76, 0.9); /* Base color with transparency */
-    color: var(--text-light); /* Default text color for dark backgrounds */
-    width: 100%; /* Ensure drawer takes full width */
-    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .experience-drawer:hover, 
 .experience-drawer.active {
     height: auto;
-    min-height: 300px; /* Increased min-height */
+    min-height: 300px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
     transform: scale(1.02); /* Slight scale up on hover */
     z-index: 30 !important;
@@ -2259,8 +1835,8 @@ footer {
 
 .experience-drawer .drawer-date {
     font-size: 14px;
-    color: #6c584c;
-    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
     width: 25%;
     text-align: left;
 }
@@ -2275,20 +1851,20 @@ footer {
     margin: 0;
     font-size: 20px;
     font-weight: 700;
-    /* color: #333; Inherit color */
+    color: #ffffff;
     margin-bottom: 6px;
 }
 
 .experience-drawer .drawer-title-company p {
     margin: 0;
     font-size: 16px;
-    /* color: #555; Inherit color */
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .experience-drawer .drawer-location {
     font-size: 14px;
-    /* color: #6c584c; Inherit color */
-    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
     width: 25%;
     text-align: right;
 }
@@ -2297,9 +1873,9 @@ footer {
     opacity: 0;
     height: 0;
     transform: translateY(20px);
-    transition: opacity 1s ease 0.3s, transform 1s ease 0.3s, height 1s ease;
+    transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s, height 0.8s ease; /* Slowed down transitions */
     font-size: 14px;
-    /* color: #444; Inherit color */
+    color: rgba(255, 255, 255, 0.9);
     line-height: 1.6;
     overflow: hidden;
     margin-top: 16px;
@@ -2318,7 +1894,6 @@ footer {
 
 .experience-drawer .drawer-description ul {
     padding-left: 20px;
-    margin: 10px 0;
 }
 
 .experience-drawer .drawer-description li {
@@ -2328,26 +1903,21 @@ footer {
 /* Color classes with the specified hex values and transparency */
 .color-1 {
     background-color: rgba(108, 88, 76, 0.9); /* #6c584c with transparency */
-    color: var(--text-light); /* Explicitly set light text */
 }
 
 .color-2 {
     background-color: rgba(163, 133, 102, 0.9); /* #a38566 with transparency */
-    color: var(--text-light); /* Explicitly set light text */
 }
 
 .color-3 {
     background-color: rgba(209, 179, 138, 0.9); /* #d1b38a with transparency */
-    color: var(--text-light); /* Explicitly set light text */
 }
 
 .color-4 {
     background-color: rgba(233, 218, 193, 0.9); /* #e9dac1 with transparency */
-    color: var(--text-dark); /* Explicitly set dark text */
+    color: rgba(0, 0, 0, 0.8); /* Darker text for light background */
 }
 
-/* Remove redundant rules inside color-4 block */
-/*
 .color-4 .drawer-title-company h3,
 .color-4 .drawer-title-company p,
 .color-4 .drawer-date,
@@ -2355,7 +1925,6 @@ footer {
 .color-4 .drawer-description {
     color: rgba(0, 0, 0, 0.8);
 }
-*/
 
 @media screen and (max-width: 768px) {
     .experience-drawer {
@@ -2414,7 +1983,7 @@ footer {
 
 /* Make sure the "Career Journey" header is above other elements */
 .experience-section {
-    background-color: #f8f8f8; /* Use light background from root */
+    background-color: #2a2a2a; /* Dark background to match reference */
     padding: 60px 0;
 }
 
@@ -2426,154 +1995,3 @@ footer {
     color: #ffffff;
     text-align: center;
 } 
-
-/* ===== Section Background Elements ===== */
-.section {
-  position: relative;
-  overflow: hidden;
-  background-color: transparent;
-}
-
-.section-background {
-  display: none; /* Hide individual section backgrounds */
-}
-
-.blur-element {
-  display: none; /* Hide blur elements for consistent background */
-}
-
-.experience-section .blur-element.blur-1 {
-  background-color: rgba(108, 88, 76, 0.8);
-  width: 300px;
-  height: 300px;
-  top: 10%;
-  left: 5%;
-}
-
-.experience-section .blur-element.blur-2 {
-  background-color: rgba(209, 179, 138, 0.8);
-  width: 400px;
-  height: 400px;
-  bottom: 15%;
-  right: 5%;
-}
-
-.education-section .blur-element.blur-1 {
-  background-color: rgba(108, 88, 76, 0.8);
-  width: 350px;
-  height: 350px;
-  top: 15%;
-  right: 10%;
-}
-
-.education-section .blur-element.blur-2 {
-  background-color: rgba(163, 133, 102, 0.8);
-  width: 300px;
-  height: 300px;
-  bottom: 10%;
-  left: 8%;
-}
-
-.certifications-section .blur-element.blur-1 {
-  background-color: rgba(90, 80, 110, 0.8);
-  width: 400px;
-  height: 400px;
-  top: 5%;
-  left: 10%;
-}
-
-.certifications-section .blur-element.blur-2 {
-  background-color: rgba(150, 140, 190, 0.8);
-  width: 300px;
-  height: 300px;
-  bottom: 5%;
-  right: 10%;
-}
-
-/* ===== Experience Section ===== */
-
-/* Mobile adjustments for education and certification drawers */
-@media screen and (max-width: 768px) {
-  .education-drawer,
-  .certification-drawer,
-  .experience-drawer {
-    height: 140px;
-    padding: 20px;
-    margin-bottom: -40px;
-  }
-  
-  .education-drawer:hover,
-  .certification-drawer:hover,
-  .experience-drawer:hover {
-    transform: none;
-    height: 140px;
-    min-height: auto;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-
-  .education-drawer.active,
-  .certification-drawer.active,
-  .experience-drawer.active {
-    height: auto;
-    min-height: 300px;
-    transform: scale(1.02);
-    z-index: 100 !important;
-    margin-bottom: 16px;
-  }
-  
-  .education-drawer .drawer-header,
-  .certification-drawer .drawer-header,
-  .experience-drawer .drawer-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .education-drawer .drawer-period,
-  .certification-drawer .drawer-dates,
-  .experience-drawer .drawer-date {
-    margin-bottom: 8px;
-    width: 100%;
-  }
-  
-  .education-drawer .drawer-degree-institution,
-  .certification-drawer .drawer-title-issuer,
-  .experience-drawer .drawer-title-company {
-    margin-bottom: 8px;
-    width: 100%;
-    text-align: left;
-    padding: 0;
-  }
-  
-  .education-drawer .drawer-degree-institution h3,
-  .certification-drawer .drawer-title-issuer h3,
-  .experience-drawer .drawer-title-company h3 {
-    justify-content: flex-start;
-  }
-  
-  .certification-drawer .drawer-actions,
-  .experience-drawer .drawer-location {
-    width: 100%;
-    text-align: left;
-    margin-top: 8px;
-    justify-content: flex-start;
-    align-self: flex-start;
-  }
-
-  .education-drawer .drawer-description,
-  .certification-drawer .view-certificate,
-  .experience-drawer .drawer-description {
-    display: none;
-  }
-
-  .education-drawer.active .drawer-description,
-  .certification-drawer.active .view-certificate,
-  .experience-drawer.active .drawer-description {
-    display: block;
-  }
-}
-
-.career-sections-wrapper {
-  padding: 30px 20px;
-  max-width: 1200px;
-  margin: 80px auto 0;
-}

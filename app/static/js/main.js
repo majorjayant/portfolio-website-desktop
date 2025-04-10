@@ -40,18 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize animations for elements when they come into view
     initScrollAnimations();
-
-    // Initialize experience, education, and certification sections
-    initExperienceCards();
-    initEducationDrawers();
-    initCertificationDrawers();
-    
-    // Reposition cards on window resize
-    window.addEventListener('resize', function() {
-        positionCards();
-        positionEducationDrawers();
-        positionCertificationDrawers();
-    });
 });
 
 // Initialize chatbot functionality
@@ -285,26 +273,6 @@ function loadSiteConfig() {
         } else {
             console.warn('No work experience data found in API response');
         }
-        
-        // Check for education data and update
-        if (data.education && Array.isArray(data.education)) {
-            console.log('Found education data:', data.education);
-            updateEducationSection(data.education);
-        } else {
-            console.warn('No education data found in API response');
-            // Try to load from static JSON file as fallback
-            loadEducationFromFile();
-        }
-        
-        // Check for certification data and update
-        if (data.certifications && Array.isArray(data.certifications)) {
-            console.log('Found certification data:', data.certifications);
-            updateCertificationsSection(data.certifications);
-        } else {
-            console.warn('No certification data found in API response');
-            // Try to load from static JSON file as fallback
-            loadCertificationsFromFile();
-        }
     }
 }
 
@@ -467,958 +435,222 @@ function updateGalleryPhoto(selector, photoUrl, altText) {
  * Update work experience section with a stacked drawer UI
  */
 function updateWorkExperienceTimeline(workExperienceData) {
-    console.log('Updating work experience timeline with data:', workExperienceData);
+    console.log('Creating drawer UI for work experience:', workExperienceData);
     
-    const experienceSection = document.getElementById('experience-section');
-    if (!experienceSection) {
-        console.error('Experience section not found');
+    const container = document.getElementById('experience-drawers-container');
+    if (!container) {
+        console.error('Experience drawers container (#experience-drawers-container) not found.');
         return;
     }
     
-    // Create section title if it doesn't exist
-    let sectionTitle = experienceSection.querySelector('.section-title');
-    if (!sectionTitle) {
-        sectionTitle = document.createElement('h2');
-        sectionTitle.className = 'section-title';
-        sectionTitle.textContent = 'Career Journey';
-        experienceSection.prepend(sectionTitle);
-    }
+    // Check if a section title already exists
+    const existingTitle = container.parentNode.querySelector('.section-title');
     
-    // Find or create container for experience drawers
-    let drawersContainer = document.querySelector('.experience-drawers');
-    if (!drawersContainer) {
-        drawersContainer = document.createElement('div');
-        drawersContainer.className = 'experience-drawers';
-        experienceSection.appendChild(drawersContainer);
+    // Only create a new title if one doesn't already exist
+    if (!existingTitle) {
+        const headerElement = document.createElement('h2');
+        headerElement.className = 'section-title text-center mb-6';
+        headerElement.textContent = 'Career Journey';
+        container.parentNode.insertBefore(headerElement, container);
+        console.log('Added "Career Journey" header above container');
     } else {
-        drawersContainer.innerHTML = ''; // Clear existing drawers
+        console.log('Using existing section title:', existingTitle.textContent);
+        // Make sure the existing title is visible
+        existingTitle.style.display = 'block';
+        existingTitle.style.position = 'relative';
+        existingTitle.style.zIndex = '5';
+        existingTitle.style.marginBottom = '2rem';
     }
     
-    if (!workExperienceData || workExperienceData.length === 0) {
-        console.log('No work experience data provided');
+    container.innerHTML = ''; // Clear previous content (e.g., old timeline)
+    
+    if (!workExperienceData || !Array.isArray(workExperienceData) || workExperienceData.length === 0) {
+        console.warn('No work experience data provided. Displaying placeholder.');
+        container.innerHTML = '<p>No work experience details available at this time.</p>'; 
         return;
     }
     
-    // Sort experiences by date (most recent first)
-    const sortedExperiences = [...workExperienceData].sort((a, b) => {
-        const dateA = new Date(a.start_date);
-        const dateB = new Date(b.start_date);
+    // Sort by date (most recent first)
+    const sortedExperience = [...workExperienceData].sort((a, b) => {
+        const dateA = new Date(a.from_date || '1970-01-01');
+        const dateB = new Date(b.from_date || '1970-01-01');
         return dateB - dateA;
     });
-    
-    console.log('Sorted experiences:', sortedExperiences);
-    
-    // Color scheme for the cards
-    const colors = ['color-1', 'color-2', 'color-3', 'color-4'];
-    
-    // Create experience drawers
-    sortedExperiences.forEach((experience, index) => {
+
+    const totalItems = sortedExperience.length;
+    const colorSchemes = [
+        'color-1',    // #6c584c
+        'color-2',    // #a38566
+        'color-3',    // #d1b38a
+        'color-4'     // #e9dac1
+    ];
+
+    // Create drawers
+    sortedExperience.forEach((exp, index) => {
         const drawer = document.createElement('div');
-        drawer.className = `experience-drawer ${colors[index % colors.length]}`;
+        drawer.classList.add('experience-drawer', colorSchemes[index % colorSchemes.length]);
         drawer.setAttribute('data-index', index);
         
+        // Set initial position based on index (stacked effect)
+        drawer.style.zIndex = totalItems - index;
+        drawer.style.transform = `translateY(${index * 20}px)`;
+        
         // Format dates
-        const startDate = new Date(experience.start_date);
-        const startDateFormatted = startDate.toLocaleDateString('en-US', { 
-            month: 'short', 
-            year: 'numeric' 
-        });
-        
-        let endDateFormatted = 'Present';
-        if (experience.end_date && experience.end_date !== 'Present') {
-            const endDate = new Date(experience.end_date);
-            endDateFormatted = endDate.toLocaleDateString('en-US', { 
-                month: 'short', 
-                year: 'numeric' 
-            });
-        }
-        
-        // Create drawer header
-        const header = document.createElement('div');
-        header.className = 'drawer-header';
-        
-        const dateSpan = document.createElement('span');
-        dateSpan.className = 'drawer-date';
-        dateSpan.textContent = `${startDateFormatted} - ${endDateFormatted}`;
-        
-        const titleCompanyDiv = document.createElement('div');
-        titleCompanyDiv.className = 'drawer-title-company';
-        
-        const titleHeading = document.createElement('h3');
-        titleHeading.textContent = experience.job_title;
-        
-        const companyPara = document.createElement('p');
-        companyPara.textContent = experience.company;
-        
-        titleCompanyDiv.appendChild(titleHeading);
-        titleCompanyDiv.appendChild(companyPara);
-        
-        const locationSpan = document.createElement('span');
-        locationSpan.className = 'drawer-location';
-        locationSpan.textContent = experience.location || '';
-        
-        header.appendChild(dateSpan);
-        header.appendChild(titleCompanyDiv);
-        header.appendChild(locationSpan);
-        
-        // Create drawer description - use innerHTML to preserve HTML formatting
-        const description = document.createElement('div');
-        description.className = 'drawer-description';
-        description.innerHTML = experience.description || '';
-        
-        // Create skills container if there are skills
-        if (experience.skills && experience.skills.length > 0) {
-            const skillsContainer = document.createElement('div');
-            skillsContainer.className = 'skills-container';
+        let dateString = 'Date N/A';
+        if (exp.from_date) {
+            const fromDate = new Date(exp.from_date);
+            const fromMonth = fromDate.toLocaleString('default', { month: 'short' });
+            const fromYear = fromDate.getFullYear();
             
-            experience.skills.forEach(skill => {
-                const skillTag = document.createElement('span');
-                skillTag.className = 'skill-tag';
-                skillTag.textContent = skill;
-                skillsContainer.appendChild(skillTag);
-            });
-            
-            description.appendChild(skillsContainer);
-        }
-        
-        drawer.appendChild(header);
-        drawer.appendChild(description);
-        
-        // Set initial z-index based on position (higher for elements at the top)
-        drawer.style.zIndex = sortedExperiences.length - index;
-        
-        drawersContainer.appendChild(drawer);
-    });
-    
-    // Variables to track active state
-    let activeIndex = -1;
-    let isAnyHovered = false;
-    
-    // Function to update card positions
-    function updateCardPositions() {
-        const drawers = document.querySelectorAll('.experience-drawer');
-        
-        drawers.forEach((drawer, idx) => {
-            const drawerIndex = parseInt(drawer.getAttribute('data-index'));
-            
-            if (isAnyHovered) {
-                if (drawerIndex === activeIndex) {
-                    // Keep the hovered card at its position and apply a slight scale
-                    drawer.style.transform = 'scale(1.02)';
-                    drawer.style.zIndex = '30';
-                    drawer.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                } else if (drawerIndex < activeIndex) {
-                    // Cards above the hovered one - move up slightly
-                    drawer.style.transform = 'translateY(-10px)';
-                    drawer.style.zIndex = (sortedExperiences.length + 10 - drawerIndex).toString();
-                    drawer.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                } else {
-                    // Cards below the hovered one - push down more
-                    drawer.style.transform = 'translateY(20px)';
-                    drawer.style.zIndex = (sortedExperiences.length - drawerIndex).toString();
-                    drawer.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                }
+            if (exp.is_current) {
+                dateString = `${fromMonth} ${fromYear} - Present`;
+            } else if (exp.to_date) {
+                const toDate = new Date(exp.to_date);
+                const toMonth = toDate.toLocaleString('default', { month: 'short' });
+                const toYear = toDate.getFullYear();
+                dateString = `${fromMonth} ${fromYear} - ${toMonth} ${toYear}`;
             } else {
-                // Reset all cards when none are hovered
-                drawer.style.transform = '';
-                drawer.style.zIndex = (sortedExperiences.length - drawerIndex).toString();
-                drawer.style.transition = 'all 1s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                dateString = `${fromMonth} ${fromYear} - Date N/A`;
             }
-        });
-    }
-    
-    // Add event listeners
-    const drawers = document.querySelectorAll('.experience-drawer');
-    
-    // For the container
-    drawersContainer.addEventListener('mouseleave', () => {
-        setTimeout(() => {
-            isAnyHovered = false;
-            activeIndex = -1;
-            
-            drawers.forEach(drawer => {
-                drawer.classList.remove('active');
-            });
-            
-            updateCardPositions();
-        }, 250);
-    });
-    
-    // For each drawer
-    drawers.forEach(drawer => {
-        const index = parseInt(drawer.getAttribute('data-index'));
-        
-        // Desktop hover
-        drawer.addEventListener('mouseenter', () => {
-            isAnyHovered = true;
-            activeIndex = index;
-            drawer.classList.add('active');
-            updateCardPositions();
-        });
-        
-        drawer.addEventListener('mouseleave', () => {
-            if (!isMobile()) {
-                drawer.classList.remove('active');
-            }
-        });
-        
-        // Mobile click
-        drawer.addEventListener('click', (e) => {
-            if (isMobile()) {
-                if (drawer.classList.contains('active')) {
-                    drawer.classList.remove('active');
-                } else {
-                    // Close other drawers first
-                    drawers.forEach(d => d.classList.remove('active'));
-                    drawer.classList.add('active');
-                }
-                e.stopPropagation();
-            }
-        });
-    });
-    
-    // Close active drawer when clicking outside on mobile
-    if (isMobile()) {
-        document.addEventListener('click', () => {
-            drawers.forEach(drawer => drawer.classList.remove('active'));
-        });
-    }
-    
-    console.log('Drawer UI creation finished');
-}
-
-// Helper function to detect mobile
-function isMobile() {
-    return window.innerWidth < 768;
-}
-
-// Experience Cards 
-function initExperienceCards() {
-    const experienceContainer = document.querySelector('.experience-drawers');
-    if (!experienceContainer) return;
-    
-    let cards = document.querySelectorAll('.experience-card');
-    
-    // If no cards exist yet, fetch them via AJAX
-    if (cards.length === 0) {
-        fetch('/api/work-experience')
-            .then(response => response.json())
-            .then(data => {
-                renderExperienceCards(data, experienceContainer);
-                setupCardEventListeners();
-                positionCards();
-            })
-            .catch(error => {
-                console.error('Error fetching experience data:', error);
-            });
-    } else {
-        setupCardEventListeners();
-        positionCards();
-    }
-}
-
-function renderExperienceCards(experiences, container) {
-    experiences.forEach((exp, index) => {
-        const card = document.createElement('div');
-        card.className = 'experience-card';
-        card.dataset.index = index;
-        
-        // Create skills HTML if skills exist
-        let skillsHtml = '';
-        if (exp.skills && exp.skills.length > 0) {
-            skillsHtml = `
-                <div class="skills-list">
-                    ${exp.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
-                </div>
-            `;
         }
         
-        card.innerHTML = `
-            <div class="card-header">
-                <div class="company-info">
-                    <div class="date-range">${exp.start_date} - ${exp.end_date || 'Present'}</div>
-                    <h3 class="company-title">${exp.company}</h3>
-                    <p class="job-title">${exp.title}</p>
+        // Create description list (assuming description is newline-separated)
+        let descriptionHtml = '';
+        if (exp.description) {
+            const descriptionItems = exp.description.split('\n').filter(item => item.trim() !== '');
+            descriptionHtml = `<ul>${descriptionItems.map(item => `<li>${item.trim()}</li>`).join('')}</ul>`;
+        }
+
+        drawer.innerHTML = `
+            <div class="drawer-header">
+                <div class="drawer-date">${dateString}</div>
+                <div class="drawer-title-company">
+                    <h3>${exp.job_title || 'N/A'}</h3>
+                    <p>${exp.company_name || 'N/A'}</p>
                 </div>
+                <div class="drawer-location">${exp.location || 'Remote'}</div>
             </div>
-            <div class="card-content">
-                <div class="experience-description">${exp.description}</div>
-                ${skillsHtml}
+            <div class="drawer-description">
+                ${descriptionHtml}
             </div>
         `;
         
-        container.appendChild(card);
-    });
-}
-
-function setupCardEventListeners() {
-    const cards = document.querySelectorAll('.experience-card');
-    
-    cards.forEach(card => {
-        card.addEventListener('click', () => {
-            const isActive = card.classList.contains('active');
-            
-            // Close all cards first
-            cards.forEach(c => c.classList.remove('active'));
-            
-            // If the clicked card wasn't active, make it active
-            if (!isActive) {
-                card.classList.add('active');
-            }
-            
-            // Reposition cards after animation
-            setTimeout(positionCards, 50);
-        });
-    });
-}
-
-function positionCards() {
-    const cards = document.querySelectorAll('.experience-card');
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) return; // Skip positioning for mobile
-    
-    // Base positioning values
-    const activeOffset = 0;
-    const cardGap = 20; // Gap between cards
-    let zIndex = cards.length + 10;
-    
-    cards.forEach((card, index) => {
-        const isActive = card.classList.contains('active');
-        card.style.zIndex = isActive ? zIndex + 10 : zIndex--;
-        
-        // Calculate top position
-        let topPosition;
-        const activeCard = document.querySelector('.experience-card.active');
-        const activeIndex = activeCard ? parseInt(activeCard.dataset.index) : 0;
-        
-        if (isActive) {
-            topPosition = activeOffset + 'px';
-        } else if (activeCard) {
-            // Calculate position based on relationship to active card
-            const offset = (index - activeIndex) * cardGap + 70;
-            topPosition = offset + 'px';
-        } else {
-            // Default positioning when no card is active
-            topPosition = (index * cardGap) + 'px';
-        }
-        
-        card.style.top = topPosition;
-    });
-}
-
-/**
- * Load education data from a static JSON file as fallback
- */
-function loadEducationFromFile() {
-    console.log('Loading education data from static file as fallback');
-    
-    fetch('/static/data/education.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to load education data: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Loaded education data from file:', data);
-            updateEducationSection(data);
-        })
-        .catch(error => {
-            console.error('Error loading education data from file:', error);
-        });
-}
-
-/**
- * Load certifications data from a static JSON file as fallback
- */
-function loadCertificationsFromFile() {
-    console.log('Loading certifications data from static file as fallback');
-    
-    fetch('/static/data/certifications.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to load certifications data: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Loaded certifications data from file:', data);
-            updateCertificationsSection(data);
-        })
-        .catch(error => {
-            console.error('Error loading certifications data from file:', error);
-        });
-}
-
-/**
- * Update education section with drawer UI
- */
-function updateEducationSection(educationData) {
-    console.log('Updating education section with data:', educationData);
-    
-    const educationSection = document.getElementById('education-section');
-    if (!educationSection) {
-        console.error('Education section not found');
-        return;
-    }
-    
-    // Find or create container for education drawers
-    let drawersContainer = document.querySelector('.education-drawers');
-    if (!drawersContainer) {
-        drawersContainer = document.createElement('div');
-        drawersContainer.className = 'education-drawers';
-        educationSection.appendChild(drawersContainer);
-    } else {
-        drawersContainer.innerHTML = ''; // Clear existing drawers
-    }
-    
-    // Use static data if no education data is provided
-    if (!educationData || educationData.length === 0) {
-        console.log('No education data provided, using static data');
-        educationData = [
-            {
-                id: 1,
-                degree: "Master of Business Administration",
-                institution: "Harvard Business School",
-                period: "2016 - 2018",
-                description: "<p>Specialized in Technology Management with focus on Product Development and Strategic Innovation. Graduated with honors, achieving a perfect GPA of 4.0.</p><ul><li>Led a cross-functional team in the development of a comprehensive business strategy for a technology startup</li><li>Completed an award-winning thesis on emerging technologies in product management</li><li>Participated in the Harvard Innovation Lab incubator program</li></ul>"
-            },
-            {
-                id: 2,
-                degree: "Bachelor of Science in Computer Science",
-                institution: "Massachusetts Institute of Technology",
-                period: "2012 - 2016",
-                description: "<p>Graduated with high honors. Focused on software engineering, artificial intelligence, and UI/UX design principles.</p><ul><li>Developed multiple open-source projects that gained industry recognition</li><li>Research assistant for the MIT Media Lab on human-computer interaction</li><li>Recipient of the Outstanding Computer Science Student Award</li></ul>"
-            },
-            {
-                id: 3,
-                degree: "Advanced Certification in Product Management",
-                institution: "Stanford University",
-                period: "2019 - 2020",
-                description: "<p>Intensive one-year specialized program focusing on modern product management methodologies and leadership skills.</p><ul><li>Mastered agile and lean product development frameworks</li><li>Completed projects involving real-world product challenges from top tech companies</li><li>Recognized for innovative approaches to user-centered design thinking</li></ul>"
-            }
-        ];
-    }
-    
-    // Sort education by date (most recent first)
-    const sortedEducation = [...educationData].sort((a, b) => {
-        // Extract years from period strings
-        const yearA = a.period.split(' - ')[1] || a.period;
-        const yearB = b.period.split(' - ')[1] || b.period;
-        return parseInt(yearB) - parseInt(yearA);
+        container.appendChild(drawer);
     });
     
-    console.log('Sorted education:', sortedEducation);
-    
-    // Color scheme
-    const colors = ['education-color-1', 'education-color-2'];
-    
-    // Create education drawers
-    sortedEducation.forEach((education, index) => {
-        const drawer = document.createElement('div');
-        drawer.className = `education-drawer ${colors[index % colors.length]}`;
-        drawer.setAttribute('data-index', index);
-        
-        // Create drawer header
-        const header = document.createElement('div');
-        header.className = 'drawer-header';
-        
-        const periodSpan = document.createElement('span');
-        periodSpan.className = 'drawer-period';
-        periodSpan.textContent = education.period;
-        
-        const degreeInstitutionDiv = document.createElement('div');
-        degreeInstitutionDiv.className = 'drawer-degree-institution';
-        
-        const degreeHeading = document.createElement('h3');
-        degreeHeading.textContent = education.degree;
-        
-        const institutionPara = document.createElement('p');
-        institutionPara.textContent = education.institution;
-        
-        degreeInstitutionDiv.appendChild(degreeHeading);
-        degreeInstitutionDiv.appendChild(institutionPara);
-        
-        header.appendChild(periodSpan);
-        header.appendChild(degreeInstitutionDiv);
-        
-        // Create drawer description with HTML support
-        const description = document.createElement('div');
-        description.className = 'drawer-description';
-        description.innerHTML = education.description || '';
-        
-        drawer.appendChild(header);
-        drawer.appendChild(description);
-        
-        // Set initial z-index based on position
-        drawer.style.zIndex = sortedEducation.length - index;
-        
-        drawersContainer.appendChild(drawer);
-    });
-    
-    // Setup event listeners
-    initEducationDrawers();
-}
-
-/**
- * Update certifications section with drawer UI
- */
-function updateCertificationsSection(certificationsData) {
-    console.log('Updating certifications section with data:', certificationsData);
-    
-    const certificationsSection = document.getElementById('certifications-section');
-    if (!certificationsSection) {
-        console.error('Certifications section not found');
-        return;
-    }
-    
-    // Find or create container for certification drawers
-    let drawersContainer = document.querySelector('.certifications-drawers');
-    if (!drawersContainer) {
-        drawersContainer = document.createElement('div');
-        drawersContainer.className = 'certifications-drawers';
-        certificationsSection.appendChild(drawersContainer);
-    } else {
-        drawersContainer.innerHTML = ''; // Clear existing drawers
-    }
-    
-    // Use static data if no certification data is provided
-    if (!certificationsData || certificationsData.length === 0) {
-        console.log('No certification data provided, using static data');
-        certificationsData = [
-            {
-                id: 1,
-                title: "AWS Certified Solutions Architect - Professional",
-                issuer: "Amazon Web Services",
-                issue_date: "Jan 2023",
-                expiry_date: "Jan 2026",
-                certificate_url: "#"
-            },
-            {
-                id: 2,
-                title: "Certified Product Manager",
-                issuer: "Product Management Institute",
-                issue_date: "Jun 2022",
-                expiry_date: "Jun 2025",
-                certificate_url: "#"
-            },
-            {
-                id: 3,
-                title: "Certified Scrum Master",
-                issuer: "Scrum Alliance",
-                issue_date: "Mar 2021",
-                expiry_date: "Mar 2023",
-                certificate_url: "#"
-            },
-            {
-                id: 4,
-                title: "Google Professional Cloud Architect",
-                issuer: "Google Cloud",
-                issue_date: "Nov 2022",
-                expiry_date: "Nov 2024",
-                certificate_url: "#"
-            },
-            {
-                id: 5,
-                title: "Advanced UX Design Certification",
-                issuer: "Interaction Design Foundation",
-                issue_date: "May 2021",
-                expiry_date: null,
-                certificate_url: "#"
-            },
-            {
-                id: 6,
-                title: "Microsoft Certified: Azure Solutions Architect Expert",
-                issuer: "Microsoft",
-                issue_date: "Sep 2022",
-                expiry_date: "Sep 2024",
-                certificate_url: "#"
-            }
-        ];
-    }
-    
-    // Sort certifications by date (most recent first)
-    const sortedCertifications = [...certificationsData].sort((a, b) => {
-        const dateA = new Date(parseDate(a.issue_date));
-        const dateB = new Date(parseDate(b.issue_date));
-        return dateB - dateA;
-    });
-    
-    console.log('Sorted certifications:', sortedCertifications);
-    
-    // Color scheme
-    const colors = ['cert-color-1', 'cert-color-2', 'cert-color-3'];
-    
-    // Create certification drawers
-    sortedCertifications.forEach((cert, index) => {
-        const drawer = document.createElement('div');
-        drawer.className = `certification-drawer ${colors[index % colors.length]}`;
-        drawer.setAttribute('data-index', index);
-        
-        // Format expiry date text
-        let expiryText = cert.expiry_date ? `Expires: ${cert.expiry_date}` : 'No Expiration';
-        
-        // Create drawer header
-        const header = document.createElement('div');
-        header.className = 'drawer-header';
-        
-        const datesSpan = document.createElement('span');
-        datesSpan.className = 'drawer-dates';
-        datesSpan.textContent = `Issued: ${cert.issue_date}`;
-        
-        const titleIssuerDiv = document.createElement('div');
-        titleIssuerDiv.className = 'drawer-title-issuer';
-        
-        const titleHeading = document.createElement('h3');
-        titleHeading.textContent = cert.title;
-        
-        const issuerPara = document.createElement('p');
-        issuerPara.textContent = cert.issuer;
-        
-        titleIssuerDiv.appendChild(titleHeading);
-        titleIssuerDiv.appendChild(issuerPara);
-        
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'drawer-actions';
-        
-        const viewCertLink = document.createElement('a');
-        viewCertLink.className = 'view-certificate';
-        viewCertLink.textContent = 'View Certificate';
-        viewCertLink.href = cert.certificate_url || '#';
-        viewCertLink.target = '_blank';
-        
-        actionsDiv.appendChild(viewCertLink);
-        
-        header.appendChild(datesSpan);
-        header.appendChild(titleIssuerDiv);
-        header.appendChild(actionsDiv);
-        
-        drawer.appendChild(header);
-        
-        // Set initial z-index based on position
-        drawer.style.zIndex = sortedCertifications.length - index;
-        
-        drawersContainer.appendChild(drawer);
-    });
-    
-    // Setup event listeners
-    initCertificationDrawers();
-}
-
-/**
- * Helper function to parse dates in different formats
- */
-function parseDate(dateStr) {
-    if (!dateStr) return new Date(0);
-    
-    // Handle format like "Mar 2018" or "Jun 2019"
-    const monthNames = {
-        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-    };
-    
-    const parts = dateStr.split(' ');
-    if (parts.length === 2 && monthNames[parts[0]]) {
-        return new Date(parseInt(parts[1]), monthNames[parts[0]], 1);
-    }
-    
-    // Fallback to standard date parsing
-    return new Date(dateStr);
-}
-
-/**
- * Initialize education drawers interactivity
- */
-function initEducationDrawers() {
-    const drawers = document.querySelectorAll('.education-drawer');
-    if (!drawers.length) return;
-    
-    // Variables to track active state
+    // Handle drawer interactions
+    const drawers = container.querySelectorAll('.experience-drawer');
     let activeIndex = -1;
     let isAnyHovered = false;
     
-    // For the container
-    const container = document.querySelector('.education-drawers');
-    if (container) {
-        container.addEventListener('mouseleave', () => {
-            setTimeout(() => {
-                isAnyHovered = false;
-                activeIndex = -1;
-                
-                drawers.forEach(drawer => {
-                    drawer.classList.remove('active');
-                });
-                
-                positionEducationDrawers();
-            }, 250);
-        });
-    }
-    
-    // For each drawer
-    drawers.forEach(drawer => {
-        const index = parseInt(drawer.getAttribute('data-index'));
-        
-        // Desktop hover
-        drawer.addEventListener('mouseenter', () => {
-            isAnyHovered = true;
-            activeIndex = index;
-            drawer.classList.add('active');
-            positionEducationDrawers();
-        });
-        
-        drawer.addEventListener('mouseleave', () => {
-            if (!isMobile()) {
-                drawer.classList.remove('active');
-            }
-        });
-        
-        // Mobile click
-        drawer.addEventListener('click', (e) => {
-            if (isMobile()) {
-                if (drawer.classList.contains('active')) {
-                    drawer.classList.remove('active');
+    // Function to update all cards based on hover state
+    function updateCardPositions(hoveredIndex) {
+        drawers.forEach((d, i) => {
+            // Base transform
+            let yOffset = i * 20;
+            
+            if (hoveredIndex !== null) {
+                // If a card is hovered, adjust positions
+                if (hoveredIndex === i) {
+                    // Keep the hovered card at its position
+                    d.style.zIndex = 30;
+                    d.style.transform = `translateY(${yOffset}px) scale(1.02)`;
+                    // Ensure transition is applied
+                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
+                } else if (hoveredIndex < i) {
+                    // Push down cards below the hovered one
+                    d.style.zIndex = totalItems - i;
+                    d.style.transform = `translateY(${yOffset + 20}px)`;
+                    // Apply slower transition
+                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
                 } else {
-                    // Close other drawers first
-                    drawers.forEach(d => d.classList.remove('active'));
-                    drawer.classList.add('active');
+                    // Pull up cards above the hovered one
+                    d.style.zIndex = totalItems - i;
+                    d.style.transform = `translateY(${yOffset - 10}px)`;
+                    // Apply slower transition
+                    d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
                 }
-                e.stopPropagation();
-            }
-        });
-    });
-    
-    // Close active drawer when clicking outside on mobile
-    if (isMobile()) {
-        document.addEventListener('click', () => {
-            drawers.forEach(drawer => drawer.classList.remove('active'));
-        });
-    }
-    
-    // Initial positioning
-    positionEducationDrawers();
-}
-
-/**
- * Position education drawers for stacked effect
- */
-function positionEducationDrawers() {
-    const drawers = document.querySelectorAll('.education-drawer');
-    if (!drawers.length) return;
-    
-    let activeIndex = -1;
-    let isAnyHovered = false;
-    
-    // Find active drawer if any
-    drawers.forEach((drawer, idx) => {
-        if (drawer.classList.contains('active')) {
-            activeIndex = parseInt(drawer.getAttribute('data-index'));
-            isAnyHovered = true;
-        }
-    });
-    
-    // Update positions
-    drawers.forEach(drawer => {
-        const drawerIndex = parseInt(drawer.getAttribute('data-index'));
-        
-        if (isAnyHovered) {
-            if (drawerIndex === activeIndex) {
-                drawer.style.transform = 'scale(1.02)';
-                drawer.style.zIndex = '30';
-            } else if (drawerIndex < activeIndex) {
-                drawer.style.transform = 'translateY(-10px)';
-                drawer.style.zIndex = (drawers.length + 10 - drawerIndex).toString();
             } else {
-                drawer.style.transform = 'translateY(20px)';
-                drawer.style.zIndex = (drawers.length - drawerIndex).toString();
+                // Reset to original position when nothing is hovered
+                d.style.zIndex = totalItems - i;
+                d.style.transform = `translateY(${yOffset}px)`;
+                // Apply slower transition for return animation
+                d.style.transition = "all 1s cubic-bezier(0.2, 0.8, 0.2, 1)";
             }
-        } else {
-            drawer.style.transform = '';
-            drawer.style.zIndex = (drawers.length - drawerIndex).toString();
-        }
-    });
-}
-
-/**
- * Initialize certification drawers interactivity
- */
-function initCertificationDrawers() {
-    const drawers = document.querySelectorAll('.certification-drawer');
-    if (!drawers.length) return;
-    
-    // Variables to track active state
-    let activeIndex = -1;
-    let isAnyHovered = false;
-    
-    // For the container
-    const container = document.querySelector('.certifications-drawers');
-    if (container) {
-        container.addEventListener('mouseleave', () => {
-            setTimeout(() => {
-                isAnyHovered = false;
-                activeIndex = -1;
-                
-                drawers.forEach(drawer => {
-                    drawer.classList.remove('active');
-                });
-                
-                positionCertificationDrawers();
-            }, 250);
         });
     }
     
-    // For each drawer
-    drawers.forEach(drawer => {
-        const index = parseInt(drawer.getAttribute('data-index'));
-        
-        // Desktop hover
+    // Add event listeners to each drawer
+    drawers.forEach((drawer, index) => {
         drawer.addEventListener('mouseenter', () => {
-            isAnyHovered = true;
-            activeIndex = index;
-            drawer.classList.add('active');
-            positionCertificationDrawers();
+            if (window.innerWidth > 768) {
+                activeIndex = index;
+                isAnyHovered = true;
+                drawer.classList.add('active');
+                updateCardPositions(index);
+                
+                // Add visibility class to all drawers to ensure smoother transitions
+                drawers.forEach(d => {
+                    d.style.visibility = 'visible';
+                });
+            }
         });
         
         drawer.addEventListener('mouseleave', () => {
-            if (!isMobile()) {
+            if (window.innerWidth > 768) {
                 drawer.classList.remove('active');
+                // Only reset if we're not entering another card
+                setTimeout(() => {
+                    if (!document.querySelector('.experience-drawer:hover')) {
+                        isAnyHovered = false;
+                        activeIndex = -1;
+                        updateCardPositions(null);
+                    }
+                }, 150); // Slightly longer delay for smoother transitions
             }
         });
         
-        // Mobile click
-        drawer.addEventListener('click', (e) => {
-            if (isMobile()) {
+        drawer.addEventListener('click', (event) => {
+            // Mobile handling
+            if (window.innerWidth <= 768) {
                 if (drawer.classList.contains('active')) {
                     drawer.classList.remove('active');
+                    activeIndex = -1;
                 } else {
-                    // Close other drawers first
+                    // Deactivate all drawers
                     drawers.forEach(d => d.classList.remove('active'));
+                    // Activate this drawer
                     drawer.classList.add('active');
+                    activeIndex = index;
                 }
-                e.stopPropagation();
+                event.stopPropagation();
             }
         });
     });
     
-    // Close active drawer when clicking outside on mobile
-    if (isMobile()) {
-        document.addEventListener('click', () => {
-            drawers.forEach(drawer => drawer.classList.remove('active'));
-        });
-    }
-    
-    // Initial positioning
-    positionCertificationDrawers();
-}
-
-/**
- * Position certification drawers for stacked effect
- */
-function positionCertificationDrawers() {
-    const drawers = document.querySelectorAll('.certification-drawer');
-    if (!drawers.length) return;
-    
-    let activeIndex = -1;
-    let isAnyHovered = false;
-    
-    // Find active drawer if any
-    drawers.forEach((drawer, idx) => {
-        if (drawer.classList.contains('active')) {
-            activeIndex = parseInt(drawer.getAttribute('data-index'));
-            isAnyHovered = true;
-        }
-    });
-    
-    // Update positions
-    drawers.forEach(drawer => {
-        const drawerIndex = parseInt(drawer.getAttribute('data-index'));
-        
-        if (isAnyHovered) {
-            if (drawerIndex === activeIndex) {
-                drawer.style.transform = 'scale(1.02)';
-                drawer.style.zIndex = '30';
-            } else if (drawerIndex < activeIndex) {
-                drawer.style.transform = 'translateY(-10px)';
-                drawer.style.zIndex = (drawers.length + 10 - drawerIndex).toString();
-            } else {
-                drawer.style.transform = 'translateY(20px)';
-                drawer.style.zIndex = (drawers.length - drawerIndex).toString();
-            }
-        } else {
-            drawer.style.transform = '';
-            drawer.style.zIndex = (drawers.length - drawerIndex).toString();
-        }
-    });
-}
-
-/**
- * Initialize experience drawers interactivity
- */
-function initExperienceDrawers() {
-    const drawers = document.querySelectorAll('.experience-drawer');
-    if (!drawers.length) return;
-    
-    // Variables to track active state
-    let activeIndex = -1;
-    let isAnyHovered = false;
-    
-    // For the container
-    const container = document.querySelector('.experience-drawers');
-    if (container) {
-        container.addEventListener('mouseleave', () => {
-            setTimeout(() => {
-                isAnyHovered = false;
+    // Handle container mouse leave
+    container.addEventListener('mouseleave', () => {
+        isAnyHovered = false;
+        setTimeout(() => {
+            if (!isAnyHovered) {
                 activeIndex = -1;
-                
-                drawers.forEach(drawer => {
-                    drawer.classList.remove('active');
-                });
-                
-                positionCards();
-            }, 250);
-        });
-    }
-    
-    // For each drawer
-    drawers.forEach(drawer => {
-        const index = parseInt(drawer.getAttribute('data-index'));
-        
-        // Desktop hover
-        drawer.addEventListener('mouseenter', () => {
-            isAnyHovered = true;
-            activeIndex = index;
-            drawer.classList.add('active');
-            positionCards();
-        });
-        
-        drawer.addEventListener('mouseleave', () => {
-            if (!isMobile()) {
-                drawer.classList.remove('active');
+                updateCardPositions(null);
+                drawers.forEach(d => d.classList.remove('active'));
             }
-        });
-        
-        // Mobile click
-        drawer.addEventListener('click', (e) => {
-            if (isMobile()) {
-                if (drawer.classList.contains('active')) {
-                    drawer.classList.remove('active');
-                } else {
-                    // Close other drawers first
-                    drawers.forEach(d => d.classList.remove('active'));
-                    drawer.classList.add('active');
-                }
-                e.stopPropagation();
-            }
-        });
+        }, 250); // Increased delay for smoother transitions when leaving the container
     });
     
-    // Close active drawer when clicking outside on mobile
-    if (isMobile()) {
-        document.addEventListener('click', () => {
-            drawers.forEach(drawer => drawer.classList.remove('active'));
-        });
-    }
-    
-    // Initial positioning
-    positionCards();
+    // Close drawers when clicking outside
+    document.addEventListener('click', (event) => {
+        if (window.innerWidth <= 768) {
+            const isClickInsideDrawer = event.target.closest('.experience-drawer');
+            
+            if (!isClickInsideDrawer && activeIndex !== -1) {
+                drawers.forEach(d => d.classList.remove('active'));
+                activeIndex = -1;
+            }
+        }
+    });
+
+    console.log('Finished creating drawer UI.');
 }
