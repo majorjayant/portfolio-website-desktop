@@ -487,11 +487,12 @@ header {
 /* ===== Experience Section ===== */
 .experience-section {
   background-color: #f8f8f8 !important;
-  padding: 60px 0;
+  padding: 30px 0 60px 0; /* Reduced top padding to minimize space after carousel */
   overflow: hidden;
   z-index: 30;
-  margin-top: 5rem; /* Increased margin-top to create more space after carousel */
+  margin-top: 2rem; /* Reduced margin-top to remove padding between carousel and this section */
   position: relative; /* Ensure proper stacking context */
+  width: 100%; /* Full width */
 }
 
 /* Decorative elements - remove or set to 0 opacity */
@@ -501,8 +502,14 @@ header {
   display: none;
 }
 
+.experience-section .container {
+  max-width: 1400px; /* Increased max-width for the container */
+  width: 90%; /* Use 90% of available width */
+  margin: 0 auto; /* Center the container */
+}
+
 .experience-section .section-title {
-  color: #7a6b5f ; /* Darker color for better visibility */
+  color: #333333; /* Darker color for better visibility */
   text-align: left !important; /* Force left alignment */
   margin-bottom: 4rem;
   margin-left: 2rem; /* Increased left margin */
@@ -513,19 +520,38 @@ header {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: block; /* Ensure block display */
   width: 100%; /* Full width */
-  max-width: 900px; /* Align with drawer container */
+  max-width: 1200px; /* Increased max-width to match wider container */
   border-bottom: 3px solid #6c584c; /* Add underline for emphasis */
   padding-bottom: 0.5rem; /* Space for underline */
 }
 
 .experience-drawers {
+  padding-top: 40px; 
+  padding-bottom: 80px; /* Reduced from 120px to tighten the layout */
+  perspective: 1200px;
   position: relative;
-  z-index: 5;
-  width: 100%;
-  max-width: 900px;
+  max-width: 1200px; /* Match the updated max-width */
   margin: 0 auto;
-  padding: 2rem 1rem;
-  perspective: 1000px;
+  width: 100%;
+}
+
+/* Skeleton background effect */
+.experience-drawers:before,
+.experience-drawers:after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-color: rgba(26, 26, 26, 0.3); /* Dark background with opacity */
+    border-radius: 24px;
+    z-index: -1;
+    transform: rotate(1deg) scale(1.05);
+}
+
+.experience-drawers:after {
+    transform: rotate(-1deg) scale(1.05);
 }
 
 .experience-drawer {
@@ -542,6 +568,7 @@ header {
   border-left: 5px solid;
   transition: all 0.5s cubic-bezier(0.2, 0.85, 0.4, 1.275);
   min-height: 110px; /* Increased minimum height */
+  width: 100%; /* Full width of container */
 }
 
 /* Color variations */
@@ -684,43 +711,84 @@ header {
 /* Mobile responsiveness */
 @media screen and (max-width: 768px) {
   .experience-section {
-    padding: 4rem 1rem;
-    margin-top: 2rem;
+    padding: 20px 0 40px 0;
+    margin-top: 1rem;
+  }
+  
+  .experience-section .container {
+    width: 95%; /* Use more of the available width on mobile */
+    max-width: 100%; /* Allow full width on mobile */
   }
   
   .experience-section .section-title {
-    font-size: 2.25rem;
-    margin-bottom: 2.5rem;
+    font-size: 2rem;
+    margin-left: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .experience-drawers {
+    padding: 1rem 0.5rem;
+    max-width: 100%;
   }
   
   .experience-drawer {
-    padding: 1.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
     min-height: 100px;
   }
   
   .drawer-header {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
   }
   
   .drawer-date {
-    flex: 1 0 100%;
     margin-bottom: 0.5rem;
+    width: 100%;
   }
   
   .drawer-title-company {
-    flex: 1;
-  }
-  
-  .drawer-location {
-    margin-left: 0;
+    padding: 0;
+    margin-bottom: 0.5rem;
+    width: 100%;
     text-align: left;
   }
   
+  .drawer-title-company:before {
+    margin: 0 0 5px 0;
+  }
+  
+  .drawer-location {
+    align-self: flex-start;
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .drawer-description {
+    margin-top: 1rem !important;
+  }
+
+  .experience-drawer .drawer-description {
+    display: none;
+  }
+
+  .experience-drawer.active .drawer-description {
+    display: block;
+  }
+  
+  .experience-drawer .skills-container {
+    display: none;
+  }
+  
+  .experience-drawer.active .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
   .skill-tag {
-    font-size: 0.8rem;
-    padding: 0.25rem 0.6rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.7rem;
   }
 }
 
@@ -1934,11 +2002,12 @@ footer {
 
 .experience-drawers {
     padding-top: 40px; 
-    padding-bottom: 120px; /* Increased to accommodate the stacked cards */
+    padding-bottom: 80px; /* Reduced from 120px to tighten the layout */
     perspective: 1200px;
     position: relative;
-    max-width: 1100px; /* Increased from 900px for wider cards */
+    max-width: 1200px; /* Match the updated max-width */
     margin: 0 auto;
+    width: 100%;
 }
 
 /* Skeleton background effect */
