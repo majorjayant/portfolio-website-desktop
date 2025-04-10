@@ -520,9 +520,12 @@ function updateWorkExperienceTimeline(workExperienceData) {
                 <div class="drawer-location">${location}</div>
             </div>
             <div class="drawer-description">
-                <div class="description-content">${description.replace(/\n/g, '<br>')}</div>
+                <div class="description-content"></div>
             </div>
         `;
+        
+        // Set the description content properly to handle HTML
+        drawer.querySelector('.description-content').innerHTML = description;
         
         // Extract potential skills from the description
         let skills = extractSkillsFromDescription(description);
@@ -605,35 +608,20 @@ function updateWorkExperienceTimeline(workExperienceData) {
         });
         
         // Toggle active state on click
-        drawer.addEventListener('click', function() {
+        drawer.addEventListener('click', () => {
             // Check if this drawer is currently active
-            const wasActive = this.classList.contains('active');
+            const wasActive = drawer.classList.contains('active');
             
             // Close all drawers first
             drawers.forEach(d => {
                 d.classList.remove('active');
-                const desc = d.querySelector('.drawer-description');
-                if (desc) {
-                    desc.style.display = 'none';
-                }
             });
             
             // If this drawer wasn't active before, make it active
             if (!wasActive) {
-                this.classList.add('active');
-                const description = this.querySelector('.drawer-description');
-                if (description) {
-                    description.style.display = 'block';
-                    
-                    // Force a reflow to ensure the display change takes effect
-                    void description.offsetHeight;
-                    
-                    // Log the state for debugging
-                    console.log('Drawer activated, description visible:', 
-                                description.style.display, 
-                                'Content:', 
-                                description.textContent.substring(0, 50) + '...');
-                }
+                drawer.classList.add('active');
+                // Force browser reflow to properly render the drawer content
+                drawer.offsetHeight;
             }
         });
     });

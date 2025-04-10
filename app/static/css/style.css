@@ -487,22 +487,18 @@ header {
 /* ===== Experience Section ===== */
 .experience-section {
   position: relative;
-  background-color: #F5EFE6; /* Updated background color */
-  padding: 6rem 1rem;
+  background-color: #f8f8f8; /* Updated to light gray as requested */
+  padding: 60px 0; /* Updated padding to match requested value */
   overflow: hidden;
   z-index: 30;
   margin-top: 3rem;
-  border: none;
-  background-image: none; /* Ensure no background image */
 }
 
-/* Decorative elements - completely remove */
+/* Decorative elements - remove or set to 0 opacity */
 .experience-section .decoration-1,
 .experience-section .decoration-2 {
-  display: none;
   opacity: 0;
-  width: 0;
-  height: 0;
+  display: none;
 }
 
 .experience-section .section-title {
@@ -525,7 +521,6 @@ header {
   margin: 0 auto;
   padding: 2rem 1rem;
   perspective: 1000px;
-  background: transparent; /* Ensure container is transparent */
 }
 
 .experience-drawer {
@@ -535,13 +530,13 @@ header {
   padding: 2rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
-  overflow: visible; /* Change from hidden to visible to ensure content isn't cut off */
+  overflow: visible;
   cursor: pointer;
   transform-origin: center top;
   backface-visibility: hidden;
   border-left: 5px solid;
   transition: all 0.5s cubic-bezier(0.2, 0.85, 0.4, 1.275);
-  min-height: 110px; /* Increased minimum height */
+  min-height: 110px;
 }
 
 /* Color variations */
@@ -570,27 +565,6 @@ header {
   margin-top: 0.75rem;
   margin-bottom: 2.25rem;
   transform: translateY(-5px);
-  padding-bottom: 3rem; /* Add extra padding at bottom when expanded */
-}
-
-/* Remove any CSS that might interfere with description visibility */
-.experience-drawer.active .description-content {
-  display: block !important;
-  visibility: visible !important;
-  height: auto !important;
-  overflow: visible !important;
-  opacity: 1 !important;
-}
-
-/* Fix text formatting in description */
-.description-content p {
-  margin-bottom: 1rem;
-}
-
-.description-content br {
-  display: block; /* Ensure line breaks are displayed */
-  content: ""; /* Empty content */
-  margin-top: 0.5rem; /* Add spacing between lines */
 }
 
 /* Lighting effect */
@@ -693,28 +667,57 @@ header {
 .drawer-description {
   color: #555;
   line-height: 1.6;
+  max-height: 0;
   overflow: hidden;
-  display: none; /* Initially hidden */
-  padding-top: 1rem;
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+  pointer-events: none;
+  padding: 0;
+  margin: 0;
   border-top: 1px solid rgba(108, 88, 76, 0.2);
+}
+
+.experience-drawer.active .drawer-description {
+  max-height: 9999px;
+  opacity: 1;
+  pointer-events: auto;
+  padding-top: 1.5rem;
   margin-top: 1rem;
-  width: 100%;
+  overflow: visible;
+  display: block;
 }
 
 .description-content {
   padding: 0.5rem 0;
-  display: block; /* Make sure content is displayed */
-  width: 100%;
-  white-space: pre-line; /* Preserve line breaks */
 }
 
-.experience-drawer.active .drawer-description {
-  display: block !important; /* Force display when active using !important */
-  padding-top: 1.5rem;
-  margin-top: 0.5rem;
-  visibility: visible;
-  max-height: none; /* Remove max-height restriction */
-  opacity: 1;
+.description-content ul {
+  margin-left: 20px;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.description-content li {
+  margin-bottom: 10px;
+  padding-left: 10px;
+}
+
+/* Mobile fixes for description */
+@media screen and (max-width: 768px) {
+  .experience-drawer.active .drawer-description {
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .description-content ul {
+    margin-left: 10px;
+    padding-left: 10px;
+  }
+  
+  .description-content li {
+    margin-bottom: 8px;
+    padding-left: 5px;
+  }
 }
 
 /* Skills container and tags */
