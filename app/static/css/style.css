@@ -25,11 +25,14 @@
   box-sizing: border-box;
 }
 
+/* Apply a consistent background for the whole page */
 body {
+  background-color: #1a1a1a;
+  color: #ffffff;
   font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
   line-height: 1.6;
-  color: var(--text-dark);
-  background-color: var(--background-light);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -61,20 +64,27 @@ img {
 }
 
 .section-title {
-  font-size: 2rem;
-  margin-bottom: 2rem;
   position: relative;
-  display: inline-block;
+  z-index: 5;
+  margin-bottom: 2.5rem;
+  display: block;
+  color: #ffffff;
+  font-family: 'Nexa Light', 'Inter', sans-serif;
+  text-align: left;
+  font-size: 2rem;
+  padding-left: 50px;
+  font-weight: 500;
 }
 
 .section-title:after {
   content: '';
   position: absolute;
   bottom: -10px;
-  left: 0;
+  left: 50px;
+  transform: none;
   width: 50px;
   height: 3px;
-  background-color: var(--accent-color);
+  background-color: #d1b38a;
 }
 
 .highlight {
@@ -487,9 +497,9 @@ header {
 /* ===== Experience Section ===== */
 .experience-section {
   background-color: transparent;
-  padding-top: 330px;
+  padding-top: 50px; /* Reduced padding now that we have the wrapper */
   padding-bottom: 100px;
-  margin-top: 50px;
+  margin-top: 0;
   position: relative;
   overflow: hidden;
 }
@@ -504,6 +514,7 @@ header {
   text-align: left;
   font-size: 2rem;
   padding-left: 50px;
+  font-weight: 500;
 }
 
 .experience-section .section-title:after {
@@ -579,7 +590,7 @@ header {
   position: relative;
   border-radius: 24px;
   margin-bottom: -60px;
-  height: 120px;
+  height: 150px; /* Increased height */
   overflow: hidden;
   cursor: pointer;
   padding: 24px;
@@ -616,7 +627,7 @@ header {
 .experience-drawer:hover, 
 .experience-drawer.active {
   height: auto;
-  min-height: 250px;
+  min-height: 300px; /* Increased min-height */
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   transform: scale(1.02);
   z-index: 30 !important;
@@ -631,7 +642,7 @@ header {
 
 .experience-drawer .drawer-date {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #d1b38a; /* Match website accent color */
   font-weight: 500;
   width: 25%;
   text-align: left;
@@ -681,12 +692,12 @@ header {
 .experience-drawer .drawer-title-company p {
   margin: 0;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .experience-drawer .drawer-location {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #d1b38a; /* Match website accent color */
   font-weight: 500;
   width: 25%;
   text-align: right;
@@ -804,7 +815,7 @@ header {
 
   .experience-drawer.active {
     height: auto;
-    min-height: 250px;
+    min-height: 300px;
     transform: scale(1.02);
     z-index: 100 !important;
     margin-bottom: 16px;
@@ -860,6 +871,7 @@ header {
   text-align: left;
   font-size: 2rem;
   padding-left: 50px;
+  font-weight: 500;
 }
 
 .education-section .section-title:after {
@@ -935,7 +947,7 @@ header {
   position: relative;
   border-radius: 24px;
   margin-bottom: -60px;
-  height: 120px;
+  height: 150px; /* Increased height */
   overflow: hidden;
   cursor: pointer;
   padding: 24px;
@@ -972,7 +984,7 @@ header {
 .education-drawer:hover, 
 .education-drawer.active {
   height: auto;
-  min-height: 250px;
+  min-height: 300px; /* Increased min-height */
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   transform: scale(1.02);
   z-index: 30 !important;
@@ -987,7 +999,7 @@ header {
 
 .education-drawer .drawer-period {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #d1b38a; /* Match website accent color */
   font-weight: 500;
   width: 25%;
   text-align: left;
@@ -1037,7 +1049,7 @@ header {
 .education-drawer .drawer-degree-institution p {
   margin: 0;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .education-drawer .drawer-description {
@@ -1090,6 +1102,7 @@ header {
   text-align: left;
   font-size: 2rem;
   padding-left: 50px;
+  font-weight: 500;
 }
 
 .certifications-section .section-title:after {
@@ -1165,7 +1178,7 @@ header {
   position: relative;
   border-radius: 24px;
   margin-bottom: -60px;
-  height: 120px;
+  height: 150px; /* Increased height */
   overflow: hidden;
   cursor: pointer;
   padding: 24px;
@@ -1202,7 +1215,7 @@ header {
 .certification-drawer:hover, 
 .certification-drawer.active {
   height: auto;
-  min-height: 200px;
+  min-height: 250px; /* Increased min-height */
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   transform: scale(1.02);
   z-index: 30 !important;
@@ -1217,7 +1230,7 @@ header {
 
 .certification-drawer .drawer-dates {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #d1b38a; /* Match website accent color */
   font-weight: 500;
   width: 25%;
   text-align: left;
@@ -1267,7 +1280,7 @@ header {
 .certification-drawer .drawer-title-issuer p {
   margin: 0;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .certification-drawer .drawer-actions {
@@ -1300,92 +1313,64 @@ header {
   transform: translateY(-2px);
 }
 
-/* Color classes for sections */
+/* Color classes for cards - use consistent colors with transparency */
+.color-1 {
+  background-color: rgba(40, 40, 40, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
+}
+
+.color-2 {
+  background-color: rgba(50, 50, 50, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
+}
+
+.color-3 {
+  background-color: rgba(60, 60, 60, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
+}
+
+.color-4 {
+  background-color: rgba(70, 70, 70, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
+}
+
+/* Education color classes */
 .education-color-1 {
-  background-color: rgba(108, 88, 76, 0.95); /* #6c584c */
+  background-color: rgba(40, 40, 40, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
 }
 
 .education-color-2 {
-  background-color: rgba(163, 133, 102, 0.95); /* #a38566 */
+  background-color: rgba(50, 50, 50, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
 }
 
+/* Certification color classes */
 .cert-color-1 {
-  background-color: rgba(90, 80, 110, 0.95); /* Purplish */
+  background-color: rgba(40, 40, 40, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
 }
 
 .cert-color-2 {
-  background-color: rgba(120, 110, 160, 0.95); /* Lighter purple */
+  background-color: rgba(50, 50, 50, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
 }
 
 .cert-color-3 {
-  background-color: rgba(150, 140, 190, 0.95); /* Even lighter purple */
+  background-color: rgba(60, 60, 60, 0.7);
+  border: 1px solid rgba(209, 179, 138, 0.3);
 }
 
-/* Mobile adjustments for education and certification drawers */
-@media screen and (max-width: 768px) {
-  .education-drawer,
-  .certification-drawer {
-    height: 140px;
-    padding: 20px;
-    margin-bottom: -40px;
-  }
-  
-  .education-drawer:hover,
-  .certification-drawer:hover {
-    transform: none;
-    height: 140px;
-    min-height: auto;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-
-  .education-drawer.active,
-  .certification-drawer.active {
-    height: auto;
-    min-height: 250px;
-    transform: scale(1.02);
-    z-index: 100 !important;
-    margin-bottom: 16px;
-  }
-  
-  .education-drawer .drawer-header,
-  .certification-drawer .drawer-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .education-drawer .drawer-period,
-  .certification-drawer .drawer-dates {
-    margin-bottom: 8px;
-    width: 100%;
-  }
-  
-  .education-drawer .drawer-degree-institution,
-  .certification-drawer .drawer-title-issuer {
-    margin-bottom: 8px;
-    width: 100%;
-    text-align: left;
-  }
-  
-  .education-drawer .drawer-degree-institution h3,
-  .certification-drawer .drawer-title-issuer h3 {
-    justify-content: flex-start;
-  }
-  
-  .certification-drawer .drawer-actions {
-    width: 100%;
-    text-align: left;
-    margin-top: 8px;
-  }
-
-  .education-drawer .drawer-description,
-  .certification-drawer .view-certificate {
-    display: none;
-  }
-
-  .education-drawer.active .drawer-description,
-  .certification-drawer.active .view-certificate {
-    display: block;
-  }
+/* Skills tags styling */
+.skill-tag {
+  background-color: rgba(209, 179, 138, 0.2);
+  color: #d1b38a;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  display: inline-block;
 }
 
 /* ===== Projects Page ===== */
@@ -2314,7 +2299,7 @@ footer {
     position: relative;
     border-radius: 24px;
     margin-bottom: -60px; /* Creates the stacked effect */
-    height: 120px;
+    height: 150px; /* Increased height */
     overflow: hidden;
     cursor: pointer;
     padding: 24px;
@@ -2329,7 +2314,7 @@ footer {
 .experience-drawer:hover, 
 .experience-drawer.active {
     height: auto;
-    min-height: 300px;
+    min-height: 300px; /* Increased min-height */
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
     transform: scale(1.02); /* Slight scale up on hover */
     z-index: 30 !important;
@@ -2344,7 +2329,7 @@ footer {
 
 .experience-drawer .drawer-date {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
+    color: #d1b38a; /* Match website accent color */
     font-weight: 500;
     width: 25%;
     text-align: left;
@@ -2367,12 +2352,12 @@ footer {
 .experience-drawer .drawer-title-company p {
     margin: 0;
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .experience-drawer .drawer-location {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
+    color: #d1b38a; /* Match website accent color */
     font-weight: 500;
     width: 25%;
     text-align: right;
@@ -2514,21 +2499,11 @@ footer {
 }
 
 .section-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
-  overflow: hidden;
+  display: none; /* Hide individual section backgrounds */
 }
 
 .blur-element {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.3;
-  z-index: 0;
+  display: none; /* Hide blur elements for consistent background */
 }
 
 .experience-section .blur-element.blur-1 {
@@ -2580,3 +2555,89 @@ footer {
 }
 
 /* ===== Experience Section ===== */
+
+/* Mobile adjustments for education and certification drawers */
+@media screen and (max-width: 768px) {
+  .education-drawer,
+  .certification-drawer,
+  .experience-drawer {
+    height: 140px;
+    padding: 20px;
+    margin-bottom: -40px;
+  }
+  
+  .education-drawer:hover,
+  .certification-drawer:hover,
+  .experience-drawer:hover {
+    transform: none;
+    height: 140px;
+    min-height: auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .education-drawer.active,
+  .certification-drawer.active,
+  .experience-drawer.active {
+    height: auto;
+    min-height: 300px;
+    transform: scale(1.02);
+    z-index: 100 !important;
+    margin-bottom: 16px;
+  }
+  
+  .education-drawer .drawer-header,
+  .certification-drawer .drawer-header,
+  .experience-drawer .drawer-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .education-drawer .drawer-period,
+  .certification-drawer .drawer-dates,
+  .experience-drawer .drawer-date {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .education-drawer .drawer-degree-institution,
+  .certification-drawer .drawer-title-issuer,
+  .experience-drawer .drawer-title-company {
+    margin-bottom: 8px;
+    width: 100%;
+    text-align: left;
+    padding: 0;
+  }
+  
+  .education-drawer .drawer-degree-institution h3,
+  .certification-drawer .drawer-title-issuer h3,
+  .experience-drawer .drawer-title-company h3 {
+    justify-content: flex-start;
+  }
+  
+  .certification-drawer .drawer-actions,
+  .experience-drawer .drawer-location {
+    width: 100%;
+    text-align: left;
+    margin-top: 8px;
+    justify-content: flex-start;
+    align-self: flex-start;
+  }
+
+  .education-drawer .drawer-description,
+  .certification-drawer .view-certificate,
+  .experience-drawer .drawer-description {
+    display: none;
+  }
+
+  .education-drawer.active .drawer-description,
+  .certification-drawer.active .view-certificate,
+  .experience-drawer.active .drawer-description {
+    display: block;
+  }
+}
+
+.career-sections-wrapper {
+  padding: 30px 20px;
+  max-width: 1200px;
+  margin: 80px auto 0;
+}
