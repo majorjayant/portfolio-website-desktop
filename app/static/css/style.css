@@ -72,14 +72,12 @@ img {
   position: absolute;
   bottom: -10px;
   left: 0;
-  width: 10px;
+  width: 100px;
   height: 3px;
   background-color: var(--accent-color);
 }
 
-.highlight {
-  color: var(--accent-color);
-}
+
 
 .button {
   display: inline-block;
@@ -558,7 +556,7 @@ header {
   position: relative;
   background: #ffffff;
   border-radius: 16px;
-  padding: 0rem;
+  padding: 2rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
