@@ -1,23 +1,38 @@
 [
   {
     "id": 1,
-    "title": "Senior Product Manager",
+    "job_title": "Senior Product Manager",
     "company": "Tech Solutions Inc.",
-    "period": "Jan 2020 - Present",
-    "description": "Leading product development for enterprise SaaS solutions. Managing a team of 5 developers and 2 designers."
+    "location": "San Francisco, CA",
+    "start_date": "2020-01-15",
+    "end_date": null,
+    "description": "Leading product development for enterprise SaaS solutions. Responsible for roadmap planning, sprint management, and stakeholder communication. Successfully launched 3 major features that increased user retention by 25%. Technologies used include JavaScript, React, Node.js, AWS, and Docker."
   },
   {
     "id": 2,
-    "title": "Product Manager",
+    "job_title": "Product Manager",
     "company": "Digital Innovations Co.",
-    "period": "Mar 2017 - Dec 2019",
-    "description": "Managed the development of mobile applications for financial services clients."
+    "location": "Austin, TX",
+    "start_date": "2017-03-10",
+    "end_date": "2019-12-20",
+    "description": "Managed the development of mobile applications for financial services clients. Led a cross-functional team of 8 developers and designers. Conducted market research and competitor analysis to inform product strategy. Implemented Agile methodologies resulting in 40% faster time-to-market. Technologies used include Python, Django, React Native, and Google Cloud."
   },
   {
     "id": 3,
-    "title": "Associate Product Manager",
+    "job_title": "Associate Product Manager",
     "company": "StartupHub",
-    "period": "Jun 2015 - Feb 2017",
-    "description": "Assisted in the development and launch of three successful web applications."
+    "location": "Remote",
+    "start_date": "2015-06-05",
+    "end_date": "2017-02-28",
+    "description": "Assisted in the development and launch of three successful web applications. Collaborated closely with UX/UI designers to create intuitive user interfaces. Gathered and analyzed user feedback to prioritize feature development. Conducted A/B testing to optimize conversion rates. Technologies used include HTML, CSS, JavaScript, PHP, and MySQL."
+  },
+  {
+    "id": 4,
+    "job_title": "Junior Web Developer",
+    "company": "Creative Technology Labs",
+    "location": "Boston, MA",
+    "start_date": "2013-09-15",
+    "end_date": "2015-05-30",
+    "description": "Developed responsive websites for small to medium-sized businesses. Created custom WordPress themes and plugins. Implemented SEO best practices resulting in improved search engine rankings. Worked with clients to identify requirements and deliver solutions on time and within budget. Technologies used include HTML5, CSS3, JavaScript, WordPress, and PHP."
   }
 ]
