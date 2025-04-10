@@ -40,6 +40,30 @@
         .drawer-title-company:before {
             display: none !important;
         }
+        
+        /* Add back the black stacked background effect */
+        .experience-drawers {
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        .experience-drawers:before,
+        .experience-drawers:after {
+            content: '' !important;
+            position: absolute !important;
+            top: -20px !important;
+            left: -20px !important;
+            right: -20px !important;
+            bottom: -20px !important;
+            background-color: rgba(26, 26, 26, 0.3) !important;
+            border-radius: 24px !important;
+            z-index: -1 !important;
+        }
+        .experience-drawers:before {
+            transform: rotate(1deg) scale(1.05) !important;
+        }
+        .experience-drawers:after {
+            transform: rotate(-1deg) scale(1.05) !important;
+        }
     </style>
     
     <!-- Favicon -->

@@ -532,7 +532,7 @@ header {
   margin: 0 auto;
   width: 100%;
   /* Reduce the staggered effect */
-  --drawer-overlap: 10px; /* Decreased from ~40px */
+  --drawer-overlap: -10px; /* Decreased from ~40px */
 }
 
 /* Adjust drawer overlap and animation */
@@ -550,7 +550,7 @@ header {
   backface-visibility: hidden;
   border-left: 5px solid;
   /* Adjust animation timing for smoother effect */
-  transition: all 0.3s ease-out; /* Changed from 0.5s cubic-bezier */
+  transition: all 1s ease-out; /* Changed from 0.5s cubic-bezier */
   min-height: 110px;
   width: 100%;
 }

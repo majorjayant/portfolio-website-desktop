@@ -1,5 +1,34 @@
 /* Custom Overrides CSS - Added to fix specific issues */
 
+/* ===== RESTORE BLACK BACKGROUND EFFECT FOR DRAWERS ===== */
+/* Add back the stacked dark background effect */
+
+.experience-drawers {
+  position: relative !important;
+  padding-top: 40px !important;
+  padding-bottom: 80px !important;
+  z-index: 1 !important;
+}
+
+/* Skeleton background effect */
+.experience-drawers:before,
+.experience-drawers:after {
+  content: '' !important;
+  position: absolute !important;
+  top: -20px !important;
+  left: -20px !important;
+  right: -20px !important;
+  bottom: -20px !important;
+  background-color: rgba(26, 26, 26, 0.3) !important; /* Dark background with opacity */
+  border-radius: 24px !important;
+  z-index: -1 !important;
+  transform: rotate(1deg) scale(1.05) !important;
+}
+
+.experience-drawers:after {
+  transform: rotate(-1deg) scale(1.05) !important;
+}
+
 /* ===== JOB DESCRIPTION ANIMATION FIXES ===== */
 /* Ensure descriptions are only visible on hover */
 
@@ -99,4 +128,26 @@
   .drawer-title-company:before {
     display: none !important;
   }
+}
+
+/* Adjust drawer appearance for proper stacking */
+.experience-drawer {
+  position: relative !important;
+  z-index: 2 !important; /* Higher than the background but lower than hover state */
+  background: #ffffff !important;
+  border-radius: 16px !important;
+  margin-bottom: 1.5rem !important;
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.experience-drawer:hover {
+  z-index: 10 !important; /* Higher z-index when hovered */
+  transform: translateY(-5px) !important;
+  box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Make sure the bg sits behind all elements */
+.experience-section {
+  position: relative !important;
+  z-index: 1 !important;
 } 
