@@ -2,6 +2,22 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing application');
+    
+    // Default configuration with fallback values
+    window.defaultConfig = {
+        site_title: "Jayant Malik | Portfolio",
+        site_subtitle: "Product Manager | Developer",
+        image_urls: {
+            favicon: "img/favicon.ico",
+            logo: "img/logo.png",
+            banner: "img/banner.jpg",
+            about_profile: "img/profile.jpg"
+        },
+        api: {
+            base_url: "/api"
+        }
+    };
+    
     // Load the site configuration
     loadSiteConfig();
 
@@ -198,242 +214,230 @@ function filterProjects(category) {
             project.style.display = 'block';
             setTimeout(() => {
                 project.style.opacity = '1';
-                project.style.transform = 'translateY(0)';
             }, 50);
         } else {
             project.style.opacity = '0';
-            project.style.transform = 'translateY(20px)';
             setTimeout(() => {
                 project.style.display = 'none';
-            }, 300);
+            }, 500);
         }
     });
 }
 
-/**
- * Load site configuration from API
- */
+// Load site configuration
 function loadSiteConfig() {
-    console.log('Starting to load site configuration');
+    console.log('Loading site configuration');
     
-    // Use the confirmed working API endpoint
-    const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+    // Check if we already have site config in window object (might be inserted inline in HTML)
+    if (window.siteConfig) {
+        console.log('Using pre-loaded site configuration');
+        processConfigData(window.siteConfig);
+        return;
+    }
     
-    console.log('Fetching from API endpoint:', apiEndpoint);
+    // Try to load from local data file
+    fetch('/data/site_config.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch site configuration');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Loaded site configuration from file');
+            if (data && data.site_configs) {
+                processConfigData(data.site_configs);
+            } else {
+                throw new Error('Invalid site configuration format');
+            }
+        })
+        .catch(error => {
+            console.warn('Error loading site configuration:', error);
+            console.log('Using default configuration');
+            processConfigData(window.defaultConfig);
+            // Fix any broken images with fallbacks
+            fixBrokenImages();
+        });
+}
+
+// Process the configuration data
+function processConfigData(data) {
+    console.log('Processing configuration data');
     
-    fetch(apiEndpoint, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Cache-Control': 'no-cache'
-        }
-    })
-    .then(response => {
-        console.log('API response status:', response.status);
-        if (!response.ok) {
-            throw new Error(`API response not OK: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Successfully loaded from API:', data);
-        processConfigData(data);
-    })
-    .catch(error => {
-        console.error('Failed to load from API:', error);
-        // Show error notification on the page
-        showErrorNotification('Failed to load configuration. Please refresh the page or contact support.');
-    });
+    // Store the configuration globally
+    window.siteConfig = data;
     
-    function processConfigData(data) {
-        console.log('Processing configuration data', data);
-        
-        // Handle nested data structure if present
-        let configData = data;
-        if (data.site_configs) {
-            console.log('Detected nested site_configs structure');
-            configData = data.site_configs;
-        }
-        
-        if (data.site_config) {
-            console.log('Detected site_config object');
-            configData = data.site_config;
-        }
-        
-        console.log('Final config data to apply:', configData);
-        
-        // Apply configuration to the website
-        updateWebsiteElements(configData);
-        
-        // Check for work experience data and update timeline
-        if (data.work_experience && Array.isArray(data.work_experience)) {
-            console.log('Found work experience data:', data.work_experience);
-            // Call the function to update the work experience timeline
-            updateWorkExperienceTimeline(data.work_experience);
-        } else {
-            console.warn('No work experience data found in API response');
-        }
+    // Update website elements with the configuration
+    updateWebsiteElements(data);
+    
+    // Load work experience data if on the homepage or about page
+    const workExperienceSection = document.getElementById('experience-timeline');
+    if (workExperienceSection && data.work_experience) {
+        updateWorkExperienceTimeline(data.work_experience);
     }
 }
 
-/**
- * Show error notification on the page
- */
+// Display error notification
 function showErrorNotification(message) {
-    const notification = document.createElement('div');
-    notification.className = 'error-notification';
-    notification.style.position = 'fixed';
-    notification.style.top = '1rem';
-    notification.style.right = '1rem';
-    notification.style.backgroundColor = '#f44336';
-    notification.style.color = 'white';
-    notification.style.padding = '1rem';
-    notification.style.borderRadius = '4px';
-    notification.style.zIndex = '9999';
-    notification.style.maxWidth = '300px';
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
+    // Create notification element if it doesn't exist
+    let notification = document.getElementById('error-notification');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'error-notification';
+        notification.className = 'error-notification';
+        document.body.appendChild(notification);
+        
+        // Style the notification
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.right = '20px';
+        notification.style.backgroundColor = '#f44336';
+        notification.style.color = 'white';
+        notification.style.padding = '12px 24px';
+        notification.style.borderRadius = '4px';
+        notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+        notification.style.zIndex = '1000';
+        notification.style.transform = 'translateY(100px)';
         notification.style.opacity = '0';
-        notification.style.transition = 'opacity 0.5s';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 500);
+        notification.style.transition = 'transform 0.3s, opacity 0.3s';
+    }
+    
+    // Set message and show notification
+    notification.textContent = message;
+    setTimeout(() => {
+        notification.style.transform = 'translateY(0)';
+        notification.style.opacity = '1';
+    }, 10);
+    
+    // Hide notification after 5 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateY(100px)';
+        notification.style.opacity = '0';
     }, 5000);
 }
 
-/**
- * Update website elements with configuration data
- */
-function updateWebsiteElements(config) {
-    console.log('Updating website elements with config data');
+// Fix broken images by using fallbacks
+function fixBrokenImages() {
+    console.log('Checking for broken images');
     
-    // Store config globally for other components to access
-    window.siteConfig = config;
+    // Default image fallbacks
+    const fallbacks = window.defaultConfig.image_urls;
+    
+    // Fix common elements
+    const elements = [
+        { selector: '.navbar .logo img', attr: 'src', fallback: fallbacks.logo },
+        { selector: '.footer-logo img', attr: 'src', fallback: fallbacks.logo },
+        { selector: 'link[rel="icon"]', attr: 'href', fallback: fallbacks.favicon },
+        { selector: '.banner-image', attr: 'style', fallback: `background-image: url('${fallbacks.banner}')` },
+        { selector: '.hero-image img, .about-profile img', attr: 'src', fallback: fallbacks.about_profile }
+    ];
+    
+    elements.forEach(el => {
+        const element = document.querySelector(el.selector);
+        if (element) {
+            if (el.attr === 'style' && (!element.style.backgroundImage || element.style.backgroundImage === 'none')) {
+                element.style.backgroundImage = `url('${el.fallback}')`;
+            } else if (el.attr !== 'style' && (!element[el.attr] || element.naturalWidth === 0)) {
+                element[el.attr] = el.fallback;
+            }
+            
+            // Add error handler for images
+            if (element.tagName === 'IMG') {
+                element.onerror = function() {
+                    this.src = el.fallback;
+                };
+            }
+        }
+    });
+}
+
+// Update website elements with configuration
+function updateWebsiteElements(config) {
+    console.log('Updating website elements with configuration');
+    
+    // Update document title
+    if (config.site_title) {
+        document.title = config.site_title;
+    }
     
     // Update favicon
-    if (config.image_favicon_url) {
-        const favicon = document.querySelector('link[rel="icon"]');
-        if (favicon) {
-            favicon.href = config.image_favicon_url;
-            console.log('Updated favicon:', config.image_favicon_url);
-        }
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon && config.image_urls && config.image_urls.favicon) {
+        favicon.href = config.image_urls.favicon;
     }
     
     // Update logo
-    if (config.image_logo_url) {
-        const logoImg = document.querySelector('.logo img');
-        if (logoImg) {
-            logoImg.src = config.image_logo_url;
-            console.log('Updated logo:', config.image_logo_url);
+    const logoElements = document.querySelectorAll('.navbar .logo img, .footer-logo img');
+    logoElements.forEach(logo => {
+        if (config.image_urls && config.image_urls.logo) {
+            logo.src = config.image_urls.logo;
         }
-    }
+    });
     
-    // Update banner
-    if (config.image_banner_url) {
-        const banner = document.getElementById('banner-image');
-        if (banner) {
-            // Function to update banner image based on screen size
-            function updateBannerImage() {
-                const isMobile = window.innerWidth <= 768;
-                const mobileUrl = config.image_mobile_banner_url;
-                const desktopUrl = config.image_banner_url;
-                
-                console.log('Updating banner image. Mobile?', isMobile, 'Mobile URL:', mobileUrl, 'Desktop URL:', desktopUrl);
-                
-                if (isMobile && mobileUrl) {
-                    banner.style.backgroundImage = `url('${mobileUrl}')`;
-                    console.log('Set mobile banner URL:', mobileUrl);
-                } else if (desktopUrl) {
-                    banner.style.backgroundImage = `url('${desktopUrl}')`;
-                    console.log('Set desktop banner URL:', desktopUrl);
-                }
-                
-                banner.style.backgroundSize = "cover";
-                banner.style.backgroundPosition = "center";
-            }
+    // Update banner image if present
+    const bannerImage = document.querySelector('.banner-image');
+    if (bannerImage && config.image_urls) {
+        function updateBannerImage() {
+            const isMobile = window.innerWidth <= 768;
+            const bannerUrl = isMobile && config.image_urls.mobile_banner 
+                ? config.image_urls.mobile_banner 
+                : config.image_urls.banner;
             
-            // Update banner immediately and on resize
-            updateBannerImage();
-            window.addEventListener('resize', updateBannerImage);
-            console.log('Banner update complete and resize listener added');
-        }
-    }
-    
-    // Update about section
-    if (config.about_title) {
-        const aboutTitle = document.getElementById('about-title');
-        if (aboutTitle) {
-            aboutTitle.innerHTML = config.about_title;
-            console.log('Updated about title:', config.about_title);
-        }
-    }
-    
-    if (config.about_subtitle) {
-        const aboutSubtitle = document.getElementById('about-subtitle');
-        if (aboutSubtitle) {
-            aboutSubtitle.innerHTML = config.about_subtitle;
-            console.log('Updated about subtitle:', config.about_subtitle);
-        }
-    }
-    
-    if (config.about_description) {
-        const aboutDescription = document.getElementById('about-description');
-        if (aboutDescription) {
-            aboutDescription.innerHTML = config.about_description;
-            console.log('Updated about description with HTML formatting');
-        }
-    }
-    
-    // Update profile photo
-    if (config.image_about_profile_url) {
-        const profilePhoto = document.getElementById('profile-image');
-        if (profilePhoto) {
-            profilePhoto.src = config.image_about_profile_url;
-            console.log('Updated profile photo:', config.image_about_profile_url);
-        }
-    }
-    
-    // Update gallery photos
-    const photos = [
-        { url: config.image_about_photo1_url, alt: config.about_photo1_alt },
-        { url: config.image_about_photo2_url, alt: config.about_photo2_alt },
-        { url: config.image_about_photo3_url, alt: config.about_photo3_alt },
-        { url: config.image_about_photo4_url, alt: config.about_photo4_alt }
-    ];
-    
-    // If updateCarousel function exists, call it
-    if (typeof updateCarousel === 'function') {
-        updateCarousel(photos);
-        console.log('Updated photo carousel with gallery photos');
-    } else {
-        console.warn('updateCarousel function not found');
-    }
-    
-    console.log('Website elements updated successfully');
-}
-
-/**
- * Update a gallery photo with the given URL and alt text
- */
-function updateGalleryPhoto(selector, photoUrl, altText) {
-    if (photoUrl) {
-        const photo = document.querySelector(`${selector} img`);
-        if (photo) {
-            photo.src = photoUrl;
-            if (altText) {
-                photo.alt = altText;
+            if (bannerUrl) {
+                bannerImage.style.backgroundImage = `url('${bannerUrl}')`;
             }
-            console.log(`Updated ${selector}:`, photoUrl);
+        }
+        
+        // Update on load and window resize
+        updateBannerImage();
+        window.addEventListener('resize', updateBannerImage);
+    }
+    
+    // Update heading content
+    const headingElements = {
+        'site-title': config.site_title,
+        'site-subtitle': config.site_subtitle,
+        'site-description': config.site_description
+    };
+    
+    for (const [id, content] of Object.entries(headingElements)) {
+        const element = document.getElementById(id);
+        if (element && content) {
+            element.innerHTML = content;
+        }
+    }
+    
+    // Update profile image
+    const profileImage = document.querySelector('.about-profile img, .hero-image img');
+    if (profileImage && config.image_urls && config.image_urls.about_profile) {
+        profileImage.src = config.image_urls.about_profile;
+        profileImage.alt = config.site_title || 'Profile Image';
+    }
+    
+    // Update gallery photos if they exist
+    if (config.image_urls) {
+        for (let i = 1; i <= 4; i++) {
+            const photoUrl = config.image_urls[`about_photo${i}`];
+            const photoAlt = config[`about_photo${i}_alt`] || `Gallery Photo ${i}`;
+            if (photoUrl) {
+                updateGalleryPhoto(`.photo-stack img:nth-child(${i})`, photoUrl, photoAlt);
+            }
         }
     }
 }
 
-/**
- * Update work experience section with a stacked drawer UI
- */
+// Update gallery photo src and alt
+function updateGalleryPhoto(selector, photoUrl, altText) {
+    const photoElement = document.querySelector(selector);
+    if (photoElement && photoUrl) {
+        photoElement.src = photoUrl;
+        if (altText) {
+            photoElement.alt = altText;
+        }
+    }
+}
+
+// Update work experience timeline
 function updateWorkExperienceTimeline(workExperienceData) {
     console.log("Updating work experience timeline with data:", workExperienceData);
     

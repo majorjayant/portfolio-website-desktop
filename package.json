@@ -1,14 +1,14 @@
 {
   "name": "portfolio-website-desktop",
   "version": "1.0.0",
-  "description": "Jayant Arora's Portfolio Website - Static site with AWS CloudFront and Lambda",
+  "description": "Jayant Arora's Portfolio Website - Static site with AWS Amplify frontend and Serverless API",
   "main": "index.js",
   "scripts": {
-    "build": "python build_static_site.py",
+    "build": "python app/index_standalone.py",
     "dev": "python app.py",
-    "deploy": "serverless deploy",
-    "deploy:prod": "serverless deploy --stage prod",
-    "remove": "serverless remove"
+    "deploy:lambda": "serverless deploy",
+    "deploy:lambda:prod": "serverless deploy --stage prod",
+    "remove:lambda": "serverless remove"
   },
   "engines": {
     "node": ">=14"
@@ -27,6 +27,7 @@
     "portfolio",
     "aws",
     "serverless",
+    "amplify",
     "python"
   ],
   "author": "Jayant Arora",

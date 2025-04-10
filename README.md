@@ -2,6 +2,36 @@
 
 A streamlined portfolio website using AWS Amplify for hosting and AWS Lambda with MySQL for backend storage.
 
+## Recent Updates & Improvements
+
+The codebase has undergone several important improvements to enhance maintainability and reliability:
+
+1. **Centralized Configuration**: 
+   - Removed hardcoded URLs in favor of environment variables 
+   - Created centralized asset handling in JavaScript
+   - Updated `environment-config.json` with standardized structure
+
+2. **Build Process Enhancements**:
+   - Improved `amplify.yml` to handle Python build environment properly
+   - Enhanced fallback mechanism in case primary build fails
+   - Added proper caching configuration for static assets
+
+3. **Cleaned Codebase**:
+   - Removed unnecessary test files and empty CSS files
+   - Updated package.json scripts to clarify deployment approach
+   - Removed Netlify-specific configuration
+
+4. **Better Error Handling**:
+   - Added frontend fallbacks for failed API requests
+   - Improved image loading with fallback paths
+   - Enhanced error notifications for user experience
+
+To use this improved codebase:
+
+1. Set up AWS resources as described in the deployment section
+2. Update the `API_GATEWAY_URL` in `environment-config.json` with your actual API endpoint
+3. Replace placeholder images in `/img` directory or update paths to your S3 bucket
+
 ## Components
 
 - **Frontend**: Static HTML/CSS/JS files in the `app/static` directory.

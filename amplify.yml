@@ -1,51 +1,84 @@
 version: 1
 frontend:
   phases:
+    preBuild:
+      commands:
+        - "echo \"Setting up Python environment...\""
+        - "python --version"
+        - "python -c \"import sys; print('Python executable:', sys.executable)\""
+        - "echo \"Installing pip and dependencies...\""
+        - "python -m pip install --upgrade pip"
+        - "python -m pip install -r requirements-dev.txt"
+        - "python -m pip install --no-cache-dir Flask==2.3.3 Jinja2==3.1.2 python-dotenv==1.0.0 boto3 botocore"
     build:
       commands:
-        - echo "Building portfolio website with admin section"
-        - mkdir -p app/static/admin
-        - mkdir -p app/static/data
-        - mkdir -p app/static/api
-        - mkdir -p app/static/admin-direct
-        - echo "Copying admin files..."
-        - cp -f app/admin/dashboard.html app/static/admin/dashboard.html || echo "dashboard.html not found"
-        - cp -f app/admin/index.html app/static/admin/index.html || echo "admin index.html not found"
-        - echo "Admin files in static directory:" && ls -la app/static/admin/
-        - echo "Copying admin-direct directories..."
-        - cp -f app/admin-direct/index.html app/static/admin-direct/index.html || echo "admin-direct/index.html not found"
-        - if [ ! -f app/static/data/site_config.json ]; then echo '{"site_configs":{}}' > app/static/data/site_config.json; fi
-        - echo "Static files ready for deployment"
+        - "echo \"Environment info and checking files...\""
+        - "pwd"
+        - "ls -la"
+        - "echo \"Setting up directories...\""
+        - "mkdir -p app/static/admin"
+        - "mkdir -p app/static/data"
+        - "mkdir -p app/static/api"
+        - "mkdir -p app/static/admin-direct"
+        - "echo \"Setting AWS credentials for build...\""
+        - "export AWS_REGION=eu-north-1"
+        - "export STATIC_DEPLOYMENT=true"
+        - "echo \"Copying admin files...\""
+        - "cp -f app/admin/dashboard.html app/static/admin/dashboard.html || echo \"dashboard.html not found\""
+        - "cp -f app/admin/index.html app/static/admin/index.html || echo \"admin index.html not found\""
+        - "cp -f app/admin-direct/index.html app/static/admin-direct/index.html || echo \"admin-direct/index.html not found\""
+        - "if [ ! -f app/static/data/site_config.json ]; then echo '{\"site_configs\":{}}' > app/static/data/site_config.json; fi"
+        - "echo \"Building static site...\""
+        - "if [ -f build_static_site.py ]; then python build_static_site.py; else echo \"No build script found, using fallback\"; python app/index_standalone.py; fi"
+        - "echo \"Checking build output:\""
+        - "ls -la app/static/"
+        - "echo \"Verifying index.html exists:\""
+        - "ls -la app/static/index.html || echo \"WARNING: index.html not found!\""
+        - "chmod +x amplify-debug.sh"
+        - "./amplify-debug.sh"
   artifacts:
     baseDirectory: app/static
     files:
       - '**/*'
   cache:
     paths:
+      - .pip-cache/**/*
       - node_modules/**/*
   customHeaders:
-    - pattern: '**/*'
+    # Set efficient caching for static assets
+    - pattern: '**/*.{js,css,png,jpg,jpeg,gif,svg,woff,woff2,ttf,eot}'
       headers:
         - key: 'Cache-Control'
-          value: 'no-cache, no-store, must-revalidate'
+          value: 'public, max-age=31536000, immutable'
+    
+    # No caching for HTML files that might change
+    - pattern: '**/*.html'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=0, must-revalidate'
+    
+    # Configure proper content types and CORS for API
     - pattern: '*.json'
       headers:
         - key: 'Content-Type'
           value: 'application/json'
         - key: 'Access-Control-Allow-Origin'
           value: '*'
+    
     - pattern: '*.js'
       headers:
         - key: 'Content-Type'
           value: 'application/javascript'
-        - key: 'Access-Control-Allow-Origin'
-          value: '*'
+    
+    # Admin section always latest version
     - pattern: 'admin/*'
       headers:
         - key: 'Cache-Control'
           value: 'no-cache, no-store, must-revalidate'
+  
+  # URL rewriting rules
   rewrites:
-    # Admin Routes - Order is important
+    # Admin Routes
     - source: '/admin'
       target: '/admin/index.html'
       status: '200'
@@ -64,27 +97,8 @@ frontend:
     - source: '/admin-direct/'
       target: '/admin-direct/index.html'
       status: '200'
-    # API Redirects
-    - source: '/api/site-config'
-      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config'
-      status: '200'
-    - source: '/api/get-site-config'
-      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?action=get_site_config&type=site_config'
-      status: '200'
-    - source: '/api/get-content'
-      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
-      status: '200'
-    - source: '/api/get-content/'
-      target: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
-      status: '200'
-    # Add specific route for html/index.html
-    - source: '/static/html/index.html'
-      target: '/html/index.html'
-      status: '200'
-    - source: '/html/index.html'
-      target: '/html/index.html'
-      status: '200'
-    # Catch-all route for SPA - this needs to be last
+    
+    # Catch-all route for SPA
     - source: '/<*>'
       target: '/index.html'
       status: '200'
