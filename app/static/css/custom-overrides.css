@@ -1,0 +1,102 @@
+/* Custom Overrides CSS - Added to fix specific issues */
+
+/* ===== JOB DESCRIPTION ANIMATION FIXES ===== */
+/* Ensure descriptions are only visible on hover */
+
+/* Base style - hidden by default */
+.experience-drawer .drawer-description {
+  opacity: 0 !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  transform: translateY(20px) !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  transition: all 0.3s ease !important;
+  margin-top: 20px !important;
+  position: relative !important;
+  z-index: 1 !important;
+  display: none !important;
+}
+
+/* Show on hover */
+.experience-drawer:hover .drawer-description {
+  opacity: 1 !important;
+  height: auto !important;
+  max-height: 2000px !important;
+  transform: translateY(0) !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Show when active (for mobile) */
+.experience-drawer.active .drawer-description {
+  opacity: 1 !important;
+  height: auto !important;
+  max-height: 2000px !important;
+  transform: translateY(0) !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+  /* Don't show on hover for mobile */
+  .experience-drawer:hover .drawer-description:not(.experience-drawer.active .drawer-description) {
+    opacity: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    transform: translateY(20px) !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    display: none !important;
+  }
+}
+
+/* ===== SUITCASE ICON POSITIONING FIXES ===== */
+/* Make suitcase icon closer to job title */
+
+/* Icon container positioning */
+.drawer-title-company h3 {
+  position: relative !important;
+  padding-left: 22px !important; /* Reduced from 28px */
+  margin-bottom: 0.25rem !important;
+}
+
+/* Icon styling */
+.drawer-title-company h3:before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 18px !important; /* Reduced from 20px */
+  height: 18px !important; /* Reduced from 20px */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,3,7V19a1,1,0,0,0,1,1H20a1,1,0,0,0,1-1V7A1,1,0,0,0,20,6ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10ZM19,18H5V8H19Z'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+/* Hide any other potential suitcase icons to avoid duplication */
+.drawer-title-company:before {
+  display: none !important;
+}
+
+/* Consistent styling for mobile */
+@media screen and (max-width: 768px) {
+  .drawer-title-company h3 {
+    padding-left: 22px !important;
+  }
+  
+  .drawer-title-company h3:before {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  .drawer-title-company:before {
+    display: none !important;
+  }
+} 

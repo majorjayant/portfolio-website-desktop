@@ -448,6 +448,38 @@ function updateWorkExperienceTimeline(workExperienceData) {
         return;
     }
     
+    // Verify our CSS changes are in effect
+    console.log('CSS Debug: Adding verification styles');
+    
+    // Create a temporary style tag to check if our styles are working
+    const debugStyle = document.createElement('style');
+    debugStyle.textContent = `
+        /* Debug verification styles */
+        .debug-verification { 
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            z-index: 9999;
+            font-size: 12px;
+        }
+    `;
+    document.head.appendChild(debugStyle);
+    
+    // Add a debug message on the page
+    const debugElement = document.createElement('div');
+    debugElement.className = 'debug-verification';
+    debugElement.innerText = 'CSS update verified: ' + new Date().toLocaleTimeString();
+    document.body.appendChild(debugElement);
+    
+    // Remove debug element after 5 seconds
+    setTimeout(() => {
+        debugElement.remove();
+        debugStyle.remove();
+    }, 5000);
+    
     // Fix background color in case CSS is not applied properly
     experienceSection.style.backgroundColor = '#f8f8f8';
     
@@ -531,13 +563,7 @@ function updateWorkExperienceTimeline(workExperienceData) {
         // Create description container with correct initial styling
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'drawer-description';
-        
-        // On mobile, we'll explicitly control display with JS
-        // On desktop, CSS hover effects will handle it
-        const isMobile = window.innerWidth <= 768;
-        if (isMobile) {
-            descriptionContainer.style.display = 'none'; // Will be shown on click on mobile
-        }
+        // No inline styles here - let CSS control the visibility
         
         // Create description content
         const descriptionContent = document.createElement('div');
@@ -649,46 +675,24 @@ function updateWorkExperienceTimeline(workExperienceData) {
             // Check if this drawer is currently active
             const wasActive = drawer.classList.contains('active');
             
-            // Close all drawers first with staggered animation
-            drawers.forEach((d, i) => {
+            // Close all drawers first
+            drawers.forEach((d) => {
                 // Remove active class
                 d.classList.remove('active');
-                
-                // Only hide descriptions on mobile
-                if (isMobile) {
-                    const desc = d.querySelector('.drawer-description');
-                    if (desc) {
-                        // Add a slight delay between each drawer closing for a smoother effect
-                        setTimeout(() => {
-                            desc.style.display = 'none';
-                        }, i * 50); // 50ms delay between each drawer
-                    }
-                }
+                // Let CSS handle the visibility - no inline styles
             });
             
             // If this drawer wasn't active before, make it active
             if (!wasActive) {
-                // Add a slight delay before showing to ensure animations complete
-                setTimeout(() => {
-                    drawer.classList.add('active');
-                    
-                    // Handle description visibility
-                    const description = drawer.querySelector('.drawer-description');
-                    if (description && isMobile) { // Only toggle visibility on mobile
-                        // Force display block style
-                        description.style.display = 'block';
-                        description.style.visibility = 'visible';
-                        description.style.overflow = 'visible';
-                        description.style.height = 'auto';
-                        description.style.maxHeight = '2000px';
-                        
-                        // Force repaint to ensure visibility
-                        void description.offsetWidth;
-                        
-                        // Scroll the drawer into view for better UX
+                drawer.classList.add('active');
+                
+                // Scroll the drawer into view for better UX (mobile only)
+                if (isMobile) {
+                    // Small delay to let animations settle
+                    setTimeout(() => {
                         drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }
-                }, 100); // 100ms delay before showing
+                    }, 100);
+                }
             }
         });
     });
