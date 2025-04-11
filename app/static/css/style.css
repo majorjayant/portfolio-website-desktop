@@ -531,8 +531,8 @@ header {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  /* Reduce the staggered effect */
-  --drawer-overlap: -10px; /* Decreased from ~40px */
+  /* Commenting out - now controlled by root variable in custom-overrides.css */
+  /* --drawer-overlap: -10px; */
 }
 
 /* Adjust drawer overlap and animation */
