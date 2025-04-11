@@ -97,7 +97,6 @@
 
 .experience-drawer:hover {
   transform: translateY(-5px) !important;
-  z-index: calc(var(--drawer-z-index) + 5) !important; /* Higher z-index when hovered */
   box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2) !important;
   transition: all 0.2s ease-out !important;
 }
@@ -300,21 +299,25 @@
 .experience-drawer.color-1 {
   background-color: rgba(108, 88, 76, 0.95) !important; /* #6c584c */
   border-color: #6c584c !important;
+  z-index: calc(var(--drawer-z-index) + 3) !important; /* Highest z-index to appear in front */
 }
 
 .experience-drawer.color-2 {
   background-color: rgba(163, 133, 102, 0.95) !important; /* #a38566 */
   border-color: #a38566 !important;
+  z-index: calc(var(--drawer-z-index) + 2) !important; /* Middle z-index */
 }
 
 .experience-drawer.color-3 {
   background-color: rgba(209, 179, 138, 0.95) !important; /* #d1b38a */
   border-color: #d1b38a !important;
+  z-index: calc(var(--drawer-z-index) + 1) !important; /* Lowest z-index to appear at back */
 }
 
 .experience-drawer.color-4 {
   background-color: rgba(233, 218, 193, 0.95) !important; /* #e9dac1 */
   border-color: #e9dac1 !important;
+  z-index: var(--drawer-z-index) !important; /* Base z-index */
 }
 
 /* Text color adjustments for each theme */
@@ -499,4 +502,21 @@
     right: -10px !important;
     bottom: -10px !important;
   }
+} 
+
+/* Hover state adjustments for each color to maintain stacking order */
+.experience-drawer.color-1:hover {
+  z-index: calc(var(--drawer-z-index) + 7) !important; /* Ensure color-1 stays on top when hovered */
+}
+
+.experience-drawer.color-2:hover {
+  z-index: calc(var(--drawer-z-index) + 6) !important; /* Ensure color-2 stays in middle when hovered */
+}
+
+.experience-drawer.color-3:hover {
+  z-index: calc(var(--drawer-z-index) + 5) !important; /* Ensure color-3 stays behind when hovered */
+}
+
+.experience-drawer.color-4:hover {
+  z-index: calc(var(--drawer-z-index) + 4) !important; /* Base hover z-index */
 } 
