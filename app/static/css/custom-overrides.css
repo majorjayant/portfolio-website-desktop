@@ -38,8 +38,8 @@
 
 /* ===== DRAWER OVERLAP CONTROL ===== */
 :root {
-  --drawer-overlap: -1.5rem; /* Default overlap value - adjust this to control how much drawers overlap */
-  --drawer-z-index: 2; /* Default z-index - adjust this to control stacking order */
+  --drawer-overlap: 10rem; /* Default overlap value - adjust this to control how much drawers overlap */
+  --drawer-z-index: 3; /* Default z-index - adjust this to control stacking order */
 }
 
 /* ===== PRIMARY DRAWER STYLES OVERRIDES ===== */
