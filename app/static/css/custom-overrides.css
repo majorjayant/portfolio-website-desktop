@@ -36,21 +36,27 @@
   transform: rotate(-1deg) scale(1.05) !important;
 }
 
+/* ===== DRAWER OVERLAP CONTROL ===== */
+:root {
+  --drawer-overlap: 1.5rem; /* Default overlap value - adjust this to control how much drawers overlap */
+  --drawer-z-index: 2; /* Default z-index - adjust this to control stacking order */
+}
+
 /* ===== PRIMARY DRAWER STYLES OVERRIDES ===== */
 /* These styles take precedence over anything in style.css */
 
 /* Adjust drawer appearance for proper stacking */
 .experience-drawer {
   position: relative !important;
-  z-index: 2 !important; /* Higher than the background but lower than hover state */
-  background: transparent !important; /* Remove white background */
+  z-index: var(--drawer-z-index) !important;
+  background: transparent !important;
   border-radius: 16px !important;
-  margin-bottom: 1.5rem !important;
+  margin-bottom: calc(-1 * var(--drawer-overlap)) !important; /* Negative margin creates overlap */
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
-  border-left: 5px solid !important; /* Preserve the left border */
-  color: #333 !important; /* Default text color */
-  backdrop-filter: blur(4px) !important; /* Add slight blur effect */
-  background-color: rgba(255, 255, 255, 0.7) !important; /* Semi-transparent background */
+  border-left: 5px solid !important;
+  color: #333 !important;
+  backdrop-filter: blur(4px) !important;
+  background-color: rgba(255, 255, 255, 0.7) !important;
   transition: all 0.3s ease !important;
   padding: 2rem !important;
   cursor: pointer !important;
@@ -137,25 +143,12 @@
 
 /* Icon container positioning */
 .drawer-title-company h3 {
-  position: relative !important;
-  padding-left: 22px !important; /* Reduced from 28px */
-  margin-bottom: 0.25rem !important;
+  padding-left: 0 !important;
 }
 
 /* Icon styling */
 .drawer-title-company h3:before {
-  content: '' !important;
-  display: inline-block !important;
-  width: 18px !important; /* Reduced from 20px */
-  height: 18px !important; /* Reduced from 20px */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,3,7V19a1,1,0,0,0,1,1H20a1,1,0,0,0,1-1V7A1,1,0,0,0,20,6ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10ZM19,18H5V8H19Z'/%3E%3C/svg%3E") !important;
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  position: absolute !important;
-  left: 0 !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
+  display: none !important;
 }
 
 /* Hide any other potential suitcase icons to avoid duplication */
