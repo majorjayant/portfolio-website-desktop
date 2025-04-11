@@ -1,311 +1,326 @@
 /* ===========================================
  * EXPERIENCE SECTION - CONSOLIDATED STYLES
  * ===========================================
- * This file contains all styles related to the experience section
+ * This file contains ALL styles related to the experience section
  * and drawer elements in one consolidated place.
+ * Any changes to drawer styles should be made here only.
  */
 
 /* ===== DRAWER OVERLAP CONTROL ===== */
 :root {
-  --drawer-overlap: 2rem; /* Controls how much drawers overlap - increase for more overlap */
-  --drawer-z-index: 3; /* Controls stacking order */
+  --drawer-overlap: 2rem !important; /* Controls how much drawers overlap - increase for more overlap */
+  --drawer-z-index: 1 !important; /* Controls stacking order */
 }
 
 /* ===== CONTAINER STYLES ===== */
 .experience-section {
-  position: relative;
-  z-index: 1;
-  background-color: #f8f8f8;
-  padding: 60px 0;
+  position: relative !important;
+  z-index: 1 !important;
+  background-color: #f8f8f8 !important;
+  padding: 60px 0 !important;
 }
 
 .experience-section .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
 }
 
 .experience-section .section-title {
-  font-size: 2.5rem;
-  color: #333;
-  position: relative;
-  margin-bottom: 3rem;
-  margin-left: 2rem;
+  font-size: 2.5rem !important;
+  color: #333 !important;
+  position: relative !important;
+  margin-bottom: 3rem !important;
+  margin-left: 2rem !important;
 }
 
 .experience-section .section-title:after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 60px;
-  height: 4px;
-  background: linear-gradient(to right, #6c584c, #a38566);
+  content: '' !important;
+  position: absolute !important;
+  bottom: -10px !important;
+  left: 0 !important;
+  width: 60px !important;
+  height: 4px !important;
+  background: linear-gradient(to right, #6c584c, #a38566) !important;
 }
 
 /* ===== DRAWER CONTAINER STYLES ===== */
 .experience-drawers {
-  position: relative;
-  padding-top: 40px;
-  padding-bottom: 80px;
-  perspective: 1200px;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  z-index: 1;
+  position: relative !important;
+  padding-top: 40px !important;
+  padding-bottom: 80px !important;
+  perspective: 1200px !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  z-index: 1 !important;
 }
 
 /* Skeleton background effect */
 .experience-drawers:before,
 .experience-drawers:after {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
-  background-color: rgba(26, 26, 26, 0.3);
-  border-radius: 24px;
-  z-index: -1;
-  transform: rotate(1deg) scale(1.05);
+  content: '' !important;
+  position: absolute !important;
+  top: -20px !important;
+  left: -20px !important;
+  right: -20px !important;
+  bottom: -20px !important;
+  background-color: rgba(26, 26, 26, 0.3) !important; /* Dark background with opacity */
+  border-radius: 24px !important;
+  z-index: -1 !important;
+  transform: rotate(1deg) scale(1.05) !important;
 }
 
 .experience-drawers:after {
-  transform: rotate(-1deg) scale(1.05);
+  transform: rotate(-1deg) scale(1.05) !important;
 }
 
 /* ===== DRAWER STYLES ===== */
 .experience-drawer {
-  position: relative;
-  z-index: var(--drawer-z-index);
-  background: transparent;
-  border-radius: 16px;
-  margin-bottom: calc(-1 * var(--drawer-overlap)); /* Creates overlap */
-  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
-  border-left: 5px solid;
-  color: #333;
-  backdrop-filter: blur(4px);
-  background-color: rgba(255, 255, 255, 0.7);
-  transition: all 0.3s ease;
-  padding: 2rem;
-  cursor: pointer;
-  min-height: 110px;
-  width: 100%;
-  overflow: hidden;
+  position: relative !important;
+  z-index: var(--drawer-z-index) !important;
+  background: transparent !important;
+  border-radius: 16px !important;
+  margin-bottom: calc(-1 * var(--drawer-overlap)) !important; /* Creates overlap */
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
+  border-left: 5px solid !important;
+  color: #333 !important;
+  backdrop-filter: blur(4px) !important;
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  transition: all 0.3s ease !important;
+  padding: 2rem !important;
+  cursor: pointer !important;
+  min-height: 110px !important;
+  width: 100% !important;
+  overflow: hidden !important;
 }
 
 .experience-drawer:hover {
-  transform: translateY(-5px);
-  z-index: calc(var(--drawer-z-index) + 5); /* Higher z-index when hovered */
-  box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease-out;
+  transform: translateY(-5px) !important;
+  z-index: calc(var(--drawer-z-index) + 5) !important; /* Higher z-index when hovered */
+  box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.2s ease-out !important;
 }
 
 /* ===== DRAWER HEADER STYLES ===== */
 .drawer-header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 1.5rem;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 1.5rem !important;
 }
 
 /* Date element */
 .drawer-date {
-  flex: 0 0 20%;
-  font-weight: 500;
-  font-size: 0.9rem;
-  position: relative;
-  padding-left: 28px;
+  flex: 0 0 20% !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  position: relative !important;
+  padding-left: 28px !important;
 }
 
 /* Calendar icon */
 .drawer-date:before {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M19,4h-1V3c0-0.6-0.4-1-1-1s-1,0.4-1,1v1H8V3c0-0.6-0.4-1-1-1S6,2.4,6,3v1H5C3.3,4,2,5.3,2,7v12c0,1.7,1.3,3,3,3h14 c1.7,0,3-1.3,3-3V7C22,5.3,20.7,4,19,4z M20,19c0,0.6-0.4,1-1,1H5c-0.6,0-1-0.4-1-1V10h16V19z M20,8H4V7c0-0.6,0.4-1,1-1h1v1 c0,0.6,0.4,1,1,1s1-0.4,1-1V6h8v1c0,0.6,0.4,1,1,1s1-0.4,1-1V6h1c0.6,0,1,0.4,1,1V8z'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  content: '' !important;
+  display: inline-block !important;
+  width: 16px !important;
+  height: 16px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M19,4h-1V3c0-0.6-0.4-1-1-1s-1,0.4-1,1v1H8V3c0-0.6-0.4-1-1-1S6,2.4,6,3v1H5C3.3,4,2,5.3,2,7v12c0,1.7,1.3,3,3,3h14 c1.7,0,3-1.3,3-3V7C22,5.3,20.7,4,19,4z M20,19c0,0.6-0.4,1-1,1H5c-0.6,0-1-0.4-1-1V10h16V19z M20,8H4V7c0-0.6,0.4-1,1-1h1v1 c0,0.6,0.4,1,1,1s1-0.4,1-1V6h8v1c0,0.6,0.4,1,1,1s1-0.4,1-1V6h1c0.6,0,1,0.4,1,1V8z'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
 }
 
 /* Job title and company */
 .drawer-title-company {
-  flex: 1;
-  padding-right: 20px;
+  flex: 1 !important;
+  padding-right: 20px !important;
 }
 
 .drawer-title-company h3 {
-  font-size: 1.2rem;
-  margin: 0;
-  padding: 0;
-  line-height: 1.4;
+  font-size: 1.2rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.4 !important;
+  padding-left: 0 !important; /* No padding for icon since we removed it */
+}
+
+/* Remove suitcase icon */
+.drawer-title-company h3:before {
+  display: none !important;
 }
 
 .drawer-title-company p {
-  margin: 0;
-  font-size: 0.9rem;
-  opacity: 0.8;
+  margin: 0 !important;
+  font-size: 0.9rem !important;
+  opacity: 0.8 !important;
 }
 
 /* Location element */
 .drawer-location {
-  flex: 0 0 25%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  font-size: 0.9rem;
-  position: relative;
-  padding-left: 20px;
+  flex: 0 0 25% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  font-size: 0.9rem !important;
+  position: relative !important;
+  padding-left: 20px !important;
 }
 
 /* Location icon */
 .drawer-location:before {
-  content: '';
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M12,2C8.1,2,5,5.1,5,9c0,5.2,7,13,7,13s7-7.8,7-13C19,5.1,15.9,2,12,2z M12,11.5c-1.4,0-2.5-1.1-2.5-2.5 s1.1-2.5,2.5-2.5s2.5,1.1,2.5,2.5S13.4,11.5,12,11.5z'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  content: '' !important;
+  display: inline-block !important;
+  width: 14px !important;
+  height: 14px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M12,2C8.1,2,5,5.1,5,9c0,5.2,7,13,7,13s7-7.8,7-13C19,5.1,15.9,2,12,2z M12,11.5c-1.4,0-2.5-1.1-2.5-2.5 s1.1-2.5,2.5-2.5s2.5,1.1,2.5,2.5S13.4,11.5,12,11.5z'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
 }
 
 /* ===== DRAWER DESCRIPTION STYLES ===== */
 .drawer-description {
-  opacity: 0;
-  height: 0;
-  max-height: 0;
-  transform: translateY(20px);
-  overflow: hidden;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  margin-top: 20px;
-  position: relative;
-  z-index: 1;
-  display: none;
+  opacity: 0 !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  transform: translateY(20px) !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  transition: all 0.3s ease !important;
+  margin-top: 20px !important;
+  position: relative !important;
+  z-index: 1 !important;
+  display: none !important;
 }
 
 /* Show description on hover */
 .experience-drawer:hover .drawer-description {
-  opacity: 1;
-  height: auto;
-  max-height: 2000px;
-  transform: translateY(0);
-  overflow: visible;
-  visibility: visible;
-  display: block;
+  opacity: 1 !important;
+  height: auto !important;
+  max-height: 2000px !important;
+  transform: translateY(0) !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  display: block !important;
 }
 
 /* Show description when active (for mobile) */
 .experience-drawer.active .drawer-description {
-  opacity: 1;
-  height: auto;
-  max-height: 2000px;
-  transform: translateY(0);
-  overflow: visible;
-  visibility: visible;
-  display: block;
+  opacity: 1 !important;
+  height: auto !important;
+  max-height: 2000px !important;
+  transform: translateY(0) !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  display: block !important;
 }
 
 /* ===== DESCRIPTION CONTENT FORMATTING ===== */
 .description-content {
-  line-height: 1.6;
-  color: inherit;
+  line-height: 1.6 !important;
+  color: inherit !important;
 }
 
 .description-content p {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.75rem !important;
 }
 
 .description-content strong, 
 .description-content b {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .description-content em,
 .description-content i {
-  font-style: italic;
+  font-style: italic !important;
 }
 
 .description-content ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-  margin: 0.5rem 0 1rem 0;
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5rem 0 1rem 0 !important;
 }
 
 .description-content ol {
-  list-style-type: decimal;
-  padding-left: 1.5rem;
-  margin: 0.5rem 0 1rem 0;
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5rem 0 1rem 0 !important;
 }
 
 .description-content li {
-  margin-bottom: 0.4rem;
-  display: list-item;
+  margin-bottom: 0.4rem !important;
+  display: list-item !important;
 }
 
 .description-content a {
-  color: #6c584c;
-  text-decoration: underline;
+  color: #6c584c !important;
+  text-decoration: underline !important;
 }
 
 .description-content a:hover {
-  text-decoration: none;
+  text-decoration: none !important;
+}
+
+/* Preserve additional HTML elements */
+.description-content h3, 
+.description-content h4 {
+  margin-top: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  font-weight: bold !important;
 }
 
 /* ===== SKILL TAGS ===== */
 .skills-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 15px;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 15px !important;
 }
 
 .skill-tag {
-  background-color: rgba(108, 88, 76, 0.1);
-  color: #6c584c;
-  border-radius: 50px;
-  padding: 4px 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  display: inline-block;
+  background-color: rgba(108, 88, 76, 0.1) !important;
+  color: #6c584c !important;
+  border-radius: 50px !important;
+  padding: 4px 12px !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  display: inline-block !important;
 }
 
 /* ===== COLOR THEME VARIATIONS ===== */
 .experience-drawer.color-1 {
-  background-color: rgba(108, 88, 76, 0.95); /* #6c584c */
-  border-color: #6c584c;
+  background-color: rgba(108, 88, 76, 0.95) !important; /* #6c584c */
+  border-color: #6c584c !important;
 }
 
 .experience-drawer.color-2 {
-  background-color: rgba(163, 133, 102, 0.95); /* #a38566 */
-  border-color: #a38566;
+  background-color: rgba(163, 133, 102, 0.95) !important; /* #a38566 */
+  border-color: #a38566 !important;
 }
 
 .experience-drawer.color-3 {
-  background-color: rgba(209, 179, 138, 0.95); /* #d1b38a */
-  border-color: #d1b38a;
+  background-color: rgba(209, 179, 138, 0.95) !important; /* #d1b38a */
+  border-color: #d1b38a !important;
 }
 
 .experience-drawer.color-4 {
-  background-color: rgba(233, 218, 193, 0.95); /* #e9dac1 */
-  border-color: #e9dac1;
+  background-color: rgba(233, 218, 193, 0.95) !important; /* #e9dac1 */
+  border-color: #e9dac1 !important;
 }
 
 /* Text color adjustments for each theme */
 .experience-drawer.color-1,
 .experience-drawer.color-2 {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .experience-drawer.color-1 h3,
@@ -318,12 +333,12 @@
 .experience-drawer.color-2 .drawer-location,
 .experience-drawer.color-1 .drawer-description,
 .experience-drawer.color-2 .drawer-description {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .experience-drawer.color-3,
 .experience-drawer.color-4 {
-  color: #333333;
+  color: #333333 !important;
 }
 
 .experience-drawer.color-3 h3,
@@ -336,134 +351,152 @@
 .experience-drawer.color-4 .drawer-location,
 .experience-drawer.color-3 .drawer-description,
 .experience-drawer.color-4 .drawer-description {
-  color: #333333;
+  color: #333333 !important;
 }
 
 /* Icon color adjustments */
-.experience-drawer.color-1 .drawer-title-company h3:before,
-.experience-drawer.color-2 .drawer-title-company h3:before,
 .experience-drawer.color-1 .drawer-date:before,
 .experience-drawer.color-2 .drawer-date:before,
 .experience-drawer.color-1 .drawer-location:before,
 .experience-drawer.color-2 .drawer-location:before {
-  filter: brightness(0) invert(1); /* Make icons white */
+  filter: brightness(0) invert(1) !important; /* Make icons white */
+}
+
+/* Fix color in all themes */
+.color-1 .description-content,
+.color-2 .description-content,
+.color-3 .description-content,
+.color-4 .description-content {
+  color: inherit !important;
 }
 
 /* ===== MOBILE RESPONSIVENESS ===== */
 @media screen and (max-width: 768px) {
   /* Container adjustments */
   .experience-section {
-    padding: 20px 10px;
-    margin-top: 0;
+    padding: 20px 10px !important;
+    margin-top: 0 !important;
   }
   
   .experience-section .container {
-    width: 95%;
-    padding: 0;
+    width: 95% !important;
+    padding: 0 !important;
   }
   
   .experience-section .section-title {
-    font-size: 2rem;
-    margin-left: 1rem;
-    margin-bottom: 2rem;
+    font-size: 2rem !important;
+    margin-left: 1rem !important;
+    margin-bottom: 2rem !important;
   }
   
   .experience-drawers {
-    padding: 1rem 0.5rem;
-    max-width: 100%;
+    padding: 1rem 0.5rem !important;
+    max-width: 100% !important;
   }
   
   /* Drawer adjustments */
   .experience-drawer {
-    padding: 15px;
-    margin-bottom: calc(-1 * var(--drawer-overlap) / 2); /* Less overlap on mobile */
-    border-radius: 10px;
-    height: auto;
-    min-height: auto;
+    padding: 15px !important;
+    margin-bottom: calc(-1 * var(--drawer-overlap) / 2) !important; /* Less overlap on mobile */
+    border-radius: 10px !important;
+    height: auto !important;
+    min-height: auto !important;
   }
   
   .experience-drawer:hover {
-    transform: none;
-    box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
+    transform: none !important;
+    box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
   }
   
   .experience-drawer.active {
-    z-index: calc(var(--drawer-z-index) + 10);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    margin-bottom: calc(-1 * var(--drawer-overlap) / 4);
-    transform: scale(1.02);
+    z-index: calc(var(--drawer-z-index) + 10) !important; /* Ensure active drawer is on top */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+    margin-bottom: calc(-1 * var(--drawer-overlap) / 4) !important; /* Even less margin for active state */
+    transform: scale(1.02) !important;
   }
   
   /* Header adjustments */
   .drawer-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+    overflow: visible !important;
   }
   
   .drawer-date {
-    width: 100%;
-    margin-bottom: 5px;
-    font-size: 0.85rem;
+    width: 100% !important;
+    margin-bottom: 5px !important;
+    font-size: 0.85rem !important;
   }
   
   .drawer-title-company {
-    width: 100%;
-    margin-bottom: 5px;
+    width: 100% !important;
+    margin-bottom: 5px !important;
   }
   
   .drawer-title-company h3 {
-    font-size: 1.1rem;
-    line-height: 1.3;
+    font-size: 1.1rem !important;
+    line-height: 1.3 !important;
   }
   
   .drawer-title-company p {
-    font-size: 0.9rem;
+    font-size: 0.9rem !important;
   }
   
   .drawer-location {
-    width: 100%;
-    text-align: left;
-    justify-content: flex-start;
-    font-size: 0.85rem;
+    width: 100% !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    font-size: 0.85rem !important;
+    padding-left: 0 !important;
   }
   
   /* Description adjustments */
   .drawer-description {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(0,0,0,0.1);
+    margin-top: 15px !important;
+    padding-top: 15px !important;
+    border-top: 1px solid rgba(0,0,0,0.1) !important;
   }
   
   .experience-drawer:hover .drawer-description:not(.experience-drawer.active .drawer-description) {
-    opacity: 0;
-    height: 0;
-    max-height: 0;
-    transform: translateY(20px);
-    overflow: hidden;
-    visibility: hidden;
-    display: none;
+    opacity: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    transform: translateY(20px) !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    display: none !important;
   }
   
   .experience-drawer.active .drawer-description {
-    padding: 15px;
-    margin-top: 15px;
-    background-color: rgba(255,255,255,0.1);
-    border-radius: 8px;
+    padding: 15px !important;
+    margin-top: 15px !important;
+    background-color: rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+  }
+  
+  /* Fix description content on mobile */
+  .description-content ul {
+    padding-left: 20px !important;
+  }
+  
+  .description-content li {
+    margin-bottom: 8px !important;
   }
   
   /* Skill tags */
   .skill-tag {
-    margin-bottom: 0.25rem;
-    font-size: 0.7rem;
+    margin-bottom: 0.25rem !important;
+    font-size: 0.7rem !important;
   }
   
   /* Background adjustments */
   .experience-drawers:before,
   .experience-drawers:after {
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
+    top: -10px !important;
+    left: -10px !important;
+    right: -10px !important;
+    bottom: -10px !important;
   }
 } 
