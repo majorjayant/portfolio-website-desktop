@@ -422,8 +422,3 @@
 .experience-drawer.color-2 .drawer-title-company h3:before {
   filter: brightness(0) invert(1) !important; /* Make icons white */
 }
-
-.experience-drawer.color-3 .drawer-title-company h3:before,
-.experience-drawer.color-4 .drawer-title-company h3:before {
-  filter: none !important; /* Keep original dark color */
-} 
