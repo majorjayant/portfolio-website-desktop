@@ -542,8 +542,8 @@ header {
   background: transparent;
   border-radius: 16px;
   padding: 0;
-  /* Reduce overlap between items */
-  margin-bottom: var(--drawer-overlap);
+  /* Commenting out - now controlled by variable in custom-overrides.css */
+  /* margin-bottom: var(--drawer-overlap); */
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: pointer;
@@ -614,7 +614,8 @@ header {
   
   .experience-drawer {
     padding: 20px;
-    margin-bottom: 15px; /* Standard spacing between items */
+    /* Commenting out - now controlled by variable in custom-overrides.css */
+    /* margin-bottom: 15px; */ /* Standard spacing between items */
     height: auto; /* Remove fixed height */
     min-height: auto;
   }
@@ -632,7 +633,8 @@ header {
     min-height: auto;
     transform: scale(1.02);
     z-index: 100 !important;
-    margin-bottom: 25px;
+    /* Commenting out - now controlled by variable in custom-overrides.css */
+    /* margin-bottom: 25px; */
   }
   
   .drawer-header {
@@ -921,7 +923,8 @@ header {
   
   .experience-drawer {
     padding: 20px;
-    margin-bottom: 15px; /* Standard spacing between items */
+    /* Commenting out - now controlled by variable in custom-overrides.css */
+    /* margin-bottom: 15px; */ /* Standard spacing between items */
     height: auto; /* Remove fixed height */
     min-height: auto;
   }
@@ -939,7 +942,8 @@ header {
     min-height: auto;
     transform: scale(1.02);
     z-index: 100 !important;
-    margin-bottom: 25px;
+    /* Commenting out - now controlled by variable in custom-overrides.css */
+    /* margin-bottom: 25px; */
   }
   
   .drawer-header {
@@ -2480,7 +2484,8 @@ footer {
 @media screen and (max-width: 768px) {
     .experience-drawer {
         padding: 20px;
-        margin-bottom: 15px; /* Standard spacing between items */
+        /* Commenting out - now controlled by variable in custom-overrides.css */
+        /* margin-bottom: 15px; */ /* Standard spacing between items */
         height: auto; /* Remove fixed height */
         min-height: auto;
     }
@@ -2498,7 +2503,8 @@ footer {
         min-height: auto;
         transform: scale(1.02);
         z-index: 100 !important;
-        margin-bottom: 25px;
+        /* Commenting out - now controlled by variable in custom-overrides.css */
+        /* margin-bottom: 25px; */
     }
     
     .experience-drawer .drawer-header {

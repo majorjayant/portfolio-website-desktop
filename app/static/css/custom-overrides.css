@@ -38,9 +38,8 @@
 
 /* ===== DRAWER OVERLAP CONTROL ===== */
 :root {
-  --drawer-overlap: -15rem; /* Default overlap value - adjust this to control how much drawers overlap */
+  --drawer-overlap: -2rem; /* Default overlap value - adjust this to control how much drawers overlap */
   --drawer-z-index: 3; /* Default z-index - adjust this to control stacking order */
-  --drawer-mobile-overlap: 2rem; /* Mobile-specific overlap value */
 }
 
 /* ===== PRIMARY DRAWER STYLES OVERRIDES ===== */
@@ -52,7 +51,7 @@
   z-index: var(--drawer-z-index) !important;
   background: transparent !important;
   border-radius: 16px !important;
-  margin-bottom: calc(-1 * var(--drawer-overlap)) !important;
+  margin-bottom: calc(-1 * var(--drawer-overlap)) !important; /* Negative margin creates overlap */
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
   border-left: 5px solid !important;
   color: #333 !important;
@@ -76,7 +75,7 @@
 }
 
 .experience-drawer:hover {
-  z-index: 10 !important; /* Higher z-index when hovered */
+  z-index: calc(var(--drawer-z-index) + 5) !important; /* Higher z-index when hovered */
   transform: translateY(-5px) !important;
   box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2) !important;
 }
@@ -182,9 +181,9 @@
   /* Drawer fixes for mobile */
   .experience-drawer {
     padding: 15px !important;
-    margin-bottom: calc(-1 * var(--drawer-mobile-overlap)) !important; /* Use mobile-specific overlap */
+    margin-bottom: calc(-1 * var(--drawer-overlap) / 2) !important; /* Less overlap on mobile */
     border-radius: 10px !important;
-    height: auto !important;
+    height: auto !important; /* Remove fixed height */
     min-height: auto !important;
   }
   
@@ -249,9 +248,9 @@
   
   /* Active state for mobile */
   .experience-drawer.active {
-    z-index: calc(var(--drawer-z-index) + 97) !important; /* Keep relative to base z-index */
+    z-index: calc(var(--drawer-z-index) + 10) !important; /* Ensure active drawer is on top */
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
-    margin-bottom: var(--drawer-mobile-overlap) !important; /* Add positive margin for active state */
+    margin-bottom: calc(-1 * var(--drawer-overlap) / 4) !important; /* Even less margin for active state */
     transform: scale(1.02) !important;
   }
   
@@ -284,11 +283,6 @@
   
   .description-content li {
     margin-bottom: 8px !important;
-  }
-  
-  /* Last drawer should have normal margin */
-  .experience-drawer:last-child {
-    margin-bottom: var(--drawer-mobile-overlap) !important;
   }
 }
 
@@ -422,3 +416,8 @@
 .experience-drawer.color-2 .drawer-title-company h3:before {
   filter: brightness(0) invert(1) !important; /* Make icons white */
 }
+
+.experience-drawer.color-3 .drawer-title-company h3:before,
+.experience-drawer.color-4 .drawer-title-company h3:before {
+  filter: none !important; /* Keep original dark color */
+} 
