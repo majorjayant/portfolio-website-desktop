@@ -38,7 +38,7 @@
 
 /* ===== DRAWER OVERLAP CONTROL ===== */
 :root {
-  --drawer-overlap: 5; /* Default overlap value - adjust this to control how much drawers overlap */
+  --drawer-overlap: 10rem; /* Default overlap value - adjust this to control how much drawers overlap */
   --drawer-z-index: 2; /* Default z-index - adjust this to control stacking order */
 }
 
@@ -58,6 +58,7 @@
   backdrop-filter: blur(4px) !important;
   background-color: rgba(255, 255, 255, 0.7) !important;
   transition: all 0.3s ease !important;
+  padding: 2rem !important;
   cursor: pointer !important;
 }
 
