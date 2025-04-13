@@ -49,6 +49,14 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+}
+
+.certification-card.card-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .certification-card:hover {
@@ -76,7 +84,14 @@
 .cert-logo {
   width: 50px;
   height: 50px;
-  object-fit: contain;
+  background-color: var(--accent-color, #6c584c);
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .cert-date {
@@ -140,6 +155,30 @@
   color: var(--accent-color-hover);
 }
 
+.cert-details-link {
+  display: inline-block;
+  margin-top: 15px;
+  color: var(--accent-color, #6c584c);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.cert-details-link:hover {
+  color: var(--accent-color-hover, #8a7868);
+}
+
+.cert-details-link span {
+  display: inline-block;
+  margin-left: 3px;
+  transition: transform 0.2s ease;
+}
+
+.cert-details-link:hover span {
+  transform: translateX(3px);
+}
+
 .lighting-effect {
   position: absolute;
   top: 0;
@@ -165,6 +204,11 @@
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
+}
+
+.certification-modal.modal-open {
+  display: flex;
+  opacity: 1;
 }
 
 .certification-modal.active {
@@ -227,8 +271,16 @@
 .modal-cert-logo {
   width: 80px;
   height: 80px;
-  object-fit: contain;
+  background-color: var(--accent-color, #6c584c);
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
   margin-right: 20px;
+  margin-bottom: 20px;
 }
 
 .modal-cert-info {

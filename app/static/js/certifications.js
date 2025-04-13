@@ -1,16 +1,40 @@
 // Certification Cards Component
 document.addEventListener('DOMContentLoaded', function() {
-  // Certification section handling
-  initCertificationCards();
+  // Don't auto-initialize - wait for data to be fetched by main.js
+  // We'll check for data every 500ms for up to 10 seconds (20 attempts)
+  let attempts = 0;
+  const maxAttempts = 20;
+  
+  const checkAndInitialize = function() {
+    if (window.certificationsData && window.certificationsData.length > 0) {
+      console.log("Certification data found, initializing certification cards");
+      initCertificationCards();
+    } else if (attempts < maxAttempts) {
+      attempts++;
+      setTimeout(checkAndInitialize, 500);
+    } else {
+      console.log("No certification data found after waiting, initializing with sample data");
+      initCertificationCards();
+    }
+  };
+  
+  // Start checking for data
+  checkAndInitialize();
 });
 
 // Initialize the certification cards with animations and interactive features
 function initCertificationCards() {
   const certificationSection = document.querySelector('.certifications-section');
-  if (!certificationSection) return;
+  if (!certificationSection) {
+    console.error("Certification section not found");
+    return;
+  }
   
   const container = document.querySelector('.certifications-container');
-  if (!container) return;
+  if (!container) {
+    console.error("Certifications container not found");
+    return;
+  }
   
   // Clear container
   container.innerHTML = '';
@@ -28,9 +52,13 @@ function initCertificationCards() {
   
   // Get certifications data from the global variable or fetch it
   let certifications = window.certificationsData || [];
+  console.log("Using certification data:", certifications);
+  
   if (!certifications || certifications.length === 0) {
-    // If no certifications data is available, fetch it or use sample data
+    // If no certifications data is available, use sample data
     certifications = getSampleCertifications();
+    console.log("Using sample certification data");
+    
     // Add a message if no data is available
     if (certifications.length === 0) {
       const noData = document.createElement('p');

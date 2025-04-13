@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load work experience, education, and certifications data
     fetchWorkExperienceData();
     fetchEducationData();
-    fetchCertificationsData();
+    fetchCertificationsData(); // Re-enabled to fetch data for certifications.js
 
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
@@ -870,7 +870,8 @@ async function fetchEducationData() {
     }
 }
 
-// Update certifications section
+// Update certifications section - DISABLED (now handled by certifications.js)
+/*
 function updateCertificationsSection(certificationsData) {
     console.log("Updating certifications section with data:", certificationsData);
     
@@ -1006,7 +1007,8 @@ async function fetchCertificationsData() {
         
         // Update the certifications section with the fetched data
         const certificationsData = data.certifications || [];
-        updateCertificationsSection(certificationsData);
+        // Store data globally for certifications.js to use
+        window.certificationsData = certificationsData;
     } catch (error) {
         console.error('Error fetching certifications data from API:', error);
         console.log('Falling back to local JSON file');
@@ -1016,11 +1018,57 @@ async function fetchCertificationsData() {
             const localResponse = await fetch('/data/certifications.json');
             const localData = await localResponse.json();
             console.log('Successfully loaded certifications data from local JSON:', localData);
-            updateCertificationsSection(localData);
+            // Store data globally for certifications.js to use
+            window.certificationsData = localData;
         } catch (localError) {
             console.error('Error loading from local JSON:', localError);
-            // Show empty state
-            updateCertificationsSection([]);
+            window.certificationsData = [];
+        }
+    }
+}
+*/
+
+// Fetch certifications data - Simplified version for certifications.js to use
+async function fetchCertificationsData() {
+    console.log('Fetching certifications data for certifications.js');
+    
+    try {
+        // Try to fetch from API first
+        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certifications';
+        
+        const response = await fetch(apiEndpoint, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            credentials: 'omit'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API response not OK: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Successfully loaded certifications data from API:', data);
+        
+        // Store data globally for certifications.js to use
+        window.certificationsData = data.certifications || [];
+    } catch (error) {
+        console.error('Error fetching certifications data from API:', error);
+        console.log('Falling back to local JSON file');
+        
+        // Fallback to local JSON
+        try {
+            const localResponse = await fetch('/data/certifications.json');
+            const localData = await localResponse.json();
+            console.log('Successfully loaded certifications data from local JSON:', localData);
+            // Store data globally for certifications.js to use
+            window.certificationsData = localData;
+        } catch (localError) {
+            console.error('Error loading from local JSON:', localError);
+            window.certificationsData = [];
         }
     }
 }
