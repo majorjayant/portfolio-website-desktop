@@ -6,6 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Jayant Malik | Portfolio</title>
     
+    <!-- Preload critical assets -->
+    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png" as="image">
+    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" as="image">
+    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg" as="image" media="(min-width: 768px)">
+    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg" as="image" media="(max-width: 767px)">
+    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Jayant_profile-removebg.png" as="image">
+    
     <!-- Critical inline styles for overrides - will ensure immediate effect -->
     <style>
         /* Fix for description toggle */
@@ -701,7 +708,9 @@
                 const fallbacks = {
                     'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
                     'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
-                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'
+                    'banner-desktop': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg',
+                    'banner-mobile': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg',
+                    'profile': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Jayant_profile-removebg.png'
                 };
                 
                 // Fix header logo
@@ -720,6 +729,19 @@
                 const favicon = document.querySelector('link[rel="icon"]');
                 if (favicon) {
                     favicon.href = fallbacks.favicon;
+                }
+                
+                // Fix banner images
+                const bannerImage = document.getElementById('banner-image');
+                if (bannerImage) {
+                    const isMobile = window.innerWidth <= 768;
+                    bannerImage.style.backgroundImage = `url('${isMobile ? fallbacks['banner-mobile'] : fallbacks['banner-desktop']}')`;
+                }
+                
+                // Fix profile image
+                const profileImage = document.getElementById('profile-image');
+                if (profileImage && (!profileImage.complete || profileImage.naturalWidth === 0)) {
+                    profileImage.src = fallbacks.profile;
                 }
                 
                 // Fix styles if needed
@@ -754,7 +776,6 @@
                     }
                     
                     // Fix banner
-                    const bannerImage = document.getElementById('banner-image');
                     if (bannerImage) {
                         bannerImage.style.backgroundSize = 'contain';
                         bannerImage.style.backgroundPosition = 'center';
@@ -775,6 +796,25 @@
             fixBrokenImages();
             setTimeout(fixBrokenImages, 1000);
         });
+    </script>
+    
+    <!-- Add the default config with all new fallbacks -->
+    <script>
+        window.defaultConfig = {
+            site_title: "Jayant Malik | Portfolio",
+            site_subtitle: "Product Manager | Developer",
+            image_urls: {
+                favicon: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+                logo: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+                banner: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png",
+                desktop_banner: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg",
+                mobile_banner: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg",
+                about_profile: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Jayant_profile-removebg.png"
+            },
+            api: {
+                base_url: "/api"
+            }
+        };
     </script>
 </head>
 <body>
