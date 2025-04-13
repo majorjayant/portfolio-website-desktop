@@ -305,7 +305,7 @@ function loadSiteConfig() {
                     });
                 
                 // Try to load certification data separately
-                fetch('/data/certifications.json')
+                fetch('/data/certification.json')
                     .then(response => response.json())
                     .then(certData => {
                         updateCertificationSection(certData);
@@ -1038,19 +1038,48 @@ function updateCertificationSection(certificationData) {
     });
 }
 
-// Fetch certification data
-function fetchCertificationData() {
-    return fetch('/api/certification')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch certification data');
-            }
-            return response.json();
-        })
-        .catch(error => {
-            console.error('Error fetching certification data:', error);
-            // Fallback to local JSON file
-            return fetch('/data/certifications.json')
-                .then(response => response.json());
+// Function to fetch certification data
+async function fetchCertificationData() {
+    console.log('Fetching certification data');
+    
+    try {
+        // Try to fetch from API first
+        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certification';
+        
+        const response = await fetch(apiEndpoint, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            credentials: 'omit'
         });
+        
+        if (!response.ok) {
+            throw new Error(`API response not OK: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Successfully loaded certification data from API:', data);
+        
+        // Update the certification section with the fetched data
+        const certificationData = data.certification || [];
+        updateCertificationSection(certificationData);
+    } catch (error) {
+        console.error('Error fetching certification data from API:', error);
+        console.log('Falling back to local JSON file');
+        
+        // Fallback to local JSON
+        try {
+            const localResponse = await fetch('/data/certification.json');
+            const localData = await localResponse.json();
+            console.log('Successfully loaded certification data from local JSON:', localData);
+            updateCertificationSection(localData);
+        } catch (localError) {
+            console.error('Error loading from local JSON:', localError);
+            // Show empty state
+            updateCertificationSection([]);
+        }
+    }
 }

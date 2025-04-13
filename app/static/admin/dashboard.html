@@ -1985,7 +1985,7 @@
                 
                 // Try loading from local JSON as fallback
                 try {
-                    const localResponse = await fetch('/data/certifications.json');
+                    const localResponse = await fetch('/data/certification.json');
                     const localData = await localResponse.json();
                     loadCertificationData(localData);
                 } catch (localError) {

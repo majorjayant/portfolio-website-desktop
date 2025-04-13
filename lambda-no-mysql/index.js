@@ -426,16 +426,16 @@ async function getEducation() {
     if (rows.length > 0) {
       console.log('First raw DB row (education):', JSON.stringify(rows[0]));
     }
-    
+
     // Format the data for response
     const education = rows.map(row => {
       return {
-        id: row.id,
+      id: row.id,
         edu_title: row.edu_title || '',
         edu_name: row.edu_name || '',
         location: row.location || '',
-        from_date: row.from_date ? row.from_date.toISOString().split('T')[0] : null,
-        to_date: row.to_date ? row.to_date.toISOString().split('T')[0] : null,
+      from_date: row.from_date ? row.from_date.toISOString().split('T')[0] : null,
+      to_date: row.to_date ? row.to_date.toISOString().split('T')[0] : null,
         is_current: row.is_current === 1,
         is_deleted: false
       };
@@ -524,7 +524,7 @@ async function saveEducation(educationData, connection) {
           ];
           
           const [result] = await conn.execute(
-            `INSERT INTO education 
+          `INSERT INTO education
              (edu_title, edu_name, location, from_date, to_date, is_current)
              VALUES (?, ?, ?, ?, ?, ?)`,
             params
@@ -579,7 +579,7 @@ async function ensureCertificationTableExists(connection) {
     console.log('Verified certification table exists');
   } catch (error) {
     console.error('Error ensuring certification table exists:', error);
-    throw error;
+      throw error;
   }
 }
 
@@ -650,7 +650,7 @@ async function saveCertification(certificationData, connection) {
     conn = await getConnection();
     privateConnection = true;
     await conn.beginTransaction();
-  }
+      }
   
   try {
     // Process each certification item
@@ -733,22 +733,22 @@ async function saveCertification(certificationData, connection) {
     
     throw error;
   }
-}
-
+      }
+      
 // Lambda handler
 exports.handler = async (event, context) => {
   try {
     console.log('Lambda function invoked');
     logRequestInfo(event, context);
-    
+        
     if (event.httpMethod === 'OPTIONS') {
-      return {
-        statusCode: 200,
-        headers,
+        return {
+          statusCode: 200,
+          headers,
         body: JSON.stringify({ message: 'CORS preflight request successful' })
-      };
-    }
-    
+        };
+      }
+      
     const queryParams = event.queryStringParameters || {};
     const action = queryParams.action || '';
     const type = queryParams.type || '';
@@ -766,20 +766,20 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({ error: 'Invalid request body: ' + error.message })
         };
       }
-    }
-    
+      }
+      
     // Handle login request
     if (action === 'login') {
       const { username, password } = requestBody;
       
       if (!username || !password) {
-        return {
+      return {
           statusCode: 400,
-          headers,
+        headers,
           body: JSON.stringify({ error: 'Username and password are required' })
-        };
-      }
-      
+      };
+    }
+    
       const loginResult = handleLogin(username, password);
       return {
         statusCode: loginResult.success ? 200 : 401,
@@ -793,28 +793,28 @@ exports.handler = async (event, context) => {
       // For site config, optionally include work experience and education
       if (type === 'site_config') {
         try {
-          const siteConfig = await getSiteConfig();
-          const workExperience = await getWorkExperience();
-          const education = await getEducation();
+        const siteConfig = await getSiteConfig();
+        const workExperience = await getWorkExperience();
+        const education = await getEducation();
           const certification = await getCertification();
-          
-          return {
+        
+        return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
-              site_config: siteConfig,
-              work_experience: workExperience,
-              education: education,
+                site_config: siteConfig,
+                work_experience: workExperience,
+                education: education,
               certification: certification
             })
-          };
+        };
         } catch (error) {
           console.error('Error getting site config and related data:', error);
-          return {
+        return {
             statusCode: 500,
-            headers,
+          headers,
             body: JSON.stringify({ error: 'Error retrieving data: ' + error.message })
-          };
+        };
         }
       }
       
@@ -822,11 +822,11 @@ exports.handler = async (event, context) => {
       if (type === 'work_experience') {
         try {
           const workExperience = await getWorkExperience();
-          return {
-            statusCode: 200,
-            headers,
+        return {
+          statusCode: 200,
+          headers,
             body: JSON.stringify({ work_experience: workExperience })
-          };
+        };
         } catch (error) {
           console.error('Error getting work experience:', error);
           return {
@@ -841,9 +841,9 @@ exports.handler = async (event, context) => {
       if (type === 'education') {
         try {
           const education = await getEducation();
-          return {
-            statusCode: 200,
-            headers,
+        return {
+          statusCode: 200,
+          headers,
             body: JSON.stringify({ education: education })
           };
         } catch (error) {
@@ -852,7 +852,7 @@ exports.handler = async (event, context) => {
             statusCode: 500,
             headers,
             body: JSON.stringify({ error: 'Error retrieving education: ' + error.message })
-          };
+        };
         }
       }
       
@@ -860,11 +860,11 @@ exports.handler = async (event, context) => {
       if (type === 'certification') {
         try {
           const certification = await getCertification();
-          return {
-            statusCode: 200,
-            headers,
+        return {
+          statusCode: 200,
+          headers,
             body: JSON.stringify({ certification: certification })
-          };
+        };
         } catch (error) {
           console.error('Error getting certification:', error);
           return {
@@ -876,13 +876,13 @@ exports.handler = async (event, context) => {
       }
       
       // Default response for GET without recognized type
-      return {
+          return {
         statusCode: 400,
-        headers,
+            headers,
         body: JSON.stringify({ error: 'Invalid request type' })
-      };
-    }
-    
+          };
+        }
+        
     // Handle update site config (POST request)
     if (event.httpMethod === 'POST' && action === 'update_site_config') {
       try {
@@ -894,17 +894,17 @@ exports.handler = async (event, context) => {
         
         // Start a transaction by creating a connection
         const connection = await getConnection();
-        await connection.beginTransaction();
-        
+          await connection.beginTransaction();
+          
         try {
           // Save site config
           await saveSiteConfig(siteConfigData);
           
           // Save work experience
-          await saveWorkExperience(workExperienceData);
+            await saveWorkExperience(workExperienceData);
           
           // Save education
-          await saveEducation(educationData, connection);
+            await saveEducation(educationData, connection);
           
           // Save certification
           await saveCertification(certificationData, connection);
@@ -917,27 +917,27 @@ exports.handler = async (event, context) => {
           return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ 
+            body: JSON.stringify({
               message: 'Data updated successfully',
               success: true
             })
           };
         } catch (error) {
           // Rollback the transaction on error
-          await connection.rollback();
+              await connection.rollback();
           console.error('Transaction failed, rolled back:', error);
           
           return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ 
+            body: JSON.stringify({
               error: 'Failed to update data: ' + error.message,
               success: false
             })
           };
         } finally {
           // Close the connection
-          await connection.end();
+              await connection.end();
         }
       } catch (error) {
         console.error('Error updating site config:', error);
@@ -945,7 +945,7 @@ exports.handler = async (event, context) => {
         return {
           statusCode: 500,
           headers,
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             error: 'Error updating data: ' + error.message,
             success: false
           })
@@ -965,7 +965,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         error: 'Internal server error: ' + error.message,
         success: false
       })
