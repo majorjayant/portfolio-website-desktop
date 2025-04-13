@@ -30,14 +30,16 @@
   font-size: 2.5rem !important;
   color: #333 !important;
   position: relative !important;
-  margin-bottom: 3rem !important;
+  margin-bottom: 5rem !important; /* Increased from 3rem to 5rem to account for the bar position */
   margin-left: 2rem !important;
+  font-family: 'Nexa', sans-serif !important;
+  font-weight: 300 !important; /* Light weight for Nexa Light */
 }
 
 .experience-section .section-title:after {
   content: '' !important;
   position: absolute !important;
-  bottom: 10px !important;
+  bottom: -2rem !important; /* Changed from 10px to -2rem to move the bar down */
   left: 0 !important;
   width: 60px !important;
   height: 4px !important;
@@ -116,6 +118,7 @@
   font-size: 0.9rem !important;
   position: relative !important;
   padding-left: 28px !important;
+  font-family: 'Nexa', sans-serif !important;
 }
 
 /* Calendar icon */
@@ -138,6 +141,7 @@
 .drawer-title-company {
   flex: 1 !important;
   padding-right: 20px !important;
+  font-family: 'Nexa', sans-serif !important;
 }
 
 .drawer-title-company h3 {
@@ -168,6 +172,8 @@
   font-size: 0.9rem !important;
   position: relative !important;
   padding-left: 18px !important;
+  font-family: 'Nexa', sans-serif !important;
+  gap: 4px !important; /* Add some gap between icon and text */
 }
 
 /* Location icon */
