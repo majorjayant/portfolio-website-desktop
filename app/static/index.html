@@ -902,56 +902,23 @@
     <section class="certifications-section">
         <div class="container">
             <h2 class="section-title">Certifications</h2>
-            <div class="certifications-container">
-                
-                    <div class="cert-item">
-                        <div class="cert-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div class="cert-content">
-                            <h3>Certified Product Manager</h3>
-                            <h4>Product Management Institute</h4>
-                            <p class="cert-date">Issued: Jun 2019</p>
-                            <p class="cert-expiry">Expires: Jun 2022</p>
-                            
-                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                            
-                        </div>
-                    </div>
-                
-                    <div class="cert-item">
-                        <div class="cert-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div class="cert-content">
-                            <h3>Certified Scrum Master</h3>
-                            <h4>Scrum Alliance</h4>
-                            <p class="cert-date">Issued: Mar 2018</p>
-                            <p class="cert-expiry">Expires: Mar 2020</p>
-                            
-                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                            
-                        </div>
-                    </div>
-                
-                    <div class="cert-item">
-                        <div class="cert-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div class="cert-content">
-                            <h3>Advanced UX Design</h3>
-                            <h4>Design Academy</h4>
-                            <p class="cert-date">Issued: Nov 2017</p>
-                            <p class="cert-expiry">No Expiration</p>
-                            
-                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                            
-                        </div>
-                    </div>
-                
+            <div class="certification-grid" id="certification-grid">
+                <!-- Certification cards will be dynamically generated here -->
             </div>
         </div>
     </section>
+
+    <!-- Certification Modal -->
+    <div class="certification-modal" id="certification-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-cert-modal">&times;</button>
+            <div class="modal-body">
+                <div class="modal-content-inner" id="modal-cert-content">
+                    <!-- Modal content will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     </main>
 
