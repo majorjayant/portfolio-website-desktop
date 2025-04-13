@@ -45,7 +45,7 @@ frontend:
       - .pip-cache/**/*
       - node_modules/**/*
   customHeaders:
-    # Set efficient caching for static assets
+    # Set efficient caching for static assets with versioning
     - pattern: '**/*.{js,css,png,jpg,jpeg,gif,svg,woff,woff2,ttf,eot}'
       headers:
         - key: 'Cache-Control'
@@ -56,6 +56,8 @@ frontend:
       headers:
         - key: 'Cache-Control'
           value: 'public, max-age=0, must-revalidate'
+        - key: 'Pragma'
+          value: 'no-cache'
     
     # Configure proper content types and CORS for API
     - pattern: '*.json'
@@ -64,6 +66,8 @@ frontend:
           value: 'application/json'
         - key: 'Access-Control-Allow-Origin'
           value: '*'
+        - key: 'Cache-Control'
+          value: 'public, max-age=3600'
     
     - pattern: '*.js'
       headers:
@@ -75,6 +79,10 @@ frontend:
       headers:
         - key: 'Cache-Control'
           value: 'no-cache, no-store, must-revalidate'
+        - key: 'Pragma'
+          value: 'no-cache'
+        - key: 'Expires'
+          value: '0'
   
   # URL rewriting rules
   rewrites:
