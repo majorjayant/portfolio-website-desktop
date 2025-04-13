@@ -179,17 +179,8 @@ async function fetchWorkExperienceData() {
     console.log('Fetching work experience data');
     
     try {
-        // Determine API stage based on current hostname
-        const currentUrl = window.location.hostname;
-        let apiStage = 'Staging'; // Default to Staging
-
-        // If on the main domain or jayant.tech, use production stage
-        if (currentUrl.includes('main.d200zhb2va2zdo') || currentUrl.includes('jayant.tech')) {
-            apiStage = 'Staging'; // Keep using Staging since there's only one API stage
-        } 
-        
-        // Try to fetch from API first
-        const apiEndpoint = `https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/${apiStage}/website-portfolio?type=work_experience`;
+        // Use the global API URL
+        const apiEndpoint = `${window.apiUrl}/website-portfolio?type=work_experience`;
         console.log('Using work experience API URL:', apiEndpoint);
         
         const response = await fetch(apiEndpoint, {
@@ -221,9 +212,9 @@ async function fetchWorkExperienceData() {
         console.error('Error fetching work experience from API:', apiError);
         console.log('Falling back to local JSON file');
         
-        // Fallback to local JSON with absolute URL to ensure it works in all environments
+        // Fallback to local JSON with dynamic URL
         try {
-            const localUrl = `${window.location.origin}/data/experience.json`;
+            const localUrl = `${window.staticUrl}/data/experience.json`;
             console.log('Attempting to load from local JSON:', localUrl);
             
             const localResponse = await fetch(localUrl);
