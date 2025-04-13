@@ -224,23 +224,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Certification Section -->
-                                    <div class="mb-8">
-                                        <h3 class="text-lg font-medium text-gray-900 mb-4">Certifications</h3>
-                                        <div id="certification-items-container" class="space-y-6">
-                                            <!-- Certification items will be dynamically added here -->
-                                            <p id="certification-loading-message" class="text-gray-500">Loading certification data...</p>
-                                        </div>
-                                        <div class="mt-4">
-                                            <button type="button" id="add-certification-button" class="inline-flex items-center px-3 py-2 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                                <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                                                </svg>
-                                                Add Certification
-                                            </button>
-                                        </div>
-                                    </div>
-
                                     <!-- Template for new work experience items -->
                                     <template id="work-experience-template">
                                         <div class="work-experience-item bg-gray-50 rounded-md p-4 my-4 border border-gray-200">
@@ -803,14 +786,6 @@
                     // Fetch education data separately if not included in site config
                     fetchEducationData();
                 }
-                
-                // Load certification data if available
-                if (data.certification) {
-                    loadCertificationData(data.certification);
-                } else {
-                    // Fetch certification data separately if not included in site config
-                    fetchCertificationData();
-                }
             })
             .catch(error => {
                 console.error('Error loading from API:', error);
@@ -863,18 +838,6 @@
                                 console.error('Error loading education from local JSON:', err);
                                 // Add empty education item
                                 addEducationItem();
-                            });
-                            
-                        // Try to load certification data from local file
-                        fetch('/data/certification.json')
-                            .then(response => response.json())
-                            .then(certData => {
-                                loadCertificationData(certData);
-                            })
-                            .catch(err => {
-                                console.error('Error loading certification from local JSON:', err);
-                                // Add empty certification item
-                                addCertificationItem();
                             });
                     })
                     .catch(localError => {
@@ -953,9 +916,6 @@
             // Get education data
             const educationData = getEducationData();
 
-            // Get certification data
-            const certificationData = getCertificationData();
-
             // Validate for required work experience fields
             const workExValidation = document.querySelectorAll('.workex-validation-error');
             if (workExValidation.length > 0) {
@@ -971,15 +931,6 @@
                 console.error('Education validation errors found:', eduValidation.length);
                 // Focus the first error
                 eduValidation[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return; // Don't submit if there are validation errors
-            }
-            
-            // Validate for required certification fields
-            const certValidation = document.querySelectorAll('.certification-validation-error');
-            if (certValidation.length > 0) {
-                console.error('Certification validation errors found:', certValidation.length);
-                // Focus the first error
-                certValidation[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return; // Don't submit if there are validation errors
             }
             
@@ -1013,8 +964,7 @@
             const payload = {
                 site_config: siteConfigData,
                 work_experience: workExperienceData,
-                education: educationData,
-                certification: certificationData
+                education: educationData
             };
             
             console.log('Sending payload:', payload);
@@ -1725,318 +1675,6 @@
                     addEducationItem();
                 }
             }
-        }
-        
-        // Initialize education function on load
-        initEducation();
-
-        // Certification Functions
-        function initCertification() {
-            console.log('Initializing certification section');
-            
-            // Add event listener to the "Add Certification" button
-            const addCertButton = document.getElementById('add-certification-button');
-            if (addCertButton) {
-                addCertButton.addEventListener('click', function() {
-                    addCertificationItem();
-                });
-            }
-        }
-        
-        function addCertificationItem(itemData = {}, index = Date.now()) {
-            console.log('Adding certification item:', itemData);
-            const container = document.getElementById('certification-items-container');
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'certification-item bg-gray-50 rounded-md p-4 my-4 border border-gray-200';
-            itemDiv.dataset.id = itemData.id || '';
-            
-            // Add marked-for-deletion class if loaded item is already marked
-            if (parseInt(itemData.is_deleted || 0) === 1) {
-                itemDiv.classList.add('marked-for-deletion');
-            }
-            
-            itemDiv.innerHTML = `
-                <div class="flex justify-between items-start mb-3">
-                    <h4 class="text-base font-medium text-gray-800">Certification Entry</h4>
-                    <button type="button" class="delete-certification text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </div>
-                
-                <input type="hidden" class="certification-id" name="certification_id" value="${itemData.id || ''}">
-                <input type="hidden" class="certification-is-deleted" name="certification_is_deleted" value="${itemData.is_deleted || 0}">
-                
-                <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
-                    <!-- Certification Name -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Certification Name*</label>
-                        <input type="text" class="certification-name mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" 
-                            value="${itemData.certification_name || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''} required>
-                    </div>
-                    
-                    <!-- Issuer Name -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Issuer Name*</label>
-                        <input type="text" class="certification-issuer mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" 
-                            value="${itemData.issuer_name || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''} required>
-                    </div>
-                    
-                    <!-- Credential ID (Optional) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Credential ID</label>
-                        <input type="text" class="certification-credential-id mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"
-                            value="${itemData.credential_id || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>
-                    </div>
-                    
-                    <!-- Credential Link (Optional) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Credential Link</label>
-                        <input type="url" class="certification-credential-link mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"
-                            value="${itemData.credential_link || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>
-                    </div>
-                    
-                    <!-- Date Range -->
-                    <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Issued Date*</label>
-                            <input type="date" class="certification-issued-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"
-                                value="${itemData.issued_date || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''} required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Expiry Date</label>
-                            <input type="date" class="certification-expiry-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"
-                                value="${itemData.expiry_date || ''}" ${(itemData.no_expiry || parseInt(itemData.is_deleted || 0) === 1) ? 'disabled' : ''}>
-                        </div>
-
-                        <div class="flex items-center pb-2">
-                            <input type="checkbox" class="certification-no-expiry h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                ${itemData.no_expiry ? 'checked' : ''} ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>
-                            <label class="ml-2 block text-sm text-gray-700">No Expiration</label>
-                        </div>
-                    </div>
-                    
-                    <!-- Description (Optional) -->
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea class="certification-description mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" rows="3"
-                            ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>${itemData.description || ''}</textarea>
-                    </div>
-                </div>
-            `;
-            
-            container.appendChild(itemDiv);
-            
-            // Hide the loading message if it exists
-            const loadingMsg = document.getElementById('certification-loading-message');
-            if (loadingMsg) {
-                loadingMsg.classList.add('hidden');
-            }
-            
-            // Add event listener for the no expiry checkbox
-            const noExpiryCheckbox = itemDiv.querySelector('.certification-no-expiry');
-            const expiryDateInput = itemDiv.querySelector('.certification-expiry-date');
-            
-            if (noExpiryCheckbox && expiryDateInput) {
-                noExpiryCheckbox.addEventListener('change', function() {
-                    expiryDateInput.disabled = this.checked;
-                    if (this.checked) {
-                        expiryDateInput.value = '';
-                    }
-                });
-            }
-            
-            // Add event listener for the delete button
-            const deleteButton = itemDiv.querySelector('.delete-certification');
-            if (deleteButton) {
-                deleteButton.addEventListener('click', function() {
-                    const isDeletedInput = itemDiv.querySelector('.certification-is-deleted');
-                    
-                    // Toggle the deletion state
-                    const isCurrentlyDeleted = parseInt(isDeletedInput.value || '0') === 1;
-                    isDeletedInput.value = isCurrentlyDeleted ? '0' : '1';
-                    
-                    // Update visual indicators and disable inputs
-                    if (!isCurrentlyDeleted) {
-                        // Mark for deletion
-                        itemDiv.classList.add('marked-for-deletion');
-                        deleteButton.innerHTML = 'Marked for Deletion';
-                        
-                        // Disable all inputs in this item
-                        itemDiv.querySelectorAll('input:not(.certification-is-deleted), textarea').forEach(input => {
-                            input.disabled = true;
-                        });
-                    } else {
-                        // Unmark from deletion
-                        itemDiv.classList.remove('marked-for-deletion');
-                        deleteButton.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                        `;
-                        
-                        // Re-enable all inputs except the "expiry date" if "no expiry" is checked
-                        itemDiv.querySelectorAll('input:not(.certification-is-deleted), textarea').forEach(input => {
-                            if (input.classList.contains('certification-expiry-date') && noExpiryCheckbox.checked) {
-                                input.disabled = true;
-                            } else {
-                                input.disabled = false;
-                            }
-                        });
-                    }
-                });
-            }
-        }
-        
-        // Get certification data from the form
-        function getCertificationData() {
-            const certificationItems = document.querySelectorAll('.certification-item');
-            const data = [];
-            
-            certificationItems.forEach(item => {
-                // Check if the item is marked for deletion
-                const isDeleted = parseInt(item.querySelector('.certification-is-deleted').value || '0');
-                
-                // Get all field values
-                const id = item.querySelector('.certification-id').value || null;
-                const certName = item.querySelector('.certification-name').value;
-                const issuerName = item.querySelector('.certification-issuer').value;
-                const credentialId = item.querySelector('.certification-credential-id').value;
-                const credentialLink = item.querySelector('.certification-credential-link').value;
-                const issuedDate = item.querySelector('.certification-issued-date').value;
-                const expiryDate = item.querySelector('.certification-expiry-date').value;
-                const noExpiry = item.querySelector('.certification-no-expiry').checked;
-                const description = item.querySelector('.certification-description').value;
-                
-                // Skip validation for items marked for deletion
-                if (isDeleted === 0) {
-                    // Basic validation for required fields
-                    let isValid = true;
-                    
-                    if (!certName) {
-                        item.querySelector('.certification-name').classList.add('border-red-500');
-                        isValid = false;
-                    } else {
-                        item.querySelector('.certification-name').classList.remove('border-red-500');
-                    }
-                    
-                    if (!issuerName) {
-                        item.querySelector('.certification-issuer').classList.add('border-red-500');
-                        isValid = false;
-                    } else {
-                        item.querySelector('.certification-issuer').classList.remove('border-red-500');
-                    }
-                    
-                    if (!issuedDate) {
-                        item.querySelector('.certification-issued-date').classList.add('border-red-500');
-                        isValid = false;
-                    } else {
-                        item.querySelector('.certification-issued-date').classList.remove('border-red-500');
-                    }
-                    
-                    if (!isValid) {
-                        console.error('Certification item has validation errors');
-                        item.classList.add('certification-validation-error');
-                    } else {
-                        item.classList.remove('certification-validation-error');
-                    }
-                }
-                
-                // Create a certification object
-                const certificationObject = {
-                    id: id,
-                    certification_name: certName,
-                    issuer_name: issuerName,
-                    credential_id: credentialId || null,
-                    credential_link: credentialLink || null,
-                    issued_date: issuedDate || null,
-                    expiry_date: noExpiry ? null : (expiryDate || null),
-                    no_expiry: noExpiry,
-                    description: description || null,
-                    is_deleted: isDeleted
-                };
-                
-                // Add to the data array
-                data.push(certificationObject);
-            });
-            
-            return data;
-        }
-        
-        // Load certification data into the form
-        function loadCertificationData(certificationItems) {
-            console.log('Loading certification data:', certificationItems);
-            
-            // Get the container
-            const container = document.getElementById('certification-items-container');
-            if (!container) {
-                console.error('Certification container not found');
-                return;
-            }
-            
-            // Clear the container
-            container.innerHTML = '';
-            
-            // If no certification items, add an empty one
-            if (!certificationItems || certificationItems.length === 0) {
-                addCertificationItem();
-                return;
-            }
-            
-            // Otherwise, add each item to the form
-            certificationItems.forEach(item => addCertificationItem(item));
-        }
-        
-        // Fetch certification data separately if needed
-        async function fetchCertificationData() {
-            console.log('Fetching certification data separately');
-            
-            try {
-                const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certification';
-                
-                const response = await fetch(apiEndpoint, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    mode: 'cors',
-                    credentials: 'omit'
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log('Received certification data from separate API call:', data);
-                const certificationData = data.certification || data;
-                
-                loadCertificationData(certificationData);
-            } catch (error) {
-                console.error('Error fetching certification data:', error);
-                // Add empty certification item as fallback
-                addCertificationItem();
-            }
-        }
-        
-        // Initialize certification function on load
-        initCertification();
-
-        // Add refresh button event listener
-        const refreshButton = document.getElementById('refresh-button');
-        if (refreshButton) {
-            refreshButton.addEventListener('click', function() {
-                console.log('Refreshing data');
-                // Show loading indicator
-                if (loadingIndicator) loadingIndicator.classList.remove('hidden');
-                if (formContainer) formContainer.classList.add('hidden');
-                
-                // Load configuration again
-                loadSiteConfig();
-            });
         }
     });
     </script>

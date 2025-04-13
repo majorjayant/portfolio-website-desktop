@@ -405,33 +405,6 @@ async function ensureEducationTableExists(connection) {
   }
 }
 
-// Function to ensure the certifications table exists
-async function ensureCertificationsTableExists(connection) {
-  try {
-    // Ensure certifications table exists
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS certifications (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        certification_name VARCHAR(200) NOT NULL,
-        issuer_name VARCHAR(200) NOT NULL,
-        credential_id VARCHAR(100),
-        credential_link VARCHAR(255),
-        issued_date DATE NOT NULL,
-        expiry_date DATE,
-        description TEXT,
-        is_deleted BOOLEAN DEFAULT FALSE,
-        created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
-    console.log('Verified certifications table exists');
-    return true;
-  } catch (error) {
-    console.error('Error ensuring certifications table exists:', error);
-    throw error;
-  }
-}
-
 // Function to get education data from the database
 async function getEducation() {
   let connection;
@@ -470,315 +443,549 @@ async function getEducation() {
 
 // Function to save education data to the database
 async function saveEducation(educationData, connection) {
-  console.log('Saving education data:', educationData);
-  
-  // First, get existing education items to check for deletions
-  const [existingEducation] = await connection.execute(
-    'SELECT id FROM education'
-  );
-  
-  const existingIds = existingEducation.map(item => item.id);
-  const incomingIds = educationData.filter(item => item.id).map(item => parseInt(item.id, 10));
-  
-  // Find IDs that exist in database but not in the incoming data (these should be marked as deleted)
-  const idsToDelete = existingIds.filter(id => !incomingIds.includes(id));
-  
-  if (idsToDelete.length > 0) {
-    console.log(`Marking education items as deleted: ${idsToDelete.join(', ')}`);
-    await connection.execute(
-      'UPDATE education SET is_deleted = 1 WHERE id IN (?)',
-      [idsToDelete]
-    );
+  // Expects an active transaction connection
+  if (!connection) {
+      throw new Error("saveEducation requires an active database transaction connection.");
   }
-  
-  // Process each education item
-  for (const edu of educationData) {
-    if (edu.id) {
-      // Update existing item
-      await connection.execute(
-        `UPDATE education SET 
-        edu_title = ?, 
-        edu_name = ?, 
-        location = ?, 
-        from_date = ?, 
-        to_date = ?, 
-        is_current = ?,
-        is_deleted = ?
-        WHERE id = ?`,
-        [
-          edu.edu_title,
-          edu.edu_name,
-          edu.location,
-          edu.from_date,
-          edu.to_date || null,
-          edu.is_current ? 1 : 0,
-          edu.is_deleted ? 1 : 0,
-          edu.id
-        ]
+  if (!Array.isArray(educationData)) {
+      console.log('No valid education data array found in payload, skipping save.');
+      return; // Nothing to save
+  }
+  console.log(`Starting saveEducation for ${educationData.length} items.`);
+
+  const insertPromises = [];
+  const updatePromises = [];
+  const softDeletePromises = [];
+
+  for (const item of educationData) {
+    // Ensure is_deleted is treated as a number (0 or 1)
+    const isDeleted = Number(item.is_deleted || 0);
+    const isCurrent = item.is_current ? 1 : 0; // Convert boolean to tinyint
+    const fromDate = item.from_date || null;
+    const toDate = item.is_current ? null : (item.to_date || null);
+
+    if (item.id) { // Existing item: Update or Soft Delete
+      const itemId = parseInt(item.id, 10);
+      if (isNaN(itemId)) {
+          console.warn(`Skipping item with invalid ID: ${item.id}`);
+          continue;
+      }
+
+      if (isDeleted === 1) { // Soft Delete
+        console.log(`Preparing soft delete for education item ID: ${itemId}`);
+        softDeletePromises.push(
+          connection.execute(
+            'UPDATE education SET is_deleted = 1, updated_date = NOW() WHERE id = ? AND is_deleted = 0',
+            [itemId]
+          ).then(([result]) => {
+              console.log(`Soft delete result for education ID ${itemId}: Affected rows: ${result.affectedRows}`);
+              if (result.affectedRows === 0) {
+                  console.log(`Education item ${itemId} either already deleted or not found.`);
+              }
+              return result;
+          }).catch(err => {
+              console.error(`Error during soft delete for education ID ${itemId}:`, err);
+              throw err; // Propagate error to fail transaction
+          })
+        );
+      } else { // Update
+        console.log(`Preparing update for education item ID: ${itemId}`);
+        updatePromises.push(
+          connection.execute(
+            `UPDATE education SET
+              edu_title = ?, edu_name = ?, location = ?, from_date = ?, to_date = ?,
+              is_current = ?, is_deleted = 0, updated_date = NOW()
+             WHERE id = ?`,
+            [
+              item.edu_title || '',
+              item.edu_name || '',
+              item.location || null,
+              fromDate,
+              toDate,
+              isCurrent,
+              itemId
+            ]
+          ).then(([result]) => {
+              console.log(`Update result for education ID ${itemId}: Affected rows: ${result.affectedRows}`);
+              if (result.affectedRows === 0) {
+                  console.warn(`Update for education item ${itemId} affected 0 rows (possibly no changes or item not found).`);
+              }
+              return result;
+          }).catch(err => {
+              console.error(`Error during update for education ID ${itemId}:`, err);
+              throw err; // Propagate error to fail transaction
+          })
+        );
+      }
+    } else if (isDeleted === 0) { // New item (only if not marked for deletion)
+      console.log(`Preparing insert for new education item: ${item.edu_title}`);
+      insertPromises.push(
+        connection.execute(
+          `INSERT INTO education
+            (edu_title, edu_name, location, from_date, to_date, is_current, is_deleted, created_date, updated_date)
+           VALUES (?, ?, ?, ?, ?, ?, 0, NOW(), NOW())`,
+          [
+            item.edu_title || '',
+            item.edu_name || '',
+            item.location || null,
+            fromDate,
+            toDate,
+            isCurrent
+          ]
+        ).then(([result]) => {
+            console.log(`Insert result for education '${item.edu_title}': Insert ID: ${result.insertId}, Affected rows: ${result.affectedRows}`);
+            if (result.affectedRows !== 1) {
+                console.error(`Insert for education '${item.edu_title}' failed or did not insert exactly one row.`);
+                throw new Error(`Failed to insert education item: ${item.edu_title}`);
+            }
+            return result;
+        }).catch(err => {
+            console.error(`Error during insert for education '${item.edu_title}':`, err);
+            throw err; // Propagate error to fail transaction
+        })
       );
     } else {
-      // Insert new item
-      await connection.execute(
-        `INSERT INTO education (
-          edu_title, 
-          edu_name, 
-          location, 
-          from_date, 
-          to_date, 
-          is_current,
-          is_deleted
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-          edu.edu_title,
-          edu.edu_name,
-          edu.location,
-          edu.from_date,
-          edu.to_date || null,
-          edu.is_current ? 1 : 0,
-          edu.is_deleted ? 1 : 0
-        ]
-      );
+        console.log(`Ignoring new education item marked for deletion: ${item.edu_title}`);
     }
   }
-  
-  console.log('Education data saved successfully');
-}
 
-/**
- * Get certification data from the database
- * @param {Object} connection - MySQL connection
- * @returns {Promise<Array>} - Certification data array
- */
-async function getCertificationData(connection) {
-  console.log('Getting certification data from database');
-  
+  // Execute all promises
   try {
-    const [rows] = await connection.query(`
-      SELECT * FROM certifications 
-      WHERE is_deleted = 0 
-      ORDER BY issued_date DESC
-    `);
-    
-    console.log(`Retrieved ${rows.length} certification records`);
-    return rows;
+      console.log(`Executing ${softDeletePromises.length} soft deletes, ${updatePromises.length} updates, ${insertPromises.length} inserts for education.`);
+      await Promise.all(softDeletePromises);
+      await Promise.all(updatePromises);
+      await Promise.all(insertPromises);
+      console.log('All education operations executed successfully.');
   } catch (error) {
-    console.error('Error retrieving certification data:', error);
-    throw error;
-  }
-}
-
-/**
- * Save certification data to the database
- * @param {Array} certificationData - Array of certification objects
- * @param {Object} connection - MySQL connection
- * @returns {Promise<Object>} - Result of the save operation
- */
-async function saveCertification(certificationData, connection) {
-  console.log('Saving certification data:', certificationData);
-  
-  try {
-    // Get existing certification ids to check for deletions
-    const [existingCerts] = await connection.query('SELECT id FROM certifications');
-    const existingIds = existingCerts.map(cert => cert.id);
-    const incomingIds = certificationData.map(cert => cert.id).filter(id => id);
-    
-    // Find ids that exist in the database but are not in the incoming data
-    const deletedIds = existingIds.filter(id => !incomingIds.includes(id));
-    
-    // Mark deleted certificates
-    if (deletedIds.length > 0) {
-      console.log('Marking deleted certifications:', deletedIds);
-      const placeholders = deletedIds.map(() => '?').join(',');
-      await connection.query(
-        `UPDATE certifications SET is_deleted = 1 WHERE id IN (${placeholders})`,
-        deletedIds
-      );
-    }
-    
-    // Process each certification item
-    for (const cert of certificationData) {
-      if (cert.id) {
-        // Update existing record
-        console.log('Updating certification:', cert.id);
-        await connection.query(`
-          UPDATE certifications
-          SET 
-            certification_name = ?,
-            issuer_name = ?,
-            credential_id = ?,
-            credential_link = ?,
-            issued_date = ?,
-            expiry_date = ?,
-            description = ?,
-            is_deleted = 0
-          WHERE id = ?
-        `, [
-          cert.certification_name,
-          cert.issuer_name,
-          cert.credential_id || null,
-          cert.credential_link || null,
-          cert.issued_date,
-          cert.expiry_date || null,
-          cert.description || null,
-          cert.id
-        ]);
-      } else {
-        // Insert new record
-        console.log('Inserting new certification');
-        await connection.query(`
-          INSERT INTO certifications
-          (certification_name, issuer_name, credential_id, credential_link, issued_date, expiry_date, description, is_deleted)
-          VALUES (?, ?, ?, ?, ?, ?, ?, 0)
-        `, [
-          cert.certification_name,
-          cert.issuer_name,
-          cert.credential_id || null,
-          cert.credential_link || null,
-          cert.issued_date,
-          cert.expiry_date || null,
-          cert.description || null
-        ]);
-      }
-    }
-    
-    return { success: true, message: 'Certification data saved successfully' };
-  } catch (error) {
-    console.error('Error saving certification data:', error);
-    throw error;
+      console.error('Error executing education save operations:', error);
+      // Error is already logged by individual promise catches, re-throw to ensure transaction rollback
+      throw error;
   }
 }
 
 // Lambda handler
-module.exports.handler = async (event, context) => {
-  console.log('Received event:', JSON.stringify(event, null, 2));
+exports.handler = async (event, context) => {
+  // Log detailed information about the request
+  logRequestInfo(event, context);
   
-  // Set up default response with CORS headers
-  const response = {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ message: 'Success' })
-  };
-  
-  // Handle preflight request
-  if (event.httpMethod === 'OPTIONS') {
-    console.log('Handling preflight request');
-    return response;
-  }
-  
-  let connection;
   try {
-    // Create MySQL connection
-    connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME
-    });
+    // Handle OPTIONS requests for CORS
+    if (event.httpMethod === 'OPTIONS') {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ 
+          message: 'CORS preflight request successful',
+          timestamp: new Date().toISOString()
+        })
+      };
+    }
     
+    // Extract and log query parameters
+    const queryParams = event.queryStringParameters || {};
+    const pathParams = event.pathParameters || {};
+    let requestType = queryParams.type || '';
+    let actionType = queryParams.action || '';
+    const path = event.path || '';
+    
+    // Check if we have a raw query string that contains the parameters
+    // This is a fallback for when API Gateway doesn't parse query params correctly
+    if (event.rawQueryString) {
+      console.log('Checking raw query string:', event.rawQueryString);
+      if (event.rawQueryString.includes('type=site_config')) {
+        requestType = 'site_config';
+        console.log('Found site_config in raw query string');
+      }
+      if (event.rawQueryString.includes('action=get_site_config')) {
+        actionType = 'get_site_config';
+        console.log('Found get_site_config in raw query string');
+      }
+    }
+    
+    console.log('Request type from query parameters:', requestType);
+    console.log('Action type from query parameters:', actionType);
+    console.log('Path:', path);
+    
+    // HIGHEST PRIORITY: Handle any GET request
     if (event.httpMethod === 'GET') {
       console.log('Processing GET request');
-      const type = event.queryStringParameters && event.queryStringParameters.type;
       
-      if (type === 'education') {
-        // Get education data only
-        const educationData = await getEducation();
-        response.body = JSON.stringify({ education: educationData });
-      } else if (type === 'certification') {
-        // Get certification data only
-        const certificationData = await getCertificationData(connection);
-        response.body = JSON.stringify({ certification: certificationData });
-      } else {
-        // Get all data
-        const [siteConfig, workExperience, educationData, certificationData] = await Promise.all([
-          getSiteConfig(),
-          getWorkExperience(),
-          getEducation(),
-          getCertificationData(connection)
-        ]);
+      // Check for work experience request
+      if (requestType === 'workex') {
+        console.log('GET request for work experience detected');
+        const workExperience = await getWorkExperience();
         
-        response.body = JSON.stringify({
-          siteConfig,
-          workExperience,
-          education: educationData,
-          certification: certificationData
-        });
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            work_experience: workExperience,
+            _version: "2.1.14",
+            source: "GET handler for work experience",
+            timestamp: new Date().toISOString()
+          })
+        };
       }
-    } else if (event.httpMethod === 'POST') {
+      
+      // Check for education request
+      if (requestType === 'education') {
+        console.log('GET request for education detected');
+        const education = await getEducation();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            education: education,
+            _version: "2.1.14",
+            source: "GET handler for education",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // Prioritize site_config requests
+      if (requestType === 'site_config' || actionType === 'get_site_config') {
+        console.log('GET request for site_config detected');
+        const siteConfig = await getSiteConfig();
+        // Also get work experience data to include in response
+        const workExperience = await getWorkExperience();
+        // Get education data
+        const education = await getEducation();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            site_config: siteConfig,
+            work_experience: workExperience,
+            education: education,
+            _version: "2.1.14",
+            source: "GET handler with query params",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // General GET request handling
+      console.log('Processing general GET request');
+      const siteConfig = await getSiteConfig();
+      // Also get work experience data to include in response
+      const workExperience = await getWorkExperience();
+      // Get education data
+      const education = await getEducation();
+      
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          site_config: siteConfig,
+          work_experience: workExperience,
+          education: education,
+          _version: "2.1.14",
+          source: "GET general handler",
+          timestamp: new Date().toISOString()
+        })
+      };
+    }
+    
+    // Check for admin access query parameter - special backdoor for access issues
+    if (queryParams.admin_check === 'true') {
+      console.log('Admin check requested');
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          message: 'Admin API is working correctly',
+          timestamp: new Date().toISOString(),
+          lambda_version: '2.1.14',
+          storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
+          routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
+        })
+      };
+    }
+    
+    // If we have an action in the query params, handle it accordingly
+    if (actionType === 'get_site_config' || requestType === 'site_config') {
+        console.log('Processing site_config request from query parameters');
+        const siteConfig = await getSiteConfig();
+        // Also get work experience data to include in response
+        const workExperience = await getWorkExperience();
+        // Get education data
+        const education = await getEducation();
+        
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                site_config: siteConfig,
+                work_experience: workExperience,
+                education: education,
+                _version: "2.1.14",
+                from: "query_parameters",
+                timestamp: new Date().toISOString(),
+                storage: "Using MySQL persistent storage with Lambda Proxy Integration"
+            })
+        };
+    }
+    
+    // Handle POST request to save site configuration
+    if (event.httpMethod === 'POST') {
       console.log('Processing POST request');
-      const requestBody = JSON.parse(event.body);
       
-      // Start a transaction
-      await connection.beginTransaction();
-      
-      if (requestBody.siteConfig) {
-        // Update site configuration
-        await saveSiteConfig(requestBody.siteConfig);
+      // Validate body
+      if (!event.body) {
+        console.error('Missing request body');
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ 
+            success: false,
+            message: 'Request body is missing',
+            timestamp: new Date().toISOString()
+          })
+        };
       }
       
-      if (requestBody.workExperience) {
-        // Update work experience data
-        await saveWorkExperience(requestBody.workExperience);
+      // Parse body
+      let parsedBody;
+      try {
+        parsedBody = JSON.parse(event.body);
+        console.log('Parsed body:', JSON.stringify(parsedBody));
+        console.log('Parsed body action:', parsedBody.action);
+      } catch (parseError) {
+        console.error('Error parsing request body:', parseError);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ 
+            success: false,
+            message: 'Invalid JSON in request body',
+            error: parseError.message,
+            timestamp: new Date().toISOString()
+          })
+        };
       }
       
-      if (requestBody.education) {
-        // Update education data
-        await saveEducation(requestBody.education, connection);
+      // Check for different request formats and determine action
+      actionType = parsedBody.action || actionType || '';
+      
+      console.log('Action type detected in request:', actionType);
+      
+      // Handle login action
+      if (actionType === 'login') {
+        console.log('Processing login request');
+        
+        const { username, password } = parsedBody;
+        if (!username || !password) {
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Username and password are required',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        const loginResult = handleLogin(username, password);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            ...loginResult,
+            timestamp: new Date().toISOString(),
+            lambda_version: '2.1.14'
+          })
+        };
       }
       
-      if (requestBody.certification) {
-        // Update certification data
-        await saveCertification(requestBody.certification, connection);
+      // Special admin access check
+      if (actionType === 'admin_access_check') {
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            message: 'Admin API is accessible',
+            lambda_version: '2.1.14',
+            storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
+            timestamp: new Date().toISOString(),
+            access_paths: {
+              admin_direct: '/admin-direct/',
+              admin_dashboard: '/admin/dashboard/'
+            }
+          })
+        };
       }
       
-      // Commit the transaction
-      await connection.commit();
+      // Handle update site config
+      if (actionType === 'update_site_config') {
+        console.log('Processing site_config update request');
+        
+        // ** Log received headers for debugging **
+        console.log('Headers received by update_site_config:', JSON.stringify(event.headers || {}));
+
+        // Validate authorization token (simplified for demo)
+        const authHeader = event.headers.Authorization || event.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          console.error('Missing or invalid Authorization header');
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Authorization required',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        // Extract config data, work experience data, and education data
+        const configData = parsedBody.site_config || {};
+        const workExperienceData = parsedBody.work_experience || [];
+        const educationData = parsedBody.education || [];
+        
+        let updateResult = { success: true, message: "No data provided to update" };
+        
+        // Start a transaction to handle the update
+        let connection;
+        try {
+          connection = await getConnection();
+          await connection.beginTransaction();
+          
+          // Save the site configuration data if provided
+          if (Object.keys(configData).length > 0) {
+            console.log('Updating site configuration with:', configData);
+            await saveSiteConfig(configData);
+          }
+          
+          // Save the work experience data if provided
+          if (workExperienceData.length > 0) {
+            console.log('Updating work experience with:', workExperienceData);
+            await saveWorkExperience(workExperienceData);
+          }
+          
+          // Save the education data if provided
+          if (educationData.length > 0) {
+            console.log('Updating education data with:', educationData);
+            await saveEducation(educationData, connection);
+          }
+          
+          // Commit the transaction
+          await connection.commit();
+          console.log('Transaction committed successfully');
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: "Updates completed successfully",
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.14'
+            })
+          };
+        } catch (error) {
+          // Roll back the transaction if there was an error
+          if (connection) {
+            try {
+              await connection.rollback();
+              console.log('Transaction rolled back due to error');
+            } catch (rollbackError) {
+              console.error('Error rolling back transaction:', rollbackError);
+            }
+          }
+          
+          console.error('Error during update:', error);
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: `Error during update: ${error.message}`,
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.14'
+            })
+          };
+        } finally {
+          if (connection) {
+            try {
+              await connection.end();
+            } catch (connectionError) {
+              console.error('Error closing connection:', connectionError);
+            }
+          }
+        }
+      }
       
-      response.body = JSON.stringify({
-        success: true,
-        message: 'Data updated successfully'
-      });
-    } else {
-      // Method not supported
-      response.statusCode = 405;
-      response.body = JSON.stringify({
-        error: 'Method not supported'
-      });
+      // Handle get site config via POST (for dashboard)
+      if (actionType === 'get_site_config') {
+        console.log('Processing site_config get request via POST');
+        
+        // Get site configuration from the database
+        const siteConfig = await getSiteConfig();
+        
+        // Also get work experience data
+        const workExperience = await getWorkExperience();
+        
+        // Get education data
+        const education = await getEducation();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            site_config: siteConfig,
+            work_experience: workExperience,
+            education: education,
+            _version: "2.1.14",
+            from: "post_body",
+            timestamp: new Date().toISOString(),
+            storage: "Using MySQL persistent storage with Lambda Proxy Integration"
+          })
+        };
+      }
+      
+      // Handle unknown action type
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          message: `Unknown action type: ${actionType}`,
+          timestamp: new Date().toISOString()
+        })
+      };
     }
+    
+    // Handle unknown request type
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        site_config: await getSiteConfig(), // Always return site_config as fallback
+        message: 'Unknown request type but returning site_config',
+        request_path: event.path,
+        request_method: event.httpMethod,
+        request_type: requestType,
+        _version: "2.1.14",
+        timestamp: new Date().toISOString()
+      })
+    };
+    
   } catch (error) {
-    console.error('Error:', error);
-    
-    // Rollback transaction if started
-    if (connection && connection.rollback) {
-      try {
-        await connection.rollback();
-        console.log('Transaction rolled back');
-      } catch (rollbackError) {
-        console.error('Rollback error:', rollbackError);
-      }
-    }
-    
-    response.statusCode = 500;
-    response.body = JSON.stringify({
-      success: false,
-      message: 'An error occurred while processing the request',
-      error: error.message
-    });
-  } finally {
-    // Close MySQL connection
-    if (connection) {
-      try {
-        await connection.end();
-        console.log('Database connection closed');
-      } catch (connectionError) {
-        console.error('Error closing database connection:', connectionError);
-      }
-    }
+    console.error('Unhandled error:', error);
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success: false,
+        message: 'Internal server error: ' + error.message,
+        error_type: error.name,
+        timestamp: new Date().toISOString()
+      })
+    };
   }
-  
-  return response;
 }; 
