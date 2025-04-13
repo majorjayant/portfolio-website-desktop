@@ -63,7 +63,7 @@
   width: 80px !important;
   height: 4px !important;
   background: linear-gradient(to right, #6c584c, #a38566) !important;
-}
+  }
 
 /* ===== DRAWER CONTAINER STYLES ===== */
 .experience-drawers {
@@ -459,7 +459,7 @@
   .experience-section {
     padding: 20px 10px !important;
     margin-top: 0 !important;
-  }
+    }
   
   .experience-section .container {
     width: 90% !important; /* Reduce width to avoid maximized look */
@@ -471,31 +471,34 @@
   .experience-section .section-title {
     font-size: 1.8rem !important; /* Slightly smaller title */
     margin-left: 0.5rem !important;
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 4rem !important;
     font-weight: 700 !important; /* Keep the bold weight on mobile */
     color: #7a6b5f !important; /* Keep the same color as desktop */
   }
   
-  /* Remove the horizontal line above experience drawers */
-  .experience-section .section-title:after {
-    display: none !important; /* Hide the line on mobile */
-  }
-  
+ 
+   
   .experience-drawers {
-    padding: 0 !important; /* Reduce padding to fix height issues */
+    padding-top: 40px !important; /* Restore original padding */
+    padding-bottom: 80px !important; /* Restore original padding */
     max-width: 100% !important;
   }
   
-  /* Remove background shapes on mobile that cause excess height */
+  /* Restore background shapes on mobile */
   .experience-drawers:before,
   .experience-drawers:after {
-    display: none !important;
+    display: block !important; /* Restore visibility */
+    top: -10px !important;
+    left: -10px !important;
+    right: -10px !important;
+    bottom: -10px !important;
+    border-radius: 14px !important; /* Smaller radius for background */
   }
   
   /* Drawer adjustments for mobile */
   .experience-drawer {
     padding: 15px !important;
-    margin-bottom: 10px !important; /* Fixed spacing between drawers */
+    margin-bottom: calc(-1 * var(--drawer-overlap) / 2) !important; /* Restore calculated overlap */
     border-radius: 10px !important;
     height: auto !important;
     min-height: auto !important;
@@ -504,102 +507,64 @@
     margin-right: auto !important;
     border: 1px solid rgba(0,0,0,0.1) !important; /* Add subtle border */
     border-left-width: 5px !important; /* Keep the left border thicker */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05) !important; /* Lighter shadow */
   }
   
-  /* On mobile, don't show on hover */
-  .experience-drawer:hover {
-    transform: none !important;
-    box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
-  }
-  
-  .experience-drawer.active {
-    z-index: calc(var(--drawer-z-index) + 10) !important; /* Ensure active drawer is on top */
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
-    margin-bottom: calc(-1 * var(--drawer-overlap) / 4) !important;
-    transform: scale(1.02) !important;
-  }
-  
-  .experience-drawer.active .drawer-description {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    height: auto !important;
-    max-height: unset !important; /* Remove max-height limit */
-    transform: none !important;
-    overflow: visible !important;
-  }
-  
-  /* Make skill tags more touch-friendly on mobile */
-  .drawer-description .skill-tag {
-    padding: 6px 14px !important; /* Larger padding for touch */
-    margin-bottom: 8px !important; /* More space between tags */
-    font-size: 0.75rem !important; /* Adjust font size */
-  }
-  
-  /* Header adjustments */
+  /* Header adjustments - fix alignment and remove extra spacing */
   .drawer-header {
     flex-direction: column !important;
-    align-items: center !important; /* Center items vertically */
-    gap: 8px !important; /* Slightly increased gap for better spacing */
+    align-items: center !important;
+    gap: 0 !important; /* Remove gap between elements */
     width: 100% !important;
     overflow: visible !important;
-    justify-content: center !important; /* Center items horizontally */
+    justify-content: center !important;
   }
   
   .drawer-date {
     width: 100% !important;
-    margin-bottom: 4px !important;
-    font-size: 0.8rem !important; /* Slightly smaller font */
-    text-align: center !important; /* Center text on mobile */
-    padding-left: 0 !important; /* Remove padding on mobile */
+    margin-bottom: 0 !important; /* Remove bottom margin */
+    font-size: 0.8rem !important;
+    text-align: center !important;
+    padding-left: 0 !important;
     justify-content: center !important;
-    padding-top: 20px !important; /* Add space at top */
+    padding-top: 10px !important; /* Reduced space at top */
   }
   
   /* Calendar icon for mobile - center it */
   .drawer-date:before {
     position: absolute !important;
-    left: calc(50% - 40px) !important; /* Position relative to center */
+    left: calc(50% - 40px) !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
   }
   
   .drawer-title-company {
     text-align: center !important;
-    align-items: center !important; /* Center content horizontally in mobile view */
+    align-items: center !important;
     width: 100% !important;
-    padding: 10px 0 !important;
+    padding: 4px 0 !important; /* Reduced padding */
+    margin: 0 !important; /* Remove margin */
   }
   
   .drawer-title-company h3 {
-    font-size: 1.1rem !important; /* Slightly increased size */
-    line-height: 1.3 !important;
-    text-align: center !important; /* Ensure text is centered */
-    margin-bottom: 4px !important; /* Add space between title and company */
+    font-size: 1.1rem !important;
+    line-height: 1.2 !important; /* Tighter line height */
+    margin-bottom: 2px !important; /* Reduced space between title and company */
   }
   
   .drawer-title-company p {
-    font-size: 0.85rem !important; /* Smaller company name */
-    text-align: center !important; /* Ensure text is centered */
+    font-size: 0.85rem !important;
+    line-height: 1.2 !important; /* Tighter line height */
   }
   
   /* Fix location for mobile */
   .drawer-location {
     width: 100% !important;
-    padding-left: 0 !important; /* Remove padding on mobile */
-    margin-top: 5px !important; /* Add space between elements */
-    text-align: center !important; /* Center text */
+    padding-left: 0 !important;
+    margin-top: 0 !important; /* Remove top margin */
+    margin-bottom: 0 !important; /* Remove bottom margin */
+    text-align: center !important;
     justify-content: center !important;
-    padding-bottom: 10px !important; /* Add space at bottom */
-  }
-  
-  /* Location icon for mobile - center it */
-  .drawer-location:before {
-    position: absolute !important;
-    left: calc(50% - 40px) !important; /* Position relative to center */
-    top: 50% !important;
-    transform: translateY(-50%) !important;
+    padding-bottom: 5px !important; /* Reduced space at bottom */
   }
   
   /* Description adjustments */
@@ -642,16 +607,6 @@
     margin-bottom: 0.25rem !important;
     font-size: 0.65rem !important; /* Smaller tags */
     padding: 3px 10px !important; /* Smaller padding */
-  }
-  
-  /* Background adjustments */
-  .experience-drawers:before,
-  .experience-drawers:after {
-    top: -10px !important;
-    left: -10px !important;
-    right: -10px !important;
-    bottom: -10px !important;
-    border-radius: 14px !important; /* Smaller radius for background */
   }
   
   .drawer-description .skills-container {

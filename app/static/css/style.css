@@ -67,14 +67,6 @@ img {
   display: inline-block;
 }
 
-.section-title:after {
-  content: '';
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  width: 100px;
-  height: 3px;
-}
 
 .highlight {
   color: var(--accent-color);
