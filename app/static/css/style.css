@@ -510,7 +510,7 @@ header {
 .experience-section .section-title {
   color: #333333; /* Darker color for better visibility */
   text-align: left !important; /* Force left alignment */
-  margin-bottom: 4rem;
+  margin-bottom: 6rem;
   margin-left: 2rem; /* Increased left margin */
   font-size: 2.75rem;
   font-weight: 700;
@@ -2685,7 +2685,7 @@ main .experience-section {
 }
 
 .experience-section .section-title:after {
-  bottom: -2rem !important; /* Move the bar down by 2rem */
+  bottom: -1rem !important; /* Move the bar down by 2rem */
 }
 
 /* Fix for location icon spacing */

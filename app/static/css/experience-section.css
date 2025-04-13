@@ -39,7 +39,7 @@
 .experience-section .section-title:after {
   content: '' !important;
   position: absolute !important;
-  bottom: -2rem !important; /* Changed from 10px to -2rem to move the bar down */
+  bottom: 1rem !important; /* Changed from 10px to -2rem to move the bar down */
   left: 0 !important;
   width: 60px !important;
   height: 4px !important;
