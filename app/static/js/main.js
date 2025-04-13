@@ -295,7 +295,7 @@ function loadSiteConfig() {
                     });
                 
                 // Try to load education data separately
-                fetch('/data/education.json')
+                fetch('/static/data/education.json')
                     .then(response => response.json())
                     .then(eduData => {
                         updateEducationSection(eduData);
@@ -305,7 +305,7 @@ function loadSiteConfig() {
                     });
                 
                 // Try to load certification data separately
-                fetch('/data/certification.json')
+                fetch('/static/data/certifications.json')
                     .then(response => response.json())
                     .then(certData => {
                         updateCertificationSection(certData);
@@ -914,7 +914,7 @@ async function fetchEducationData() {
         
         // Fallback to local JSON
         try {
-            const localResponse = await fetch('/data/education.json');
+            const localResponse = await fetch('/static/data/education.json');
             const localData = await localResponse.json();
             console.log('Successfully loaded education data from local JSON:', localData);
             updateEducationSection(localData);
@@ -952,15 +952,16 @@ function updateCertificationSection(certificationData) {
     
     // Sort certifications by date (most recent first)
     certificationData.sort((a, b) => {
-        const dateA = a.issued_date;
-        const dateB = b.issued_date;
+        // Handle different field names in local JSON vs API data
+        const dateA = a.issued_date || a.issue_date;
+        const dateB = b.issued_date || b.issue_date;
         return new Date(dateB) - new Date(dateA);
     });
     
     // Create an item for each certification entry
     certificationData.forEach((certification) => {
-        // Format dates
-        const issuedDate = new Date(certification.issued_date);
+        // Format dates - handle different field names in local JSON vs API data
+        const issuedDate = new Date(certification.issued_date || certification.issue_date);
         const expiryDate = certification.expiry_date ? new Date(certification.expiry_date) : null;
         
         const issuedDateString = `Issued: ${getMonthName(issuedDate.getMonth()).substring(0, 3)} ${issuedDate.getFullYear()}`;
@@ -981,13 +982,13 @@ function updateCertificationSection(certificationData) {
         const content = document.createElement('div');
         content.className = 'cert-content';
         
-        // Create title (certification name)
+        // Create title (certification name) - handle different field names
         const title = document.createElement('h3');
-        title.textContent = certification.certification_name;
+        title.textContent = certification.certification_name || certification.title;
         
-        // Create issuer name
+        // Create issuer name - handle different field names
         const issuer = document.createElement('h4');
-        issuer.textContent = certification.issuer_name;
+        issuer.textContent = certification.issuer_name || certification.issuer;
         
         // Create dates
         const issuedDateElement = document.createElement('p');
@@ -998,10 +999,10 @@ function updateCertificationSection(certificationData) {
         expiryDateElement.className = 'cert-expiry';
         expiryDateElement.textContent = expiryDateString;
         
-        // Create credential link if available
-        if (certification.credential_link) {
+        // Create credential link if available - handle different field names
+        if (certification.credential_link || certification.certificate_url) {
             const link = document.createElement('a');
-            link.href = certification.credential_link;
+            link.href = certification.credential_link || certification.certificate_url;
             link.target = '_blank';
             link.className = 'cert-link';
             link.textContent = 'View Certificate';
@@ -1072,7 +1073,7 @@ async function fetchCertificationData() {
         
         // Fallback to local JSON
         try {
-            const localResponse = await fetch('/data/certification.json');
+            const localResponse = await fetch('/static/data/certifications.json');
             const localData = await localResponse.json();
             console.log('Successfully loaded certification data from local JSON:', localData);
             updateCertificationSection(localData);
