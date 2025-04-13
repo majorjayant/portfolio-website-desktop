@@ -70,7 +70,7 @@ img {
 .section-title:after {
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: 10px;
   left: 0;
   width: 100px;
   height: 3px;
@@ -684,14 +684,7 @@ header {
     transform: translateY(-50%);
   }
   
-  .drawer-location,
-  .experience-drawer .drawer-location {
-    align-self: flex-start;
-    width: 100%;
-    text-align: left;
-    justify-content: flex-start;
-    font-size: 0.85rem;
-  }
+  
 
   .drawer-description {
     margin-top: 1rem !important;
@@ -777,8 +770,7 @@ header {
 .drawer-date {
   flex: 0 0 20%;
   color: #6c584c;
-  font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   position: relative;
   padding-left: 28px;
 }
@@ -835,15 +827,7 @@ header {
   margin: 0;
 }
 
-.drawer-location {
-  font-size: 0.9rem;
-  color: #666;
-  text-align: right;
-  flex: 0 0 auto;
-  padding: 0;
-  border-radius: 4px;
-  margin-left: auto;
-}
+
 
 .drawer-description {
   position: relative;
@@ -993,15 +977,7 @@ header {
     transform: translateY(-50%);
   }
   
-  .drawer-location,
-  .experience-drawer .drawer-location {
-    align-self: flex-start;
-    width: 100%;
-    text-align: left;
-    justify-content: flex-start;
-    font-size: 0.85rem;
-  }
-
+  
   .drawer-description {
     margin-top: 1rem !important;
   }
@@ -2321,9 +2297,8 @@ footer {
 .experience-drawer .drawer-date {
     display: flex;
     align-items: center;
-    font-size: 14px;
+    font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.9);
-    font-weight: 500;
     width: 25%;
     text-align: left;
 }
@@ -2378,28 +2353,8 @@ footer {
     color: rgba(255, 255, 255, 0.8);
 }
 
-.experience-drawer .drawer-location {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 500;
-    width: 25%;
-    text-align: right;
-    justify-content: flex-end;
-}
 
-.experience-drawer .drawer-location:before {
-    content: '';
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.7)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'%3E%3C/path%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'%3E%3C/path%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-right: 8px;
-    opacity: 0.7;
-}
+
 
 .experience-drawer .drawer-description {
     opacity: 1;
@@ -2476,9 +2431,6 @@ footer {
     color: rgba(0, 0, 0, 0.8);
 }
 
-.color-4 .drawer-date:before,
-.color-4 .drawer-location:before,
-.color-4 .drawer-title-company:before 
 
 @media screen and (max-width: 768px) {
     .experience-drawer {
@@ -2514,11 +2466,7 @@ footer {
         overflow: visible;
     }
     
-    .experience-drawer .drawer-date {
-        margin-bottom: 5px;
-        width: 100%;
-        font-size: 0.85rem;
-    }
+  
     
     .experience-drawer .drawer-title-company {
         padding: 0;
@@ -2543,14 +2491,7 @@ footer {
         transform: translateY(-50%);
     }
     
-    .experience-drawer .drawer-location {
-        align-self: flex-start;
-        width: 100%;
-        text-align: left;
-        justify-content: flex-start;
-        font-size: 0.85rem;
-    }
-
+   
     .experience-drawer .drawer-description {
         display: none;
         opacity: 0;
@@ -2684,34 +2625,42 @@ main .experience-section {
   font-weight: 300 !important; /* Light weight for Nexa Light */
 }
 
-.experience-section .section-title:after {
-  bottom: -1rem !important; /* Move the bar down by 2rem */
-}
-
-/* Fix for location icon spacing */
-.drawer-location {
-  padding-left: 18px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-}
-
-.drawer-location:before {
-  position: absolute !important;
-  left: 0 !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-}
-
 /* Apply Nexa Light font to all text in experience section */
 .experience-section * {
-  font-family: 'Nexa', sans-serif !important;
+  font-family: 'Nexa' !important;
 }
 
-.drawer-title-company h3, 
-.drawer-title-company p,
-.drawer-date,
-.drawer-location {
-  font-family: 'Nexa', sans-serif !important;
+/*
+ * ===============================================================
+ * IMPORTANT: Experience section styles are now consolidated in:
+ * 1. experience-section.css (primary styles)
+ * 2. custom-overrides.css (overrides with higher specificity)
+ * 
+ * Any changes to experience section styles should be made in 
+ * those files, not here in style.css
+ * ===============================================================
+ */
+
+/* Experience section root variables */
+:root {
+  --drawer-overlap: 2rem; /* Controls drawer overlap */
+  --drawer-z-index: 2; /* Controls stacking order */
 }
 
+/* Only basic experience section container styles here for fallback */
+.experience-section {
+  background-color: #f8f8f8;
+  padding: 30px 0 60px 0;
+  position: relative;
+  z-index: 30;
+  width: 100%;
+}
+
+.experience-section .section-title {
+  font-family: 'Nexa', sans-serif;
+  font-weight: 300; /* Light weight for Nexa Light */
+}
+
+.experience-section .section-title:after {
+  bottom: -2rem; /* Move the bar down by 2rem */
+}
