@@ -726,8 +726,7 @@
                 const fallbacks = {
                     'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
                     'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
-                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png',
-                    'profile': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg' 
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'
                 };
                 
                 // Fix header logo
@@ -747,32 +746,6 @@
                 if (favicon) {
                     favicon.href = fallbacks.favicon;
                 }
-                
-                // Fix profile photo
-                const profilePhoto = document.getElementById('profile-image');
-                if (profilePhoto && (!profilePhoto.complete || profilePhoto.naturalWidth === 0)) {
-                    profilePhoto.src = fallbacks.profile;
-                    profilePhoto.onerror = null; // Prevent infinite error loop
-                }
-                
-                // Fix any other images with relative paths that might be broken
-                document.querySelectorAll('img').forEach(img => {
-                    if (img !== headerLogo && img !== footerLogo && img !== profilePhoto && 
-                        (!img.complete || img.naturalWidth === 0)) {
-                        
-                        // Try to detect what type of image this is
-                        const imgSrc = img.src.toLowerCase();
-                        if (imgSrc.includes('profile') || imgSrc.includes('avatar')) {
-                            img.src = fallbacks.profile;
-                        } else if (imgSrc.includes('logo')) {
-                            img.src = fallbacks.logo;
-                        } else if (imgSrc.includes('banner')) {
-                            img.src = fallbacks.banner;
-                        }
-                        
-                        img.onerror = null; // Prevent infinite error loop
-                    }
-                });
                 
                 // Fix styles if needed
                 const fixStyles = function() {
@@ -1474,18 +1447,18 @@
             const aboutDescription = document.getElementById('about-description');
             const profileImage = document.getElementById('profile-image');
                         
-                        if (aboutTitle) {
+            if (aboutTitle) {
                 aboutTitle.innerHTML = config.about_title || '';
-                        }
+            }
                         
-                        if (aboutSubtitle) {
+            if (aboutSubtitle) {
                 aboutSubtitle.innerHTML = config.about_subtitle || '';
-                        }
+            }
                         
-                        if (aboutDescription) {
+            if (aboutDescription) {
                 aboutDescription.innerHTML = config.about_description || '';
-                    aboutDescription.style.textAlign = 'left';
-                        }
+                aboutDescription.style.textAlign = 'left';
+            }
                         
             if (profileImage) {
                 profileImage.src = config.image_about_profile_url || '';
