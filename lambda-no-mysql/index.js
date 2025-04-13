@@ -379,6 +379,190 @@ async function saveWorkExperience(workExperienceData) {
   }
 }
 
+// Function to ensure the education table exists
+async function ensureEducationTableExists(connection) {
+  try {
+    // Ensure education table exists
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS education (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        edu_title VARCHAR(100) NOT NULL,
+        edu_name VARCHAR(100) NOT NULL,
+        location VARCHAR(100),
+        from_date DATE NOT NULL,
+        to_date DATE,
+        is_current BOOLEAN DEFAULT FALSE,
+        is_deleted BOOLEAN DEFAULT FALSE,
+        created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Verified education table exists');
+    return true;
+  } catch (error) {
+    console.error('Error ensuring education table exists:', error);
+    throw error;
+  }
+}
+
+// Function to get education data from the database
+async function getEducation() {
+  let connection;
+  try {
+    connection = await getConnection();
+    
+    // First, check if table exists and create it if it doesn't
+    await ensureEducationTableExists(connection);
+    
+    // Query non-deleted education entries ordered by from_date (most recent first)
+    const [rows] = await connection.execute(
+      'SELECT * FROM education WHERE is_deleted = 0 ORDER BY from_date DESC'
+    );
+    console.log(`Retrieved ${rows.length} non-deleted education entries from the database`);
+
+    // Format the data for response
+    const educationData = rows.map(row => ({
+      id: row.id,
+      edu_title: row.edu_title || '', // Degree Name
+      edu_name: row.edu_name || '',   // College/School Name
+      location: row.location,
+      from_date: row.from_date ? row.from_date.toISOString().split('T')[0] : null,
+      to_date: row.to_date ? row.to_date.toISOString().split('T')[0] : null,
+      is_current: row.is_current === 1, // Convert MySQL tinyint to boolean
+      // is_deleted is filtered by query, not included in response
+    }));
+    return educationData;
+  } catch (error) {
+    console.error('Error retrieving education from database:', error);
+    console.log('Returning empty education array');
+    return [];
+  } finally {
+    if (connection) await connection.end();
+  }
+}
+
+// Function to save education data to the database
+async function saveEducation(educationData, connection) {
+  // Expects an active transaction connection
+  if (!connection) {
+      throw new Error("saveEducation requires an active database transaction connection.");
+  }
+  if (!Array.isArray(educationData)) {
+      console.log('No valid education data array found in payload, skipping save.');
+      return; // Nothing to save
+  }
+  console.log(`Starting saveEducation for ${educationData.length} items.`);
+
+  const insertPromises = [];
+  const updatePromises = [];
+  const softDeletePromises = [];
+
+  for (const item of educationData) {
+    // Ensure is_deleted is treated as a number (0 or 1)
+    const isDeleted = Number(item.is_deleted || 0);
+    const isCurrent = item.is_current ? 1 : 0; // Convert boolean to tinyint
+    const fromDate = item.from_date || null;
+    const toDate = item.is_current ? null : (item.to_date || null);
+
+    if (item.id) { // Existing item: Update or Soft Delete
+      const itemId = parseInt(item.id, 10);
+      if (isNaN(itemId)) {
+          console.warn(`Skipping item with invalid ID: ${item.id}`);
+          continue;
+      }
+
+      if (isDeleted === 1) { // Soft Delete
+        console.log(`Preparing soft delete for education item ID: ${itemId}`);
+        softDeletePromises.push(
+          connection.execute(
+            'UPDATE education SET is_deleted = 1, updated_date = NOW() WHERE id = ? AND is_deleted = 0',
+            [itemId]
+          ).then(([result]) => {
+              console.log(`Soft delete result for education ID ${itemId}: Affected rows: ${result.affectedRows}`);
+              if (result.affectedRows === 0) {
+                  console.log(`Education item ${itemId} either already deleted or not found.`);
+              }
+              return result;
+          }).catch(err => {
+              console.error(`Error during soft delete for education ID ${itemId}:`, err);
+              throw err; // Propagate error to fail transaction
+          })
+        );
+      } else { // Update
+        console.log(`Preparing update for education item ID: ${itemId}`);
+        updatePromises.push(
+          connection.execute(
+            `UPDATE education SET
+              edu_title = ?, edu_name = ?, location = ?, from_date = ?, to_date = ?,
+              is_current = ?, is_deleted = 0, updated_date = NOW()
+             WHERE id = ?`,
+            [
+              item.edu_title || '',
+              item.edu_name || '',
+              item.location || null,
+              fromDate,
+              toDate,
+              isCurrent,
+              itemId
+            ]
+          ).then(([result]) => {
+              console.log(`Update result for education ID ${itemId}: Affected rows: ${result.affectedRows}`);
+              if (result.affectedRows === 0) {
+                  console.warn(`Update for education item ${itemId} affected 0 rows (possibly no changes or item not found).`);
+              }
+              return result;
+          }).catch(err => {
+              console.error(`Error during update for education ID ${itemId}:`, err);
+              throw err; // Propagate error to fail transaction
+          })
+        );
+      }
+    } else if (isDeleted === 0) { // New item (only if not marked for deletion)
+      console.log(`Preparing insert for new education item: ${item.edu_title}`);
+      insertPromises.push(
+        connection.execute(
+          `INSERT INTO education
+            (edu_title, edu_name, location, from_date, to_date, is_current, is_deleted, created_date, updated_date)
+           VALUES (?, ?, ?, ?, ?, ?, 0, NOW(), NOW())`,
+          [
+            item.edu_title || '',
+            item.edu_name || '',
+            item.location || null,
+            fromDate,
+            toDate,
+            isCurrent
+          ]
+        ).then(([result]) => {
+            console.log(`Insert result for education '${item.edu_title}': Insert ID: ${result.insertId}, Affected rows: ${result.affectedRows}`);
+            if (result.affectedRows !== 1) {
+                console.error(`Insert for education '${item.edu_title}' failed or did not insert exactly one row.`);
+                throw new Error(`Failed to insert education item: ${item.edu_title}`);
+            }
+            return result;
+        }).catch(err => {
+            console.error(`Error during insert for education '${item.edu_title}':`, err);
+            throw err; // Propagate error to fail transaction
+        })
+      );
+    } else {
+        console.log(`Ignoring new education item marked for deletion: ${item.edu_title}`);
+    }
+  }
+
+  // Execute all promises
+  try {
+      console.log(`Executing ${softDeletePromises.length} soft deletes, ${updatePromises.length} updates, ${insertPromises.length} inserts for education.`);
+      await Promise.all(softDeletePromises);
+      await Promise.all(updatePromises);
+      await Promise.all(insertPromises);
+      console.log('All education operations executed successfully.');
+  } catch (error) {
+      console.error('Error executing education save operations:', error);
+      // Error is already logged by individual promise catches, re-throw to ensure transaction rollback
+      throw error;
+  }
+}
+
 // Lambda handler
 exports.handler = async (event, context) => {
   // Log detailed information about the request
@@ -443,12 +627,31 @@ exports.handler = async (event, context) => {
         };
       }
       
+      // Check for education request
+      if (requestType === 'education') {
+        console.log('GET request for education detected');
+        const education = await getEducation();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            education: education,
+            _version: "2.1.14",
+            source: "GET handler for education",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
       // Prioritize site_config requests
       if (requestType === 'site_config' || actionType === 'get_site_config') {
         console.log('GET request for site_config detected');
         const siteConfig = await getSiteConfig();
         // Also get work experience data to include in response
         const workExperience = await getWorkExperience();
+        // Get education data
+        const education = await getEducation();
         
         return {
           statusCode: 200,
@@ -456,6 +659,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             site_config: siteConfig,
             work_experience: workExperience,
+            education: education,
             _version: "2.1.14",
             source: "GET handler with query params",
             timestamp: new Date().toISOString()
@@ -468,6 +672,8 @@ exports.handler = async (event, context) => {
       const siteConfig = await getSiteConfig();
       // Also get work experience data to include in response
       const workExperience = await getWorkExperience();
+      // Get education data
+      const education = await getEducation();
       
       return {
         statusCode: 200,
@@ -475,6 +681,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           site_config: siteConfig,
           work_experience: workExperience,
+          education: education,
           _version: "2.1.14",
           source: "GET general handler",
           timestamp: new Date().toISOString()
@@ -504,6 +711,8 @@ exports.handler = async (event, context) => {
         const siteConfig = await getSiteConfig();
         // Also get work experience data to include in response
         const workExperience = await getWorkExperience();
+        // Get education data
+        const education = await getEducation();
         
         return {
             statusCode: 200,
@@ -511,6 +720,7 @@ exports.handler = async (event, context) => {
             body: JSON.stringify({
                 site_config: siteConfig,
                 work_experience: workExperience,
+                education: education,
                 _version: "2.1.14",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
@@ -632,53 +842,82 @@ exports.handler = async (event, context) => {
           };
         }
         
-        // Extract config data and work experience data
+        // Extract config data, work experience data, and education data
         const configData = parsedBody.site_config || {};
         const workExperienceData = parsedBody.work_experience || [];
+        const educationData = parsedBody.education || [];
         
         let updateResult = { success: true, message: "No data provided to update" };
         
-        // Save the site configuration data if provided
-        if (Object.keys(configData).length > 0) {
-          console.log('Updating site configuration with:', configData);
-          updateResult = await saveSiteConfig(configData);
-        }
-        
-        // Save the work experience data if provided
-        let workExperienceResult = { success: true, message: "No work experience data provided" };
-        if (workExperienceData.length > 0) {
-          console.log('Updating work experience with:', workExperienceData);
-          workExperienceResult = await saveWorkExperience(workExperienceData);
-        }
-        
-        // If either update fails, return error
-        if (!updateResult.success || !workExperienceResult.success) {
+        // Start a transaction to handle the update
+        let connection;
+        try {
+          connection = await getConnection();
+          await connection.beginTransaction();
+          
+          // Save the site configuration data if provided
+          if (Object.keys(configData).length > 0) {
+            console.log('Updating site configuration with:', configData);
+            await saveSiteConfig(configData);
+          }
+          
+          // Save the work experience data if provided
+          if (workExperienceData.length > 0) {
+            console.log('Updating work experience with:', workExperienceData);
+            await saveWorkExperience(workExperienceData);
+          }
+          
+          // Save the education data if provided
+          if (educationData.length > 0) {
+            console.log('Updating education data with:', educationData);
+            await saveEducation(educationData, connection);
+          }
+          
+          // Commit the transaction
+          await connection.commit();
+          console.log('Transaction committed successfully');
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: "Updates completed successfully",
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.14'
+            })
+          };
+        } catch (error) {
+          // Roll back the transaction if there was an error
+          if (connection) {
+            try {
+              await connection.rollback();
+              console.log('Transaction rolled back due to error');
+            } catch (rollbackError) {
+              console.error('Error rolling back transaction:', rollbackError);
+            }
+          }
+          
+          console.error('Error during update:', error);
           return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
               success: false,
-              message: !updateResult.success ? updateResult.message : workExperienceResult.message,
-              site_config_result: updateResult,
-              work_experience_result: workExperienceResult,
+              message: `Error during update: ${error.message}`,
               timestamp: new Date().toISOString(),
               lambda_version: '2.1.14'
             })
           };
+        } finally {
+          if (connection) {
+            try {
+              await connection.end();
+            } catch (connectionError) {
+              console.error('Error closing connection:', connectionError);
+            }
+          }
         }
-        
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({
-            success: true,
-            message: "Updates completed successfully",
-            site_config_result: updateResult,
-            work_experience_result: workExperienceResult,
-            timestamp: new Date().toISOString(),
-            lambda_version: '2.1.14'
-          })
-        };
       }
       
       // Handle get site config via POST (for dashboard)
@@ -691,12 +930,16 @@ exports.handler = async (event, context) => {
         // Also get work experience data
         const workExperience = await getWorkExperience();
         
+        // Get education data
+        const education = await getEducation();
+        
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
             site_config: siteConfig,
             work_experience: workExperience,
+            education: education,
             _version: "2.1.14",
             from: "post_body",
             timestamp: new Date().toISOString(),

@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load the site configuration
     loadSiteConfig();
 
+    // Load work experience and education data
+    fetchWorkExperienceData();
+    fetchEducationData();
+
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', function() {
@@ -274,6 +278,12 @@ function processConfigData(data) {
     const workExperienceSection = document.getElementById('experience-timeline');
     if (workExperienceSection && data.work_experience) {
         updateWorkExperienceTimeline(data.work_experience);
+    }
+    
+    // Load education data if available
+    const educationSection = document.querySelector('.education-container');
+    if (educationSection && data.education) {
+        updateEducationSection(data.education);
     }
 }
 
@@ -722,4 +732,139 @@ function getMonthName(monthIndex) {
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
     return months[monthIndex];
+}
+
+// Update education section
+function updateEducationSection(educationData) {
+    console.log("Updating education section with data:", educationData);
+    
+    // Get the education container
+    const educationContainer = document.querySelector('.education-container');
+    if (!educationContainer) {
+        console.error('Education container not found');
+        return;
+    }
+    
+    // Clear previous content
+    educationContainer.innerHTML = '';
+    
+    // Check if there is any education data
+    if (!educationData || educationData.length === 0) {
+        const noEducation = document.createElement('p');
+        noEducation.textContent = 'No education data available.';
+        noEducation.style.color = '#333';
+        noEducation.style.textAlign = 'center';
+        educationContainer.appendChild(noEducation);
+        return;
+    }
+    
+    // Sort education by date (most recent first)
+    educationData.sort((a, b) => {
+        const dateA = a.from_date;
+        const dateB = b.from_date;
+        return new Date(dateB) - new Date(dateA);
+    });
+    
+    // Create an item for each education entry
+    educationData.forEach((education) => {
+        // Format dates
+        const fromDate = new Date(education.from_date);
+        const toDate = education.to_date ? new Date(education.to_date) : null;
+        const isCurrent = education.is_current;
+        
+        const dateString = isCurrent 
+            ? `${fromDate.getFullYear()} - Present`
+            : toDate ? `${fromDate.getFullYear()} - ${toDate.getFullYear()}` : `${fromDate.getFullYear()}`;
+        
+        // Create education item
+        const item = document.createElement('div');
+        item.className = 'education-item';
+        
+        // Create icon
+        const icon = document.createElement('div');
+        icon.className = 'edu-icon';
+        icon.innerHTML = '<i class="fas fa-graduation-cap"></i>';
+        
+        // Create content
+        const content = document.createElement('div');
+        content.className = 'edu-content';
+        
+        // Create title (degree)
+        const title = document.createElement('h3');
+        title.textContent = education.edu_title;
+        
+        // Create institution name
+        const institution = document.createElement('h4');
+        institution.textContent = education.edu_name;
+        
+        // Create date
+        const date = document.createElement('p');
+        date.className = 'edu-date';
+        date.textContent = dateString;
+        
+        // Create location if present
+        if (education.location) {
+            const location = document.createElement('p');
+            location.className = 'edu-location';
+            location.textContent = education.location;
+            content.appendChild(location);
+        }
+        
+        // Assemble the education item
+        content.appendChild(title);
+        content.appendChild(institution);
+        content.appendChild(date);
+        
+        item.appendChild(icon);
+        item.appendChild(content);
+        
+        // Add to container
+        educationContainer.appendChild(item);
+    });
+}
+
+// Fetch education data
+async function fetchEducationData() {
+    console.log('Fetching education data');
+    
+    try {
+        // Try to fetch from API first
+        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=education';
+        
+        const response = await fetch(apiEndpoint, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            credentials: 'omit'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API response not OK: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Successfully loaded education data from API:', data);
+        
+        // Update the education section with the fetched data
+        const educationData = data.education || [];
+        updateEducationSection(educationData);
+    } catch (error) {
+        console.error('Error fetching education data from API:', error);
+        console.log('Falling back to local JSON file');
+        
+        // Fallback to local JSON
+        try {
+            const localResponse = await fetch('/data/education.json');
+            const localData = await localResponse.json();
+            console.log('Successfully loaded education data from local JSON:', localData);
+            updateEducationSection(localData);
+        } catch (localError) {
+            console.error('Error loading from local JSON:', localError);
+            // Show empty state
+            updateEducationSection([]);
+        }
+    }
 }

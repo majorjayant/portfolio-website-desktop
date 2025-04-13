@@ -2,7 +2,18 @@
 
 A streamlined portfolio website using AWS Amplify for hosting and AWS Lambda with MySQL for backend storage.
 
-## Recent Updates & Improvements
+## Table of Contents
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Deployment](#deployment)
+- [Admin Dashboard](#admin-dashboard)
+- [Frontend Components](#frontend-components)
+- [CSS Organization](#css-organization)
+- [Developer Guide](#developer-guide)
+
+## Overview
+
+### Recent Updates & Improvements
 
 The codebase has undergone several important improvements to enhance maintainability and reliability:
 
@@ -33,20 +44,16 @@ The codebase has undergone several important improvements to enhance maintainabi
    - Ensured proper display of list items in job descriptions
    - Optimized skills extraction and display
 
-To use this improved codebase:
+## Architecture
 
-1. Set up AWS resources as described in the deployment section
-2. Update the `API_GATEWAY_URL` in `environment-config.json` with your actual API endpoint
-3. Replace placeholder images in `/img` directory or update paths to your S3 bucket
-
-## Components
+### Key Components
 
 - **Frontend**: Static HTML/CSS/JS files in the `app/static` directory.
 - **Admin Dashboard**: Located at `app/static/admin/dashboard.html` for managing site content.
 - **Backend**: AWS Lambda function in the `lambda-no-mysql` directory (using MySQL for storage via RDS). Implements soft delete for work experience items using an `is_deleted` flag in the database.
 - **Database**: MySQL database on AWS RDS (configuration in the Lambda function and `.env`). Assumes `workex` table includes `is_deleted` (TINYINT DEFAULT 0), `created_date` (DATETIME/TIMESTAMP), `updated_date` (DATETIME/TIMESTAMP) columns.
 
-## Key Files
+### Key Files
 
 - `lambda-no-mysql/index.js`: Lambda function handling API requests for getting/updating site configuration and work experience (implements soft delete for work experience).
 - `lambda-payload-delete.zip`: The latest deployment package for the Lambda function (created in the project root).
@@ -55,140 +62,238 @@ To use this improved codebase:
 - `app/static/admin/dashboard.html`: HTML and JavaScript for the Admin Dashboard interface.
 - `app/static/admin/login.html`: Admin login page.
 
+### Admin Dashboard Structure
+
+- `/app/static/admin/dashboard.html` - The main admin dashboard file (single source of truth)
+- `/app/admin/index.html` - Redirect file pointing to the main dashboard
+- `/app/admin/dashboard/index.html` - Redirect file for clean URL structure
+
+### API Communication
+
+The application communicates with the API endpoint at:
+`https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio`
+
+This API handles:
+- Fetching site configuration
+- Updating site configuration
+- Managing work experience data
+
 ## Deployment
 
-1.  Set up AWS RDS MySQL database. Ensure the `workex` table has `is_deleted` (TINYINT DEFAULT 0), `created_date`, and `updated_date` columns. Ensure `site_config` table exists.
-2.  Configure environment variables for the Lambda function (e.g., DB host, user, password, database name).
-3.  Deploy the latest Lambda deployment package (`lambda-payload-delete.zip` located in the project root) to AWS Lambda and configure API Gateway trigger.
-4.  Deploy the frontend static files (contents of `app/static/`) to AWS Amplify or another static hosting provider.
-5.  Ensure the API endpoint URL in `app/static/admin/dashboard.html` and `app/static/js/main.js` points to your deployed API Gateway stage URL.
+1. Set up AWS RDS MySQL database. Ensure the `workex` table has `is_deleted` (TINYINT DEFAULT 0), `created_date`, and `updated_date` columns. Ensure `site_config` table exists.
+2. Configure environment variables for the Lambda function (e.g., DB host, user, password, database name).
+3. Deploy the latest Lambda deployment package (`lambda-payload-delete.zip` located in the project root) to AWS Lambda and configure API Gateway trigger.
+4. Deploy the frontend static files (contents of `app/static/`) to AWS Amplify or another static hosting provider.
+5. Ensure the API endpoint URL in `app/static/admin/dashboard.html` and `app/static/js/main.js` points to your deployed API Gateway stage URL.
 
----
+## Admin Dashboard
 
-## Admin Dashboard Guide (`/admin`)
+The Admin Dashboard provides a user-friendly interface to update various sections of your website without needing to edit the code directly.
 
-This guide explains how to use the Admin Dashboard to manage the content of your portfolio website.
+### Key Features
 
-### Purpose
+1. **Authentication System** - Handles login/logout and protects admin content
+2. **Site Configuration** - For updating website title, description, images, etc.
+3. **Work Experience Management** - For adding/editing/deleting work experience entries
+4. **Rich Text Formatting** - Buttons for adding HTML formatting to text fields (B/I/U/BR)
+5. **Responsive Design** - Works on both desktop and mobile devices
 
-The Admin Dashboard provides a user-friendly interface to update various sections of your website without needing to edit the code directly. All changes are saved to the MySQL database via the AWS Lambda backend.
+### Authentication
 
-### Accessing the Dashboard
+The dashboard uses localStorage to store and validate the `admin_token`.
+If not authenticated, users will see a login prompt.
 
-1.  Navigate to `/admin/login` on your website URL (e.g., `yourwebsite.com/admin/login`).
-2.  Enter the admin username and password.
-    *   _Note: Authentication logic is handled by the `handleLogin` function within the Lambda function (`lambda-no-mysql/index.js`). You may need to consult or modify this function based on your specific user management setup._
-3.  Upon successful login, you will be redirected to the main dashboard page (`/static/admin/dashboard.html`).
+### URL Structure
+
+- `/admin/` - Redirects to the main dashboard
+- `/admin/dashboard/` - Alternate URL that also redirects to the main dashboard
+- `/static/admin/dashboard.html` - Direct URL to the dashboard (used by the redirects)
 
 ### Dashboard Sections and Fields
 
 The dashboard is divided into several sections:
 
-1.  **General Website Information:**
-    *   `Site Title`: The main title displayed, often in the browser tab and potentially on the page. Supports basic HTML tags (Bold, Italic, Underline, Line Break) via formatting buttons.
-    *   `Subtitle`: A secondary title or tagline. Supports basic HTML tags.
-    *   `Description`: The main descriptive text for the 'About' section or a general site description. Supports basic HTML tags and line breaks.
+1. **General Website Information:**
+   * `Site Title`: The main title displayed, often in the browser tab and potentially on the page. Supports basic HTML tags.
+   * `Subtitle`: A secondary title or tagline. Supports basic HTML tags.
+   * `Description`: The main descriptive text for the 'About' section. Supports basic HTML tags and line breaks.
 
-2.  **Website Images:**
-    *   `Favicon URL`: URL for the small icon shown in the browser tab.
-    *   `Logo URL`: URL for the main site logo, typically displayed in the header/navbar.
-    *   `Banner URL`: URL for the main banner image displayed on the homepage (usually for desktop views).
-    *   `Mobile Banner URL`: URL for an alternative banner image optimized for mobile devices (screens 768px wide or less).
-    *   `Profile Image URL`: URL for the main profile picture used in the 'About' section.
+2. **Website Images:**
+   * `Favicon URL`: URL for the small icon shown in the browser tab.
+   * `Logo URL`: URL for the main site logo, typically displayed in the header/navbar.
+   * `Banner URL`: URL for the main banner image displayed on the homepage.
+   * `Mobile Banner URL`: URL for an alternative banner image optimized for mobile devices.
+   * `Profile Image URL`: URL for the main profile picture used in the 'About' section.
 
-3.  **Gallery Photos:**
-    *   `Photo 1-4 URL`: URLs for images displayed in the gallery or 'snaps' section.
-    *   `Photo 1-4 Alt Text`: Descriptive alternative text for each gallery image, important for accessibility (SEO and screen readers).
+3. **Gallery Photos:**
+   * `Photo 1-4 URL`: URLs for images displayed in the gallery section.
+   * `Photo 1-4 Alt Text`: Descriptive alternative text for each gallery image.
 
-4.  **Work Experience:**
-    *   This section allows you to manage your professional experience timeline.
-    *   Items are loaded dynamically from the database when the page loads (only non-deleted items are shown).
-    *   **Adding an Item:** Click the "Add Work Experience" button.
-    *   **Fields per Item:**
-        *   `Job Title*`: Your role or position (Required).
-        *   `Company*`: The name of the company (Required).
-        *   `Location`: The city/state or general location of the job.
-        *   `From Date`: The start date of the position (Year and Month).
-        *   `To Date`: The end date of the position (Year and Month). Leave empty and check "Current Job" if you are still employed there.
-        *   `Current Job`: Checkbox to indicate if this is your current position. If checked, the 'To Date' field will be disabled.
-        *   `Description`: A brief description of your responsibilities and achievements in the role.
-    *   **Deleting an Item (Soft Delete):** Click the "Delete" button next to the item you wish to remove.
-        *   This **does not** remove the item from the dashboard immediately.
-        *   Instead, it visually marks the item (e.g., faded out) and sets a hidden flag (`is_deleted = 1`) associated with that item in the form.
-        *   When you click "Save Changes", the data for *all* items (including the marked one) is sent to the backend.
-        *   The backend then processes the item marked with `is_deleted = 1` by updating its record in the database to set the `is_deleted` column to `1`.
-        *   The item will no longer appear on the public website or in the dashboard on subsequent loads (as only items with `is_deleted = 0` are fetched).
+4. **Work Experience:**
+   * This section allows you to manage your professional experience timeline.
+   * Items are loaded dynamically from the database when the page loads.
+   * **Fields per Item:**
+     * `Job Title*`: Your role or position (Required).
+     * `Company*`: The name of the company (Required).
+     * `Location`: The city/state or general location of the job.
+     * `From Date`: The start date of the position (Year and Month).
+     * `To Date`: The end date of the position.
+     * `Current Job`: Checkbox to indicate if this is your current position.
+     * `Description`: A brief description of your responsibilities and achievements.
 
 ### Operations
 
-1.  **Loading Data:** When the dashboard loads, it automatically fetches the current site configuration and *non-deleted* work experience data (`is_deleted = 0`) from the Lambda backend.
-    *   A loading indicator is shown while data is being fetched.
-    *   If there's an error fetching data (e.g., API issue), an error message appears.
+1. **Accessing the Dashboard**: Navigate to `/admin/login` and enter credentials.
 
-2.  **Saving Changes:**
-    *   After making modifications, click "Save Changes".
-    *   The dashboard gathers all data, including *all* currently displayed work experience items and their associated deletion status (hidden `is_deleted` flag: 0 or 1).
-    *   It sends a `POST` request to the Lambda function (`action: 'update_site_config'`).
-    *   The Lambda function (`saveWorkExperience`):
-        *   Validates the request.
-        *   Updates/Inserts `site_config` data.
-        *   Iterates through the received `work_experience` array:
-            *   **Soft Delete:** If an item has an `id` and `is_deleted: 1`, it performs `UPDATE workex SET is_deleted = 1, updated_date = NOW() WHERE id = ? AND is_deleted = 0`.
-            *   **Update:** If an item has an `id` and `is_deleted: 0`, it performs a normal `UPDATE` on all fields, setting `updated_date = NOW()` and ensuring `is_deleted = 0`.
-            *   **Insert:** If an item has no `id` and `is_deleted: 0`, it performs an `INSERT`, setting `created_date`, `updated_date`, and `is_deleted = 0`.
-            *   **Ignore:** If an item has no `id` and `is_deleted: 1` (e.g., added and deleted before first save), it is ignored.
-    *   A loading overlay appears; success/error messages are displayed.
+2. **Loading Data**: The dashboard automatically fetches the current site configuration and work experience data from the Lambda backend on load.
 
-3.  **Refreshing Data:**
-    *   Clicking "Refresh Data" reloads only the *non-deleted* configuration and work experience items (`is_deleted = 0`).
+3. **Saving Changes**:
+   * After making modifications, click "Save Changes".
+   * A loading overlay appears; success/error messages are displayed.
 
-4.  **Logout:**
-    *   Click the "Logout" button in the top navigation bar.
-    *   This removes the authentication token from your browser's local storage and redirects you to the login page.
+4. **Deleting Work Experience Items (Soft Delete)**:
+   * Click the "Delete" button next to a work experience item to mark it for deletion.
+   * This sets the `is_deleted` flag to 1, which prevents it from displaying on the live site.
 
-### How it Works (Technical Flow - Updated)
+5. **Refreshing Data**:
+   * Click "Refresh Data" to reload configuration and non-deleted work experience items.
 
-1.  **Load:** `dashboard.html` loads -> JavaScript checks auth -> Calls `loadSiteConfig`.
-2.  **Fetch:** `loadSiteConfig` makes `GET` request (`?type=site_config`).
-3.  **Lambda GET:** Lambda runs `getSiteConfig` and `getWorkExperience`. `getWorkExperience` uses `SELECT * FROM workex WHERE is_deleted = 0 ...`. Returns JSON with `site_config` and only *non-deleted* `work_experience`.
-4.  **Populate:** `loadSiteConfig` calls `populateForm` and `loadWorkExperienceData`.
-5.  **Display WorkEx:** `loadWorkExperienceData` displays only the non-deleted items received.
-6.  **User Deletes (Frontend):** User clicks delete on an item -> JavaScript finds the corresponding work experience container -> Sets the hidden input `.workex-is-deleted` value to `1` -> Adds the `.marked-for-deletion` class for visual feedback. The item remains in the DOM.
-7.  **Save:** User clicks "Save Changes" -> `getWorkExperienceData` collects data from *all* work experience containers, reading the value of the hidden `.workex-is-deleted` input for each (0 or 1) -> `saveSiteConfig` sends `POST` request with the full list including `is_deleted` flags.
-8.  **Lambda POST:** Lambda receives request -> Calls `saveSiteConfig` -> Calls `saveWorkExperience`.
-    *   `saveWorkExperience` iterates through the payload items *without* fetching IDs separately.
-    *   For each item:
-        *   Checks `item.id` and `item.is_deleted`.
-        *   If `id` and `is_deleted: 1`, prepares/executes `UPDATE ... SET is_deleted = 1 WHERE id = ? AND is_deleted = 0`. Logs result.
-        *   If `id` and `is_deleted: 0`, prepares/executes normal `UPDATE ... WHERE id = ?`. Logs result.
-        *   If no `id` and `is_deleted: 0`, prepares/executes `INSERT ...`. Logs result.
-        *   If no `id` and `is_deleted: 1`, skips and logs ignore action.
-    *   Commits transaction if all operations succeed, otherwise rolls back.
-    *   Returns success/error.
-9.  **Refresh After Save:** `saveSiteConfig` calls `fetchConfiguration` which re-runs the `GET` request, fetching only the items where `is_deleted = 0`, thus reflecting any soft deletions.
+6. **Logout**:
+   * Click the "Logout" button to clear the authentication token and return to the login page.
 
----
+## Frontend Components
 
-## Developer Guide: Adding New Fields
+### Page Structure
+- **Banner Section**: Full-width banner with parallax effect
+- **About Section**: Profile image and bio
+- **Experience Section**: Interactive work experience drawers
+- **Education Section**: Academic history
+- **Certifications Section**: Professional certifications
+
+### Data Flow
+1. Initial page load triggers fetch from AWS Lambda API
+2. `fetchLatestAboutContent()` loads site configuration from the API
+3. `updatePageWithConfig()` populates page content dynamically
+4. Work experiences are loaded and displayed as collapsible drawers
+5. Carousel images load from configuration URLs
+6. Interactive elements initialize (parallax, carousel, drawer toggles)
+
+### User Interaction
+- Scroll-based transitions (banner to about section)
+- Hover/click on experience drawers to expand
+- Photo carousel with 3D rotation effect
+- Responsive navigation that adapts to scroll position
+
+### Experience Section Structure
+The experience drawers follow this HTML structure:
+```html
+<div class="experience-drawer color-1">
+  <div class="drawer-header">
+    <div class="drawer-date">November 2023 - Present</div>
+    <div class="drawer-title-company">
+      <h3>Product Owner | Product Manager</h3>
+      <p>AtliQ Technologies Pvt. Ltd.</p>
+    </div>
+    <div class="drawer-location">Vadodara, India</div>
+  </div>
+  <div class="drawer-description">
+    <div class="description-content">
+      <!-- Description content -->
+    </div>
+    <div class="skills-container">
+      <span class="skill-tag">Product Management</span>
+      <span class="skill-tag">Agile</span>
+      <!-- More skill tags -->
+    </div>
+  </div>
+</div>
+```
+
+## CSS Organization
+
+### File Structure
+1. **style.css** - Main stylesheet for the entire website
+   - Contains general styles for the whole site
+   - Does not contain experience section styles
+
+2. **experience-section-combined.css** - Consolidated experience section styles
+   - Contains ALL styles related to the experience section
+   - Includes responsive behavior for all screen sizes
+   - Uses consistent naming conventions and organization
+
+### CSS Methodology
+- **Component-Based**: Each section has isolated styles
+- **Mobile-First**: Base styles with responsive overrides
+- **Namespaced Classes**: Prevents style conflicts (e.g., `drawer-title`, `drawer-date`)
+- **CSS Variables**: Used for theme colors and spacing
+
+### Theme Colors
+- Primary colors: Brown palette (#6c584c, #a38566, #d1b38a, #e9dac1)
+- Each drawer has a different color class (color-1, color-2, etc.)
+- Text colors adapt to background (white on dark, dark on light)
+
+### Mobile Responsiveness
+- Breakpoints at 768px and 480px
+- Mobile adaptations:
+  - Centered elements with adjusted spacing
+  - Touch-friendly tap targets
+  - Stacked layout for previously horizontal elements
+  - Adjusted font sizes and padding
+
+## Developer Guide
+
+### Adding New Fields
 
 This section outlines the steps required to add a new manageable field to the website, controllable via the Admin Dashboard.
 
 **Scenario:** Add a new text field called `portfolio_highlight` to the `site_config`.
 
-1.  **Database Schema:**
-    *   **Add Column:** Add the new column `portfolio_highlight` (e.g., `VARCHAR(255)`) to your `site_config` table in the MySQL database. Set a sensible default if needed (e.g., `NULL` or `''`).
-    *   _Location: Perform this directly on your RDS instance using a SQL client._
+1. **Database Schema:**
+   * Add the new column `portfolio_highlight` to your `site_config` table in the MySQL database.
+   * Set a sensible default if needed (e.g., `NULL` or `''`).
 
-2.  **Lambda Function (`lambda-no-mysql/index.js`):**
-    *   **`getSiteConfig` Function:**
-        *   Ensure the `SELECT` query retrieves the new column. If using `SELECT *`, it might be included automatically, but explicitly adding it (`SELECT config_key, config_value, ... portfolio_highlight FROM site_config`) is safer if you aren't selecting all columns.
-        *   Update the logic that builds the `configObject` to include the new field: `configObject.portfolio_highlight = row.portfolio_highlight;` (adjust based on how your query returns data).
-    *   **`saveSiteConfig` Function:**
-        *   Add the new field to the list of fields being updated/inserted. Modify the `INSERT` and `UPDATE` statements.
-        *   Example (Conceptual - adapt to your specific query structure):
-            ```sql
-            -- For UPDATE
-            UPDATE site_config SET ..., portfolio_highlight = ? WHERE ...
-            -- For INSERT
-            INSERT INTO site_config (..., portfolio_highlight) VALUES (..., ?)
-            ```
+2. **Lambda Function (`lambda-no-mysql/index.js`):**
+   * **`getSiteConfig` Function:**
+     * Ensure the `SELECT` query retrieves the new column.
+     * Update the logic that builds the `configObject` to include the new field.
+   * **`saveSiteConfig` Function:**
+     * Add the new field to the list of fields being updated/inserted.
+     * Modify the `INSERT` and `UPDATE` statements.
+
+3. **Admin Dashboard:**
+   * Add a new form field in `app/static/admin/dashboard.html`:
+     ```html
+     <div class="form-group">
+       <label for="portfolio_highlight">Portfolio Highlight:</label>
+       <input type="text" id="portfolio_highlight" name="portfolio_highlight" class="form-control">
+     </div>
+     ```
+   * Update the JavaScript to handle the new field:
+     * Add it to `populateForm` to ensure it's populated when data is loaded.
+     * Add it to the data collection in the save function.
+
+4. **Frontend Display:**
+   * Modify the frontend HTML (`app/static/index.html`) to include a placeholder for the new field.
+   * Update `main.js` to populate this field from the site config.
+
+### Adding New Sections
+
+1. Create HTML structure in index.html
+2. Add corresponding styles in style.css
+3. Update admin dashboard to include form fields
+4. Add API handlers for the new content type
+
+### Updating Styling
+
+1. Edit general styles in style.css
+2. For experience section, edit experience-section-combined.css
+3. Keep the same naming conventions and organization
+4. Test on multiple devices and screen sizes
+
+### Best Practices
+
+1. Keep CSS files under 1000 lines each
+2. Document major changes in comments
+3. Use consistent naming conventions
+4. Maintain mobile responsiveness with each change
+5. Test on major browsers after significant updates
