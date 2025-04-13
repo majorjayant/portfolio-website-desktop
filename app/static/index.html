@@ -78,8 +78,8 @@
     <!-- Core Styles -->
     <link rel="stylesheet" href="/css/style.css">
     <!-- All work experience styles are now in experience-section.css and not in other files -->
-    <!-- <link rel="stylesheet" href="/css/custom-overrides.css"> -->
-    <!-- <link rel="stylesheet" href="/css/experience-section.css"> -->
+    <link rel="stylesheet" href="/css/custom-overrides.css">
+    <link rel="stylesheet" href="/css/experience-section.css">
     
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -637,6 +637,10 @@
         border-bottom-right-radius: 15px;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
+    }
+
+    .carousel__slider__item--active .item__3d-frame {
+        
     }
 
     @media (max-width: 768px) {
@@ -1689,8 +1693,8 @@
                 });
 
                 const totalItems = sortedExperience.length;
-                // Corrected color schemes to match CSS (color-1 to color-4)
                 const colorSchemes = [
+                    'color-0', // olive green
                     'color-1', // terracotta
                     'color-2', // slate blue
                     'color-3', // golden
@@ -1699,7 +1703,6 @@
 
                 sortedExperience.forEach((exp, index) => {
                     const drawer = document.createElement('div');
-                    // Apply color scheme using modulo correctly on the corrected array
                     drawer.classList.add('experience-drawer', colorSchemes[index % colorSchemes.length]);
                     drawer.style.zIndex = totalItems - index; // Stacking order
                     
