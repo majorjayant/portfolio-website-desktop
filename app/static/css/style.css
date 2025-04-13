@@ -525,45 +525,58 @@ header {
   }
 
 .experience-drawers {
-  padding-top: 40px; 
-  padding-bottom: 80px;
-  perspective: 1200px;
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  /* Commenting out - now controlled by root variable in custom-overrides.css */
-  /* --drawer-overlap: -10px; */
+  position: relative !important;
+  padding-top: 40px !important;
+  padding-bottom: 80px !important;
+  z-index: 1 !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
 }
 
-/* Adjust drawer overlap and animation */
+.experience-drawers:before,
+.experience-drawers:after {
+  content: '' !important;
+  position: absolute !important;
+  top: -20px !important;
+  left: -20px !important;
+  right: -20px !important;
+  bottom: -20px !important;
+  background-color: rgba(26, 26, 26, 0.3) !important; /* Dark background with opacity */
+  border-radius: 24px !important;
+  z-index: -1 !important;
+  transform: rotate(1deg) scale(1.05) !important;
+}
+
+.experience-drawers:after {
+  transform: rotate(-1deg) scale(1.05) !important;
+}
+
+/* Adjust drawer appearance for proper stacking */
 .experience-drawer {
-  position: relative;
-  /* Remove white background */
-  background: transparent;
-  border-radius: 16px;
-  padding: 0;
-  /* Commenting out - now controlled by variable in custom-overrides.css */
-  /* margin-bottom: var(--drawer-overlap); */
-  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  cursor: pointer;
-  transform-origin: center top;
-  backface-visibility: hidden;
-  border-left: 5px solid;
-  /* Adjust animation timing for smoother effect */
-  transition: all 1s ease-out; /* Changed from 0.5s cubic-bezier */
-  min-height: 110px;
-  width: 100%;
+  position: relative !important;
+  z-index: var(--drawer-z-index) !important;
+  background: transparent !important;
+  border-radius: 16px !important;
+  margin-bottom: calc(-1 * var(--drawer-overlap)) !important; /* Negative margin creates overlap */
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1) !important;
+  border-left: 5px solid !important;
+  color: #333 !important;
+  backdrop-filter: blur(4px) !important;
+  transition: all 0.3s ease !important;
+  padding: 2rem !important;
+  cursor: pointer !important;
+  min-height: 110px !important;
+  width: 100% !important;
+  overflow: hidden !important;
 }
 
 /* Improve hover animation and control speed */
 .experience-drawer:hover {
-  transform: translateY(-5px);
-  z-index: 10;
-  box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2);
-  /* Shorter animation time for more responsive feel */
-  transition: all 0.2s ease-out;
+  transform: translateY(-5px) !important;
+  z-index: calc(var(--drawer-z-index) + 5) !important; /* Higher z-index when hovered */
+  box-shadow: 0 20px 30px -15px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.2s ease-out !important;
 }
 
 /* Control the slide-in animation speed of the description */
@@ -753,19 +766,61 @@ header {
 /* Color variations */
 .experience-drawer.color-1 {
   border-color: #6c584c;
-  background-color: transparent;
+  background-color: rgba(108, 88, 76, 0.95) !important; /* #6c584c */
+  color: #ffffff !important;
 }
+
 .experience-drawer.color-2 {
   border-color: #a38566;
-  background-color: transparent;
+  background-color: rgba(163, 133, 102, 0.95) !important; /* #a38566 */
+  color: #ffffff !important;
 }
+
 .experience-drawer.color-3 {
   border-color: #d1b38a;
-  background-color: transparent;
+  background-color: rgba(209, 179, 138, 0.95) !important; /* #d1b38a */
+  color: #333333 !important;
 }
+
 .experience-drawer.color-4 {
   border-color: #e9dac1;
-  background-color: transparent;
+  background-color: rgba(233, 218, 193, 0.95) !important; /* #e9dac1 */
+  color: #333333 !important;
+}
+
+/* Update text colors for each theme */
+.experience-drawer.color-1 h3,
+.experience-drawer.color-1 p,
+.experience-drawer.color-1 .drawer-date,
+.experience-drawer.color-1 .drawer-location,
+.experience-drawer.color-1 .drawer-description,
+.experience-drawer.color-2 h3,
+.experience-drawer.color-2 p,
+.experience-drawer.color-2 .drawer-date,
+.experience-drawer.color-2 .drawer-location,
+.experience-drawer.color-2 .drawer-description {
+  color: #ffffff !important;
+}
+
+.experience-drawer.color-3 h3,
+.experience-drawer.color-3 p,
+.experience-drawer.color-3 .drawer-date,
+.experience-drawer.color-3 .drawer-location,
+.experience-drawer.color-3 .drawer-description,
+.experience-drawer.color-4 h3,
+.experience-drawer.color-4 p,
+.experience-drawer.color-4 .drawer-date,
+.experience-drawer.color-4 .drawer-location,
+.experience-drawer.color-4 .drawer-description {
+  color: #333333 !important;
+}
+
+/* Icon color adjustments for light/dark themes */
+.experience-drawer.color-1 .drawer-date:before,
+.experience-drawer.color-1 .drawer-location:before,
+.experience-drawer.color-2 .drawer-date:before,
+.experience-drawer.color-2 .drawer-location:before {
+  filter: brightness(0) invert(1) !important; /* Make icons white */
 }
 
 /* Drawer header */
@@ -815,6 +870,22 @@ header {
   font-weight: 600;
   position: relative;
   padding-left: 22px !important; /* Adjusted padding */
+}
+
+/* Add the suitcase icon */
+.drawer-title-company h3:before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 18px !important;
+  height: 18px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c584c'%3E%3Cpath d='M20 7h-4V5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-6-2h-4v2h4V5zM20 20H4V9h16v11z'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
 }
 
 .drawer-title-company p {
