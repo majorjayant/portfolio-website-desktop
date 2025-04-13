@@ -6,31 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Jayant Arora</title>
     
-    <!-- Domain detection script to set correct base URLs -->
-    <script>
-        // Determine the current environment and set appropriate base URLs
-        window.siteConfig = window.siteConfig || {};
-        const currentDomain = window.location.hostname;
-        
-        // Set base URLs based on domain
-        if (currentDomain === 'jayant.tech' || currentDomain.includes('cloudfront.net')) {
-            // Production/CloudFront domain
-            window.baseUrl = window.location.origin;
-            window.staticUrl = window.location.origin + '/static';
-            window.apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging';
-        } else {
-            // Amplify domain or local development
-            window.baseUrl = window.location.origin;
-            window.staticUrl = window.location.origin;
-            window.apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging';
-        }
-        
-        console.log('Domain detected:', currentDomain);
-        console.log('Base URL set to:', window.baseUrl);
-        console.log('Static URL set to:', window.staticUrl);
-        console.log('API URL set to:', window.apiUrl);
-    </script>
-    
     <!-- Critical inline styles for overrides - will ensure immediate effect -->
     <style>
         /* Fix for description toggle */
@@ -103,10 +78,10 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Core Styles - Use dynamic URLs -->
-    <script>document.write('<link rel="stylesheet" href="' + window.staticUrl + '/css/style.css?v=' + new Date().getTime() + '">');</script>
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="/css/style.css?v=<?php echo time(); ?>">
     <!-- Consolidated experience section styles -->
-    <script>document.write('<link rel="stylesheet" href="' + window.staticUrl + '/css/experience-section-combined.css?v=' + new Date().getTime() + '">');</script>
+    <link rel="stylesheet" href="/css/experience-section-combined.css?v=<?php echo time(); ?>">
     
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -978,46 +953,43 @@
     <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
 
-    <!-- JavaScript - using dynamic URLs -->
+    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>document.write('<script src="' + window.staticUrl + '/js/script.js?v=' + new Date().getTime() + '"><\/script>');</script>
-    <script>document.write('<script src="' + window.staticUrl + '/js/main.js?v=' + new Date().getTime() + '"><\/script>');</script>
+    <script src="/js/script.js"></script>
+    <script src="/js/main.js"></script>
     
 <script>
         // Function to load footer
         function loadFooter() {
-            const footerPath = window.staticUrl + '/html/_footer.html';
-            console.log('Loading footer from:', footerPath);
-            
-            fetch(footerPath)
+            fetch('/html/_footer.html') // Path relative to the static root
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Footer not found');
-                }
-                return response.text();
-            })
-            .then(html => {
-                const placeholder = document.getElementById('footer-placeholder');
-                if (placeholder) {
-                    placeholder.innerHTML = html;
-                    // Re-run any script needed for the footer content, e.g., update footer logo
-                    const config = window.siteConfig; // Assuming siteConfig is global
-                    if (config && config.image_logo_url) {
-                        const footerLogo = placeholder.querySelector('.footer-logo img');
-                        if (footerLogo) {
-                            footerLogo.src = config.image_logo_url;
-                            footerLogo.alt = config.about_title || 'Logo';
+                        throw new Error('Footer not found');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    const placeholder = document.getElementById('footer-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = html;
+                        // Re-run any script needed for the footer content, e.g., update footer logo
+                        const config = window.siteConfig; // Assuming siteConfig is global
+                        if (config && config.image_logo_url) {
+                            const footerLogo = placeholder.querySelector('.footer-logo img');
+                            if (footerLogo) {
+                                footerLogo.src = config.image_logo_url;
+                                footerLogo.alt = config.about_title || 'Logo';
+                            }
                         }
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error loading footer:', error);
-                const placeholder = document.getElementById('footer-placeholder');
-                if (placeholder) {
-                    placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer content.</p>';
-                }
-            });
+                })
+                .catch(error => {
+                    console.error('Error loading footer:', error);
+                    const placeholder = document.getElementById('footer-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer content.</p>';
+                    }
+                });
         }
 
         // Global variables for modal elements
@@ -1282,9 +1254,8 @@
         function fetchLatestAboutContent() {
             console.log('Checking for latest content from API');
             
-            // For AWS API Gateway endpoint - use the dynamic API URL
-            const apiUrl = window.apiUrl + '/website-portfolio?type=site_config';
-            console.log('Using API URL:', apiUrl);
+            // For AWS API Gateway endpoint
+            const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
             
             fetch(apiUrl)
                 .then(response => {
@@ -1300,56 +1271,8 @@
                     updatePageWithConfig(data);
                 })
                 .catch(error => {
-                    console.error('Error fetching content from AWS API:', error);
-                    console.log('Falling back to local JSON file');
-                    // Try to load from local JSON as fallback
-                    fetchDataFromLocalJson();
-                });
-        }
-
-        // Function to fetch data from local JSON files
-        function fetchDataFromLocalJson() {
-            // Use the dynamic static URL for local JSON
-            const localJsonUrl = `${window.staticUrl}/data/site_config.json`;
-            console.log('Attempting to load from local JSON:', localJsonUrl);
-            
-            fetch(localJsonUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Successfully loaded site config from local JSON:', data);
-                    updatePageWithConfig(data);
-                })
-                .catch(error => {
-                    console.error('Error loading site config JSON:', error);
-                    console.log('Applying hardcoded fallback content');
-                    
-                    // Use hardcoded fallback data
-                    const fallbackData = {
-                        site_config: {
-                            about_title: "Jayant Arora",
-                            about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
-                            about_description: "Product Manager with a passion for solving complex problems.",
-                            image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg",
-                            image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
-                            image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
-                            image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png",
-                            image_about_photo1_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0138.jpg",
-                            image_about_photo2_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_0915.jpg",
-                            image_about_photo3_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1461.jpg",
-                            image_about_photo4_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/IMG_1627.jpg",
-                            about_photo1_alt: "Photo 1",
-                            about_photo2_alt: "Photo 2",
-                            about_photo3_alt: "Photo 3",
-                            about_photo4_alt: "Photo 4"
-                        }
-                    };
-                    
-                    updatePageWithConfig(fallbackData);
+                    console.error('Error loading from API:', error);
+                    showErrorMessage('Error loading configuration. Please refresh or try again later.');
                 });
         }
 
@@ -1447,18 +1370,18 @@
             const aboutDescription = document.getElementById('about-description');
             const profileImage = document.getElementById('profile-image');
                         
-            if (aboutTitle) {
+                        if (aboutTitle) {
                 aboutTitle.innerHTML = config.about_title || '';
-            }
+                        }
                         
-            if (aboutSubtitle) {
+                        if (aboutSubtitle) {
                 aboutSubtitle.innerHTML = config.about_subtitle || '';
-            }
+                        }
                         
-            if (aboutDescription) {
+                        if (aboutDescription) {
                 aboutDescription.innerHTML = config.about_description || '';
-                aboutDescription.style.textAlign = 'left';
-            }
+                    aboutDescription.style.textAlign = 'left';
+                        }
                         
             if (profileImage) {
                 profileImage.src = config.image_about_profile_url || '';
