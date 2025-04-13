@@ -2632,11 +2632,6 @@ main .experience-section {
  * ===============================================================
  */
 
-/* Experience section root variables */
-:root {
-  --drawer-overlap: 2rem; /* Controls drawer overlap */
-  --drawer-z-index: 2; /* Controls stacking order */
-}
 
 /* Only basic experience section container styles here for fallback */
 .experience-section {

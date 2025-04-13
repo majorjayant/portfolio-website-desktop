@@ -259,6 +259,8 @@
   overflow: visible !important;
   visibility: visible !important;
   display: block !important;
+  background-color: rgba(255,255,255,0.1) !important;
+  border-radius: 6px !important;
 }
 
 /* Show description when active (for mobile) */
@@ -466,20 +468,21 @@
     max-width: 500px !important;
     padding: 0 !important;
     margin: 0 auto !important;
+    text-align: left !important;
   }
   
   .experience-section .section-title {
     font-size: 1.7rem !important;
     margin-left: 0.5rem !important;
-    margin-bottom: 2.5rem !important;
+    margin-bottom: 3rem !important;
     font-weight: 700 !important;
     color: #7a6b5f !important;
-    text-align: center !important;
+    text-align: left !important;
   }
   
   .experience-section .section-title:after {
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    left: 0 !important;
+    transform: none !important;
     width: 60px !important;
   }
    
@@ -487,6 +490,7 @@
     padding-top: 20px !important;
     padding-bottom: 40px !important;
     max-width: 100% !important;
+    text-align: left !important;
   }
   
   /* Adjust background shapes on mobile */
@@ -504,7 +508,7 @@
   /* Drawer adjustments for mobile */
   .experience-drawer {
     padding: 10px 15px !important;
-    margin-bottom: 12px !important; /* Reduce spacing between drawers */
+    margin-bottom: -17px !important; /* Reduce spacing between drawers */
     border-radius: 10px !important;
     height: auto !important;
     min-height: auto !important;
@@ -615,9 +619,9 @@
   .experience-drawer.active .drawer-description {
     padding: 8px 5px !important;
     margin-top: 8px !important;
-    background-color: rgba(255,255,255,0.5) !important;
+    background-color: rgba(255,255,255,0.1) !important;
     border-radius: 6px !important;
-    font-size: 0.85rem !important;
+    font-size: 0.95rem !important;
   }
   
   /* Fix description content on mobile */
@@ -675,6 +679,13 @@
   .experience-section .section-title {
     font-size: 1.5rem !important;
     margin-bottom: 2rem !important;
+    text-align: left !important;
+  }
+  
+  .experience-section .section-title:after {
+    left: 0 !important;
+    transform: none !important;
+    width: 50px !important;
   }
   
   .experience-drawer {
