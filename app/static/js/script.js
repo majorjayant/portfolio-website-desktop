@@ -179,8 +179,18 @@ async function fetchWorkExperienceData() {
     console.log('Fetching work experience data');
     
     try {
+        // Determine API stage based on current hostname
+        const currentUrl = window.location.hostname;
+        let apiStage = 'Staging'; // Default to Staging
+
+        // If on the main domain or jayant.tech, use production stage
+        if (currentUrl.includes('main.d200zhb2va2zdo') || currentUrl.includes('jayant.tech')) {
+            apiStage = 'Staging'; // Keep using Staging since there's only one API stage
+        } 
+        
         // Try to fetch from API first
-        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=work_experience';
+        const apiEndpoint = `https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/${apiStage}/website-portfolio?type=work_experience`;
+        console.log('Using work experience API URL:', apiEndpoint);
         
         const response = await fetch(apiEndpoint, {
             method: 'GET',
@@ -211,9 +221,16 @@ async function fetchWorkExperienceData() {
         console.error('Error fetching work experience from API:', apiError);
         console.log('Falling back to local JSON file');
         
-        // Fallback to local JSON
+        // Fallback to local JSON with absolute URL to ensure it works in all environments
         try {
-            const localResponse = await fetch('/data/experience.json');
+            const localUrl = `${window.location.origin}/data/experience.json`;
+            console.log('Attempting to load from local JSON:', localUrl);
+            
+            const localResponse = await fetch(localUrl);
+            if (!localResponse.ok) {
+                throw new Error('Local JSON response not OK');
+            }
+            
             const localData = await localResponse.json();
             console.log('Successfully loaded work experience from local JSON:', localData);
             if (typeof updateWorkExperienceTimeline === 'function') {
@@ -229,4 +246,75 @@ async function fetchWorkExperienceData() {
             }
         }
     }
+}
+
+// Add updateWorkExperienceTimeline function if not already defined elsewhere
+if (typeof window.updateWorkExperienceTimeline !== 'function') {
+    window.updateWorkExperienceTimeline = function(workExperience) {
+        console.log('Using fallback updateWorkExperienceTimeline function');
+        
+        if (!Array.isArray(workExperience) || workExperience.length === 0) {
+            console.warn('Work experience data is empty or invalid');
+            return;
+        }
+        
+        // Find the container for work experience items
+        const container = document.querySelector('.experience-drawers') || 
+                          document.querySelector('.timeline-container') ||
+                          document.getElementById('work-experience-container');
+                          
+        if (!container) {
+            console.error('No suitable container found for work experience items');
+            return;
+        }
+        
+        // Clear existing items
+        container.innerHTML = '';
+        
+        // Add each work experience item to the container
+        workExperience.forEach((job, index) => {
+            const drawer = document.createElement('div');
+            drawer.className = 'experience-drawer';
+            drawer.setAttribute('data-aos', 'fade-up');
+            drawer.setAttribute('data-aos-delay', (index * 100).toString());
+            
+            // Format dates
+            const startDate = job.start_date ? new Date(job.start_date).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short' 
+            }) : 'Unknown';
+            
+            const endDate = job.end_date ? new Date(job.end_date).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short' 
+            }) : 'Present';
+            
+            // Create HTML for job item
+            drawer.innerHTML = `
+                <div class="drawer-header">
+                    <div class="drawer-title-company">
+                        <h3>${job.company || 'Company'}</h3>
+                        <p>${job.position || 'Position'}</p>
+                    </div>
+                    <div class="drawer-dates">
+                        ${startDate} - ${endDate}
+                    </div>
+                </div>
+                <div class="drawer-description">
+                    ${job.description || 'No description available.'}
+                </div>
+            `;
+            
+            container.appendChild(drawer);
+        });
+        
+        // Initialize any interactive elements
+        document.querySelectorAll('.experience-drawer').forEach(drawer => {
+            drawer.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        console.log('Work experience timeline updated successfully');
+    };
 } 

@@ -701,7 +701,8 @@
                 const fallbacks = {
                     'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
                     'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
-                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png',
+                    'profile': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg' 
                 };
                 
                 // Fix header logo
@@ -721,6 +722,32 @@
                 if (favicon) {
                     favicon.href = fallbacks.favicon;
                 }
+                
+                // Fix profile photo
+                const profilePhoto = document.getElementById('profile-image');
+                if (profilePhoto && (!profilePhoto.complete || profilePhoto.naturalWidth === 0)) {
+                    profilePhoto.src = fallbacks.profile;
+                    profilePhoto.onerror = null; // Prevent infinite error loop
+                }
+                
+                // Fix any other images with relative paths that might be broken
+                document.querySelectorAll('img').forEach(img => {
+                    if (img !== headerLogo && img !== footerLogo && img !== profilePhoto && 
+                        (!img.complete || img.naturalWidth === 0)) {
+                        
+                        // Try to detect what type of image this is
+                        const imgSrc = img.src.toLowerCase();
+                        if (imgSrc.includes('profile') || imgSrc.includes('avatar')) {
+                            img.src = fallbacks.profile;
+                        } else if (imgSrc.includes('logo')) {
+                            img.src = fallbacks.logo;
+                        } else if (imgSrc.includes('banner')) {
+                            img.src = fallbacks.banner;
+                        }
+                        
+                        img.onerror = null; // Prevent infinite error loop
+                    }
+                });
                 
                 // Fix styles if needed
                 const fixStyles = function() {
@@ -1254,8 +1281,17 @@
         function fetchLatestAboutContent() {
             console.log('Checking for latest content from API');
             
-            // For AWS API Gateway endpoint
-            const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+            // For AWS API Gateway endpoint - using current domain to determine stage
+            const currentUrl = window.location.hostname;
+            let apiStage = 'Staging'; // Default to Staging
+
+            // If on the main domain or jayant.tech, use production stage
+            if (currentUrl.includes('main.d200zhb2va2zdo') || currentUrl.includes('jayant.tech')) {
+                apiStage = 'Staging'; // Keep using Staging since there's only one API stage
+            } 
+            
+            const apiUrl = `https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/${apiStage}/website-portfolio?type=site_config`;
+            console.log('Using API URL:', apiUrl);
             
             fetch(apiUrl)
                 .then(response => {
@@ -1272,7 +1308,44 @@
                 })
                 .catch(error => {
                     console.error('Error loading from API:', error);
-                    showErrorMessage('Error loading configuration. Please refresh or try again later.');
+                    console.log('Falling back to local JSON file');
+                    fetchDataFromLocalJson();
+                });
+        }
+
+        function fetchDataFromLocalJson() {
+            const localJsonUrl = `${window.location.origin}/data/site_config.json`;
+            console.log('Attempting to load from local JSON:', localJsonUrl);
+            
+            fetch(localJsonUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Successfully loaded from local JSON:', data);
+                    updatePageWithConfig(data);
+                })
+                .catch(error => {
+                    console.error('Error loading site config JSON:', error);
+                    console.log('Applying hardcoded fallback content');
+                    
+                    // Fallback to hardcoded values with S3 URLs that work in both environments
+                    const fallbackConfig = {
+                        site_config: {
+                            about_title: "Jayant Arora",
+                            about_subtitle: "Curious Mind. Data Geek. Product Whisperer.",
+                            about_description: "Ever since I was a kid, I've been that person - the one who asks why, what, and so what? on repeat. Fast forward to today, and not much has changed. I thrive on solving complex problems, breaking down business chaos into structured roadmaps, and turning data into decisions that matter.",
+                            image_favicon_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
+                            image_logo_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
+                            image_banner_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png",
+                            image_about_profile_url: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/profilephoto+(2).svg"
+                        }
+                    };
+                    
+                    updatePageWithConfig(fallbackConfig);
                 });
         }
 
