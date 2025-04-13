@@ -19,9 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // Load the site configuration
-    // This will also load work experience, education, and certification data
     loadSiteConfig();
-    
+
+    // Load work experience, education, and certifications data
+    fetchWorkExperienceData();
+    fetchEducationData();
+    fetchCertificationsData();
+
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', function() {
@@ -227,98 +231,38 @@ function filterProjects(category) {
 
 // Load site configuration
 function loadSiteConfig() {
-    console.log("Loading site configuration");
+    console.log('Loading site configuration');
     
-    // Try to fetch from API first
-    fetch('https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        mode: 'cors',
-        credentials: 'omit'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Received site config from API:", data);
-        
-        // Process the retrieved data
-        processConfigData(data);
-        
-        // Update the work experience timeline if data is included
-        if (data.work_experience) {
-            updateWorkExperienceTimeline(data.work_experience);
-        }
-        
-        // Update the education section if data is included
-        if (data.education) {
-            updateEducationSection(data.education);
-        } else {
-            // Fetch education data separately
-            fetchEducationData();
-        }
-        
-        // Update the certification section if data is included
-        if (data.certification) {
-            updateCertificationSection(data.certification);
-        } else {
-            // Fetch certification data separately
-            fetchCertificationData();
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching site config:', error);
-        
-        // Fallback to local JSON file
-        console.log("Using local fallback data");
-        
-        fetch('/data/site_config.json')
-            .then(response => response.json())
-            .then(data => {
-                console.log("Received site config from local JSON:", data);
-                processConfigData(data);
-                
-                // Try to load experience data separately
-                fetch('/data/experience.json')
-                    .then(response => response.json())
-                    .then(expData => {
-                        updateWorkExperienceTimeline(expData);
-                    })
-                    .catch(expError => {
-                        console.error('Error loading work experience from local JSON:', expError);
-                    });
-                
-                // Try to load education data separately
-                fetch('/static/data/education.json')
-                    .then(response => response.json())
-                    .then(eduData => {
-                        updateEducationSection(eduData);
-                    })
-                    .catch(eduError => {
-                        console.error('Error loading education from local JSON:', eduError);
-                    });
-                
-                // Try to load certification data separately
-                fetch('/static/data/certifications.json')
-                    .then(response => response.json())
-                    .then(certData => {
-                        updateCertificationSection(certData);
-                    })
-                    .catch(certError => {
-                        console.error('Error loading certification from local JSON:', certError);
-                    });
-            })
-            .catch(localError => {
-                console.error('Error loading from local JSON:', localError);
-                showErrorNotification("Failed to load site configuration. Please try again later.");
-            });
-    });
+    // Check if we already have site config in window object (might be inserted inline in HTML)
+    if (window.siteConfig) {
+        console.log('Using pre-loaded site configuration');
+        processConfigData(window.siteConfig);
+        return;
+    }
+    
+    // Try to load from local data file
+    fetch('/data/site_config.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch site configuration');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Loaded site configuration from file');
+            if (data && data.site_configs) {
+                processConfigData(data.site_configs);
+            } else {
+                throw new Error('Invalid site configuration format');
+            }
+        })
+        .catch(error => {
+            console.warn('Error loading site configuration:', error);
+            console.log('Using default configuration');
+            processConfigData(window.defaultConfig);
+            // Fix any broken images with fallbacks
+            fixBrokenImages();
+        });
 }
 
 // Process the configuration data
@@ -914,7 +858,7 @@ async function fetchEducationData() {
         
         // Fallback to local JSON
         try {
-            const localResponse = await fetch('/static/data/education.json');
+            const localResponse = await fetch('/data/education.json');
             const localData = await localResponse.json();
             console.log('Successfully loaded education data from local JSON:', localData);
             updateEducationSection(localData);
@@ -926,48 +870,47 @@ async function fetchEducationData() {
     }
 }
 
-// Function to update the certification section with data
-function updateCertificationSection(certificationData) {
-    console.log("Updating certification section with data:", certificationData);
+// Update certifications section
+function updateCertificationsSection(certificationsData) {
+    console.log("Updating certifications section with data:", certificationsData);
     
-    // Get the certification container
-    const certificationContainer = document.querySelector('.certifications-container');
-    if (!certificationContainer) {
-        console.error('Certification container not found');
+    // Get the certifications container
+    const certificationsContainer = document.querySelector('.certifications-container');
+    if (!certificationsContainer) {
+        console.error('Certifications container not found');
         return;
     }
     
     // Clear previous content
-    certificationContainer.innerHTML = '';
+    certificationsContainer.innerHTML = '';
     
     // Check if there is any certification data
-    if (!certificationData || certificationData.length === 0) {
-        const noCertification = document.createElement('p');
-        noCertification.textContent = 'No certification data available.';
-        noCertification.style.color = '#333';
-        noCertification.style.textAlign = 'center';
-        certificationContainer.appendChild(noCertification);
+    if (!certificationsData || certificationsData.length === 0) {
+        const noCertifications = document.createElement('p');
+        noCertifications.textContent = 'No certification data available.';
+        noCertifications.style.color = '#333';
+        noCertifications.style.textAlign = 'center';
+        certificationsContainer.appendChild(noCertifications);
         return;
     }
     
     // Sort certifications by date (most recent first)
-    certificationData.sort((a, b) => {
-        // Handle different field names in local JSON vs API data
-        const dateA = a.issued_date || a.issue_date;
-        const dateB = b.issued_date || b.issue_date;
+    certificationsData.sort((a, b) => {
+        const dateA = a.issued_date;
+        const dateB = b.issued_date;
         return new Date(dateB) - new Date(dateA);
     });
     
     // Create an item for each certification entry
-    certificationData.forEach((certification) => {
-        // Format dates - handle different field names in local JSON vs API data
-        const issuedDate = new Date(certification.issued_date || certification.issue_date);
+    certificationsData.forEach((certification) => {
+        // Format dates
+        const issuedDate = new Date(certification.issued_date);
         const expiryDate = certification.expiry_date ? new Date(certification.expiry_date) : null;
         
-        const issuedDateString = `Issued: ${getMonthName(issuedDate.getMonth()).substring(0, 3)} ${issuedDate.getFullYear()}`;
-        const expiryDateString = expiryDate 
-            ? `Expires: ${getMonthName(expiryDate.getMonth()).substring(0, 3)} ${expiryDate.getFullYear()}`
-            : 'No Expiration';
+        const issuedDateString = `Issued: ${getMonthName(issuedDate.getMonth())} ${issuedDate.getFullYear()}`;
+        const expiryDateString = expiryDate ? 
+            `Expires: ${getMonthName(expiryDate.getMonth())} ${expiryDate.getFullYear()}` : 
+            'No Expiration';
         
         // Create certification item
         const item = document.createElement('div');
@@ -982,70 +925,67 @@ function updateCertificationSection(certificationData) {
         const content = document.createElement('div');
         content.className = 'cert-content';
         
-        // Create title (certification name) - handle different field names
+        // Create title (certification name)
         const title = document.createElement('h3');
-        title.textContent = certification.certification_name || certification.title;
+        title.textContent = certification.certification_name;
         
-        // Create issuer name - handle different field names
+        // Create issuer name
         const issuer = document.createElement('h4');
-        issuer.textContent = certification.issuer_name || certification.issuer;
+        issuer.textContent = certification.issuer_name;
         
-        // Create dates
-        const issuedDateElement = document.createElement('p');
-        issuedDateElement.className = 'cert-date';
-        issuedDateElement.textContent = issuedDateString;
+        // Create issued date
+        const issued = document.createElement('p');
+        issued.className = 'cert-date';
+        issued.textContent = issuedDateString;
         
-        const expiryDateElement = document.createElement('p');
-        expiryDateElement.className = 'cert-expiry';
-        expiryDateElement.textContent = expiryDateString;
+        // Create expiry date
+        const expiry = document.createElement('p');
+        expiry.className = 'cert-expiry';
+        expiry.textContent = expiryDateString;
         
-        // Create credential link if available - handle different field names
-        if (certification.credential_link || certification.certificate_url) {
+        // Create credential link if present
+        if (certification.credential_link) {
             const link = document.createElement('a');
-            link.href = certification.credential_link || certification.certificate_url;
+            link.href = certification.credential_link;
             link.target = '_blank';
             link.className = 'cert-link';
             link.textContent = 'View Certificate';
+            content.appendChild(title);
+            content.appendChild(issuer);
+            content.appendChild(issued);
+            content.appendChild(expiry);
             content.appendChild(link);
+        } else {
+            content.appendChild(title);
+            content.appendChild(issuer);
+            content.appendChild(issued);
+            content.appendChild(expiry);
         }
         
-        // Add credential ID if available
-        if (certification.credential_id) {
-            const credentialId = document.createElement('p');
-            credentialId.className = 'cert-id';
-            credentialId.textContent = `Credential ID: ${certification.credential_id}`;
-            content.appendChild(credentialId);
-        }
-        
-        // Add description if available
+        // Add description if present
         if (certification.description) {
             const description = document.createElement('p');
             description.className = 'cert-description';
-            description.innerHTML = certification.description;
+            description.textContent = certification.description;
             content.appendChild(description);
         }
         
         // Assemble the certification item
-        content.appendChild(title);
-        content.appendChild(issuer);
-        content.appendChild(issuedDateElement);
-        content.appendChild(expiryDateElement);
-        
         item.appendChild(icon);
         item.appendChild(content);
         
         // Add to container
-        certificationContainer.appendChild(item);
+        certificationsContainer.appendChild(item);
     });
 }
 
-// Function to fetch certification data
-async function fetchCertificationData() {
-    console.log('Fetching certification data');
+// Fetch certifications data
+async function fetchCertificationsData() {
+    console.log('Fetching certifications data');
     
     try {
         // Try to fetch from API first
-        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certification';
+        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certifications';
         
         const response = await fetch(apiEndpoint, {
             method: 'GET',
@@ -1062,25 +1002,25 @@ async function fetchCertificationData() {
         }
         
         const data = await response.json();
-        console.log('Successfully loaded certification data from API:', data);
+        console.log('Successfully loaded certifications data from API:', data);
         
-        // Update the certification section with the fetched data
-        const certificationData = data.certification || [];
-        updateCertificationSection(certificationData);
+        // Update the certifications section with the fetched data
+        const certificationsData = data.certifications || [];
+        updateCertificationsSection(certificationsData);
     } catch (error) {
-        console.error('Error fetching certification data from API:', error);
+        console.error('Error fetching certifications data from API:', error);
         console.log('Falling back to local JSON file');
         
         // Fallback to local JSON
         try {
-            const localResponse = await fetch('/static/data/certifications.json');
+            const localResponse = await fetch('/data/certifications.json');
             const localData = await localResponse.json();
-            console.log('Successfully loaded certification data from local JSON:', localData);
-            updateCertificationSection(localData);
+            console.log('Successfully loaded certifications data from local JSON:', localData);
+            updateCertificationsSection(localData);
         } catch (localError) {
             console.error('Error loading from local JSON:', localError);
             // Show empty state
-            updateCertificationSection([]);
+            updateCertificationsSection([]);
         }
     }
 }

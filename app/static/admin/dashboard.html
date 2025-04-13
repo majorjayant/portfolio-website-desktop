@@ -223,8 +223,8 @@
                                             </button>
                                         </div>
                                     </div>
-
-                                    <!-- Certification Section -->
+                                    
+                                    <!-- Certifications Section -->
                                     <div class="mb-8">
                                         <h3 class="text-lg font-medium text-gray-900 mb-4">Certifications</h3>
                                         <div id="certification-items-container" class="space-y-6">
@@ -240,6 +240,66 @@
                                             </button>
                                         </div>
                                     </div>
+
+                                    <!-- Template for new work experience items -->
+                                    <template id="work-experience-template">
+                                        <div class="work-experience-item bg-gray-50 rounded-md p-4 my-4 border border-gray-200">
+                                            <div class="flex justify-between items-start mb-3">
+                                                <h4 class="text-base font-medium text-gray-800">Work Experience Entry</h4>
+                                                <button type="button" class="delete-work-experience text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            
+                                            <input type="hidden" class="workex-id" name="workex_id">
+                                            
+                                            <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
+                                                <!-- Job Title -->
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Job Title</label>
+                                                    <input type="text" class="workex-title mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
+                                                </div>
+                                                
+                                                <!-- Company Name -->
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Company Name</label>
+                                                    <input type="text" class="workex-company mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
+                                                </div>
+                                                
+                                                <!-- Location -->
+                                                <div class="sm:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Location</label>
+                                                    <input type="text" class="workex-location mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                                </div>
+                                                
+                                                <!-- Date Range -->
+                                                <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700">From Date</label>
+                                                        <input type="month" class="workex-from-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700">To Date</label>
+                                                        <input type="month" class="workex-to-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
+                                                    </div>
+
+                                                    <div class="flex items-center pb-2">
+                                                        <input type="checkbox" class="workex-current h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                                        <label class="ml-2 block text-sm text-gray-700">Current Job</label>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Description / Responsibilities -->
+                                                <div class="sm:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Description / Responsibilities</label>
+                                                    <textarea class="workex-description mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" rows="3" required></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
                                     
                                     <div class="mt-6 flex justify-between items-center">
                                         <button type="button" id="refresh-button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -253,66 +313,6 @@
                                         </button>
                                     </div>
                                 </form>
-                                
-                                <!-- Template for new work experience items -->
-                                <template id="work-experience-template">
-                                    <div class="work-experience-item bg-gray-50 rounded-md p-4 my-4 border border-gray-200">
-                                        <div class="flex justify-between items-start mb-3">
-                                            <h4 class="text-base font-medium text-gray-800">Work Experience Entry</h4>
-                                            <button type="button" class="delete-work-experience text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        
-                                        <input type="hidden" class="workex-id" name="workex_id">
-                                        
-                                        <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
-                                            <!-- Job Title -->
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700">Job Title</label>
-                                                <input type="text" class="workex-title mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
-                                            </div>
-                                            
-                                            <!-- Company Name -->
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700">Company Name</label>
-                                                <input type="text" class="workex-company mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
-                                            </div>
-                                            
-                                            <!-- Location -->
-                                            <div class="sm:col-span-2">
-                                                <label class="block text-sm font-medium text-gray-700">Location</label>
-                                                <input type="text" class="workex-location mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
-                                            </div>
-                                            
-                                            <!-- Date Range -->
-                                            <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700">From Date</label>
-                                                    <input type="month" class="workex-from-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" required>
-                                                </div>
-                                                
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700">To Date</label>
-                                                    <input type="month" class="workex-to-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border">
-                                                </div>
-
-                                                <div class="flex items-center pb-2">
-                                                    <input type="checkbox" class="workex-current h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                                    <label class="ml-2 block text-sm text-gray-700">Current Job</label>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Description / Responsibilities -->
-                                            <div class="sm:col-span-2">
-                                                <label class="block text-sm font-medium text-gray-700">Description / Responsibilities</label>
-                                                <textarea class="workex-description mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" rows="3" required></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
                                 
                                 <!-- Ensure rich text editors are initialized -->
                                 <script>
@@ -507,11 +507,6 @@
         const formContainer = document.getElementById('form-container');
         const apiError = document.getElementById('api-error');
         const saveButton = document.getElementById('save-button');
-        
-        // Initialize functions
-        initWorkExperience();
-        initEducation();
-        initCertification();
         
         // Check authentication
         checkAuth();
@@ -810,8 +805,8 @@
                 }
                 
                 // Load certification data if available
-                if (data.certification) {
-                    loadCertificationData(data.certification);
+                if (data.certifications) {
+                    loadCertificationData(data.certifications);
                 } else {
                     // Fetch certification data separately if not included in site config
                     fetchCertificationData();
@@ -869,6 +864,18 @@
                                 // Add empty education item
                                 addEducationItem();
                             });
+                            
+                        // Try to load certification data from local file
+                        fetch('/data/certifications.json')
+                            .then(response => response.json())
+                            .then(certData => {
+                                loadCertificationData(certData);
+                            })
+                            .catch(err => {
+                                console.error('Error loading certifications from local JSON:', err);
+                                // Add empty certification item
+                                addCertificationItem();
+                            });
                     })
                     .catch(localError => {
                         console.error('Error loading from local JSON:', localError);
@@ -880,6 +887,9 @@
                         
                         // Add empty education item
                         addEducationItem();
+                        
+                        // Add empty certification item
+                        addCertificationItem();
                     });
             });
         }
@@ -1007,7 +1017,7 @@
                 site_config: siteConfigData,
                 work_experience: workExperienceData,
                 education: educationData,
-                certification: certificationData
+                certifications: certificationData
             };
             
             console.log('Sending payload:', payload);
@@ -1720,9 +1730,15 @@
             }
         }
 
-        // Certification Functions
-        function initCertification() {
-            console.log('Initializing certification section');
+        // Initialize education function on load
+        initEducation();
+        
+        // Initialize certifications function on load
+        initCertifications();
+        
+        // Certifications Functions
+        function initCertifications() {
+            console.log('Initializing certifications section');
             
             // Add event listener to the "Add Certification" button
             const addCertButton = document.getElementById('add-certification-button');
@@ -1776,28 +1792,28 @@
                     <!-- Credential ID -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Credential ID</label>
-                        <input type="text" class="certification-credential-id mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"
+                        <input type="text" class="certification-credential-id mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" 
                             value="${itemData.credential_id || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>
                     </div>
                     
                     <!-- Credential Link -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Credential Link</label>
-                        <input type="url" class="certification-credential-link mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"
-                            value="${itemData.credential_link || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>
+                        <input type="url" class="certification-credential-link mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" 
+                            value="${itemData.credential_link || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''} placeholder="https://">
                     </div>
                     
-                    <!-- Date Range -->
+                    <!-- Dates -->
                     <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Issue Date*</label>
-                            <input type="date" class="certification-issued-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"
+                            <label class="block text-sm font-medium text-gray-700">Issued Date*</label>
+                            <input type="date" class="certification-issued-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" 
                                 value="${itemData.issued_date || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''} required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Expiry Date</label>
-                            <input type="date" class="certification-expiry-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border"
+                            <input type="date" class="certification-expiry-date mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" 
                                 value="${itemData.expiry_date || ''}" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>
                         </div>
                     </div>
@@ -1805,8 +1821,8 @@
                     <!-- Description -->
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea class="certification-description mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" rows="3"
-                            ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>${itemData.description || ''}</textarea>
+                        <textarea class="certification-description mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border" 
+                            rows="3" ${parseInt(itemData.is_deleted || 0) === 1 ? 'disabled' : ''}>${itemData.description || ''}</textarea>
                     </div>
                 </div>
             `;
@@ -1854,6 +1870,13 @@
                         });
                     }
                 });
+            }
+            
+            // Create rich text toolbar for description
+            const descriptionField = itemDiv.querySelector('.certification-description');
+            if (descriptionField) {
+                descriptionField.id = `certification-desc-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                createRichTextToolbar(descriptionField.id);
             }
         }
         
@@ -1915,11 +1938,11 @@
                     id: id,
                     certification_name: certificationName,
                     issuer_name: issuerName,
-                    credential_id: credentialId,
-                    credential_link: credentialLink,
+                    credential_id: credentialId || null,
+                    credential_link: credentialLink || null,
                     issued_date: issuedDate || null,
                     expiry_date: expiryDate || null,
-                    description: description,
+                    description: description || null,
                     is_deleted: isDeleted
                 };
                 
@@ -1927,6 +1950,7 @@
                 data.push(certificationObject);
             });
             
+            console.log('Collected certification data:', data);
             return data;
         }
         
@@ -1959,7 +1983,7 @@
             console.log('Fetching certification data separately');
             
             try {
-                const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certification';
+                const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certifications';
                 
                 const response = await fetch(apiEndpoint, {
                     method: 'GET',
@@ -1979,17 +2003,17 @@
                 console.log('Successfully loaded certification data:', data);
                 
                 // Load the certification data
-                loadCertificationData(data.certification || []);
+                loadCertificationData(data.certifications || []);
             } catch (error) {
                 console.error('Error fetching certification data:', error);
                 
                 // Try loading from local JSON as fallback
                 try {
-                    const localResponse = await fetch('/data/certification.json');
+                    const localResponse = await fetch('/data/certifications.json');
                     const localData = await localResponse.json();
                     loadCertificationData(localData);
                 } catch (localError) {
-                    console.error('Error loading from local certification JSON:', localError);
+                    console.error('Error loading from local certifications JSON:', localError);
                     // Add an empty certification item
                     addCertificationItem();
                 }
