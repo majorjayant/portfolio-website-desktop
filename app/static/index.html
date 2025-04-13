@@ -4,14 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Jayant Arora</title>
-    
-    <!-- Preload critical assets -->
-    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png" as="image">
-    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" as="image">
-    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg" as="image" media="(min-width: 768px)">
-    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg" as="image" media="(max-width: 767px)">
-    <link rel="preload" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Jayant_profile-removebg.png" as="image">
+    <title>Jayant Malik | Portfolio</title>
     
     <!-- Critical inline styles for overrides - will ensure immediate effect -->
     <style>
@@ -86,9 +79,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- Core Styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <!-- Consolidated experience section styles -->
-    <link rel="stylesheet" href="css/experience-section-combined.css">
+    <link rel="stylesheet" href="/css/experience-section-combined.css">
     
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -97,30 +90,6 @@
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     
 <style>
-    /* Safari-specific fixes */
-    @supports (-webkit-touch-callout: none) {
-        .experience-drawer .drawer-description {
-            display: none !important;
-        }
-        
-        .experience-drawer:hover .drawer-description,
-        .experience-drawer.active .drawer-description {
-            display: block !important;
-        }
-        
-        /* Banner fix for Safari */
-        #banner-image {
-            -webkit-background-size: cover;
-            background-size: cover;
-        }
-        
-        /* Force hardware acceleration */
-        .navbar, .experience-drawer, .photo-stack, #banner-image {
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-        }
-    }
-    
     /* About section styles */
     .about-section {
         padding: 6rem 0;
@@ -732,9 +701,7 @@
                 const fallbacks = {
                     'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
                     'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
-                    'banner-desktop': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg',
-                    'banner-mobile': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg',
-                    'profile': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Jayant_profile-removebg.png'
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'
                 };
                 
                 // Fix header logo
@@ -753,19 +720,6 @@
                 const favicon = document.querySelector('link[rel="icon"]');
                 if (favicon) {
                     favicon.href = fallbacks.favicon;
-                }
-                
-                // Fix banner images
-                const bannerImage = document.getElementById('banner-image');
-                if (bannerImage) {
-                    const isMobile = window.innerWidth <= 768;
-                    bannerImage.style.backgroundImage = `url('${isMobile ? fallbacks['banner-mobile'] : fallbacks['banner-desktop']}')`;
-                }
-                
-                // Fix profile image
-                const profileImage = document.getElementById('profile-image');
-                if (profileImage && (!profileImage.complete || profileImage.naturalWidth === 0)) {
-                    profileImage.src = fallbacks.profile;
                 }
                 
                 // Fix styles if needed
@@ -800,6 +754,7 @@
                     }
                     
                     // Fix banner
+                    const bannerImage = document.getElementById('banner-image');
                     if (bannerImage) {
                         bannerImage.style.backgroundSize = 'contain';
                         bannerImage.style.backgroundPosition = 'center';
@@ -820,72 +775,6 @@
             fixBrokenImages();
             setTimeout(fixBrokenImages, 1000);
         });
-    </script>
-    
-    <!-- Add the default config with all new fallbacks -->
-    <script>
-        window.defaultConfig = {
-            site_title: "Jayant Malik | Portfolio",
-            site_subtitle: "Product Manager | Developer",
-            image_urls: {
-                favicon: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon",
-                logo: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo",
-                banner: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png",
-                desktop_banner: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg",
-                mobile_banner: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg",
-                about_profile: "https://website-majorjayant.s3.eu-north-1.amazonaws.com/Jayant_profile-removebg.png"
-            },
-            api: {
-                base_url: "/api"
-            }
-        };
-    </script>
-    
-    <!-- Force CSS reload for Safari/iOS -->
-    <script>
-        // iOS Safari CSS fix
-        (function() {
-            // Detect iOS Safari
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-            
-            if (isIOS || isSafari) {
-                console.log("iOS Safari detected, applying fixes");
-                
-                // Force reload of CSS files
-                document.addEventListener('DOMContentLoaded', function() {
-                    const styleSheets = document.querySelectorAll('link[rel="stylesheet"]');
-                    styleSheets.forEach(function(sheet) {
-                        // Only refresh our own stylesheets, not CDN ones
-                        if (sheet.href && !sheet.href.includes('cdnjs') && !sheet.href.includes('unpkg')) {
-                            const originalHref = sheet.href;
-                            sheet.href = originalHref + '?v=' + new Date().getTime();
-                            console.log('Refreshed stylesheet:', originalHref);
-                        }
-                    });
-                    
-                    // Apply specific mobile fixes
-                    const bannerImage = document.getElementById('banner-image');
-                    if (bannerImage) {
-                        bannerImage.style.webkitBackgroundSize = 'cover';
-                        bannerImage.style.backgroundSize = 'cover';
-                        bannerImage.style.height = '100vh'; // Full height for mobile
-                        bannerImage.style.maxHeight = '100vh';
-                    }
-                    
-                    // Force repaint on experience drawers
-                    setTimeout(function() {
-                        const drawers = document.querySelectorAll('.experience-drawer');
-                        drawers.forEach(function(drawer) {
-                            drawer.style.opacity = '0.99';
-                            setTimeout(function() {
-                                drawer.style.opacity = '1';
-                            }, 10);
-                        });
-                    }, 1000);
-                });
-            }
-        })();
     </script>
 </head>
 <body>
@@ -949,67 +838,6 @@
                 <!-- Photo containers will be dynamically added here -->
             </div>
         </div>
-        
-        <!-- Safari-specific style fixes for photos -->
-        <style>
-            /* Safari fixes for photo stack */
-            @supports (-webkit-touch-callout: none) {
-                .photo-stack {
-                    position: relative !important;
-                    width: 250px !important;
-                    height: 250px !important;
-                    margin: 0 auto !important;
-                    perspective: 1000px !important;
-                    -webkit-perspective: 1000px !important;
-                    transform-style: preserve-3d !important;
-                    -webkit-transform-style: preserve-3d !important;
-                }
-                
-                .photo-stack img {
-                    position: absolute !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 250px !important;
-                    height: 250px !important;
-                    object-fit: cover !important;
-                    border: 5px solid #f3f3f3 !important;
-                    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
-                    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                    -webkit-transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                    transform-origin: center center !important;
-                    -webkit-transform-origin: center center !important;
-                    backface-visibility: hidden !important;
-                    -webkit-backface-visibility: hidden !important;
-                }
-                
-                /* Don't use 3D transforms on Safari - they can be buggy */
-                .photo-stack img:nth-child(1) {
-                    transform: rotate(-8deg) !important;
-                    -webkit-transform: rotate(-8deg) !important;
-                    z-index: 3 !important;
-                }
-                
-                .photo-stack img:nth-child(2) {
-                    transform: rotate(8deg) !important;
-                    -webkit-transform: rotate(8deg) !important;
-                    z-index: 2 !important;
-                }
-                
-                .photo-stack img:nth-child(3) {
-                    transform: rotate(-5deg) !important;
-                    -webkit-transform: rotate(-5deg) !important;
-                    z-index: 1 !important;
-                }
-                
-                /* Hover effect - simplified for Safari */
-                .photo-stack:hover img:nth-child(1) {
-                    transform: scale(1.1) !important;
-                    -webkit-transform: scale(1.1) !important;
-                    z-index: 4 !important;
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
-                }
-            }
-        </style>
     </section>
 
     <!-- Photo Modal -->
@@ -1029,56 +857,6 @@
                 <!-- Drawers will be dynamically inserted here by JavaScript -->
             </div>
         </div>
-        <!-- Safari-specific style fixes -->
-        <style>
-            /* Safari fixes for experience section */
-            @supports (-webkit-touch-callout: none) {
-                .experience-section {
-                    display: block !important;
-                    padding: 3rem 0 !important;
-                }
-                
-                .experience-drawers {
-                    display: flex !important;
-                    flex-direction: column !important;
-                    gap: 1rem !important;
-                }
-                
-                .experience-drawer {
-                    border-radius: 8px !important;
-                    padding: 1.5rem !important;
-                    border-left: 4px solid #6c584c !important; 
-                    background-color: #fff !important;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
-                    margin-bottom: 1rem !important;
-                    transition: all 0.3s ease !important;
-                    opacity: 1 !important;
-                    transform: none !important;
-                }
-                
-                .drawer-header {
-                    display: grid !important;
-                    grid-template-columns: 1fr auto !important;
-                    grid-template-rows: auto auto !important;
-                    gap: 0.5rem !important;
-                }
-                
-                .drawer-title-company h3 {
-                    font-size: 1.2rem !important;
-                    font-weight: 600 !important;
-                    margin: 0 !important;
-                    padding-left: 22px !important;
-                }
-                
-                .drawer-location {
-                    font-size: 0.9rem !important;
-                    color: #555 !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: flex-end !important;
-                }
-            }
-        </style>
     </section>
 
     <!-- Education Section -->

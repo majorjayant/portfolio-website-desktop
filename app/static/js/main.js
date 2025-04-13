@@ -316,104 +316,38 @@ function showErrorNotification(message) {
     }, 5000);
 }
 
-// Fix any broken images with fallbacks
+// Fix broken images by using fallbacks
 function fixBrokenImages() {
-    console.log('Fixing broken images');
+    console.log('Checking for broken images');
     
-    // Detect iOS Safari
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    // Default image fallbacks
+    const fallbacks = window.defaultConfig.image_urls;
     
-    // Log platform info for debugging
-    console.log('Platform detection - iOS:', isIOS, 'Safari:', isSafari, 'UA:', navigator.userAgent);
-    
-    const images = document.querySelectorAll('img');
-    
-    images.forEach(img => {
-        // Skip images that already have error handlers
-        if (img.hasAttribute('data-error-handled')) return;
-        
-        // Mark this image as having an error handler
-        img.setAttribute('data-error-handled', 'true');
-        
-        // Fix Safari image display issues
-        if (isIOS || isSafari) {
-            img.style.webkitBackfaceVisibility = 'hidden';
-            img.style.backfaceVisibility = 'hidden';
-        }
-        
-        // Add error handler
-        img.addEventListener('error', function() {
-            console.log('Fixing broken image:', this.src);
-            
-            // Set a data attribute to track that we already fixed this image
-            if (this.hasAttribute('data-fixed')) return;
-            this.setAttribute('data-fixed', 'true');
-            
-            // Check if this is a profile image
-            if (this.classList.contains('profile-img') || this.src.includes('profile')) {
-                this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Jayant_profile-removebg.png';
-            }
-            // Check if this is a desktop banner image
-            else if ((this.classList.contains('banner-img') || this.src.includes('banner')) && this.src.includes('desktop')) {
-                this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg';
-            }
-            // Check if this is a mobile banner image
-            else if ((this.classList.contains('banner-img') || this.src.includes('banner')) && this.src.includes('mobile')) {
-                this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg';
-            }
-            // Check if this is any other banner image
-            else if (this.classList.contains('banner-img') || this.src.includes('banner')) {
-                // Check device width to determine which banner to use
-                if (window.innerWidth <= 768) {
-                    this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg';
-                } else {
-                    this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg';
-                }
-            }
-            // Default fallback for other images
-            else {
-                this.src = 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo';
-            }
-            
-            // Try to correct the parent container's height if needed
-            const container = this.closest('.img-container');
-            if (container) {
-                container.style.height = 'auto';
-            }
-        });
-    });
-    
-    // Also fix background images
-    const backgroundElements = [
-        {selector: '#banner-image', fallbackClass: 'banner-img'},
-        {selector: '.parallax-layer', fallbackClass: 'banner-img'}
+    // Fix common elements
+    const elements = [
+        { selector: '.navbar .logo img', attr: 'src', fallback: fallbacks.logo },
+        { selector: '.footer-logo img', attr: 'src', fallback: fallbacks.logo },
+        { selector: 'link[rel="icon"]', attr: 'href', fallback: fallbacks.favicon },
+        { selector: '.banner-image', attr: 'style', fallback: `background-image: url('${fallbacks.banner}')` },
+        { selector: '.hero-image img, .about-profile img', attr: 'src', fallback: fallbacks.about_profile }
     ];
     
-    backgroundElements.forEach(element => {
-        const elements = document.querySelectorAll(element.selector);
-        elements.forEach(el => {
-            // If no background image (or doesn't display correctly)
-            if (!el.style.backgroundImage || el.style.backgroundImage === 'none' || 
-                el.getBoundingClientRect().height === 0) {
-                
-                console.log('Fixing broken background image for:', element.selector);
-                
-                // Use appropriate image based on screen size
-                if (window.innerWidth <= 768) {
-                    el.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-mobile.jpg')";
-                } else {
-                    el.style.backgroundImage = "url('https://website-majorjayant.s3.eu-north-1.amazonaws.com/banner-desktop.jpg')";
-                }
-                
-                // Make sure it covers the whole container
-                el.style.backgroundSize = "cover";
-                el.style.webkitBackgroundSize = "cover";
-                el.style.backgroundPosition = "center";
-                el.style.height = "100%";
-                el.style.width = "100%";
+    elements.forEach(el => {
+        const element = document.querySelector(el.selector);
+        if (element) {
+            if (el.attr === 'style' && (!element.style.backgroundImage || element.style.backgroundImage === 'none')) {
+                element.style.backgroundImage = `url('${el.fallback}')`;
+            } else if (el.attr !== 'style' && (!element[el.attr] || element.naturalWidth === 0)) {
+                element[el.attr] = el.fallback;
             }
-        });
+            
+            // Add error handler for images
+            if (element.tagName === 'IMG') {
+                element.onerror = function() {
+                    this.src = el.fallback;
+                };
+            }
+        }
     });
 }
 
