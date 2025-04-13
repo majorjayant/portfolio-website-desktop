@@ -167,7 +167,7 @@
   justify-content: flex-end !important;
   font-size: 0.9rem !important;
   position: relative !important;
-  padding-left: 20px !important;
+  padding-left: 18px !important;
 }
 
 /* Location icon */
@@ -461,7 +461,7 @@
     text-align: left !important;
     justify-content: flex-start !important;
     font-size: 0.8rem !important;
-    padding-left: 20px !important; /* Restore padding for icon */
+    padding-left: 18px !important;
     position: relative !important;
     margin-top: 2px !important;
   }
