@@ -890,8 +890,7 @@ header {
   .experience-section .container {
     width: 95%; /* Use more of the available width on mobile */
     max-width: 100%; /* Allow full width on mobile */
-    padding: 0 10px;
-  }
+      }
   
   .experience-section .section-title {
     font-size: 2rem;

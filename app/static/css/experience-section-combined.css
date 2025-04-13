@@ -476,15 +476,26 @@
     color: #7a6b5f !important; /* Keep the same color as desktop */
   }
   
+  /* Remove the horizontal line above experience drawers */
+  .experience-section .section-title:after {
+    display: none !important; /* Hide the line on mobile */
+  }
+  
   .experience-drawers {
-    padding: 1rem 0 !important;
+    padding: 0 !important; /* Reduce padding to fix height issues */
     max-width: 100% !important;
+  }
+  
+  /* Remove background shapes on mobile that cause excess height */
+  .experience-drawers:before,
+  .experience-drawers:after {
+    display: none !important;
   }
   
   /* Drawer adjustments for mobile */
   .experience-drawer {
     padding: 15px !important;
-    margin-bottom: calc(-1 * var(--drawer-overlap) / 2) !important; /* Less overlap on mobile */
+    margin-bottom: 10px !important; /* Fixed spacing between drawers */
     border-radius: 10px !important;
     height: auto !important;
     min-height: auto !important;
@@ -493,6 +504,7 @@
     margin-right: auto !important;
     border: 1px solid rgba(0,0,0,0.1) !important; /* Add subtle border */
     border-left-width: 5px !important; /* Keep the left border thicker */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05) !important; /* Lighter shadow */
   }
   
   /* On mobile, don't show on hover */
