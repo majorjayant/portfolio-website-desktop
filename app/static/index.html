@@ -6,6 +6,31 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Jayant Arora</title>
     
+    <!-- Domain detection script to set correct base URLs -->
+    <script>
+        // Determine the current environment and set appropriate base URLs
+        window.siteConfig = window.siteConfig || {};
+        const currentDomain = window.location.hostname;
+        
+        // Set base URLs based on domain
+        if (currentDomain === 'jayant.tech' || currentDomain.includes('cloudfront.net')) {
+            // Production/CloudFront domain
+            window.baseUrl = window.location.origin;
+            window.staticUrl = window.location.origin + '/static';
+            window.apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging';
+        } else {
+            // Amplify domain or local development
+            window.baseUrl = window.location.origin;
+            window.staticUrl = window.location.origin;
+            window.apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging';
+        }
+        
+        console.log('Domain detected:', currentDomain);
+        console.log('Base URL set to:', window.baseUrl);
+        console.log('Static URL set to:', window.staticUrl);
+        console.log('API URL set to:', window.apiUrl);
+    </script>
+    
     <!-- Critical inline styles for overrides - will ensure immediate effect -->
     <style>
         /* Fix for description toggle */
@@ -78,10 +103,10 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Core Styles -->
-    <link rel="stylesheet" href="/css/style.css?v=<?php echo time(); ?>">
+    <!-- Core Styles - Use dynamic URLs -->
+    <script>document.write('<link rel="stylesheet" href="' + window.staticUrl + '/css/style.css?v=' + new Date().getTime() + '">');</script>
     <!-- Consolidated experience section styles -->
-    <link rel="stylesheet" href="/css/experience-section-combined.css?v=<?php echo time(); ?>">
+    <script>document.write('<link rel="stylesheet" href="' + window.staticUrl + '/css/experience-section-combined.css?v=' + new Date().getTime() + '">');</script>
     
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -953,43 +978,46 @@
     <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
 
-    <!-- JavaScript -->
+    <!-- JavaScript - using dynamic URLs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="/js/script.js"></script>
-    <script src="/js/main.js"></script>
+    <script>document.write('<script src="' + window.staticUrl + '/js/script.js?v=' + new Date().getTime() + '"><\/script>');</script>
+    <script>document.write('<script src="' + window.staticUrl + '/js/main.js?v=' + new Date().getTime() + '"><\/script>');</script>
     
 <script>
         // Function to load footer
         function loadFooter() {
-            fetch('/html/_footer.html') // Path relative to the static root
+            const footerPath = window.staticUrl + '/html/_footer.html';
+            console.log('Loading footer from:', footerPath);
+            
+            fetch(footerPath)
             .then(response => {
                 if (!response.ok) {
-                        throw new Error('Footer not found');
-                    }
-                    return response.text();
-                })
-                .then(html => {
-                    const placeholder = document.getElementById('footer-placeholder');
-                    if (placeholder) {
-                        placeholder.innerHTML = html;
-                        // Re-run any script needed for the footer content, e.g., update footer logo
-                        const config = window.siteConfig; // Assuming siteConfig is global
-                        if (config && config.image_logo_url) {
-                            const footerLogo = placeholder.querySelector('.footer-logo img');
-                            if (footerLogo) {
-                                footerLogo.src = config.image_logo_url;
-                                footerLogo.alt = config.about_title || 'Logo';
-                            }
+                    throw new Error('Footer not found');
+                }
+                return response.text();
+            })
+            .then(html => {
+                const placeholder = document.getElementById('footer-placeholder');
+                if (placeholder) {
+                    placeholder.innerHTML = html;
+                    // Re-run any script needed for the footer content, e.g., update footer logo
+                    const config = window.siteConfig; // Assuming siteConfig is global
+                    if (config && config.image_logo_url) {
+                        const footerLogo = placeholder.querySelector('.footer-logo img');
+                        if (footerLogo) {
+                            footerLogo.src = config.image_logo_url;
+                            footerLogo.alt = config.about_title || 'Logo';
                         }
                     }
-                })
-                .catch(error => {
-                    console.error('Error loading footer:', error);
-                    const placeholder = document.getElementById('footer-placeholder');
-                    if (placeholder) {
-                        placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer content.</p>';
-                    }
-                });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading footer:', error);
+                const placeholder = document.getElementById('footer-placeholder');
+                if (placeholder) {
+                    placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer content.</p>';
+                }
+            });
         }
 
         // Global variables for modal elements
@@ -1254,8 +1282,9 @@
         function fetchLatestAboutContent() {
             console.log('Checking for latest content from API');
             
-            // For AWS API Gateway endpoint
-            const apiUrl = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+            // For AWS API Gateway endpoint - use the dynamic API URL
+            const apiUrl = window.apiUrl + '/website-portfolio?type=site_config';
+            console.log('Using API URL:', apiUrl);
             
             fetch(apiUrl)
                 .then(response => {
@@ -1280,8 +1309,9 @@
 
         // Function to fetch data from local JSON files
         function fetchDataFromLocalJson() {
-            const baseUrl = window.location.origin;
-            const localJsonUrl = `${baseUrl}/static/data/site_config.json`;
+            // Use the dynamic static URL for local JSON
+            const localJsonUrl = `${window.staticUrl}/data/site_config.json`;
+            console.log('Attempting to load from local JSON:', localJsonUrl);
             
             fetch(localJsonUrl)
                 .then(response => {
