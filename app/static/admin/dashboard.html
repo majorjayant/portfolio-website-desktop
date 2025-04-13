@@ -801,10 +801,10 @@
             const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?action=update_site_config';
             
             // Get the token from storage
-            const token = localStorage.getItem('admin_token');
-            
+                const token = localStorage.getItem('admin_token');
+                
             // Check if token exists
-            if (!token) {
+                if (!token) {
                 console.error('No admin token found for authorization');
                 document.getElementById('loading-overlay').classList.add('hidden');
                 
@@ -813,13 +813,13 @@
                 errorMsg.innerHTML = '<strong>Error:</strong> Authorization required. Please log in again.';
                 siteConfigForm.prepend(errorMsg);
                 
-                setTimeout(() => {
+                    setTimeout(() => {
                     logout();
                 }, 2000);
+                    
+                    return;
+                }
                 
-                return;
-            }
-            
             // Prepare the data to send
             const payload = {
                 site_config: siteConfigData,
@@ -830,12 +830,12 @@
             console.log('Sending payload:', payload);
             
             fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
+                    method: 'POST',
+                    headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
                 body: JSON.stringify(payload),
                 mode: 'cors'
             })
@@ -848,18 +848,18 @@
             })
             .then(data => {
                 console.log('Save successful:', data);
-                
+
                 // Hide loading overlay
                 document.getElementById('loading-overlay').classList.add('hidden');
-                
-                // Show success message
+                    
+                    // Show success message
                 const successMsg = document.createElement('div');
                 successMsg.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4';
                 successMsg.innerHTML = '<strong>Success:</strong> Changes saved successfully.';
                 siteConfigForm.prepend(successMsg);
                 
                 // Remove message after a few seconds
-                setTimeout(() => {
+                    setTimeout(() => {
                     successMsg.remove();
                 }, 5000);
             })

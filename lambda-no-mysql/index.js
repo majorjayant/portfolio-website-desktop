@@ -419,6 +419,11 @@ async function getEducation() {
       'SELECT * FROM education WHERE is_deleted = 0 ORDER BY from_date DESC'
     );
     console.log(`Retrieved ${rows.length} non-deleted education entries from the database`);
+    
+    // Debug - log the first row to see what fields are actually present
+    if (rows.length > 0) {
+      console.log('First raw education DB row:', JSON.stringify(rows[0]));
+    }
 
     // Format the data for response
     const educationData = rows.map(row => ({
@@ -431,6 +436,12 @@ async function getEducation() {
       is_current: row.is_current === 1, // Convert MySQL tinyint to boolean
       // is_deleted is filtered by query, not included in response
     }));
+    
+    // Debug - log the first mapped education object
+    if (educationData.length > 0) {
+      console.log('First mapped education object:', JSON.stringify(educationData[0]));
+    }
+    
     return educationData;
   } catch (error) {
     console.error('Error retrieving education from database:', error);
