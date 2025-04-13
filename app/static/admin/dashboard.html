@@ -320,6 +320,146 @@
                                         console.log('DOM loaded, trying to initialize rich text editors');
                                         setTimeout(initRichTextToolbars, 500);
                                     });
+                                    
+                                    // Add the missing initRichTextToolbars function
+                                    function initRichTextToolbars() {
+                                        console.log('Initializing rich text toolbars');
+                                        
+                                        // Find all textarea elements that need rich text editing
+                                        const richTextAreas = document.querySelectorAll('textarea[data-rich-text="true"]');
+                                        
+                                        // If no textareas with rich text attribute are found, look for description fields
+                                        if (richTextAreas.length === 0) {
+                                            // Add toolbar to work experience description fields
+                                            const workExDescriptions = document.querySelectorAll('.workex-description');
+                                            workExDescriptions.forEach(textarea => {
+                                                createToolbarForElement(textarea);
+                                            });
+                                            
+                                            // Add toolbar to about description field if it exists
+                                            const aboutDescription = document.getElementById('about_description');
+                                            if (aboutDescription) {
+                                                createToolbarForElement(aboutDescription);
+                                            }
+                                        } else {
+                                            // Add toolbar to explicitly marked rich text areas
+                                            richTextAreas.forEach(textarea => {
+                                                createToolbarForElement(textarea);
+                                            });
+                                        }
+                                    }
+                                    
+                                    // Helper function to create a toolbar for a specific element
+                                    function createToolbarForElement(element) {
+                                        // Skip if element already has a toolbar
+                                        if (element.parentNode.querySelector('.rich-text-toolbar')) {
+                                            return;
+                                        }
+                                        
+                                        // Create toolbar container
+                                        const toolbar = document.createElement('div');
+                                        toolbar.className = 'rich-text-toolbar';
+                                        toolbar.dataset.for = element.id;
+                                        
+                                        // Define buttons for the toolbar
+                                        const buttons = [
+                                            { icon: '<b>B</b>', title: 'Bold', action: 'b' },
+                                            { icon: '<i>I</i>', title: 'Italic', action: 'i' },
+                                            { icon: '<u>U</u>', title: 'Underline', action: 'u' },
+                                            { icon: 'P', title: 'Paragraph', action: 'p' },
+                                            { icon: 'H1', title: 'Heading 1', action: 'h1' },
+                                            { icon: 'H2', title: 'Heading 2', action: 'h2' },
+                                            { icon: 'BR', title: 'Line Break', action: 'br' },
+                                            { icon: 'Link', title: 'Insert Link', action: 'link' },
+                                            { icon: 'List', title: 'Bulleted List', action: 'ul' }
+                                        ];
+                                        
+                                        // Create buttons
+                                        buttons.forEach(btn => {
+                                            const button = document.createElement('button');
+                                            button.type = 'button';
+                                            button.innerHTML = btn.icon;
+                                            button.title = btn.title;
+                                            button.className = 'tooltip';
+                                            button.addEventListener('click', function() {
+                                                insertTag(element.id, btn.action);
+                                            });
+                                            toolbar.appendChild(button);
+                                        });
+                                        
+                                        // Insert toolbar before the element
+                                        element.parentNode.insertBefore(toolbar, element);
+                                    }
+                                    
+                                    // Function to insert HTML tags in textareas
+                                    function insertTag(elementId, tag) {
+                                        const textarea = document.getElementById(elementId);
+                                        if (!textarea) return;
+                                        
+                                        const start = textarea.selectionStart;
+                                        const end = textarea.selectionEnd;
+                                        const selectedText = textarea.value.substring(start, end);
+                                        let insertedText = '';
+                                        
+                                        // Handle different tag types
+                                        switch(tag) {
+                                            case 'b':
+                                                insertedText = `<b>${selectedText}</b>`;
+                                                break;
+                                            case 'i':
+                                                insertedText = `<i>${selectedText}</i>`;
+                                                break;
+                                            case 'u':
+                                                insertedText = `<u>${selectedText}</u>`;
+                                                break;
+                                            case 'p':
+                                                insertedText = `<p>${selectedText}</p>`;
+                                                break;
+                                            case 'h1':
+                                                insertedText = `<h1>${selectedText}</h1>`;
+                                                break;
+                                            case 'h2':
+                                                insertedText = `<h2>${selectedText}</h2>`;
+                                                break;
+                                            case 'br':
+                                                insertedText = `${selectedText}<br>`;
+                                                break;
+                                            case 'link':
+                                                const url = prompt('Enter URL:', 'https://');
+                                                if (url) {
+                                                    insertedText = `<a href="${url}" target="_blank">${selectedText || url}</a>`;
+                                                }
+                                                break;
+                                            case 'ul':
+                                                if (selectedText) {
+                                                    // If there's already a line break in the selection, create list items
+                                                    if (selectedText.includes('\n')) {
+                                                        const items = selectedText.split('\n').filter(item => item.trim() !== '');
+                                                        const listItems = items.map(item => `  <li>${item.trim()}</li>`).join('\n');
+                                                        insertedText = `<ul>\n${listItems}\n</ul>`;
+                                                    } else {
+                                                        insertedText = `<ul>\n  <li>${selectedText}</li>\n</ul>`;
+                                                    }
+                                                } else {
+                                                    insertedText = `<ul>\n  <li>List item</li>\n</ul>`;
+                                                }
+                                                break;
+                                            default:
+                                                return;
+                                        }
+                                        
+                                        // Insert the new text
+                                        textarea.focus();
+                                        textarea.value = textarea.value.substring(0, start) + insertedText + textarea.value.substring(end);
+                                        
+                                        // Set cursor position after insertion
+                                        const newCursorPos = start + insertedText.length;
+                                        textarea.setSelectionRange(newCursorPos, newCursorPos);
+                                        
+                                        // Trigger change event to ensure form state updates
+                                        const event = new Event('change', { bubbles: true });
+                                        textarea.dispatchEvent(event);
+                                    }
                                 </script>
                             </div>
                         </div>

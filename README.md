@@ -1,6 +1,6 @@
 # Portfolio Website
 
-A streamlined portfolio website using AWS Amplify for hosting and AWS Lambda with MySQL for backend storage.
+A modern, responsive portfolio website with an admin dashboard for content management.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -10,290 +10,240 @@ A streamlined portfolio website using AWS Amplify for hosting and AWS Lambda wit
 - [Frontend Components](#frontend-components)
 - [CSS Organization](#css-organization)
 - [Developer Guide](#developer-guide)
+- [Recent Fixes](#recent-fixes)
 
 ## Overview
 
-### Recent Updates & Improvements
+This portfolio website features a clean, modern design with a responsive layout that works on all devices. It includes an admin dashboard for easy content management without requiring code changes.
 
-The codebase has undergone several important improvements to enhance maintainability and reliability:
-
-1. **Centralized Configuration**: 
-   - Removed hardcoded URLs in favor of environment variables 
-   - Created centralized asset handling in JavaScript
-   - Updated `environment-config.json` with standardized structure
-
-2. **Build Process Enhancements**:
-   - Improved `amplify.yml` to handle Python build environment properly
-   - Enhanced fallback mechanism in case primary build fails
-   - Added proper caching configuration for static assets
-
-3. **Cleaned Codebase**:
-   - Removed unnecessary test files and empty CSS files
-   - Updated package.json scripts to clarify deployment approach
-   - Removed Netlify-specific configuration
-
-4. **Better Error Handling**:
-   - Added frontend fallbacks for failed API requests
-   - Improved image loading with fallback paths
-   - Enhanced error notifications for user experience
-
-5. **Work Experience Section Improvements**:
-   - Fixed issues with description and skills visibility in work experience cards
-   - Improved styling of section title and positioning
-   - Enhanced spacing between sections for better visual hierarchy
-   - Ensured proper display of list items in job descriptions
-   - Optimized skills extraction and display
+Recent updates:
+- Centralized configuration for easy maintenance 
+- Enhanced build process for better performance
+- Cleaner codebase with improved organization
+- Better error handling and logging
+- Improved Work Experience section with enhanced visual effects
+- Added Education section with admin dashboard management
+- Fixed rich text editor functionality in the admin dashboard
 
 ## Architecture
 
-### Key Components
+### Components
 
-- **Frontend**: Static HTML/CSS/JS files in the `app/static` directory.
-- **Admin Dashboard**: Located at `app/static/admin/dashboard.html` for managing site content.
-- **Backend**: AWS Lambda function in the `lambda-no-mysql` directory (using MySQL for storage via RDS). Implements soft delete for work experience items using an `is_deleted` flag in the database.
-- **Database**: MySQL database on AWS RDS (configuration in the Lambda function and `.env`). Assumes `workex` table includes `is_deleted` (TINYINT DEFAULT 0), `created_date` (DATETIME/TIMESTAMP), `updated_date` (DATETIME/TIMESTAMP) columns.
+#### Frontend
+- Located in `app/static`
+- HTML, CSS, and JavaScript
+- Admin Dashboard at `app/static/admin/dashboard.html`
+
+#### Backend
+- AWS Lambda function in `lambda-no-mysql`
+- API Gateway endpoints for data retrieval and updates
+
+#### Database
+- MySQL database on AWS RDS
+- Tables for site configuration, work experience, and education
 
 ### Key Files
-
-- `lambda-no-mysql/index.js`: Lambda function handling API requests for getting/updating site configuration and work experience (implements soft delete for work experience).
-- `lambda-payload-delete.zip`: The latest deployment package for the Lambda function (created in the project root).
-- `app/static/html/index.html` or `app/static/index.html`: Main portfolio website page.
-- `app/static/js/main.js`: Frontend JavaScript for the portfolio page, including loading config and displaying data (only shows non-deleted work experience).
-- `app/static/admin/dashboard.html`: HTML and JavaScript for the Admin Dashboard interface.
-- `app/static/admin/login.html`: Admin login page.
-
-### Admin Dashboard Structure
-
-- `/app/static/admin/dashboard.html` - The main admin dashboard file (single source of truth)
-- `/app/admin/index.html` - Redirect file pointing to the main dashboard
-- `/app/admin/dashboard/index.html` - Redirect file for clean URL structure
-
-### API Communication
-
-The application communicates with the API endpoint at:
-`https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio`
-
-This API handles:
-- Fetching site configuration
-- Updating site configuration
-- Managing work experience data
+- `lambda-no-mysql/index.js`: Handles API requests
+- `app/static/js/main.js`: Frontend JavaScript
+- `app/static/admin/dashboard.html`: Admin dashboard
 
 ## Deployment
 
-1. Set up AWS RDS MySQL database. Ensure the `workex` table has `is_deleted` (TINYINT DEFAULT 0), `created_date`, and `updated_date` columns. Ensure `site_config` table exists.
-2. Configure environment variables for the Lambda function (e.g., DB host, user, password, database name).
-3. Deploy the latest Lambda deployment package (`lambda-payload-delete.zip` located in the project root) to AWS Lambda and configure API Gateway trigger.
-4. Deploy the frontend static files (contents of `app/static/`) to AWS Amplify or another static hosting provider.
-5. Ensure the API endpoint URL in `app/static/admin/dashboard.html` and `app/static/js/main.js` points to your deployed API Gateway stage URL.
+1. Set up AWS RDS MySQL database
+   - Create a database named `website`
+   - Configure security groups for Lambda access
+
+2. Configure environment variables for Lambda function
+   - DB_HOST: Database hostname
+   - DB_USER: Database username
+   - DB_PASSWORD: Database password
+   - DB_NAME: Database name (default: website)
+   - DB_PORT: Database port (default: 3306)
+
+3. Deploy Lambda package
+   - Create a zip of the `lambda-no-mysql/dist` directory
+   - Upload to AWS Lambda
+   - Configure API Gateway triggers
+
+4. Update API endpoint
+   - Set the API endpoint in frontend files (main.js and dashboard.html)
 
 ## Admin Dashboard
 
-The Admin Dashboard provides a user-friendly interface to update various sections of your website without needing to edit the code directly.
+The Admin Dashboard provides a user-friendly interface to manage website content without needing to edit code.
 
-### Key Features
+### Features
 
-1. **Authentication System** - Handles login/logout and protects admin content
-2. **Site Configuration** - For updating website title, description, images, etc.
-3. **Work Experience Management** - For adding/editing/deleting work experience entries
-4. **Rich Text Formatting** - Buttons for adding HTML formatting to text fields (B/I/U/BR)
-5. **Responsive Design** - Works on both desktop and mobile devices
-
-### Authentication
-
-The dashboard uses localStorage to store and validate the `admin_token`.
-If not authenticated, users will see a login prompt.
+- **Authentication System**: Secure login required to access dashboard
+- **Site Configuration**: Manage basic site information
+  - Site title
+  - Header info
+  - Contact information
+  - Social media links
+- **Work Experience Management**: Add, edit, and delete work experiences
+  - Title, company, dates
+  - Description with rich text formatting
+  - Technology tags
+  - Custom ordering
+- **Education Management**: Add, edit, and delete education entries
+  - Institution, degree, dates
+  - Description with rich text formatting
+  - Custom ordering
+- **Rich Text Formatting**: Format text in description fields
+  - Bold, italic, underline formatting
+  - Headings (H1, H2)
+  - Paragraph tags
+  - Bulleted lists
+  - Links
+  - Line breaks
+- **Responsive Design**: Fully functional on mobile devices
 
 ### URL Structure
+- Admin dashboard: `/admin/dashboard.html`
+- Login: `/admin/login.html`
 
-- `/admin/` - Redirects to the main dashboard
-- `/admin/dashboard/` - Alternate URL that also redirects to the main dashboard
-- `/static/admin/dashboard.html` - Direct URL to the dashboard (used by the redirects)
+### Dashboard Sections
 
-### Dashboard Sections and Fields
+#### Site Configuration
+- Website title and subtitle
+- About section description
+- Image URLs (logo, banner, favicon, profile)
+- Gallery photos and alt text
 
-The dashboard is divided into several sections:
+#### Work Experience Management
+- Add, edit, or remove work experience entries
+- Fields include:
+  - Job title
+  - Company name
+  - Location
+  - Date range
+  - Current job flag
+  - Description with rich text formatting
 
-1. **General Website Information:**
-   * `Site Title`: The main title displayed, often in the browser tab and potentially on the page. Supports basic HTML tags.
-   * `Subtitle`: A secondary title or tagline. Supports basic HTML tags.
-   * `Description`: The main descriptive text for the 'About' section. Supports basic HTML tags and line breaks.
-
-2. **Website Images:**
-   * `Favicon URL`: URL for the small icon shown in the browser tab.
-   * `Logo URL`: URL for the main site logo, typically displayed in the header/navbar.
-   * `Banner URL`: URL for the main banner image displayed on the homepage.
-   * `Mobile Banner URL`: URL for an alternative banner image optimized for mobile devices.
-   * `Profile Image URL`: URL for the main profile picture used in the 'About' section.
-
-3. **Gallery Photos:**
-   * `Photo 1-4 URL`: URLs for images displayed in the gallery section.
-   * `Photo 1-4 Alt Text`: Descriptive alternative text for each gallery image.
-
-4. **Work Experience:**
-   * This section allows you to manage your professional experience timeline.
-   * Items are loaded dynamically from the database when the page loads.
-   * **Fields per Item:**
-     * `Job Title*`: Your role or position (Required).
-     * `Company*`: The name of the company (Required).
-     * `Location`: The city/state or general location of the job.
-     * `From Date`: The start date of the position (Year and Month).
-     * `To Date`: The end date of the position.
-     * `Current Job`: Checkbox to indicate if this is your current position.
-     * `Description`: A brief description of your responsibilities and achievements.
-
-### Operations
-
-1. **Accessing the Dashboard**: Navigate to `/admin/login` and enter credentials.
-
-2. **Loading Data**: The dashboard automatically fetches the current site configuration and work experience data from the Lambda backend on load.
-
-3. **Saving Changes**:
-   * After making modifications, click "Save Changes".
-   * A loading overlay appears; success/error messages are displayed.
-
-4. **Deleting Work Experience Items (Soft Delete)**:
-   * Click the "Delete" button next to a work experience item to mark it for deletion.
-   * This sets the `is_deleted` flag to 1, which prevents it from displaying on the live site.
-
-5. **Refreshing Data**:
-   * Click "Refresh Data" to reload configuration and non-deleted work experience items.
-
-6. **Logout**:
-   * Click the "Logout" button to clear the authentication token and return to the login page.
+#### Education Management
+- Add, edit, or remove education entries
+- Fields include:
+  - Degree name
+  - Institution name
+  - Location
+  - Date range
+  - Currently enrolled flag
 
 ## Frontend Components
 
 ### Page Structure
-- **Banner Section**: Full-width banner with parallax effect
-- **About Section**: Profile image and bio
-- **Experience Section**: Interactive work experience drawers
-- **Education Section**: Academic history
-- **Certifications Section**: Professional certifications
+- Header with navigation
+- Hero section
+- About section
+- Experience section with interactive timeline
+- Education section with card layout
+- Projects section
+- Contact form
+- Footer with links and information
 
 ### Data Flow
-1. Initial page load triggers fetch from AWS Lambda API
-2. `fetchLatestAboutContent()` loads site configuration from the API
-3. `updatePageWithConfig()` populates page content dynamically
-4. Work experiences are loaded and displayed as collapsible drawers
-5. Carousel images load from configuration URLs
-6. Interactive elements initialize (parallax, carousel, drawer toggles)
+- Content loaded from API on page load
+- Fallbacks to local JSON files if API unavailable
+- Dynamic rendering of work experience and education sections
 
 ### User Interaction
-- Scroll-based transitions (banner to about section)
-- Hover/click on experience drawers to expand
-- Photo carousel with 3D rotation effect
-- Responsive navigation that adapts to scroll position
+- Interactive experience timeline that responds to mouse movements
+- Smooth scrolling navigation
+- Mobile-friendly navigation and content
 
-### Experience Section Structure
-The experience drawers follow this HTML structure:
+#### Experience Section
 ```html
-<div class="experience-drawer color-1">
-  <div class="drawer-header">
-    <div class="drawer-date">November 2023 - Present</div>
-    <div class="drawer-title-company">
-      <h3>Product Owner | Product Manager</h3>
-      <p>AtliQ Technologies Pvt. Ltd.</p>
-    </div>
-    <div class="drawer-location">Vadodara, India</div>
-  </div>
-  <div class="drawer-description">
-    <div class="description-content">
-      <!-- Description content -->
-    </div>
-    <div class="skills-container">
-      <span class="skill-tag">Product Management</span>
-      <span class="skill-tag">Agile</span>
-      <!-- More skill tags -->
-    </div>
-  </div>
+<div class="experience-drawers">
+  <!-- Dynamically populated with work experience entries -->
+</div>
+```
+
+#### Education Section
+```html
+<div class="education-container">
+  <!-- Dynamically populated with education entries -->
 </div>
 ```
 
 ## CSS Organization
 
 ### File Structure
-1. **style.css** - Main stylesheet for the entire website
-   - Contains general styles for the whole site
-   - Does not contain experience section styles
+- `app/static/css/style.css`: Main styles
+- `app/static/css/mobile.css`: Mobile-specific styles
+- `app/static/css/experience-section-combined.css`: Experience section styles
+- `app/static/css/admin-dashboard.css`: Admin dashboard styles
 
-2. **experience-section-combined.css** - Consolidated experience section styles
-   - Contains ALL styles related to the experience section
-   - Includes responsive behavior for all screen sizes
-   - Uses consistent naming conventions and organization
-
-### CSS Methodology
-- **Component-Based**: Each section has isolated styles
-- **Mobile-First**: Base styles with responsive overrides
-- **Namespaced Classes**: Prevents style conflicts (e.g., `drawer-title`, `drawer-date`)
-- **CSS Variables**: Used for theme colors and spacing
+### Methodology
+- Mobile-first responsive design
+- CSS variables for consistent theming
+- BEM-inspired naming convention
+- Minimized dependencies on external libraries
 
 ### Theme Colors
-- Primary colors: Brown palette (#6c584c, #a38566, #d1b38a, #e9dac1)
-- Each drawer has a different color class (color-1, color-2, etc.)
-- Text colors adapt to background (white on dark, dark on light)
+- Primary: #333333
+- Accent: #d1b38a
+- Background Light: #f9f9f9
+- Text Light: #ffffff
+- Text Dark: #333333
 
 ### Mobile Responsiveness
-- Breakpoints at 768px and 480px
-- Mobile adaptations:
-  - Centered elements with adjusted spacing
-  - Touch-friendly tap targets
-  - Stacked layout for previously horizontal elements
-  - Adjusted font sizes and padding
+- Fluid typography (responsive font sizes)
+- Flexbox and CSS Grid for layouts
+- Media queries for breakpoints
+- Touch-friendly interactive elements
 
 ## Developer Guide
 
-### Adding New Fields
+### Adding New Fields/Sections
 
-This section outlines the steps required to add a new manageable field to the website, controllable via the Admin Dashboard.
+#### Database Changes
+1. Add new columns to the appropriate table
+2. Ensure the Lambda function references these columns
 
-**Scenario:** Add a new text field called `portfolio_highlight` to the `site_config`.
+#### Lambda Function Updates
+1. Update the relevant `get` function to include new fields
+2. Update the corresponding `save` function to handle the new fields
+3. Test the API with sample data
 
-1. **Database Schema:**
-   * Add the new column `portfolio_highlight` to your `site_config` table in the MySQL database.
-   * Set a sensible default if needed (e.g., `NULL` or `''`).
+#### Admin Dashboard Updates
+1. Add form fields for the new data in `dashboard.html`
+2. Update the JavaScript functions to handle the new fields
+3. Test the form submission and data retrieval
 
-2. **Lambda Function (`lambda-no-mysql/index.js`):**
-   * **`getSiteConfig` Function:**
-     * Ensure the `SELECT` query retrieves the new column.
-     * Update the logic that builds the `configObject` to include the new field.
-   * **`saveSiteConfig` Function:**
-     * Add the new field to the list of fields being updated/inserted.
-     * Modify the `INSERT` and `UPDATE` statements.
+#### Frontend Display Updates
+1. Update the HTML structure to accommodate new data
+2. Modify the JavaScript to display the new fields
+3. Add appropriate styling
 
-3. **Admin Dashboard:**
-   * Add a new form field in `app/static/admin/dashboard.html`:
-     ```html
-     <div class="form-group">
-       <label for="portfolio_highlight">Portfolio Highlight:</label>
-       <input type="text" id="portfolio_highlight" name="portfolio_highlight" class="form-control">
-     </div>
-     ```
-   * Update the JavaScript to handle the new field:
-     * Add it to `populateForm` to ensure it's populated when data is loaded.
-     * Add it to the data collection in the save function.
+### Keeping the Code Organized
 
-4. **Frontend Display:**
-   * Modify the frontend HTML (`app/static/index.html`) to include a placeholder for the new field.
-   * Update `main.js` to populate this field from the site config.
+- Follow existing naming conventions
+- Comment code sections for clarity
+- Use consistent indentation and formatting
+- Keep functions focused on a single responsibility
+- Test changes thoroughly before deployment
 
-### Adding New Sections
+### Bug Fixes
 
-1. Create HTML structure in index.html
-2. Add corresponding styles in style.css
-3. Update admin dashboard to include form fields
-4. Add API handlers for the new content type
+#### Rich Text Editor
+- Fixed missing `initRichTextToolbars` function which caused JavaScript errors
+- Implemented proper toolbar creation for text fields
+- Added support for various formatting options (bold, italic, headings, etc.)
 
-### Updating Styling
+## Recent Fixes
 
-1. Edit general styles in style.css
-2. For experience section, edit experience-section-combined.css
-3. Keep the same naming conventions and organization
-4. Test on multiple devices and screen sizes
+### Rich Text Editor Implementation
 
-### Best Practices
+The admin dashboard now includes a fully functional rich text editor for description fields. This feature allows:
 
-1. Keep CSS files under 1000 lines each
-2. Document major changes in comments
-3. Use consistent naming conventions
-4. Maintain mobile responsiveness with each change
-5. Test on major browsers after significant updates
+- Formatting text with HTML tags (bold, italic, underline, etc.)
+- Adding headings, paragraphs, and lists
+- Inserting links and line breaks
+
+The implementation includes:
+
+1. **Rich Text Toolbars**: Automatically appears above text areas marked with `data-rich-text="true"` attribute
+2. **Tag Insertion**: Inserts proper HTML tags at cursor position or around selected text
+3. **Dynamic Initialization**: Toolbars are created when form sections become visible or on page load
+
+This rich text editor makes content management more intuitive, allowing non-technical users to format content without knowing HTML.
