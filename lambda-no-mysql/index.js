@@ -615,6 +615,9 @@ async function getCertifications() {
     // Create a connection to the database
     connection = await getConnection();
     
+    // First, check if table exists and create it if it doesn't
+    await ensureCertificationsTableExists(connection);
+    
     // Query non-deleted certification entries ordered by issued_date (most recent first)
     const [rows] = await connection.execute(
       'SELECT * FROM certifications WHERE is_deleted = 0 ORDER BY issued_date DESC'
