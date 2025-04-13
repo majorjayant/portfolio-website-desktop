@@ -457,121 +457,149 @@
 @media screen and (max-width: 768px) {
   /* Container adjustments */
   .experience-section {
-    padding: 20px 10px !important;
+    padding: 30px 10px !important;
     margin-top: 0 !important;
-    }
+  }
   
   .experience-section .container {
-    width: 90% !important; /* Reduce width to avoid maximized look */
-    max-width: 500px !important; /* Add max-width for better control */
+    width: 95% !important;
+    max-width: 500px !important;
     padding: 0 !important;
-    margin: 0 auto !important; /* Center the container */
+    margin: 0 auto !important;
   }
   
   .experience-section .section-title {
-    font-size: 1.8rem !important; /* Slightly smaller title */
+    font-size: 1.7rem !important;
     margin-left: 0.5rem !important;
-    margin-bottom: 4rem !important;
-    font-weight: 700 !important; /* Keep the bold weight on mobile */
-    color: #7a6b5f !important; /* Keep the same color as desktop */
+    margin-bottom: 2.5rem !important;
+    font-weight: 700 !important;
+    color: #7a6b5f !important;
+    text-align: center !important;
   }
   
- 
+  .experience-section .section-title:after {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 60px !important;
+  }
    
   .experience-drawers {
-    padding-top: 40px !important; /* Restore original padding */
-    padding-bottom: 80px !important; /* Restore original padding */
+    padding-top: 20px !important;
+    padding-bottom: 40px !important;
     max-width: 100% !important;
   }
   
-  /* Restore background shapes on mobile */
+  /* Adjust background shapes on mobile */
   .experience-drawers:before,
   .experience-drawers:after {
-    display: block !important; /* Restore visibility */
-    top: -10px !important;
-    left: -10px !important;
-    right: -10px !important;
-    bottom: -10px !important;
-    border-radius: 14px !important; /* Smaller radius for background */
+    display: block !important;
+    top: -8px !important;
+    left: -8px !important;
+    right: -8px !important;
+    bottom: -8px !important;
+    border-radius: 12px !important;
+    opacity: 0.7 !important;
   }
   
   /* Drawer adjustments for mobile */
   .experience-drawer {
-    padding: 15px !important;
-    margin-bottom: calc(-1 * var(--drawer-overlap) / 2) !important; /* Restore calculated overlap */
+    padding: 10px 15px !important;
+    margin-bottom: 12px !important; /* Reduce spacing between drawers */
     border-radius: 10px !important;
     height: auto !important;
     min-height: auto !important;
-    max-width: 95% !important; /* Add max-width to avoid full width */
+    width: 100% !important;
+    max-width: 100% !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    border: 1px solid rgba(0,0,0,0.1) !important; /* Add subtle border */
-    border-left-width: 5px !important; /* Keep the left border thicker */
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    border-left-width: 5px !important;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1) !important;
   }
   
-  /* Header adjustments - fix alignment and remove extra spacing */
+  /* Header adjustments - compact layout */
   .drawer-header {
     flex-direction: column !important;
-    align-items: center !important;
-    gap: 0 !important; /* Remove gap between elements */
+    align-items: flex-start !important;
+    gap: 4px !important;
     width: 100% !important;
     overflow: visible !important;
-    justify-content: center !important;
+    padding: 5px 0 !important;
   }
   
-  .drawer-date {
-    width: 100% !important;
-    margin-bottom: 0 !important; /* Remove bottom margin */
-    font-size: 0.8rem !important;
-    text-align: center !important;
-    padding-left: 0 !important;
-    justify-content: center !important;
-    padding-top: 10px !important; /* Reduced space at top */
-  }
-  
-  /* Calendar icon for mobile - center it */
-  .drawer-date:before {
-    position: absolute !important;
-    left: calc(50% - 40px) !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-  }
-  
+  /* Job title and company - LEFT ALIGNED for better readability */
   .drawer-title-company {
-    text-align: center !important;
-    align-items: center !important;
+    text-align: left !important;
+    align-items: flex-start !important;
     width: 100% !important;
-    padding: 4px 0 !important; /* Reduced padding */
-    margin: 0 !important; /* Remove margin */
+    padding: 0 !important;
+    margin: 0 !important;
   }
   
   .drawer-title-company h3 {
     font-size: 1.1rem !important;
-    line-height: 1.2 !important; /* Tighter line height */
-    margin-bottom: 2px !important; /* Reduced space between title and company */
+    line-height: 1.3 !important;
+    margin-bottom: 0 !important;
+    text-align: left !important;
+    font-weight: 600 !important;
   }
   
   .drawer-title-company p {
     font-size: 0.85rem !important;
-    line-height: 1.2 !important; /* Tighter line height */
+    line-height: 1.3 !important;
+    text-align: left !important;
+    margin-top: 2px !important;
   }
   
-  /* Fix location for mobile */
+  /* Date with icon - better positioning */
+  .drawer-date {
+    width: auto !important;
+    padding-left: 22px !important;
+    margin: 5px 0 3px 0 !important;
+    font-size: 0.75rem !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    padding-top: 0 !important;
+    color: #666 !important;
+  }
+  
+  /* Calendar icon for mobile */
+  .drawer-date:before {
+    position: absolute !important;
+    left: 0 !important;
+    top: 50% !important;
+    width: 14px !important;
+    height: 14px !important;
+    transform: translateY(-50%) !important;
+  }
+  
+  /* Location styling to match date */
   .drawer-location {
-    width: 100% !important;
-    padding-left: 0 !important;
-    margin-top: 0 !important; /* Remove top margin */
-    margin-bottom: 0 !important; /* Remove bottom margin */
-    text-align: center !important;
-    justify-content: center !important;
-    padding-bottom: 5px !important; /* Reduced space at bottom */
+    width: auto !important;
+    padding-left: 22px !important;
+    margin: 3px 0 5px 0 !important;
+    font-size: 0.75rem !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    padding-bottom: 0 !important;
+    color: #666 !important;
+  }
+  
+  /* Location icon */
+  .drawer-location:before {
+    position: absolute !important;
+    left: 0 !important;
+    top: 50% !important;
+    width: 14px !important;
+    height: 14px !important;
+    transform: translateY(-50%) !important;
   }
   
   /* Description adjustments */
   .drawer-description {
-    margin-top: 12px !important;
-    padding-top: 12px !important;
-    border-top: 1px solid rgba(0,0,0,0.1) !important;
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+    border-top: 1px solid rgba(0,0,0,0.08) !important;
   }
   
   .experience-drawer:hover .drawer-description:not(.experience-drawer.active .drawer-description) {
@@ -585,33 +613,56 @@
   }
   
   .experience-drawer.active .drawer-description {
-    padding: 12px 8px !important; /* Slightly smaller padding */
-    margin-top: 12px !important;
-    background-color: rgba(255,255,255,0.1) !important;
+    padding: 8px 5px !important;
+    margin-top: 8px !important;
+    background-color: rgba(255,255,255,0.5) !important;
     border-radius: 6px !important;
-    font-size: 0.9rem !important; /* Slightly smaller text */
+    font-size: 0.85rem !important;
   }
   
   /* Fix description content on mobile */
+  .description-content {
+    margin-top: 5px !important;
+    line-height: 1.4 !important;
+  }
+  
+  .description-content p {
+    margin-bottom: 8px !important;
+    font-size: 0.85rem !important;
+  }
+  
   .description-content ul {
-    padding-left: 18px !important; /* Slightly smaller padding */
+    padding-left: 18px !important;
+    margin-bottom: 8px !important;
+    margin-top: 0 !important;
   }
   
   .description-content li {
-    margin-bottom: 6px !important;
-    font-size: 0.85rem !important; /* Smaller text for list items */
+    margin-bottom: 5px !important;
+    font-size: 0.8rem !important;
+    line-height: 1.3 !important;
   }
   
-  /* Skill tags */
+  /* Skill tags - more compact */
+  .skills-container {
+    margin-top: 8px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+    justify-content: flex-start !important;
+  }
+  
   .skill-tag {
-    margin-bottom: 0.25rem !important;
-    font-size: 0.65rem !important; /* Smaller tags */
-    padding: 3px 10px !important; /* Smaller padding */
+    margin: 0 !important;
+    font-size: 0.65rem !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+    line-height: 1.2 !important;
   }
   
   .drawer-description .skills-container {
-    justify-content: center !important;
-    padding-top: 10px !important;
+    justify-content: flex-start !important;
+    padding-top: 5px !important;
   }
   
   .experience-drawer.active .drawer-description .skills-container {
@@ -619,48 +670,37 @@
   }
 }
 
-/* Mobile Responsive Adjustments */
-@media (max-width: 767px) {
-  .container {
-    padding: 0 10px !important;
+/* Smallest screens adjustments */
+@media (max-width: 320px) {
+  .experience-section .section-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 2rem !important;
   }
-
-  .drawer-header {
-    flex-direction: column !important;
-    align-items: center !important;
-    padding: 15px 10px !important;
-  }
-
-  .drawer-title-company {
-    width: 100% !important;
-    text-align: center !important;
+  
+  .experience-drawer {
+    padding: 8px 12px !important;
     margin-bottom: 10px !important;
-    padding: 0 !important;
   }
-
+  
+  .drawer-title-company h3 {
+    font-size: 1rem !important;
+  }
+  
+  .drawer-title-company p {
+    font-size: 0.8rem !important;
+  }
+  
   .drawer-date,
   .drawer-location {
-    width: auto !important;
-    text-align: center !important;
-    padding-left: 20px !important; /* Ensure space for icon */
-    margin: 5px 0 !important;
-    justify-content: center !important;
-  }
-
-  .drawer-location:before,
-  .drawer-date:before {
-    position: absolute !important;
-    left: 0 !important;
+    font-size: 0.7rem !important;
+    padding-left: 18px !important;
   }
   
-  .drawer-content {
-    padding: 15px 10px !important;
+  .drawer-date:before,
+  .drawer-location:before {
+    width: 12px !important;
+    height: 12px !important;
   }
-  
-  .experience-section {
-    padding: 30px 0 !important;
-  }
-  
 }
 
 /* ===== SKILL TAGS ===== */

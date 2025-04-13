@@ -448,41 +448,6 @@ function updateWorkExperienceTimeline(workExperienceData) {
         return;
     }
     
-    // Verify our CSS changes are in effect
-    console.log('CSS Debug: Adding verification styles');
-    
-    // Create a temporary style tag to check if our styles are working
-    const debugStyle = document.createElement('style');
-    debugStyle.textContent = `
-        /* Debug verification styles */
-        .debug-verification { 
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 10px;
-            z-index: 9999;
-            font-size: 12px;
-        }
-    `;
-    document.head.appendChild(debugStyle);
-    
-    // Add a debug message on the page
-    const debugElement = document.createElement('div');
-    debugElement.className = 'debug-verification';
-    debugElement.innerText = 'CSS update verified: ' + new Date().toLocaleTimeString();
-    document.body.appendChild(debugElement);
-    
-    // Remove debug element after 5 seconds
-    setTimeout(() => {
-        debugElement.remove();
-        debugStyle.remove();
-    }, 5000);
-    
-    // Fix background color in case CSS is not applied properly
-    experienceSection.style.backgroundColor = '#f8f8f8';
-    
     // Get the container for the drawers
     const drawersContainer = document.querySelector('.experience-drawers');
     if (!drawersContainer) {
@@ -563,7 +528,6 @@ function updateWorkExperienceTimeline(workExperienceData) {
         // Create description container with correct initial styling
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'drawer-description';
-        // No inline styles here - let CSS control the visibility
         
         // Create description content
         const descriptionContent = document.createElement('div');
@@ -614,6 +578,46 @@ function updateWorkExperienceTimeline(workExperienceData) {
             // Append skills directly to description content
             descriptionContent.appendChild(skillsContainer);
         }
+        
+        // Add click event listener for mobile drawer toggle
+        drawer.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Toggle active class for this drawer
+            this.classList.toggle('active');
+            
+            // If this drawer is now active, close all other drawers
+            if (this.classList.contains('active')) {
+                document.querySelectorAll('.experience-drawer').forEach(otherDrawer => {
+                    if (otherDrawer !== this) {
+                        otherDrawer.classList.remove('active');
+                    }
+                });
+                
+                // Add some visual feedback for mobile
+                if (window.innerWidth <= 768) {
+                    this.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                    this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15)';
+                    
+                    // Scroll this drawer into view with a small offset
+                    const drawerRect = this.getBoundingClientRect();
+                    const isPartiallyVisible = (
+                        drawerRect.top < window.innerHeight && 
+                        drawerRect.bottom >= 0
+                    );
+                    
+                    if (!isPartiallyVisible) {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            } else {
+                // Reset styles when closed
+                if (window.innerWidth <= 768) {
+                    this.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                    this.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.1)';
+                }
+            }
+        });
         
         // Add to container
         drawersContainer.appendChild(drawer);
@@ -674,35 +678,6 @@ function updateWorkExperienceTimeline(workExperienceData) {
             
             // Reset z-index
             drawer.style.zIndex = drawers.length - index;
-        });
-        
-        // Toggle active state on click
-        drawer.addEventListener('click', function() {
-            // Check if we're on mobile view
-            const isMobile = window.innerWidth <= 768;
-            
-            // Check if this drawer is currently active
-            const wasActive = drawer.classList.contains('active');
-            
-            // Close all drawers first
-            drawers.forEach((d) => {
-                // Remove active class
-                d.classList.remove('active');
-                // Let CSS handle the visibility - no inline styles
-            });
-            
-            // If this drawer wasn't active before, make it active
-            if (!wasActive) {
-                drawer.classList.add('active');
-                
-                // Scroll the drawer into view for better UX (mobile only)
-                if (isMobile) {
-                    // Small delay to let animations settle
-                    setTimeout(() => {
-                        drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }, 100);
-                }
-            }
         });
     });
     
