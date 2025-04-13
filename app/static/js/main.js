@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load the site configuration
     loadSiteConfig();
 
+    // Load work experience, education, and certifications data
+    fetchWorkExperienceData();
+    fetchEducationData();
+    fetchCertificationsData();
+
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', function() {
@@ -274,6 +279,12 @@ function processConfigData(data) {
     const workExperienceSection = document.getElementById('experience-timeline');
     if (workExperienceSection && data.work_experience) {
         updateWorkExperienceTimeline(data.work_experience);
+    }
+    
+    // Load education data if available
+    const educationSection = document.querySelector('.education-container');
+    if (educationSection && data.education) {
+        updateEducationSection(data.education);
     }
 }
 
@@ -722,4 +733,294 @@ function getMonthName(monthIndex) {
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
     return months[monthIndex];
+}
+
+// Update education section
+function updateEducationSection(educationData) {
+    console.log("Updating education section with data:", educationData);
+    
+    // Get the education container
+    const educationContainer = document.querySelector('.education-container');
+    if (!educationContainer) {
+        console.error('Education container not found');
+        return;
+    }
+    
+    // Clear previous content
+    educationContainer.innerHTML = '';
+    
+    // Check if there is any education data
+    if (!educationData || educationData.length === 0) {
+        const noEducation = document.createElement('p');
+        noEducation.textContent = 'No education data available.';
+        noEducation.style.color = '#333';
+        noEducation.style.textAlign = 'center';
+        educationContainer.appendChild(noEducation);
+        return;
+    }
+    
+    // Sort education by date (most recent first)
+    educationData.sort((a, b) => {
+        const dateA = a.from_date;
+        const dateB = b.from_date;
+        return new Date(dateB) - new Date(dateA);
+    });
+    
+    // Create an item for each education entry
+    educationData.forEach((education) => {
+        // Format dates
+        const fromDate = new Date(education.from_date);
+        const toDate = education.to_date ? new Date(education.to_date) : null;
+        const isCurrent = education.is_current;
+        
+        const dateString = isCurrent 
+            ? `${fromDate.getFullYear()} - Present`
+            : toDate ? `${fromDate.getFullYear()} - ${toDate.getFullYear()}` : `${fromDate.getFullYear()}`;
+        
+        // Create education item
+        const item = document.createElement('div');
+        item.className = 'education-item';
+        
+        // Create icon
+        const icon = document.createElement('div');
+        icon.className = 'edu-icon';
+        icon.innerHTML = '<i class="fas fa-graduation-cap"></i>';
+        
+        // Create content
+        const content = document.createElement('div');
+        content.className = 'edu-content';
+        
+        // Create title (degree)
+        const title = document.createElement('h3');
+        title.textContent = education.edu_title;
+        
+        // Create institution name
+        const institution = document.createElement('h4');
+        institution.textContent = education.edu_name;
+        
+        // Create date
+        const date = document.createElement('p');
+        date.className = 'edu-date';
+        date.textContent = dateString;
+        
+        // Create location if present
+        if (education.location) {
+            const location = document.createElement('p');
+            location.className = 'edu-location';
+            location.textContent = education.location;
+            content.appendChild(location);
+        }
+        
+        // Assemble the education item
+        content.appendChild(title);
+        content.appendChild(institution);
+        content.appendChild(date);
+        
+        item.appendChild(icon);
+        item.appendChild(content);
+        
+        // Add to container
+        educationContainer.appendChild(item);
+    });
+}
+
+// Fetch education data
+async function fetchEducationData() {
+    console.log('Fetching education data');
+    
+    try {
+        // Try to fetch from API first
+        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=education';
+        
+        const response = await fetch(apiEndpoint, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            credentials: 'omit'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API response not OK: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Successfully loaded education data from API:', data);
+        
+        // Update the education section with the fetched data
+        const educationData = data.education || [];
+        updateEducationSection(educationData);
+    } catch (error) {
+        console.error('Error fetching education data from API:', error);
+        console.log('Falling back to local JSON file');
+        
+        // Fallback to local JSON
+        try {
+            const localResponse = await fetch('/data/education.json');
+            const localData = await localResponse.json();
+            console.log('Successfully loaded education data from local JSON:', localData);
+            updateEducationSection(localData);
+        } catch (localError) {
+            console.error('Error loading from local JSON:', localError);
+            // Show empty state
+            updateEducationSection([]);
+        }
+    }
+}
+
+// Update certifications section
+function updateCertificationsSection(certificationsData) {
+    console.log("Updating certifications section with data:", certificationsData);
+    
+    // Get the certifications container
+    const certificationsContainer = document.querySelector('.certifications-container');
+    if (!certificationsContainer) {
+        console.error('Certifications container not found');
+        return;
+    }
+    
+    // Clear previous content
+    certificationsContainer.innerHTML = '';
+    
+    // Check if there is any certification data
+    if (!certificationsData || certificationsData.length === 0) {
+        const noCertifications = document.createElement('p');
+        noCertifications.textContent = 'No certification data available.';
+        noCertifications.style.color = '#333';
+        noCertifications.style.textAlign = 'center';
+        certificationsContainer.appendChild(noCertifications);
+        return;
+    }
+    
+    // Sort certifications by date (most recent first)
+    certificationsData.sort((a, b) => {
+        const dateA = a.issued_date;
+        const dateB = b.issued_date;
+        return new Date(dateB) - new Date(dateA);
+    });
+    
+    // Create an item for each certification entry
+    certificationsData.forEach((certification) => {
+        // Format dates
+        const issuedDate = new Date(certification.issued_date);
+        const expiryDate = certification.expiry_date ? new Date(certification.expiry_date) : null;
+        
+        const issuedDateString = `Issued: ${getMonthName(issuedDate.getMonth())} ${issuedDate.getFullYear()}`;
+        const expiryDateString = expiryDate ? 
+            `Expires: ${getMonthName(expiryDate.getMonth())} ${expiryDate.getFullYear()}` : 
+            'No Expiration';
+        
+        // Create certification item
+        const item = document.createElement('div');
+        item.className = 'cert-item';
+        
+        // Create icon
+        const icon = document.createElement('div');
+        icon.className = 'cert-icon';
+        icon.innerHTML = '<i class="fas fa-certificate"></i>';
+        
+        // Create content
+        const content = document.createElement('div');
+        content.className = 'cert-content';
+        
+        // Create title (certification name)
+        const title = document.createElement('h3');
+        title.textContent = certification.certification_name;
+        
+        // Create issuer name
+        const issuer = document.createElement('h4');
+        issuer.textContent = certification.issuer_name;
+        
+        // Create issued date
+        const issued = document.createElement('p');
+        issued.className = 'cert-date';
+        issued.textContent = issuedDateString;
+        
+        // Create expiry date
+        const expiry = document.createElement('p');
+        expiry.className = 'cert-expiry';
+        expiry.textContent = expiryDateString;
+        
+        // Create credential link if present
+        if (certification.credential_link) {
+            const link = document.createElement('a');
+            link.href = certification.credential_link;
+            link.target = '_blank';
+            link.className = 'cert-link';
+            link.textContent = 'View Certificate';
+            content.appendChild(title);
+            content.appendChild(issuer);
+            content.appendChild(issued);
+            content.appendChild(expiry);
+            content.appendChild(link);
+        } else {
+            content.appendChild(title);
+            content.appendChild(issuer);
+            content.appendChild(issued);
+            content.appendChild(expiry);
+        }
+        
+        // Add description if present
+        if (certification.description) {
+            const description = document.createElement('p');
+            description.className = 'cert-description';
+            description.textContent = certification.description;
+            content.appendChild(description);
+        }
+        
+        // Assemble the certification item
+        item.appendChild(icon);
+        item.appendChild(content);
+        
+        // Add to container
+        certificationsContainer.appendChild(item);
+    });
+}
+
+// Fetch certifications data
+async function fetchCertificationsData() {
+    console.log('Fetching certifications data');
+    
+    try {
+        // Try to fetch from API first
+        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certifications';
+        
+        const response = await fetch(apiEndpoint, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            credentials: 'omit'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API response not OK: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Successfully loaded certifications data from API:', data);
+        
+        // Update the certifications section with the fetched data
+        const certificationsData = data.certifications || [];
+        updateCertificationsSection(certificationsData);
+    } catch (error) {
+        console.error('Error fetching certifications data from API:', error);
+        console.log('Falling back to local JSON file');
+        
+        // Fallback to local JSON
+        try {
+            const localResponse = await fetch('/data/certifications.json');
+            const localData = await localResponse.json();
+            console.log('Successfully loaded certifications data from local JSON:', localData);
+            updateCertificationsSection(localData);
+        } catch (localError) {
+            console.error('Error loading from local JSON:', localError);
+            // Show empty state
+            updateCertificationsSection([]);
+        }
+    }
 }
