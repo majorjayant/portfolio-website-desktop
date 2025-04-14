@@ -785,6 +785,124 @@ async function saveCertifications(certificationsData, connection) {
   }
 }
 
+// Function to ensure contacts table exists
+async function ensureContactsTableExists(connection) {
+  try {
+    // Create contacts table if it doesn't exist
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS contacts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255),
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        message TEXT NOT NULL,
+        is_anonymous BOOLEAN DEFAULT FALSE,
+        ip_address VARCHAR(50),
+        country VARCHAR(100),
+        city VARCHAR(100),
+        region VARCHAR(100),
+        latitude DECIMAL(10,8),
+        longitude DECIMAL(11,8),
+        submission_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+        is_read BOOLEAN DEFAULT FALSE,
+        is_deleted BOOLEAN DEFAULT FALSE
+      )
+    `);
+    console.log('Verified contacts table exists');
+    return true;
+  } catch (error) {
+    console.error('Error ensuring contacts table exists:', error);
+    throw error;
+  }
+}
+
+// Function to save contact form submission
+async function saveContactSubmission(contactData) {
+  let connection;
+  try {
+    // Get a database connection
+    connection = await getConnection();
+    
+    // Ensure the contacts table exists
+    await ensureContactsTableExists(connection);
+    
+    // Extract data from the request
+    const {
+      name, 
+      email, 
+      phone, 
+      message, 
+      isAnonymous,
+      ip_address,
+      location
+    } = contactData;
+    
+    // Prepare location data
+    const country = location?.country || 'Unknown';
+    const city = location?.city || 'Unknown';
+    const region = location?.region || 'Unknown';
+    const latitude = location?.latitude || null;
+    const longitude = location?.longitude || null;
+    
+    // Insert the contact form submission into the database
+    const [result] = await connection.execute(
+      `INSERT INTO contacts 
+      (name, email, phone, message, is_anonymous, ip_address, country, city, region, latitude, longitude, submission_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [
+        isAnonymous ? null : (name || null),
+        isAnonymous ? null : (email || null),
+        isAnonymous ? null : (phone || null),
+        message,
+        isAnonymous ? 1 : 0,
+        ip_address || null,
+        country,
+        city,
+        region,
+        latitude,
+        longitude
+      ]
+    );
+    
+    console.log(`Contact form submission saved. Insert ID: ${result.insertId}`);
+    return {
+      success: true,
+      message: "Contact form submission saved successfully",
+      id: result.insertId
+    };
+  } catch (error) {
+    console.error('Error saving contact form submission:', error);
+    throw error;
+  } finally {
+    if (connection) await connection.end();
+  }
+}
+
+// Function to get all contact form submissions
+async function getContactSubmissions() {
+  let connection;
+  try {
+    // Get a database connection
+    connection = await getConnection();
+    
+    // Ensure the contacts table exists
+    await ensureContactsTableExists(connection);
+    
+    // Query non-deleted contact submissions ordered by submission date (most recent first)
+    const [rows] = await connection.execute(
+      'SELECT * FROM contacts WHERE is_deleted = 0 ORDER BY submission_date DESC'
+    );
+    
+    console.log(`Retrieved ${rows.length} contact form submissions from the database`);
+    return rows;
+  } catch (error) {
+    console.error('Error retrieving contact submissions:', error);
+    return [];
+  } finally {
+    if (connection) await connection.end();
+  }
+}
+
 // Lambda handler
 exports.handler = async (event, context) => {
   // Log detailed information about the request
@@ -796,18 +914,20 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ 
-          message: 'CORS preflight request successful',
-          timestamp: new Date().toISOString()
-        })
+        body: ''
       };
     }
     
-    // Extract and log query parameters
+    // Extract query parameters and path parameters
     const queryParams = event.queryStringParameters || {};
     const pathParams = event.pathParameters || {};
-    let requestType = queryParams.type || '';
-    let actionType = queryParams.action || '';
+    const actionType = queryParams.action || '';
+    const requestType = queryParams.type || '';
+    
+    console.log('Action Type:', actionType);
+    console.log('Request Type:', requestType);
+    
+    // Extract and log query parameters
     const path = event.path || '';
     
     // Check if we have a raw query string that contains the parameters
@@ -977,48 +1097,37 @@ exports.handler = async (event, context) => {
         };
     }
     
-    // Handle POST request to save site configuration
+    // If this is a POST request, process the body
     if (event.httpMethod === 'POST') {
-      console.log('Processing POST request');
-      
-      // Validate body
       if (!event.body) {
-        console.error('Missing request body');
         return {
-          statusCode: 200,
+          statusCode: 400,
           headers,
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             success: false,
-            message: 'Request body is missing',
+            message: 'Missing request body',
             timestamp: new Date().toISOString()
           })
         };
       }
       
-      // Parse body
+      // Parse the request body
       let parsedBody;
       try {
         parsedBody = JSON.parse(event.body);
-        console.log('Parsed body:', JSON.stringify(parsedBody));
-        console.log('Parsed body action:', parsedBody.action);
-      } catch (parseError) {
-        console.error('Error parsing request body:', parseError);
+        console.log('Parsed request body successfully');
+      } catch (error) {
+        console.error('Error parsing request body:', error);
         return {
-          statusCode: 200,
+          statusCode: 400,
           headers,
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             success: false,
             message: 'Invalid JSON in request body',
-            error: parseError.message,
             timestamp: new Date().toISOString()
           })
         };
       }
-      
-      // Check for different request formats and determine action
-      actionType = parsedBody.action || actionType || '';
-      
-      console.log('Action type detected in request:', actionType);
       
       // Handle login action
       if (actionType === 'login') {
@@ -1205,6 +1314,178 @@ exports.handler = async (event, context) => {
             storage: "Using MySQL persistent storage with Lambda Proxy Integration"
           })
         };
+      }
+      
+      // Handle contact form submission
+      if (actionType === 'submit_contact' || requestType === 'contacts' || event.path.includes('/contacts')) {
+        console.log('Processing contact form submission');
+        
+        try {
+          // Save the contact form submission
+          const result = await saveContactSubmission(parsedBody);
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: "Contact submission saved successfully",
+              timestamp: new Date().toISOString(),
+              id: result.id
+            })
+          };
+        } catch (error) {
+          console.error('Error saving contact submission:', error);
+          return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Error saving contact submission',
+              error: error.message,
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+      }
+      
+      // Handle retrieving contact submissions (admin only)
+      if (actionType === 'get_contacts') {
+        console.log('Processing get contacts request');
+        
+        // Check for admin authentication token
+        const authToken = event.headers.Authorization || '';
+        if (!authToken.includes('admin-token-')) {
+          return {
+            statusCode: 401,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Unauthorized. Admin access required.',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        try {
+          // Get all contact submissions
+          const contactSubmissions = await getContactSubmissions();
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              contacts: contactSubmissions,
+              count: contactSubmissions.length,
+              timestamp: new Date().toISOString()
+            })
+          };
+        } catch (error) {
+          console.error('Error retrieving contact submissions:', error);
+          return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Error retrieving contact submissions',
+              error: error.message,
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+      }
+      
+      // Process save_config_all request with contact functionality
+      if (actionType === 'save_config_all') {
+        console.log('Processing save_config_all request');
+        
+        // Extract data from the request body
+        const configData = parsedBody.site_config || {};
+        const workExperienceData = parsedBody.work_experience || [];
+        const educationData = parsedBody.education || [];
+        let connection;
+        
+        try {
+          connection = await getConnection();
+          await connection.beginTransaction();
+          
+          // Ensure tables exist (reusing connection)
+          await ensureEducationTableExists(connection);
+          await ensureCertificationsTableExists(connection);
+          await ensureContactsTableExists(connection);
+          
+          // Save the site configuration data if provided
+          if (Object.keys(configData).length > 0) {
+            console.log('Updating site configuration with:', configData);
+            await saveSiteConfig(configData);
+          }
+          
+          // Save the work experience data if provided
+          if (workExperienceData.length > 0) {
+            console.log('Updating work experience with:', workExperienceData);
+            await saveWorkExperience(workExperienceData);
+          }
+          
+          // Save the education data if provided
+          if (educationData.length > 0) {
+            console.log('Updating education data with:', educationData);
+            await saveEducation(educationData, connection);
+          }
+          
+          // Save the certifications data if provided
+          const certificationsData = parsedBody.certifications || [];
+          if (certificationsData.length > 0) {
+            console.log('Updating certifications data with:', certificationsData);
+            await saveCertifications(certificationsData, connection);
+          }
+          
+          // Commit the transaction
+          await connection.commit();
+          console.log('Transaction committed successfully');
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: "Updates completed successfully",
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.15'
+            })
+          };
+        }
+        catch (error) {
+          // Roll back the transaction if there was an error
+          if (connection) {
+            try {
+              await connection.rollback();
+              console.log('Transaction rolled back due to error');
+            } catch (rollbackError) {
+              console.error('Error rolling back transaction:', rollbackError);
+            }
+          }
+          
+          console.error('Error during update:', error);
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: `Error during update: ${error.message}`,
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.14'
+            })
+          };
+        } finally {
+          if (connection) {
+            try {
+              await connection.end();
+            } catch (connectionError) {
+              console.error('Error closing connection:', connectionError);
+            }
+          }
+        }
       }
       
       // Handle unknown action type

@@ -3,143 +3,543 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact | majorjayant</title>
-    
-    <!-- Critical CSS - Fallback styles in case external CSS fails -->
+    <title>Contact Me - Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Fallback critical styles */
-        header { position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background-color: rgba(0, 0, 0, 0.6); }
-        .logo { display: block; padding: 5px 15px; position: relative; }
-        .logo img { height: 70px; width: auto; display: block; }
-        .nav-links { flex-grow: 1; margin-left: auto; text-align: right; }
-        .nav-links ul { display: flex; list-style: none; justify-content: flex-end; margin: 0; padding: 0; }
-        .nav-links li { margin: 0 1.5rem; }
-        .nav-links a { color: #e6e0d4; text-decoration: none; font-weight: 600; }
-        .banner { margin-top: 80px; width: 100%; overflow: hidden; }
-        .banner-image { width: 100%; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat; }
-        footer { background-color: #0d141a; color: white; padding: 3rem 0 1rem; }
-        .footer-container { display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-        .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
-        .footer-logo img { max-width: 100px; max-height: 60px; }
+        /* Star and Moon animation for banner */
+        #banner-section.contact-banner {
+            height: 500px; /* Increased height */
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #333333 30%, #000000 95%);
+        }
+        
+        #banner-section.contact-banner .banner-image {
+            height: 100%;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+        }
+        
+        /* Moon styles */
+        .moon_outer {
+            position: absolute;
+            left: calc(20px + 20%); /* Moved 20% to the right */
+            top: calc(20px + 30%); /* Moved 30% down */
+            z-index: 2; /* Increased z-index to appear over stars */
+        }
+        
+        .moon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            animation: shine 2s ease-in-out infinite;
+            background-color: rgb(230, 224, 224);
+            box-shadow: 0px 0px 15px 5px rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .details {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: rgba(165, 165, 165, 0.089);
+        }
+        
+        .details.one {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: inset 2px 0 4px rgba(167, 167, 167, 0.685);
+        }
+        
+        .details.two {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: inset -2px 0 4px rgba(167, 167, 167, 0.685);
+        }
+        
+        .details.three {
+            position: absolute;
+            top: 70px;
+            left: 70px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: inset 2px 0 4px rgba(167, 167, 167, 0.685);
+        }
+        
+        .details.four.small {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: inset 2px 0 4px rgba(167, 167, 167, 0.585);
+        }
+        
+        /* New Static Stars Background */
+        .stars-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .stars-container .star {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 4px 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Create 200 static stars with CSS */
+        .stars-container .star:nth-child(1) { width: 3px; height: 3px; top: 10%; left: 5%; animation: twinkle 3s infinite 0.1s; }
+        .stars-container .star:nth-child(2) { width: 2px; height: 2px; top: 20%; left: 15%; animation: twinkle 4s infinite 0.5s; }
+        .stars-container .star:nth-child(3) { width: 4px; height: 4px; top: 30%; left: 25%; animation: twinkle 5s infinite 1s; }
+        .stars-container .star:nth-child(4) { width: 2px; height: 2px; top: 40%; left: 35%; animation: twinkle 3.5s infinite 1.5s; }
+        .stars-container .star:nth-child(5) { width: 3px; height: 3px; top: 50%; left: 45%; animation: twinkle 4.5s infinite 2s; }
+        .stars-container .star:nth-child(6) { width: 2px; height: 2px; top: 60%; left: 55%; animation: twinkle 3s infinite 2.5s; }
+        .stars-container .star:nth-child(7) { width: 4px; height: 4px; top: 70%; left: 65%; animation: twinkle 4s infinite 3s; }
+        .stars-container .star:nth-child(8) { width: 3px; height: 3px; top: 80%; left: 75%; animation: twinkle 5s infinite 3.5s; }
+        .stars-container .star:nth-child(9) { width: 2px; height: 2px; top: 90%; left: 85%; animation: twinkle 3.5s infinite 4s; }
+        .stars-container .star:nth-child(10) { width: 4px; height: 4px; top: 5%; left: 95%; animation: twinkle 4.5s infinite 4.5s; }
+        .stars-container .star:nth-child(11) { width: 3px; height: 3px; top: 15%; left: 10%; animation: twinkle 3s infinite 5s; }
+        .stars-container .star:nth-child(12) { width: 2px; height: 2px; top: 25%; left: 20%; animation: twinkle 4s infinite 5.5s; }
+        .stars-container .star:nth-child(13) { width: 4px; height: 4px; top: 35%; left: 30%; animation: twinkle 5s infinite 0.2s; }
+        .stars-container .star:nth-child(14) { width: 3px; height: 3px; top: 45%; left: 40%; animation: twinkle 3.5s infinite 0.7s; }
+        .stars-container .star:nth-child(15) { width: 2px; height: 2px; top: 55%; left: 50%; animation: twinkle 4.5s infinite 1.2s; }
+        .stars-container .star:nth-child(16) { width: 4px; height: 4px; top: 65%; left: 60%; animation: twinkle 3s infinite 1.7s; }
+        .stars-container .star:nth-child(17) { width: 3px; height: 3px; top: 75%; left: 70%; animation: twinkle 4s infinite 2.2s; }
+        .stars-container .star:nth-child(18) { width: 2px; height: 2px; top: 85%; left: 80%; animation: twinkle 5s infinite 2.7s; }
+        .stars-container .star:nth-child(19) { width: 4px; height: 4px; top: 95%; left: 90%; animation: twinkle 3.5s infinite 3.2s; }
+        .stars-container .star:nth-child(20) { width: 3px; height: 3px; top: 7%; left: 92%; animation: twinkle 4.5s infinite 3.7s; }
+        
+        /* Add 30 more stars with different positions */
+        .stars-container .star:nth-child(21) { width: 3px; height: 3px; top: 12%; left: 8%; animation: twinkle 3s infinite 0.3s; }
+        .stars-container .star:nth-child(22) { width: 2px; height: 2px; top: 22%; left: 18%; animation: twinkle 4s infinite 0.8s; }
+        .stars-container .star:nth-child(23) { width: 4px; height: 4px; top: 32%; left: 28%; animation: twinkle 5s infinite 1.3s; }
+        .stars-container .star:nth-child(24) { width: 2px; height: 2px; top: 42%; left: 38%; animation: twinkle 3.5s infinite 1.8s; }
+        .stars-container .star:nth-child(25) { width: 3px; height: 3px; top: 52%; left: 48%; animation: twinkle 4.5s infinite 2.3s; }
+        .stars-container .star:nth-child(26) { width: 2px; height: 2px; top: 62%; left: 58%; animation: twinkle 3s infinite 2.8s; }
+        .stars-container .star:nth-child(27) { width: 4px; height: 4px; top: 72%; left: 68%; animation: twinkle 4s infinite 3.3s; }
+        .stars-container .star:nth-child(28) { width: 3px; height: 3px; top: 82%; left: 78%; animation: twinkle 5s infinite 3.8s; }
+        .stars-container .star:nth-child(29) { width: 2px; height: 2px; top: 92%; left: 88%; animation: twinkle 3.5s infinite 4.3s; }
+        .stars-container .star:nth-child(30) { width: 4px; height: 4px; top: 3%; left: 98%; animation: twinkle 4.5s infinite 4.8s; }
+        
+        /* Large prominent stars - updated with new animations */
+        .stars-container .star:nth-child(31) { width: 5px; height: 5px; top: 25%; left: 35%; animation: pulsate 3s infinite 1s; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.9); }
+        .stars-container .star:nth-child(32) { width: 5px; height: 5px; top: 75%; left: 25%; animation: pulsate 4s infinite 2s; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.9); }
+        .stars-container .star:nth-child(33) { width: 5px; height: 5px; top: 15%; left: 65%; animation: pulsate 5s infinite 3s; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.9); }
+        .stars-container .star:nth-child(34) { width: 5px; height: 5px; top: 85%; left: 85%; animation: pulsate 3.5s infinite 1.5s; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.9); }
+        .stars-container .star:nth-child(35) { width: 5px; height: 5px; top: 45%; left: 15%; animation: stardust 4.5s infinite 2.5s; }
+        .stars-container .star:nth-child(36) { width: 5px; height: 5px; top: 55%; left: 75%; animation: stardust 3s infinite 0.5s; }
+        .stars-container .star:nth-child(37) { width: 5px; height: 5px; top: 35%; left: 95%; animation: stardust 4s infinite 1.5s; }
+        .stars-container .star:nth-child(38) { width: 5px; height: 5px; top: 65%; left: 5%; animation: stardust 5s infinite 2.5s; }
+        
+        /* Shooting stars */
+        .stars-container .star:nth-child(39) { 
+            width: 2px; 
+            height: 2px; 
+            top: 5%; 
+            left: 5%; 
+            animation: shooting 7s infinite 1s;
+            z-index: 2;
+        }
+        .stars-container .star:nth-child(40) { 
+            width: 2px; 
+            height: 2px; 
+            top: 15%; 
+            left: 80%; 
+            animation: shooting 9s infinite 4s;
+            z-index: 2;
+        }
+        
+        /* Add more randomly positioned stars */
+        .stars-container .star:nth-child(41) { width: 3px; height: 3px; top: 17%; left: 23%; animation: twinkle 3s infinite 1.2s; }
+        .stars-container .star:nth-child(42) { width: 2px; height: 2px; top: 29%; left: 57%; animation: twinkle 4s infinite 0.7s; }
+        .stars-container .star:nth-child(43) { width: 4px; height: 4px; top: 38%; left: 82%; animation: twinkle 5s infinite 2.2s; }
+        .stars-container .star:nth-child(44) { width: 2px; height: 2px; top: 63%; left: 13%; animation: twinkle 3.5s infinite 3.2s; }
+        .stars-container .star:nth-child(45) { width: 3px; height: 3px; top: 79%; left: 41%; animation: twinkle 4.5s infinite 1.7s; }
+        .stars-container .star:nth-child(46) { width: 2px; height: 2px; top: 88%; left: 69%; animation: twinkle 3s infinite 0.3s; }
+        .stars-container .star:nth-child(47) { width: 4px; height: 4px; top: 9%; left: 77%; animation: twinkle 4s infinite 2.3s; }
+        .stars-container .star:nth-child(48) { width: 3px; height: 3px; top: 33%; left: 11%; animation: twinkle 5s infinite 1.8s; }
+        .stars-container .star:nth-child(49) { width: 2px; height: 2px; top: 71%; left: 29%; animation: twinkle 3.5s infinite 0.9s; }
+        .stars-container .star:nth-child(50) { width: 4px; height: 4px; top: 48%; left: 63%; animation: twinkle 4.5s infinite 2.9s; }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* New shooting star animation */
+        @keyframes shooting {
+            0% { 
+                transform: translateX(0) translateY(0) rotate(0deg); 
+                opacity: 1;
+                width: 2px;
+                height: 2px;
+            }
+            70% { 
+                transform: translateX(500px) translateY(500px) rotate(45deg);
+                opacity: 1;
+                width: 4px;
+                height: 4px;
+                box-shadow: 0 0 10px 4px rgba(255, 255, 255, 0.9), 
+                            0 0 20px 8px rgba(255, 255, 255, 0.5),
+                            0 0 30px 15px rgba(255, 255, 255, 0.3);
+            }
+            100% { 
+                transform: translateX(1000px) translateY(1000px) rotate(45deg);
+                opacity: 0;
+                width: 2px;
+                height: 2px;
+            }
+        }
+        
+        /* New stardust animation */
+        @keyframes stardust {
+            0%, 100% { box-shadow: 0 0 4px 2px rgba(255, 255, 255, 0.8); }
+            50% { box-shadow: 0 0 15px 6px rgba(173, 216, 230, 0.9); }
+        }
+        
+        /* New pulsate animation */
+        @keyframes pulsate {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+        
+        @keyframes shine {
+            0%, 100% {
+                box-shadow: 0px 0px 8px 2px rgba(235, 235, 231, 0.5);
+            }
+            50% {
+                box-shadow: 0px 0px 20px 10px rgba(255, 255, 255, 0.7);
+            }
+        }
+        
+        /* Banner content styles */
+        #banner-section.contact-banner .container {
+            position: relative;
+            z-index: 3; /* Increased z-index to appear over stars */
+            color: #fff;
+            text-align: center;
+        }
+        
+        #banner-section.contact-banner .page-title {
+            font-size: 42px;
+            font-weight: 300;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        #banner-section.contact-banner .page-description {
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 3px rgba(0,0,0,0.5);
+        }
+
+        /* CSS Patterns for Background - Replace broken images */
+        .contact-background-image {
+            position: absolute;
+            z-index: -1;
+        }
+        
+        .contact-background-image.img-1 {
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            opacity: 0.6;
+            border-radius: 50%;
+        }
+        
+        .contact-background-image.img-2 {
+            bottom: 100px;
+            left: -70px;
+            width: 300px;
+            height: 300px;
+            background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0.03) 2px, transparent 2px, transparent 4px);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+        
+        .contact-background-image.img-3 {
+            top: 30%;
+            right: -80px;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 70%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 58% 42% 33% 67% / 33% 78% 22% 67%;
+        }
+        
+        .contact-background-image.img-4 {
+            bottom: -80px;
+            right: 20%;
+            width: 180px;
+            height: 180px;
+            background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+
+        /* Contact section theme transition */
+        .contact-section {
+            transition: all 0.5s ease-in-out;
+        }
+        
+        .contact-section.anonymous-mode {
+            filter: invert(1);
+            background-color: #1a1a1a;
+        }
+        
+        .contact-section.anonymous-mode .contact-form-container {
+            filter: invert(1); /* Double invert to keep form elements normal */
+        }
+        
+        /* Toggle switch styling - improved for better visibility */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin-left: 10px;
+            z-index: 10;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 60px;
+            height: 30px;
+            margin: 0;
+            position: absolute;
+            cursor: pointer;
+            z-index: 11;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+            z-index: 9;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #d1b38a;
+        }
+        
+        input:focus + .toggle-slider {
+            box-shadow: 0 0 1px #d1b38a;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .anonymous-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .anonymous-toggle label {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: top 0.5s ease, opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            min-width: 300px;
+            max-width: 90%;
+        }
+        
+        .notification.success {
+            background-color: #d1b38a;
+            color: #fff;
+            border-left: 5px solid #a58a64;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+            color: #fff;
+            border-left: 5px solid #ba000d;
+        }
+        
+        .notification i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .notification.show {
+            top: 20px;
+            opacity: 1;
+        }
+
+        /* Banner loader styles */
+        .banner-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .banner-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #d1b38a;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Preload critical images */
+        .preload-images {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
     </style>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon">
-    
-    <!-- Google Fonts - Nexa Light -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
-    
-    <!-- Animate.css for animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    
-    
-    
-    <!-- Netlify deployment fix -->
     <script>
-        // Handle case when SiteConfig not available (static sites)
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if any of the image elements failed to load
-            const fixBrokenImages = function() {
-                // S3 fallback URLs
-                const fallbacks = {
-                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
-                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
-                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'
-                };
-                
-                // Fix header logo
-                const headerLogo = document.querySelector('.navbar .logo img');
-                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
-                    headerLogo.src = fallbacks.logo;
+        // Function to fix broken images
+        function fixBrokenImages() {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                if (!img.complete || img.naturalWidth === 0) {
+                    img.src = 'images/placeholder.jpg';
                 }
-                
-                // Fix footer logo 
-                const footerLogo = document.querySelector('.footer-logo img');
-                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
-                    footerLogo.src = fallbacks.logo;
+            });
+        }
+
+        // Priority loading for banner
+        function initBannerLoader() {
+            const bannerLoader = document.getElementById('bannerLoader');
+            const banner = document.getElementById('banner-section');
+            
+            // Hide loader after banner elements are loaded or after timeout
+            const hideLoader = () => {
+                if (bannerLoader) {
+                    bannerLoader.classList.add('hidden');
+                    // Remove loader from DOM after transition completes
+                    setTimeout(() => {
+                        bannerLoader.remove();
+                    }, 500);
                 }
-                
-                // Fix favicon
-                const favicon = document.querySelector('link[rel="icon"]');
-                if (favicon) {
-                    favicon.href = fallbacks.favicon;
-                }
-                
-                // Fix styles if needed
-                const fixStyles = function() {
-                    // Fix header styles
-                    const navbar = document.querySelector('.navbar');
-                    if (navbar) {
-                        navbar.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-                        navbar.style.backdropFilter = 'blur(8px)';
-                    }
-                    
-                    // Fix logo styles
-                    if (headerLogo) {
-                        headerLogo.style.height = '70px';
-                        headerLogo.style.width = 'auto';
-                        headerLogo.style.display = 'block';
-                    }
-                    
-                    // Fix navigation
-                    const navLinks = document.querySelector('.nav-links');
-                    if (navLinks) {
-                        navLinks.style.marginLeft = 'auto';
-                        navLinks.style.textAlign = 'right';
-                    }
-                    
-                    const navLinksList = document.querySelector('.nav-links ul');
-                    if (navLinksList) {
-                        navLinksList.style.display = 'flex';
-                        navLinksList.style.justifyContent = 'flex-end';
-                        navLinksList.style.padding = '0';
-                        navLinksList.style.margin = '0';
-                    }
-                    
-                    // Fix banner
-                    const bannerImage = document.getElementById('banner-image');
-                    if (bannerImage) {
-                        bannerImage.style.backgroundSize = 'contain';
-                        bannerImage.style.backgroundPosition = 'center';
-                        bannerImage.style.backgroundRepeat = 'no-repeat';
-                    }
-                    
-                    // Fix footer logo
-                    if (footerLogo) {
-                        footerLogo.style.maxWidth = '100px';
-                        footerLogo.style.maxHeight = '60px';
-                    }
-                };
-                
-                fixStyles();
             };
             
-            // Run immediately and also after a short delay to catch slow-loading elements
+            // Set a maximum wait time (3 seconds) before hiding loader anyway
+            const loaderTimeout = setTimeout(hideLoader, 3000);
+            
+            // Hide loader when all critical elements are loaded
+            if (document.readyState === 'complete') {
+                clearTimeout(loaderTimeout);
+                hideLoader();
+            } else {
+                window.addEventListener('load', () => {
+                    clearTimeout(loaderTimeout);
+                    hideLoader();
+                });
+            }
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize banner loader
+            initBannerLoader();
+            
+            // Fix broken images
             fixBrokenImages();
             setTimeout(fixBrokenImages, 1000);
+            
+            // Load the footer
+            loadFooter();
         });
     </script>
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <!-- Header -->
     <header>
         <nav class="navbar">
-            <a href="/" class="logo" style="display: block !important; padding: 5px 15px !important; position: relative !important;">
-                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="height: 70px !important; width: auto !important; display: block !important; max-width: none !important; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));">
+            <a href="./" class="logo" style="display: block !important; padding: 5px 15px !important; position: relative !important;">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Jayant Arora Logo" style="height: 70px !important; width: auto !important; display: block !important; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));">
             </a>
             <div class="nav-links" style="flex-grow: 1 !important; margin-left: auto !important; text-align: right !important;">
                 <ul style="display: flex !important; list-style: none !important; justify-content: flex-end !important; margin: 0 !important; padding: 0 !important;">
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/" class="active" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/projects"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/solutions"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Solutions</a></li>
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/contact"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="./" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="projects.html" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="contact.html" class="active" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
                 </ul>
             </div>
             <div class="social-links">
@@ -150,208 +550,495 @@
         </nav>
     </header>
 
-    <!-- Flash Messages -->
-    
+    <!-- Banner Section with Moon and Stars -->
+    <section id="banner-section" class="contact-banner">
+        <!-- Banner loader -->
+        <div class="banner-loader" id="bannerLoader">
+            <div class="spinner"></div>
+        </div>
         
-    
-
-    <!-- Main Content -->
-    <main>
-        
-    <!-- Contact Banner -->
-    <section class="contact-banner">
+        <!-- Preload container for critical images -->
+        <div class="preload-images">
+            <!-- Add any critical images here -->
+        </div>
+        <div class="stars-container">
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+        </div>
+        <div class="moon_outer">
+            <div class="moon">
+                <div class="details one"></div>
+                <div class="details two"></div>
+                <div class="details three"></div>
+                <div class="details four small"></div>
+            </div>
+        </div>
+        <div class="banner-image">
         <div class="container">
-            <h1 class="page-title">Get in Touch</h1>
-            <p class="page-description">I'd love to hear from you. Let's discuss how we can work together.</p>
+                <h1 class="page-title">Contact Me</h1>
+                <p class="page-description">Let's discuss how we can work together on your next project.</p>
+            </div>
         </div>
     </section>
 
-    <!-- Contact Form Section -->
+    <main>
     <section class="contact-section">
-        <div class="container">
+            <!-- Replace background images with CSS patterns -->
+            <div class="contact-background-images">
+                <div class="contact-background-image img-1"></div>
+                <div class="contact-background-image img-2"></div>
+                <div class="contact-background-image img-3"></div>
+                <div class="contact-background-image img-4"></div>
+            </div>
+
+            <!-- Contact container -->
             <div class="contact-container">
-                <div class="contact-info">
-                    <h2>Contact Information</h2>
-                    <p>Feel free to reach out with any questions, inquiries, or collaboration opportunities.</p>
+                <div class="contact-header">
+                    <h1>Let's start a project together?</h1>
                     
-                    <div class="info-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>info@majorjayant.com</span>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-phone"></i>
-                        <span>+1 (234) 567-890</span>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>New Delhi, India</span>
-                    </div>
-                    
-                    <div class="social-links">
-                        <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="https://linkedin.com/in/majorjayant" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-                    </div>
                 </div>
                 
                 <div class="contact-form-container">
-                    <h2>Send a Message</h2>
-                    <form class="contact-form" action="/contact" method="POST">
-                        <div class="form-group">
-                            <label for="name">Your Name</label>
-                            <input type="text" id="name" name="name" required>
+                    <form class="contact-form" id="contactForm">
+                        <!-- Anonymous toggle - improved structure -->
+                        <div class="anonymous-toggle">
+                            <label for="anonymousToggle">Send as anonymous</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="anonymousToggle">
+                                <span class="toggle-slider"></span>
+                            </div>
                         </div>
+
+                        <!-- Add Web3Forms access key -->
+                        <input type="hidden" name="access_key" value="2568f3c0-288b-4cf1-9a48-21924aa0bd25">
+                        
+                        <!-- Honeypot Spam Protection -->
+                        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                        
+                        <div id="personalDetails">
+                            <!-- Personal details -->
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" placeholder="Your name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" placeholder="Your email">
+                            </div>
+
                         <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" required>
+                                <label for="phone">Phone (optional)</label>
+                                <input type="tel" id="phone" name="phone" placeholder="Your phone number">
+                            </div>
                         </div>
+
+                        <!-- Message -->
                         <div class="form-group">
-                            <label for="message">Your Message</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="6" placeholder="Your message"></textarea>
                         </div>
-                        <button type="submit" class="submit-button">Send Message</button>
+
+                        <!-- Submit button -->
+                        <button type="submit" class="submit-button">
+                            Send Message
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </form>
-                </div>
             </div>
         </div>
     </section>
-
-    <!-- FAQ Section -->
-    <section class="faq-section">
-        <div class="container">
-            <h2 class="section-title">Frequently Asked Questions</h2>
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>What services do you offer?</h3>
-                        <span class="faq-toggle"><i class="fas fa-plus"></i></span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>I offer a range of product management services including business analysis, product documentation (PRDs, BRDs, SRS), project management, data analytics and reporting, UX design consultation, and strategic planning.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>How can we work together?</h3>
-                        <span class="faq-toggle"><i class="fas fa-plus"></i></span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>I'm open to various working arrangements including full-time positions, contract work, consulting, and project-based collaborations. Feel free to contact me to discuss your specific needs and how I can help.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>What industries have you worked with?</h3>
-                        <span class="faq-toggle"><i class="fas fa-plus"></i></span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>I have experience working across various industries including technology, finance, healthcare, retail, and education. My skills in product management are adaptable to different business contexts and requirements.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>How quickly can you respond to inquiries?</h3>
-                        <span class="faq-toggle"><i class="fas fa-plus"></i></span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>I typically respond to all inquiries within 24-48 hours. For urgent matters, please indicate this in your message and I'll prioritize your request.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     </main>
 
-    <!-- Footer -->
-    <footer style="padding: 2rem 0 0.5rem;">
-        <div class="footer-container">
-            <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
-                <div class="footer-logo" style="margin-bottom: 0.5rem;">
-                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
-                </div>
-                <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
-                <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
-                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Contact Info</h3>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
-            </div>
-            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Quick Links</h3>
-                <ul style="margin: 0; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;"><a href="/">Home</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/projects">Projects</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/solutions">Solutions</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/contact">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright" style="margin-top: 1rem; padding-top: 0.8rem;">
-            <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
-        </div>
-    </footer>
-
-    <!-- JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="/js/script.js"></script>
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
     
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // FAQ toggle functionality
-        const faqQuestions = document.querySelectorAll('.faq-question');
+        // Website configuration object with correct API endpoint from admin dashboard
+        window.siteConfig = {
+            api_base_url: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
+        };
         
-        faqQuestions.forEach(question => {
-            question.addEventListener('click', function() {
-                // Toggle active class on the FAQ item
-                const faqItem = this.parentElement;
-                faqItem.classList.toggle('active');
+        // Function to load footer
+        function loadFooter() {
+            fetch('html/_footer.html') // Path relative to the static root
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Footer not found');
+                }
+                return response.text();
+            })
+            .then(html => {
+                const placeholder = document.getElementById('footer-placeholder');
+                if (placeholder) {
+                    placeholder.innerHTML = html;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading footer:', error);
+                const placeholder = document.getElementById('footer-placeholder');
+                if (placeholder) {
+                    placeholder.innerHTML = '<p style="text-align: center; color: red;">Error loading footer content.</p>';
+                }
+            });
+        }
+
+        // Toggle anonymous functionality - fixed and improved
+        document.addEventListener('DOMContentLoaded', function() {
+            const anonymousToggle = document.getElementById('anonymousToggle');
+            if (!anonymousToggle) {
+                console.error('Anonymous toggle checkbox not found!');
+                return;
+            }
+            
+            // Log initial state for debugging
+            console.log('Initial anonymous toggle state:', anonymousToggle.checked);
+            
+            // Add click listener to the label to also toggle the checkbox
+            document.querySelector('.anonymous-toggle label').addEventListener('click', function(e) {
+                // Prevent default to avoid double-triggering with the checkbox's own click
+                e.preventDefault(); 
+                anonymousToggle.checked = !anonymousToggle.checked;
+                // Manually trigger the change event
+                const event = new Event('change');
+                anonymousToggle.dispatchEvent(event);
+            });
+            
+            anonymousToggle.addEventListener('change', function() {
+                console.log('Anonymous toggle changed:', this.checked);
                 
-                // Toggle the plus/minus icon
-                const icon = this.querySelector('.faq-toggle i');
-                icon.classList.toggle('fa-plus');
-                icon.classList.toggle('fa-minus');
+                const personalDetails = document.getElementById('personalDetails');
+                const contactSection = document.querySelector('.contact-section');
                 
-                // Toggle the answer visibility
-                const answer = this.nextElementSibling;
-                if (faqItem.classList.contains('active')) {
-                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                if (!personalDetails) {
+                    console.error('Personal details container not found!');
+                    return;
+                }
+                
+                if (!contactSection) {
+                    console.error('Contact section not found!');
+                    return;
+                }
+                
+                if (this.checked) {
+                    // Enable anonymous mode
+                    personalDetails.style.opacity = '0.3';
+                    personalDetails.style.pointerEvents = 'none';
+                    
+                    // Clear the personal details fields
+                    document.getElementById('name').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('phone').value = '';
+                    
+                    // Set disabled attribute on inputs
+                    document.getElementById('name').disabled = true;
+                    document.getElementById('email').disabled = true;
+                    document.getElementById('phone').disabled = true;
+                    
+                    // Apply color inversion with animation
+                    contactSection.classList.add('anonymous-mode');
                 } else {
-                    answer.style.maxHeight = '0px';
+                    // Disable anonymous mode
+                    personalDetails.style.opacity = '1';
+                    personalDetails.style.pointerEvents = 'auto';
+                    
+                    // Remove disabled attribute
+                    document.getElementById('name').disabled = false;
+                    document.getElementById('email').disabled = false;
+                    document.getElementById('phone').disabled = false;
+                    
+                    // Remove color inversion
+                    contactSection.classList.remove('anonymous-mode');
                 }
             });
         });
-    });
-</script>
 
-
-    <!-- Add script for logo background that can't be done with inline styles -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add the pseudo-element effect that can't be done with inline styles
-            const logoElement = document.querySelector('.logo');
-            if (logoElement) {
-                // Create a div that will act as our :before pseudo-element
-                const beforeElement = document.createElement('div');
-                beforeElement.style.position = 'absolute';
-                beforeElement.style.top = '-6px';
-                beforeElement.style.left = '-3px';
-                beforeElement.style.right = '-3px';
-                beforeElement.style.bottom = '-6px';
-                beforeElement.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-                beforeElement.style.borderRadius = '8px';
-                beforeElement.style.zIndex = '-1';
-                
-                // Insert as first child to be below the logo
-                logoElement.insertBefore(beforeElement, logoElement.firstChild);
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const isAnonymous = document.getElementById('anonymousToggle').checked;
+            const message = document.getElementById('message').value;
+            
+            if (!message.trim()) {
+                alert('Please enter a message');
+                return;
             }
+            
+            let formData = {
+                message: message,
+                isAnonymous: isAnonymous,
+                timestamp: new Date().toISOString()
+            };
+            
+            if (!isAnonymous) {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                
+                if (!name.trim() || !email.trim()) {
+                    alert('Please fill in your name and email');
+                    return;
+                }
+                
+                if (!isValidEmail(email)) {
+                    alert('Please enter a valid email address');
+                    return;
+                }
+                
+                formData.name = name;
+                formData.email = email;
+                formData.phone = phone;
+            }
+            
+            // Get IP address and location data
+            getIPAndLocation()
+                .then(ipData => {
+                    // Add IP and location data to form data
+                    formData = { ...formData, ...ipData };
+                    console.log('Sending contact form data:', formData);
+                    
+                    // Prepare data for Web3Forms
+                    const web3FormsData = new FormData();
+                    web3FormsData.append('access_key', '2568f3c0-288b-4cf1-9a48-21924aa0bd25');
+                    web3FormsData.append('message', formData.message);
+                    
+                    if (!formData.isAnonymous) {
+                        web3FormsData.append('name', formData.name || 'Anonymous');
+                        web3FormsData.append('email', formData.email || 'info@jayant.tech');
+                        web3FormsData.append('phone', formData.phone || 'Not provided');
+                    } else {
+                        web3FormsData.append('name', 'Anonymous User');
+                        web3FormsData.append('email', 'info@jayant.tech');
+                    }
+                    
+                    // Add location data if available
+                    if (formData.location) {
+                        web3FormsData.append('location', 
+                            `${formData.location.city || 'Unknown'}, ${formData.location.region || 'Unknown'}, ${formData.location.country || 'Unknown'}`);
+                    }
+                    
+                    // Submit to Web3Forms in parallel with our API
+                    const web3FormsPromise = fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        body: web3FormsData
+                    }).then(response => {
+                        if (!response.ok) {
+                            console.warn('Web3Forms submission had issues:', response.status);
+                        }
+                        return response.json();
+                    }).catch(error => {
+                        console.error('Web3Forms submission error:', error);
+                        // Don't fail the whole submission if just Web3Forms fails
+                        return { success: false, message: 'Email notification failed but data was saved' };
+                    });
+                    
+                    // Send data to backend API
+                    const apiPromise = fetch(`${window.siteConfig.api_base_url}?action=submit_contact`, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'submit_contact',
+                            ...formData
+                        }),
+                        mode: 'cors',
+                        credentials: 'omit'
+                    })
+                    .catch(fetchError => {
+                        console.error('Network error:', fetchError);
+                        throw new Error(`Network error: ${fetchError.message}. Please check your internet connection and try again.`);
+                    });
+                    
+                    // Wait for both submissions to complete
+                    return Promise.all([apiPromise, web3FormsPromise])
+                        .then(([apiResponse, web3FormsResponse]) => {
+                            if (!apiResponse.ok) {
+                                console.error('Server error:', apiResponse.status, apiResponse.statusText);
+                                throw new Error(`Server error (${apiResponse.status}): ${apiResponse.statusText}`);
+                            }
+                            return apiResponse.json().then(apiData => {
+                                return {
+                                    api: apiData,
+                                    web3Forms: web3FormsResponse
+                                };
+                            });
+                        });
+                })
+                .then(results => {
+                    console.log('Submission results:', results);
+                    
+                    // Show success notification with email info
+                    let message = '<i class="fas fa-check-circle"></i> Message sent successfully!';
+                    if (results.web3Forms && results.web3Forms.success) {
+                        message += ' Email notification sent.';
+                    }
+                    
+                    // Show styled success notification
+                    showNotification('success', message);
+                    
+                    // Reset form
+                    document.getElementById('contactForm').reset();
+                    
+                    // Reset the anonymous toggle if it was checked
+                    if (document.getElementById('anonymousToggle').checked) {
+                        document.getElementById('anonymousToggle').checked = false;
+                        const personalDetails = document.getElementById('personalDetails');
+                        personalDetails.style.opacity = '1';
+                        personalDetails.style.pointerEvents = 'auto';
+                        document.getElementById('name').disabled = false;
+                        document.getElementById('email').disabled = false;
+                        document.getElementById('phone').disabled = false;
+                    }
+                    
+                    // Refresh page after 2.5 seconds
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2500);
+                })
+                .catch(error => {
+                    console.error('Error submitting form:', error);
+                    
+                    // Show styled error notification
+                    showNotification('error', '<i class="fas fa-exclamation-circle"></i> ' + error.message);
+                    
+                    // Fallback to local storage
+                    try {
+                        let contactSubmissions = JSON.parse(localStorage.getItem('contactSubmissions')) || [];
+                        contactSubmissions.push({
+                            ...formData,
+                            id: Date.now(),
+                            savedLocally: true
+                        });
+                        
+                        // Limit local storage to prevent overflow
+                        if (contactSubmissions.length > 50) {
+                            contactSubmissions = contactSubmissions.slice(contactSubmissions.length - 50);
+                        }
+                        
+                        localStorage.setItem('contactSubmissions', JSON.stringify(contactSubmissions));
+                        console.log('Contact form data saved to local storage as fallback');
+                    } catch (localError) {
+                        console.error('Error saving to local storage:', localError);
+                }
+            });
         });
+        
+        // Email validation function
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Function to get IP address and location data
+        async function getIPAndLocation() {
+            try {
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                
+                // Try to get location data based on IP
+                try {
+                    const geoResponse = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+                    const geoData = await geoResponse.json();
+                    
+                    return {
+                        ip_address: ipData.ip,
+                        location: {
+                            country: geoData.country_name || 'Unknown',
+                            city: geoData.city || 'Unknown',
+                            region: geoData.region || 'Unknown',
+                            latitude: geoData.latitude || null,
+                            longitude: geoData.longitude || null
+                        }
+                    };
+                } catch (geoError) {
+                    console.error('Error fetching location data:', geoError);
+                    return {
+                        ip_address: ipData.ip,
+                        location: { country: 'Unknown', city: 'Unknown', region: 'Unknown' }
+                    };
+                }
+            } catch (error) {
+                console.error('Error fetching IP address:', error);
+                return {
+                    ip_address: 'Unknown',
+                    location: { country: 'Unknown', city: 'Unknown', region: 'Unknown' }
+                };
+            }
+        }
+        
+        // Function to show styled notification
+        function showNotification(type, message) {
+            // Remove any existing notifications
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = message;
+            document.body.appendChild(notification);
+            
+            // Show the notification (after a small delay to allow for proper rendering)
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Remove notification after some time
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 2000);
+        }
     </script>
 </body>
 </html> 

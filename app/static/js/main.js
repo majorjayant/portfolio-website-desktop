@@ -1354,6 +1354,9 @@ async function fetchCertificationsData() {
         // Update the certifications section with the fetched data
         const certificationsData = data.certifications || [];
         updateCertificationsSection(certificationsData);
+        
+        // Initialize view all button after loading certificates
+        initCertificationsViewAll();
     } catch (error) {
         console.error('Error fetching certifications data from API:', error);
         console.log('Falling back to local JSON file');
@@ -1375,10 +1378,88 @@ async function fetchCertificationsData() {
             }));
             
             updateCertificationsSection(mappedData);
+            
+            // Initialize view all button after loading certificates
+            initCertificationsViewAll();
         } catch (localError) {
             console.error('Error loading from local JSON:', localError);
             // Show empty state
             updateCertificationsSection([]);
         }
+    }
+}
+
+// Initialize view all button for certifications
+function initCertificationsViewAll() {
+    const grid = document.querySelector('.certifications-grid');
+    const viewAllBtn = document.querySelector('.view-all-btn');
+    const viewText = document.querySelector('.view-text');
+    
+    if (!grid || !viewAllBtn) {
+        console.warn('Certifications grid or view all button not found');
+        return;
+    }
+    
+    // Hide view all button if there are less than 6 cards (2 rows on desktop)
+    const cardCount = grid.querySelectorAll('.cert-card').length;
+    const viewAllContainer = document.querySelector('.view-all-container');
+    
+    if (cardCount <= getRowSize()) {
+        if (viewAllContainer) {
+            viewAllContainer.style.display = 'none';
+        }
+        grid.classList.add('expanded');
+        return;
+    }
+    
+    // Show button and attach click handler
+    viewAllBtn.addEventListener('click', () => {
+        grid.classList.toggle('expanded');
+        viewAllBtn.classList.toggle('collapsed');
+        
+        // Update button text
+        if (grid.classList.contains('expanded')) {
+            viewText.textContent = 'Collapse';
+            viewAllBtn.setAttribute('aria-expanded', 'true');
+            
+            // Add ripple effect animation
+            const ripple = document.createElement('div');
+            ripple.classList.add('btn-ripple');
+            viewAllBtn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 1000);
+            
+            // Scroll to show more content
+            setTimeout(() => {
+                const firstHiddenCard = grid.querySelector('.cert-card:nth-child(' + (getRowSize() + 1) + ')');
+                if (firstHiddenCard) {
+                    firstHiddenCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 300);
+        } else {
+            viewText.textContent = 'View All';
+            viewAllBtn.setAttribute('aria-expanded', 'false');
+            
+            // Scroll back to the certifications section
+            const certsSection = document.querySelector('.certifications-section');
+            if (certsSection) {
+                certsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    });
+    
+    // Show the button
+    if (viewAllContainer) {
+        viewAllContainer.style.display = 'block';
+    }
+}
+
+// Helper to get number of cards per row based on screen size
+function getRowSize() {
+    if (window.innerWidth >= 992) {
+        return 6; // 2 rows of 3 cards
+    } else if (window.innerWidth >= 576) {
+        return 4; // 2 rows of 2 cards
+    } else {
+        return 2; // 2 rows of 1 card
     }
 }
