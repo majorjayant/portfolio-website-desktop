@@ -81,7 +81,7 @@
     <!-- Alternatively, you can import the font in your CSS if you have the font files -->
     
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Core Styles -->
     <link rel="stylesheet" href="/css/style.css?v=<?php echo time(); ?>">
@@ -902,56 +902,17 @@
     <section class="certifications-section">
         <div class="container">
             <h2 class="section-title">Certifications</h2>
-            <div class="certifications-container">
-                
-                    <div class="cert-item">
-                        <div class="cert-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div class="cert-content">
-                            <h3>Certified Product Manager</h3>
-                            <h4>Product Management Institute</h4>
-                            <p class="cert-date">Issued: Jun 2019</p>
-                            <p class="cert-expiry">Expires: Jun 2022</p>
-                            
-                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                            
-                        </div>
-                    </div>
-                
-                    <div class="cert-item">
-                        <div class="cert-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div class="cert-content">
-                            <h3>Certified Scrum Master</h3>
-                            <h4>Scrum Alliance</h4>
-                            <p class="cert-date">Issued: Mar 2018</p>
-                            <p class="cert-expiry">Expires: Mar 2020</p>
-                            
-                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                            
-                        </div>
-                    </div>
-                
-                    <div class="cert-item">
-                        <div class="cert-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div class="cert-content">
-                            <h3>Advanced UX Design</h3>
-                            <h4>Design Academy</h4>
-                            <p class="cert-date">Issued: Nov 2017</p>
-                            <p class="cert-expiry">No Expiration</p>
-                            
-                            <a href="#" target="_blank" class="cert-link">View Certificate</a>
-                            
-                        </div>
-                    </div>
-                
+            <div class="certifications-grid">
+                <!-- Certification cards will be dynamically inserted here -->
+                <p class="loading-message">Loading certifications...</p> 
             </div>
         </div>
     </section>
+
+    <!-- Certification Modal Placeholder -->
+    <div id="certification-modal" class="cert-modal" aria-hidden="true">
+        <!-- Modal content will be dynamically inserted here -->
+    </div>
 
     </main>
 
@@ -1676,9 +1637,9 @@
             function updateWorkExperienceTimeline(workExperienceData) {
                 console.log('Creating drawer UI for work experience:', workExperienceData);
                 
-                const container = document.getElementById('experience-drawers-container');
+                const container = document.querySelector('.experience-drawers');
                 if (!container) {
-                    console.error('Experience drawers container (#experience-drawers-container) not found.');
+                    console.error('Experience drawers container (.experience-drawers) not found.');
                     return;
                 }
                 
