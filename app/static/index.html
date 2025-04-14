@@ -81,7 +81,7 @@
     <!-- Alternatively, you can import the font in your CSS if you have the font files -->
     
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Core Styles -->
     <link rel="stylesheet" href="/css/style.css?v=<?php echo time(); ?>">
@@ -902,22 +902,16 @@
     <section class="certifications-section">
         <div class="container">
             <h2 class="section-title">Certifications</h2>
-            <div class="certifications-container">
-                <!-- Certification cards will be dynamically generated here -->
+            <div class="certifications-grid">
+                <!-- Certification cards will be dynamically inserted here -->
+                <p class="loading-message">Loading certifications...</p> 
             </div>
         </div>
     </section>
 
-    <!-- Certification Modal -->
-    <div class="certification-modal" id="certification-modal">
-        <div class="modal-content">
-            <button class="modal-close" id="close-cert-modal">&times;</button>
-            <div class="modal-body">
-                <div class="modal-content-inner" id="modal-cert-content">
-                    <!-- Modal content will be dynamically inserted here -->
-                </div>
-            </div>
-        </div>
+    <!-- Certification Modal Placeholder -->
+    <div id="certification-modal" class="cert-modal" aria-hidden="true">
+        <!-- Modal content will be dynamically inserted here -->
     </div>
 
     </main>
@@ -929,7 +923,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/js/script.js"></script>
     <script src="/js/main.js"></script>
-    <script src="/js/certifications.js"></script>
     <script src="/js/clear-cache.js"></script>
     
 <script>
@@ -1644,9 +1637,9 @@
             function updateWorkExperienceTimeline(workExperienceData) {
                 console.log('Creating drawer UI for work experience:', workExperienceData);
                 
-                const container = document.getElementById('experience-drawers-container');
+                const container = document.querySelector('.experience-drawers');
                 if (!container) {
-                    console.error('Experience drawers container (#experience-drawers-container) not found.');
+                    console.error('Experience drawers container (.experience-drawers) not found.');
                     return;
                 }
                 

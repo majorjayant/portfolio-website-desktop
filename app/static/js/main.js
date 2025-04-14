@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load work experience, education, and certifications data
     fetchWorkExperienceData();
     fetchEducationData();
-    fetchCertificationsData(); // Re-enabled to fetch data for certifications.js
+    fetchCertificationsData();
 
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
@@ -870,114 +870,171 @@ async function fetchEducationData() {
     }
 }
 
-// Update certifications section - DISABLED (now handled by certifications.js)
-/*
+// Helper function to format date (e.g., Jan 2023)
+function formatCertDate(dateString) {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short' };
+        return date.toLocaleDateString('en-US', options);
+    } catch (e) {
+        console.error("Error formatting date:", dateString, e);
+        return dateString; // Fallback to original string
+    }
+}
+
+// Helper function to generate a simple logo based on issuer name
+function getLogoFromName(issuerName) {
+    if (!issuerName) return '?';
+    const words = issuerName.split(' ');
+    if (words.length > 1) {
+        return (words[0][0] + words[1][0]).toUpperCase();
+    } else {
+        return issuerName.substring(0, 2).toUpperCase();
+    }
+}
+
+// Updated function to create certification cards with enhanced 3D effects
 function updateCertificationsSection(certificationsData) {
-    console.log("Updating certifications section with data:", certificationsData);
+    console.log("Updating certifications section with enhanced 3D cards:");
     
-    // Get the certifications container
-    const certificationsContainer = document.querySelector('.certifications-container');
-    if (!certificationsContainer) {
-        console.error('Certifications container not found');
+    const gridContainer = document.querySelector('.certifications-grid');
+    
+    if (!gridContainer) {
+        console.error('Certifications grid container not found');
         return;
     }
     
-    // Clear previous content
-    certificationsContainer.innerHTML = '';
+    gridContainer.innerHTML = ''; // Clear previous content
     
-    // Check if there is any certification data
     if (!certificationsData || certificationsData.length === 0) {
-        const noCertifications = document.createElement('p');
-        noCertifications.textContent = 'No certification data available.';
-        noCertifications.style.color = '#333';
-        noCertifications.style.textAlign = 'center';
-        certificationsContainer.appendChild(noCertifications);
+        gridContainer.innerHTML = '<p class="loading-message">No certification data available.</p>';
         return;
     }
     
-    // Sort certifications by date (most recent first)
+    const colors = ["color-1", "color-2", "color-3", "color-4"];
+    
     certificationsData.sort((a, b) => {
-        const dateA = a.issued_date;
-        const dateB = b.issued_date;
-        return new Date(dateB) - new Date(dateA);
+        const dateA = a.issued_date ? new Date(a.issued_date) : new Date(0);
+        const dateB = b.issued_date ? new Date(b.issued_date) : new Date(0);
+        return dateB - dateA;
     });
     
-    // Create an item for each certification entry
-    certificationsData.forEach((certification) => {
-        // Format dates
-        const issuedDate = new Date(certification.issued_date);
-        const expiryDate = certification.expiry_date ? new Date(certification.expiry_date) : null;
+    certificationsData.forEach((cert, index) => {
+        const card = document.createElement('div');
+        const colorClass = colors[index % colors.length];
+        card.className = `cert-card ${colorClass}`;
         
-        const issuedDateString = `Issued: ${getMonthName(issuedDate.getMonth())} ${issuedDate.getFullYear()}`;
-        const expiryDateString = expiryDate ? 
-            `Expires: ${getMonthName(expiryDate.getMonth())} ${expiryDate.getFullYear()}` : 
-            'No Expiration';
+        // Add enhanced animations and 3D effects with AOS
+        card.setAttribute('data-aos', 'fade-up'); 
+        card.setAttribute('data-aos-delay', `${(index % 3) * 100}`);
+        card.setAttribute('data-aos-duration', '800');
+        card.setAttribute('data-aos-easing', 'ease-out-cubic');
         
-        // Create certification item
-        const item = document.createElement('div');
-        item.className = 'cert-item';
+        // Add 3D tilt effect with mouse movement
+        card.addEventListener('mousemove', (e) => {
+            const cardRect = card.getBoundingClientRect();
+            const centerX = cardRect.left + cardRect.width / 2;
+            const centerY = cardRect.top + cardRect.height / 2;
+            const posX = e.clientX - centerX;
+            const posY = e.clientY - centerY;
+            
+            // Calculate tilt angle based on mouse position (max 10 degrees)
+            const tiltX = (posY / cardRect.height) * 10;
+            const tiltY = -(posX / cardRect.width) * 10;
+            
+            // Apply the 3D transformation
+            card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.03, 1.03, 1.03)`;
+            
+            // Add dynamic shadow based on tilt
+            card.style.boxShadow = `
+                ${-tiltY/3}px ${tiltX/3}px 20px rgba(0,0,0,0.2),
+                0 10px 20px rgba(0,0,0,0.15)
+            `;
+            
+            // Show lighting effect based on mouse position
+            const glare = card.querySelector('.card-glare');
+            if (glare) {
+                const glareX = (posX / cardRect.width) * 100 + 50;
+                const glareY = (posY / cardRect.height) * 100 + 50;
+                glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 80%)`;
+                glare.style.opacity = '1';
+            }
+        });
         
-        // Create icon
-        const icon = document.createElement('div');
-        icon.className = 'cert-icon';
-        icon.innerHTML = '<i class="fas fa-certificate"></i>';
-        
-        // Create content
-        const content = document.createElement('div');
-        content.className = 'cert-content';
-        
-        // Create title (certification name)
-        const title = document.createElement('h3');
-        title.textContent = certification.certification_name;
-        
-        // Create issuer name
-        const issuer = document.createElement('h4');
-        issuer.textContent = certification.issuer_name;
-        
-        // Create issued date
-        const issued = document.createElement('p');
-        issued.className = 'cert-date';
-        issued.textContent = issuedDateString;
-        
-        // Create expiry date
-        const expiry = document.createElement('p');
-        expiry.className = 'cert-expiry';
-        expiry.textContent = expiryDateString;
-        
-        // Create credential link if present
-        if (certification.credential_link) {
-            const link = document.createElement('a');
-            link.href = certification.credential_link;
-            link.target = '_blank';
-            link.className = 'cert-link';
-            link.textContent = 'View Certificate';
-            content.appendChild(title);
-            content.appendChild(issuer);
-            content.appendChild(issued);
-            content.appendChild(expiry);
-            content.appendChild(link);
-        } else {
-            content.appendChild(title);
-            content.appendChild(issuer);
-            content.appendChild(issued);
-            content.appendChild(expiry);
+        // Reset card on mouse leave
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            card.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+            
+            const glare = card.querySelector('.card-glare');
+            if (glare) {
+                glare.style.opacity = '0';
+            }
+        });
+
+        // Simple skill extraction
+        let skills = [];
+        if (cert.description) {
+            const commonSkills = [
+                'AWS', 'Azure', 'GCP', 'Cloud', 'Scrum', 'Agile', 'Kubernetes', 
+                'Docker', 'Security', 'Networking', 'Java', 'Python', 'JavaScript',
+                'React', 'Node.js', 'MongoDB', 'SQL', 'Architecture', 'Leadership',
+                'Management', 'Planning', 'Development', 'Testing', 'DevOps',
+                'Orchestration', 'Database', 'Modeling', 'Analytics', 'Visualization'
+            ];
+            commonSkills.forEach(skill => {
+                if (new RegExp(`\\b${skill}\\b`, 'i').test(cert.description)) {
+                    skills.push(skill);
+                }
+            });
+            if (skills.length === 0) {
+                skills = cert.description.split(/[\n,;•\-]/)
+                    .map(s => s.trim())
+                    .filter(s => s.length > 2 && s.length < 25)
+                    .slice(0, 5);
+            }
         }
+        skills = skills.slice(0, 5); 
+
+        const formattedDate = formatCertDate(cert.issued_date);
+        const logoText = getLogoFromName(cert.issuer_name);
         
-        // Add description if present
-        if (certification.description) {
-            const description = document.createElement('p');
-            description.className = 'cert-description';
-            description.textContent = certification.description;
-            content.appendChild(description);
-        }
+        // Prepare View Certificate link HTML (if exists)
+        const viewCertLinkHTML = cert.credential_link 
+            ? `<a href="${cert.credential_link}" target="_blank" rel="noopener noreferrer" class="cert-view-link" onclick="event.stopPropagation();">
+                   <i class="fas fa-external-link-alt"></i>
+               </a>` 
+            : '';
+
+        card.innerHTML = `
+            <div class="mandala-background"></div>
+            <div class="card-glare"></div>
+            <div class="cert-card-top">
+                <div class="cert-logo">${logoText}</div>
+                <div class="cert-date">
+                    <i class="fas fa-calendar-alt"></i>&nbsp;${formattedDate}
+                </div>
+                ${viewCertLinkHTML}
+            </div>
+            <div class="cert-card-content">
+                <h3 class="cert-title">${cert.certification_name}</h3>
+                <p class="cert-issuer">${cert.issuer_name}</p>
+                ${cert.credential_id ? `<p class="cert-id">ID: ${cert.credential_id}</p>` : ''}
+                <div class="cert-skills">
+                    ${skills.map(skill => `<span>${skill}</span>`).join('')}
+                </div>
+            </div>
+            <div class="card-gradient-overlay"></div>
+        `;
         
-        // Assemble the certification item
-        item.appendChild(icon);
-        item.appendChild(content);
-        
-        // Add to container
-        certificationsContainer.appendChild(item);
+        gridContainer.appendChild(card);
     });
+    
+    // Re-initialize AOS after adding new elements
+    if (window.AOS) {
+        AOS.refresh();
+    }
 }
 
 // Fetch certifications data
@@ -1007,8 +1064,7 @@ async function fetchCertificationsData() {
         
         // Update the certifications section with the fetched data
         const certificationsData = data.certifications || [];
-        // Store data globally for certifications.js to use
-        window.certificationsData = certificationsData;
+        updateCertificationsSection(certificationsData);
     } catch (error) {
         console.error('Error fetching certifications data from API:', error);
         console.log('Falling back to local JSON file');
@@ -1018,57 +1074,22 @@ async function fetchCertificationsData() {
             const localResponse = await fetch('/data/certifications.json');
             const localData = await localResponse.json();
             console.log('Successfully loaded certifications data from local JSON:', localData);
-            // Store data globally for certifications.js to use
-            window.certificationsData = localData;
+            
+            // Map the local data fields to match what updateCertificationsSection expects
+            const mappedData = localData.map(cert => ({
+                certification_name: cert.title,
+                issuer_name: cert.issuer,
+                issued_date: cert.issue_date,
+                credential_id: cert.id?.toString() || '',
+                credential_link: cert.certificate_url !== '#' ? cert.certificate_url : '',
+                description: cert.description || ''
+            }));
+            
+            updateCertificationsSection(mappedData);
         } catch (localError) {
             console.error('Error loading from local JSON:', localError);
-            window.certificationsData = [];
-        }
-    }
-}
-*/
-
-// Fetch certifications data - Simplified version for certifications.js to use
-async function fetchCertificationsData() {
-    console.log('Fetching certifications data for certifications.js');
-    
-    try {
-        // Try to fetch from API first
-        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=certifications';
-        
-        const response = await fetch(apiEndpoint, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors',
-            credentials: 'omit'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`API response not OK: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Successfully loaded certifications data from API:', data);
-        
-        // Store data globally for certifications.js to use
-        window.certificationsData = data.certifications || [];
-    } catch (error) {
-        console.error('Error fetching certifications data from API:', error);
-        console.log('Falling back to local JSON file');
-        
-        // Fallback to local JSON
-        try {
-            const localResponse = await fetch('/data/certifications.json');
-            const localData = await localResponse.json();
-            console.log('Successfully loaded certifications data from local JSON:', localData);
-            // Store data globally for certifications.js to use
-            window.certificationsData = localData;
-        } catch (localError) {
-            console.error('Error loading from local JSON:', localError);
-            window.certificationsData = [];
+            // Show empty state
+            updateCertificationsSection([]);
         }
     }
 }
