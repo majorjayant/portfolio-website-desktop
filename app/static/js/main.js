@@ -731,9 +731,13 @@ function getMonthName(monthIndex) {
     return months[monthIndex];
 }
 
-// Update education section
+// Define the star colors that will be used for the background effect
+const starColors = ["#0A4247", "#8C2F0D", "#F2A057", "#F2C185", "#8CB7B8"];
+const shootingStarColors = ["#F2C185", "#8CB7B8"];
+
+// Update education section with 3D carousel cards
 function updateEducationSection(educationData) {
-    console.log("Updating education section with data:", educationData);
+    console.log("Updating education section with 3D carousel cards:", educationData);
     
     // Get the education container
     const educationContainer = document.querySelector('.education-container');
@@ -757,67 +761,356 @@ function updateEducationSection(educationData) {
     
     // Sort education by date (most recent first)
     educationData.sort((a, b) => {
-        const dateA = a.from_date;
-        const dateB = b.from_date;
+        const dateA = a.from_date || '';
+        const dateB = b.from_date || '';
         return new Date(dateB) - new Date(dateA);
     });
     
-    // Create an item for each education entry
-    educationData.forEach((education) => {
+    // Define the brown color theme
+    const cardColors = [
+        '#6c584c', // Dark brown
+        '#a38566', // Medium brown
+        '#d1b38a', // Light brown
+        '#e9dac1'  // Beige
+    ];
+    
+    // Create carousel container
+    const carouselContainer = document.createElement('div');
+    carouselContainer.className = 'education-carousel';
+    
+    // Create carousel track
+    const carouselTrack = document.createElement('div');
+    carouselTrack.className = 'education-carousel-track';
+    
+    // Create education cards
+    educationData.forEach((education, index) => {
         // Format dates
-        const fromDate = new Date(education.from_date);
+        const fromDate = education.from_date ? new Date(education.from_date) : null;
         const toDate = education.to_date ? new Date(education.to_date) : null;
-        const isCurrent = education.is_current;
+        const isCurrent = education.is_current || !toDate;
         
-        const dateString = isCurrent 
-            ? `${fromDate.getFullYear()} - Present`
-            : toDate ? `${fromDate.getFullYear()} - ${toDate.getFullYear()}` : `${fromDate.getFullYear()}`;
+        const fromDateStr = fromDate ? `${getMonthName(fromDate.getMonth())} ${fromDate.getFullYear()}` : '';
+        const toDateStr = isCurrent ? 'Present' : toDate ? `${getMonthName(toDate.getMonth())} ${toDate.getFullYear()}` : '';
+        const dateString = `${fromDateStr} — ${toDateStr}`;
         
-        // Create education item
-        const item = document.createElement('div');
-        item.className = 'education-item';
+        // Determine if this is a dark card (first two colors are darker)
+        const colorIndex = index % cardColors.length;
+        const isDarkCard = colorIndex <= 1;
         
-        // Create icon
-        const icon = document.createElement('div');
-        icon.className = 'edu-icon';
-        icon.innerHTML = '<i class="fas fa-graduation-cap"></i>';
+        // Create card container
+        const card = document.createElement('div');
+        card.className = `education-card color-${colorIndex + 1}`;
+        card.setAttribute('data-aos', 'fade-up');
+        card.setAttribute('data-aos-delay', `${index * 100}`);
+        card.setAttribute('data-aos-duration', '800');
         
-        // Create content
-        const content = document.createElement('div');
-        content.className = 'edu-content';
+        // Add star background container
+        const starsContainer = document.createElement('div');
+        starsContainer.className = 'education-card-stars-container';
         
-        // Create title (degree)
-        const title = document.createElement('h3');
-        title.textContent = education.edu_title;
+        // Create SVG for stars
+        const starsSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        starsSvg.setAttribute('class', 'education-card-stars');
+        starsSvg.setAttribute('viewBox', '0 0 100 100');
+        starsSvg.setAttribute('preserveAspectRatio', 'none');
         
-        // Create institution name
-        const institution = document.createElement('h4');
-        institution.textContent = education.edu_name;
-        
-        // Create date
-        const date = document.createElement('p');
-        date.className = 'edu-date';
-        date.textContent = dateString;
-        
-        // Create location if present
-        if (education.location) {
-            const location = document.createElement('p');
-            location.className = 'edu-location';
-            location.textContent = education.location;
-            content.appendChild(location);
+        // Add static stars to SVG
+        const numStars = 12 + Math.floor(Math.random() * 8); // 12-20 stars
+        for (let i = 0; i < numStars; i++) {
+            const starGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            const starColor = starColors[Math.floor(Math.random() * starColors.length)];
+            
+            // Create circle for star
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const radius = Math.random() * 1.5 + 0.5;
+            
+            circle.setAttribute('class', 'star');
+            circle.setAttribute('cx', `${x}%`);
+            circle.setAttribute('cy', `${y}%`);
+            circle.setAttribute('r', radius);
+            circle.setAttribute('fill', starColor);
+            
+            // Add random animations to stars
+            const animationType = Math.random();
+            if (animationType < 0.25) {
+                circle.classList.add('pulsate');
+            } else if (animationType < 0.45) {
+                circle.classList.add('rotate');
+            } else if (animationType < 0.6) {
+                circle.classList.add('sparkle');
+            }
+            
+            // Add delay to animation
+            circle.style.animationDelay = `${Math.random() * 4}s`;
+            
+            starGroup.appendChild(circle);
+            
+            // Add duplicate stars with offset for more density
+            if (Math.random() > 0.5) {
+                const twinCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                
+                // Apply random animation type for twin circle
+                const twinAnimationType = Math.random();
+                twinCircle.setAttribute('class', 'star');
+                if (twinAnimationType < 0.3) {
+                    twinCircle.classList.add('pulsate');
+                } else if (twinAnimationType < 0.5) {
+                    twinCircle.classList.add('rotate');
+                } else if (twinAnimationType < 0.7) {
+                    twinCircle.classList.add('sparkle');
+                }
+                
+                twinCircle.setAttribute('cx', `${(x + 30) % 100}%`);
+                twinCircle.setAttribute('cy', `${(y + 30) % 100}%`);
+                twinCircle.setAttribute('r', radius * 0.8);
+                twinCircle.setAttribute('fill', starColor);
+                twinCircle.style.animationDelay = `${Math.random() * 4 + 2}s`;
+                starGroup.appendChild(twinCircle);
+            }
+            
+            starsSvg.appendChild(starGroup);
         }
         
-        // Assemble the education item
-        content.appendChild(title);
-        content.appendChild(institution);
-        content.appendChild(date);
+        // Add shooting star path
+        const shootingStarGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        shootingStarGroup.setAttribute('class', 'star');
         
-        item.appendChild(icon);
-        item.appendChild(content);
+        const shootingStarPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const arcOffset = Math.random() * 40 - 20;
+        shootingStarPath.setAttribute('class', 'shootingStar');
+        shootingStarPath.setAttribute('d', `M 10 10 q ${80 + arcOffset} ${80 - arcOffset} 80 80`);
+        shootingStarPath.setAttribute('stroke', shootingStarColors[Math.floor(Math.random() * shootingStarColors.length)]);
+        shootingStarPath.setAttribute('fill', 'transparent');
+        shootingStarPath.setAttribute('stroke-dasharray', '227.62');
+        shootingStarPath.setAttribute('stroke-dashoffset', '227.62');
+        shootingStarPath.setAttribute('stroke-width', '2');
+        shootingStarPath.setAttribute('stroke-linecap', 'round');
         
-        // Add to container
-        educationContainer.appendChild(item);
+        shootingStarGroup.appendChild(shootingStarPath);
+        starsSvg.appendChild(shootingStarGroup);
+        
+        starsContainer.appendChild(starsSvg);
+        card.appendChild(starsContainer);
+        
+        // Add content to card
+        const cardContent = document.createElement('div');
+        cardContent.className = 'education-card-content';
+        
+        // Create date element
+        const dateElement = document.createElement('div');
+        dateElement.className = 'education-card-date';
+        dateElement.textContent = dateString;
+        
+        // Create degree title
+        const degreeTitle = document.createElement('h3');
+        degreeTitle.className = 'education-card-title';
+        degreeTitle.textContent = education.edu_title || '';
+        
+        // Create institution
+        const institution = document.createElement('p');
+        institution.className = 'education-card-institution';
+        institution.textContent = education.edu_name || '';
+        
+        // Create location if available
+        const location = document.createElement('p');
+        location.className = 'education-card-location';
+        location.textContent = education.location || '';
+        
+        // Create underline
+        const underline = document.createElement('div');
+        underline.className = 'education-card-underline';
+        
+        // Assemble card content
+        cardContent.appendChild(dateElement);
+        cardContent.appendChild(degreeTitle);
+        cardContent.appendChild(institution);
+        cardContent.appendChild(location);
+        cardContent.appendChild(underline);
+        card.appendChild(cardContent);
+        
+        // Add 3D tilt effect on mousemove
+        card.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Calculate relative position inside card (0 to 1)
+            const relativeX = x / rect.width;
+            const relativeY = y / rect.height;
+            
+            // Calculate rotation values (max 15deg on X-axis, max 10deg on Y-axis)
+            const rotateX = 10 - (relativeY * 20); // Top: positive, Bottom: negative
+            const rotateY = (relativeX * 20) - 10; // Left: negative, Right: positive
+            
+            // Apply rotation in 3D space
+            this.style.transform = `perspective(1000px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+            this.style.zIndex = '10';
+            this.style.boxShadow = `0 15px 30px rgba(0,0,0,0.2)`;
+            
+            // Animate stars - make them more visible on hover
+            const starsContainer = this.querySelector('.education-card-stars-container');
+            if (starsContainer) {
+                starsContainer.style.opacity = '0.7';
+            }
+            
+            // Animate shooting star on hover with random delay
+            if (Math.random() > 0.7) {
+                const shootingStar = this.querySelector('.shootingStar');
+                if (shootingStar) {
+                    shootingStar.style.animation = 'none';
+                    shootingStar.offsetHeight; // Trigger reflow
+                    shootingStar.style.animation = 'shoot 0.6s ease-out forwards';
+                }
+            }
+            
+            // Animate underline
+            const underline = this.querySelector('.education-card-underline');
+            if (underline) {
+                underline.style.width = '120px';
+                underline.style.transition = 'width 0.3s ease';
+            }
+        });
+        
+        // Reset on mouseout
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            this.style.zIndex = '1';
+            this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+            
+            // Reset stars opacity
+            const starsContainer = this.querySelector('.education-card-stars-container');
+            if (starsContainer) {
+                starsContainer.style.opacity = '0.4';
+            }
+            
+            // Reset underline
+            const underline = this.querySelector('.education-card-underline');
+            if (underline) {
+                underline.style.width = '40px';
+            }
+        });
+        
+        // Add to carousel track
+        carouselTrack.appendChild(card);
     });
+    
+    // Add carousel navigation
+    const prevButton = document.createElement('button');
+    prevButton.className = 'carousel-nav carousel-prev';
+    prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+    
+    const nextButton = document.createElement('button');
+    nextButton.className = 'carousel-nav carousel-next';
+    nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+    
+    // Add the carousel components to the container
+    carouselContainer.appendChild(prevButton);
+    carouselContainer.appendChild(carouselTrack);
+    carouselContainer.appendChild(nextButton);
+    
+    // Add the carousel to the education container
+    educationContainer.appendChild(carouselContainer);
+    
+    // Initialize the carousel functionality
+    initEducationCarousel();
+    
+    console.log('Education carousel created successfully');
+}
+
+// Function to initialize the education carousel
+function initEducationCarousel() {
+    const track = document.querySelector('.education-carousel-track');
+    const cards = Array.from(document.querySelectorAll('.education-card'));
+    const prevButton = document.querySelector('.carousel-prev');
+    const nextButton = document.querySelector('.carousel-next');
+    
+    if (!track || !cards.length || !prevButton || !nextButton) {
+        console.error('Education carousel elements not found');
+        return;
+    }
+    
+    let currentIndex = 0;
+    const cardWidth = cards[0].offsetWidth + 24; // Add gap
+    
+    // Determine number of cards visible based on screen width
+    function calculateCardsPerView() {
+        const trackWidth = track.parentNode.offsetWidth - 100; // Subtract nav button space
+        return Math.max(1, Math.min(Math.floor(trackWidth / cardWidth), 3)); // Clamp between 1-3
+    }
+    
+    let cardsPerView = calculateCardsPerView();
+    
+    // Initial positioning
+    positionCards();
+    
+    // Update card positions on window resize
+    window.addEventListener('resize', () => {
+        cardsPerView = calculateCardsPerView();
+        positionCards();
+    });
+    
+    // Add click event listeners to navigation buttons
+    nextButton.addEventListener('click', () => {
+        if (currentIndex < cards.length - cardsPerView) {
+            currentIndex++;
+            positionCards();
+        }
+    });
+    
+    prevButton.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            positionCards();
+        }
+    });
+    
+    // Function to position cards
+    function positionCards() {
+        const offset = -currentIndex * cardWidth;
+        track.style.transform = `translateX(${offset}px)`;
+        
+        // Update button states (disabled when at start/end)
+        prevButton.disabled = currentIndex === 0;
+        prevButton.style.opacity = currentIndex === 0 ? '0.5' : '1';
+        
+        nextButton.disabled = currentIndex >= cards.length - cardsPerView;
+        nextButton.style.opacity = currentIndex >= cards.length - cardsPerView ? '0.5' : '1';
+    }
+    
+    // Enable touch swipe for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    track.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    track.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50; // Minimum pixels to be considered a swipe
+        
+        if (touchEndX < touchStartX - swipeThreshold) {
+            // Swipe left, go to next
+            if (currentIndex < cards.length - cardsPerView) {
+                currentIndex++;
+                positionCards();
+            }
+        }
+        
+        if (touchEndX > touchStartX + swipeThreshold) {
+            // Swipe right, go to previous
+            if (currentIndex > 0) {
+                currentIndex--;
+                positionCards();
+            }
+        }
+    }
 }
 
 // Fetch education data
