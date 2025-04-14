@@ -213,7 +213,7 @@ async function fetchWorkExperienceData() {
         
         // Fallback to local JSON
         try {
-            const localResponse = await fetch('/data/experience.json');
+            const localResponse = await fetch('data/experience.json');
             const localData = await localResponse.json();
             console.log('Successfully loaded work experience from local JSON:', localData);
             if (typeof updateWorkExperienceTimeline === 'function') {

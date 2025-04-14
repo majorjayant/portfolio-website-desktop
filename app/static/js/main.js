@@ -231,37 +231,33 @@ function filterProjects(category) {
 
 // Load site configuration
 function loadSiteConfig() {
-    console.log('Loading site configuration');
+    console.log('Attempting to load site config from local JSON');
     
-    // Check if we already have site config in window object (might be inserted inline in HTML)
-    if (window.siteConfig) {
-        console.log('Using pre-loaded site configuration');
-        processConfigData(window.siteConfig);
-        return;
-    }
-    
-    // Try to load from local data file
-    fetch('/data/site_config.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch site configuration');
-            }
-            return response.json();
-        })
+    // Use relative path instead of absolute path
+    fetch('data/site_config.json')
+        .then(response => response.json())
         .then(data => {
-            console.log('Loaded site configuration from file');
-            if (data && data.site_configs) {
-                processConfigData(data.site_configs);
+            console.log('Successfully loaded site config from local JSON');
+            // Extract site_config from the data object since updatePageWithConfig expects
+            // an object with a site_config property
+            if (data.site_configs) {
+                // Create the expected structure for updatePageWithConfig
+                const configData = {
+                    site_config: data.site_configs,
+                    work_experience: data.work_experience
+                };
+                updatePageWithConfig(configData);
             } else {
-                throw new Error('Invalid site configuration format');
+                console.error('site_configs property not found in the loaded JSON');
+                // Try to create a compatible object anyway
+                const configData = {
+                    site_config: data
+                };
+                updatePageWithConfig(configData);
             }
         })
         .catch(error => {
-            console.warn('Error loading site configuration:', error);
-            console.log('Using default configuration');
-            processConfigData(window.defaultConfig);
-            // Fix any broken images with fallbacks
-            fixBrokenImages();
+            console.error('Error loading site config from local JSON:', error);
         });
 }
 
@@ -1071,7 +1067,7 @@ async function fetchCertificationsData() {
         
         // Fallback to local JSON
         try {
-            const localResponse = await fetch('/data/certifications.json');
+            const localResponse = await fetch('data/certifications.json');
             const localData = await localResponse.json();
             console.log('Successfully loaded certifications data from local JSON:', localData);
             
