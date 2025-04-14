@@ -305,6 +305,130 @@
             background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
             border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
         }
+
+        /* Contact section theme transition */
+        .contact-section {
+            transition: all 0.5s ease-in-out;
+        }
+        
+        .contact-section.anonymous-mode {
+            filter: invert(1);
+            background-color: #1a1a1a;
+        }
+        
+        .contact-section.anonymous-mode .contact-form-container {
+            filter: invert(1); /* Double invert to keep form elements normal */
+        }
+        
+        /* Toggle switch styling - improved for better visibility */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin-left: 10px;
+            z-index: 10;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 60px;
+            height: 30px;
+            margin: 0;
+            position: absolute;
+            cursor: pointer;
+            z-index: 11;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+            z-index: 9;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #d1b38a;
+        }
+        
+        input:focus + .toggle-slider {
+            box-shadow: 0 0 1px #d1b38a;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .anonymous-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .anonymous-toggle label {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: top 0.5s ease, opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            min-width: 300px;
+            max-width: 90%;
+        }
+        
+        .notification.success {
+            background-color: #d1b38a;
+            color: #fff;
+            border-left: 5px solid #a58a64;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+            color: #fff;
+            border-left: 5px solid #ba000d;
+        }
+        
+        .notification i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .notification.show {
+            top: 20px;
+            opacity: 1;
+        }
     </style>
     <script>
         // Function to fix broken images
@@ -398,8 +522,6 @@
             <div class="star"></div>
             <div class="star"></div>
             <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
         </div>
         <div class="moon_outer">
             <div class="moon">
@@ -410,7 +532,7 @@
             </div>
         </div>
         <div class="banner-image">
-            <div class="container">
+        <div class="container">
                 <h1 class="page-title">Contact Me</h1>
                 <p class="page-description">Let's discuss how we can work together on your next project.</p>
             </div>
@@ -418,7 +540,7 @@
     </section>
 
     <main>
-        <section class="contact-section">
+    <section class="contact-section">
             <!-- Replace background images with CSS patterns -->
             <div class="contact-background-images">
                 <div class="contact-background-image img-1"></div>
@@ -433,10 +555,10 @@
                     <h1>Let's start a project together?</h1>
                     
                 </div>
-
+                
                 <div class="contact-form-container">
                     <form class="contact-form" id="contactForm">
-                        <!-- Anonymous toggle -->
+                        <!-- Anonymous toggle - improved structure -->
                         <div class="anonymous-toggle">
                             <label for="anonymousToggle">Send as anonymous</label>
                             <div class="toggle-switch">
@@ -457,7 +579,7 @@
                                 <input type="email" id="email" name="email" placeholder="Your email">
                             </div>
 
-                            <div class="form-group">
+                        <div class="form-group">
                                 <label for="phone">Phone (optional)</label>
                                 <input type="tel" id="phone" name="phone" placeholder="Your phone number">
                             </div>
@@ -475,18 +597,18 @@
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </form>
-                </div>
             </div>
-        </section>
+        </div>
+    </section>
     </main>
 
     <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
-
-    <script>
-        // Website configuration object
+    
+<script>
+        // Website configuration object with correct API endpoint from admin dashboard
         window.siteConfig = {
-            api_base_url: 'https://mqqf78s6p9.execute-api.eu-north-1.amazonaws.com/prod'
+            api_base_url: 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio'
         };
         
         // Function to load footer
@@ -513,31 +635,74 @@
             });
         }
 
-        // Toggle anonymous functionality
-        document.getElementById('anonymousToggle').addEventListener('change', function() {
-            const personalDetails = document.getElementById('personalDetails');
-            if (this.checked) {
-                personalDetails.style.opacity = '0.3';
-                personalDetails.style.pointerEvents = 'none';
-                
-                // Clear the personal details fields
-                document.getElementById('name').value = '';
-                document.getElementById('email').value = '';
-                document.getElementById('phone').value = '';
-                
-                // Set disabled attribute on inputs
-                document.getElementById('name').disabled = true;
-                document.getElementById('email').disabled = true;
-                document.getElementById('phone').disabled = true;
-            } else {
-                personalDetails.style.opacity = '1';
-                personalDetails.style.pointerEvents = 'auto';
-                
-                // Remove disabled attribute
-                document.getElementById('name').disabled = false;
-                document.getElementById('email').disabled = false;
-                document.getElementById('phone').disabled = false;
+        // Toggle anonymous functionality - fixed and improved
+        document.addEventListener('DOMContentLoaded', function() {
+            const anonymousToggle = document.getElementById('anonymousToggle');
+            if (!anonymousToggle) {
+                console.error('Anonymous toggle checkbox not found!');
+                return;
             }
+            
+            // Log initial state for debugging
+            console.log('Initial anonymous toggle state:', anonymousToggle.checked);
+            
+            // Add click listener to the label to also toggle the checkbox
+            document.querySelector('.anonymous-toggle label').addEventListener('click', function(e) {
+                // Prevent default to avoid double-triggering with the checkbox's own click
+                e.preventDefault(); 
+                anonymousToggle.checked = !anonymousToggle.checked;
+                // Manually trigger the change event
+                const event = new Event('change');
+                anonymousToggle.dispatchEvent(event);
+            });
+            
+            anonymousToggle.addEventListener('change', function() {
+                console.log('Anonymous toggle changed:', this.checked);
+                
+                const personalDetails = document.getElementById('personalDetails');
+                const contactSection = document.querySelector('.contact-section');
+                
+                if (!personalDetails) {
+                    console.error('Personal details container not found!');
+                    return;
+                }
+                
+                if (!contactSection) {
+                    console.error('Contact section not found!');
+                    return;
+                }
+                
+                if (this.checked) {
+                    // Enable anonymous mode
+                    personalDetails.style.opacity = '0.3';
+                    personalDetails.style.pointerEvents = 'none';
+                    
+                    // Clear the personal details fields
+                    document.getElementById('name').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('phone').value = '';
+                    
+                    // Set disabled attribute on inputs
+                    document.getElementById('name').disabled = true;
+                    document.getElementById('email').disabled = true;
+                    document.getElementById('phone').disabled = true;
+                    
+                    // Apply color inversion with animation
+                    contactSection.classList.add('anonymous-mode');
+                } else {
+                    // Disable anonymous mode
+                    personalDetails.style.opacity = '1';
+                    personalDetails.style.pointerEvents = 'auto';
+                    
+                    // Remove disabled attribute
+                    document.getElementById('name').disabled = false;
+                    document.getElementById('email').disabled = false;
+                    document.getElementById('phone').disabled = false;
+                    
+                    // Remove color inversion
+                    contactSection.classList.remove('anonymous-mode');
+                }
+            });
         });
 
         // Form submission
@@ -585,28 +750,42 @@
                     formData = { ...formData, ...ipData };
                     console.log('Sending contact form data:', formData);
                     
-                    // Send data to backend - Updated to match Lambda handler's expected format
-                    return fetch(`${window.siteConfig.api_base_url}`, {
+                    // Send data to backend - Updated with working API endpoint and correct action parameter
+                    return fetch(`${window.siteConfig.api_base_url}?action=submit_contact`, {
                         method: 'POST',
                         headers: {
+                            'Accept': 'application/json',
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             action: 'submit_contact',
                             ...formData
-                        })
+                        }),
+                        mode: 'cors',
+                        credentials: 'omit'
+                    })
+                    .catch(fetchError => {
+                        console.error('Network error:', fetchError);
+                        throw new Error(`Network error: ${fetchError.message}. Please check your internet connection and try again.`);
                     });
                 })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        console.error('Server error:', response.status, response.statusText);
+                        throw new Error(`Server error (${response.status}): ${response.statusText}`);
                     }
-                    return response.json();
+                    return response.json().catch(jsonError => {
+                        console.error('Error parsing response:', jsonError);
+                        throw new Error('Invalid response from server. Please try again later.');
+                    });
                 })
                 .then(data => {
                     console.log('Contact form submission response:', data);
-                    // Show success message
-                    alert('Message sent successfully!');
+                    
+                    // Show styled success notification
+                    showNotification('success', '<i class="fas fa-check-circle"></i> Message sent successfully!');
+                    
+                    // Reset form
                     this.reset();
                     
                     // Reset the anonymous toggle if it was checked
@@ -619,10 +798,17 @@
                         document.getElementById('email').disabled = false;
                         document.getElementById('phone').disabled = false;
                     }
+                    
+                    // Refresh page after 2.5 seconds
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2500);
                 })
                 .catch(error => {
                     console.error('Error submitting form:', error);
-                    alert('There was an error sending your message. Please try again later.');
+                    
+                    // Show styled error notification
+                    showNotification('error', '<i class="fas fa-exclamation-circle"></i> ' + error.message);
                     
                     // Fallback to local storage
                     try {
@@ -642,8 +828,8 @@
                         console.log('Contact form data saved to local storage as fallback');
                     } catch (localError) {
                         console.error('Error saving to local storage:', localError);
-                    }
-                });
+                }
+            });
         });
         
         // Email validation function
@@ -687,6 +873,34 @@
                     location: { country: 'Unknown', city: 'Unknown', region: 'Unknown' }
                 };
             }
+        }
+        
+        // Function to show styled notification
+        function showNotification(type, message) {
+            // Remove any existing notifications
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = message;
+            document.body.appendChild(notification);
+            
+            // Show the notification (after a small delay to allow for proper rendering)
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Remove notification after some time
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 2000);
         }
     </script>
 </body>
