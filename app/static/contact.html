@@ -429,6 +429,48 @@
             top: 20px;
             opacity: 1;
         }
+
+        /* Banner loader styles */
+        .banner-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .banner-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #d1b38a;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Preload critical images */
+        .preload-images {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
     </style>
     <script>
         // Function to fix broken images
@@ -441,8 +483,43 @@
             });
         }
 
+        // Priority loading for banner
+        function initBannerLoader() {
+            const bannerLoader = document.getElementById('bannerLoader');
+            const banner = document.getElementById('banner-section');
+            
+            // Hide loader after banner elements are loaded or after timeout
+            const hideLoader = () => {
+                if (bannerLoader) {
+                    bannerLoader.classList.add('hidden');
+                    // Remove loader from DOM after transition completes
+                    setTimeout(() => {
+                        bannerLoader.remove();
+                    }, 500);
+                }
+            };
+            
+            // Set a maximum wait time (3 seconds) before hiding loader anyway
+            const loaderTimeout = setTimeout(hideLoader, 3000);
+            
+            // Hide loader when all critical elements are loaded
+            if (document.readyState === 'complete') {
+                clearTimeout(loaderTimeout);
+                hideLoader();
+            } else {
+                window.addEventListener('load', () => {
+                    clearTimeout(loaderTimeout);
+                    hideLoader();
+                });
+            }
+        }
+
         // Run on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize banner loader
+            initBannerLoader();
+            
+            // Fix broken images
             fixBrokenImages();
             setTimeout(fixBrokenImages, 1000);
             
@@ -475,8 +552,16 @@
 
     <!-- Banner Section with Moon and Stars -->
     <section id="banner-section" class="contact-banner">
+        <!-- Banner loader -->
+        <div class="banner-loader" id="bannerLoader">
+            <div class="spinner"></div>
+        </div>
+        
+        <!-- Preload container for critical images -->
+        <div class="preload-images">
+            <!-- Add any critical images here -->
+        </div>
         <div class="stars-container">
-            <div class="star"></div>
             <div class="star"></div>
             <div class="star"></div>
             <div class="star"></div>
@@ -567,8 +652,14 @@
                             </div>
                         </div>
 
-                        <!-- Personal details -->
-                        <div class="personal-details" id="personalDetails">
+                        <!-- Add Web3Forms access key -->
+                        <input type="hidden" name="access_key" value="2568f3c0-288b-4cf1-9a48-21924aa0bd25">
+                        
+                        <!-- Honeypot Spam Protection -->
+                        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                        
+                        <div id="personalDetails">
+                            <!-- Personal details -->
                             <div class="form-group">
                                 <label for="name">Name</label>
                                 <input type="text" id="name" name="name" placeholder="Your name">
@@ -750,8 +841,43 @@
                     formData = { ...formData, ...ipData };
                     console.log('Sending contact form data:', formData);
                     
-                    // Send data to backend - Updated with working API endpoint and correct action parameter
-                    return fetch(`${window.siteConfig.api_base_url}?action=submit_contact`, {
+                    // Prepare data for Web3Forms
+                    const web3FormsData = new FormData();
+                    web3FormsData.append('access_key', '2568f3c0-288b-4cf1-9a48-21924aa0bd25');
+                    web3FormsData.append('message', formData.message);
+                    
+                    if (!formData.isAnonymous) {
+                        web3FormsData.append('name', formData.name || 'Anonymous');
+                        web3FormsData.append('email', formData.email || 'info@jayant.tech');
+                        web3FormsData.append('phone', formData.phone || 'Not provided');
+                    } else {
+                        web3FormsData.append('name', 'Anonymous User');
+                        web3FormsData.append('email', 'info@jayant.tech');
+                    }
+                    
+                    // Add location data if available
+                    if (formData.location) {
+                        web3FormsData.append('location', 
+                            `${formData.location.city || 'Unknown'}, ${formData.location.region || 'Unknown'}, ${formData.location.country || 'Unknown'}`);
+                    }
+                    
+                    // Submit to Web3Forms in parallel with our API
+                    const web3FormsPromise = fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        body: web3FormsData
+                    }).then(response => {
+                        if (!response.ok) {
+                            console.warn('Web3Forms submission had issues:', response.status);
+                        }
+                        return response.json();
+                    }).catch(error => {
+                        console.error('Web3Forms submission error:', error);
+                        // Don't fail the whole submission if just Web3Forms fails
+                        return { success: false, message: 'Email notification failed but data was saved' };
+                    });
+                    
+                    // Send data to backend API
+                    const apiPromise = fetch(`${window.siteConfig.api_base_url}?action=submit_contact`, {
                         method: 'POST',
                         headers: {
                             'Accept': 'application/json',
@@ -768,25 +894,36 @@
                         console.error('Network error:', fetchError);
                         throw new Error(`Network error: ${fetchError.message}. Please check your internet connection and try again.`);
                     });
+                    
+                    // Wait for both submissions to complete
+                    return Promise.all([apiPromise, web3FormsPromise])
+                        .then(([apiResponse, web3FormsResponse]) => {
+                            if (!apiResponse.ok) {
+                                console.error('Server error:', apiResponse.status, apiResponse.statusText);
+                                throw new Error(`Server error (${apiResponse.status}): ${apiResponse.statusText}`);
+                            }
+                            return apiResponse.json().then(apiData => {
+                                return {
+                                    api: apiData,
+                                    web3Forms: web3FormsResponse
+                                };
+                            });
+                        });
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        console.error('Server error:', response.status, response.statusText);
-                        throw new Error(`Server error (${response.status}): ${response.statusText}`);
+                .then(results => {
+                    console.log('Submission results:', results);
+                    
+                    // Show success notification with email info
+                    let message = '<i class="fas fa-check-circle"></i> Message sent successfully!';
+                    if (results.web3Forms && results.web3Forms.success) {
+                        message += ' Email notification sent.';
                     }
-                    return response.json().catch(jsonError => {
-                        console.error('Error parsing response:', jsonError);
-                        throw new Error('Invalid response from server. Please try again later.');
-                    });
-                })
-                .then(data => {
-                    console.log('Contact form submission response:', data);
                     
                     // Show styled success notification
-                    showNotification('success', '<i class="fas fa-check-circle"></i> Message sent successfully!');
+                    showNotification('success', message);
                     
                     // Reset form
-                    this.reset();
+                    document.getElementById('contactForm').reset();
                     
                     // Reset the anonymous toggle if it was checked
                     if (document.getElementById('anonymousToggle').checked) {
