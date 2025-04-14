@@ -84,9 +84,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Core Styles -->
-    <link rel="stylesheet" href="/css/style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="css/style.css?v=20250414001">
     <!-- Consolidated experience section styles -->
-    <link rel="stylesheet" href="/css/experience-section-combined.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="css/experience-section-combined.css?v=20250414001">
     
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -786,15 +786,15 @@
     <!-- Navigation Bar -->
     <header>
         <nav class="navbar">
-            <a href="/" class="logo" style="display: block !important; padding: 5px 15px !important; position: relative !important;">
-                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="height: 70px !important; width: auto !important; display: block !important; max-width: none !important; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));">
+            <a href="./" class="logo" style="display: block !important; padding: 5px 15px !important; position: relative !important;">
+                <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Jayant Arora Logo" style="height: 70px !important; width: auto !important; display: block !important; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));">
             </a>
             <div class="nav-links" style="flex-grow: 1 !important; margin-left: auto !important; text-align: right !important;">
                 <ul style="display: flex !important; list-style: none !important; justify-content: flex-end !important; margin: 0 !important; padding: 0 !important;">
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/" class="active" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/projects"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/solutions"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Solutions</a></li>
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/contact"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="./" class="active" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="projects.html"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="solutions.html"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Solutions</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="contact.html"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
                 </ul>
             </div>
             <div class="social-links">
@@ -921,14 +921,14 @@
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="/js/script.js"></script>
-    <script src="/js/main.js"></script>
-    <script src="/js/clear-cache.js"></script>
+    <script src="js/script.js?v=20250414001"></script>
+    <script src="js/main.js?v=20250414001"></script>
+    <script src="js/clear-cache.js?v=20250414001"></script>
     
 <script>
         // Function to load footer
         function loadFooter() {
-            fetch('/html/_footer.html') // Path relative to the static root
+            fetch('html/_footer.html') // Path relative to the static root
             .then(response => {
                 if (!response.ok) {
                         throw new Error('Footer not found');
