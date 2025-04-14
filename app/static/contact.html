@@ -311,7 +311,7 @@
         function fixBrokenImages() {
             const images = document.querySelectorAll('img');
             images.forEach(img => {
-                if (img.naturalWidth === 0) {
+                if (!img.complete || img.naturalWidth === 0) {
                     img.src = 'images/placeholder.jpg';
                 }
             });
@@ -321,6 +321,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             fixBrokenImages();
             setTimeout(fixBrokenImages, 1000);
+            
+            // Load the footer
+            loadFooter();
         });
     </script>
 </head>
@@ -349,7 +352,6 @@
     <!-- Banner Section with Moon and Stars -->
     <section id="banner-section" class="contact-banner">
         <div class="stars-container">
-            <div class="star"></div>
             <div class="star"></div>
             <div class="star"></div>
             <div class="star"></div>
@@ -481,8 +483,12 @@
     <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
 
-    <script src="js/main.js"></script>
     <script>
+        // Website configuration object
+        window.siteConfig = {
+            api_base_url: 'https://mqqf78s6p9.execute-api.eu-north-1.amazonaws.com/prod'
+        };
+        
         // Function to load footer
         function loadFooter() {
             fetch('html/_footer.html') // Path relative to the static root
@@ -496,15 +502,6 @@
                 const placeholder = document.getElementById('footer-placeholder');
                 if (placeholder) {
                     placeholder.innerHTML = html;
-                    // Re-run any script needed for the footer content, e.g., update footer logo
-                    const config = window.siteConfig; // Assuming siteConfig is global
-                    if (config && config.image_logo_url) {
-                        const footerLogo = placeholder.querySelector('.footer-logo img');
-                        if (footerLogo) {
-                            footerLogo.src = config.image_logo_url;
-                            footerLogo.alt = config.about_title || 'Logo';
-                        }
-                    }
                 }
             })
             .catch(error => {
@@ -515,11 +512,6 @@
                 }
             });
         }
-
-        // Load the footer when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            loadFooter();
-        });
 
         // Toggle anonymous functionality
         document.getElementById('anonymousToggle').addEventListener('change', function() {
@@ -591,11 +583,28 @@
                 .then(ipData => {
                     // Add IP and location data to form data
                     formData = { ...formData, ...ipData };
+                    console.log('Sending contact form data:', formData);
                     
-                    // Send data to backend
-                    return saveContactData(formData);
+                    // Send data to backend - Updated to match Lambda handler's expected format
+                    return fetch(`${window.siteConfig.api_base_url}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'submit_contact',
+                            ...formData
+                        })
+                    });
                 })
                 .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Contact form submission response:', data);
                     // Show success message
                     alert('Message sent successfully!');
                     this.reset();
@@ -614,6 +623,26 @@
                 .catch(error => {
                     console.error('Error submitting form:', error);
                     alert('There was an error sending your message. Please try again later.');
+                    
+                    // Fallback to local storage
+                    try {
+                        let contactSubmissions = JSON.parse(localStorage.getItem('contactSubmissions')) || [];
+                        contactSubmissions.push({
+                            ...formData,
+                            id: Date.now(),
+                            savedLocally: true
+                        });
+                        
+                        // Limit local storage to prevent overflow
+                        if (contactSubmissions.length > 50) {
+                            contactSubmissions = contactSubmissions.slice(contactSubmissions.length - 50);
+                        }
+                        
+                        localStorage.setItem('contactSubmissions', JSON.stringify(contactSubmissions));
+                        console.log('Contact form data saved to local storage as fallback');
+                    } catch (localError) {
+                        console.error('Error saving to local storage:', localError);
+                    }
                 });
         });
         
@@ -657,56 +686,6 @@
                     ip_address: 'Unknown',
                     location: { country: 'Unknown', city: 'Unknown', region: 'Unknown' }
                 };
-            }
-        }
-        
-        // Function to save contact data to database
-        async function saveContactData(data) {
-            try {
-                // Get the API endpoint from config or use default
-                const apiBaseUrl = window.siteConfig?.api_base_url || 'https://yourapiendpoint.com/api';
-                
-                const response = await fetch(`${apiBaseUrl}/contacts`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
-                return await response.json();
-            } catch (error) {
-                console.error('Error saving contact data:', error);
-                
-                // Fallback to local storage if API call fails
-                try {
-                    // Get existing contact submissions or initialize empty array
-                    let contactSubmissions = JSON.parse(localStorage.getItem('contactSubmissions')) || [];
-                    
-                    // Add the new submission
-                    contactSubmissions.push({
-                        ...data,
-                        id: Date.now(), // Generate a pseudo-unique ID
-                        savedLocally: true
-                    });
-                    
-                    // Limit local storage to prevent overflow
-                    if (contactSubmissions.length > 50) {
-                        contactSubmissions = contactSubmissions.slice(contactSubmissions.length - 50);
-                    }
-                    
-                    // Save back to local storage
-                    localStorage.setItem('contactSubmissions', JSON.stringify(contactSubmissions));
-                    
-                    return { success: true, savedLocally: true };
-                } catch (localError) {
-                    console.error('Error saving to local storage:', localError);
-                    throw error; // Re-throw the original error
-                }
             }
         }
     </script>
