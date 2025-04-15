@@ -19,6 +19,15 @@
   --transition: all 0.3s ease;
 }
 
+/* First fix: ensure html and body have proper styles to prevent horizontal scrolling */
+html {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw; /* Add max-width */
+  position: relative; /* Add position property */
+  box-sizing: border-box;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -30,6 +39,12 @@ body {
   line-height: 1.6;
   color: var(--text-dark);
   background-color: var(--background-light);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw; /* Add max-width */
+  position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -301,6 +316,14 @@ header {
   .nav-links a {
     display: block;
     padding: 0.5rem 0;
+  }
+  
+  .chatbot-widget {
+    width: 300px;
+    max-width: 90%; /* Add max-width */
+    height: 400px;
+    right: 5%; /* Position from right edge */
+    bottom: 10px;
   }
 }
 
@@ -2522,7 +2545,7 @@ footer {
   bottom: 20px;
   right: 20px;
   width: 350px;
-  max-width: 90vw;
+  max-width: 90%; /* Changed from 90vw to 90% */
   height: 450px;
   background-color: white;
   border-radius: 10px;
@@ -2686,7 +2709,10 @@ footer {
   
   .chatbot-widget {
     width: 300px;
+    max-width: 90%; /* Add max-width */
     height: 400px;
+    right: 5%; /* Position from right edge */
+    bottom: 10px;
   }
   
   #banner-section {
@@ -2708,9 +2734,9 @@ footer {
   }
   
   .chatbot-widget {
-    width: 90vw;
+    width: 90%; /* Changed from 90vw to 90% */
     bottom: 10px;
-    right: 5vw;
+    right: 5%; /* Changed from 5vw to 5% */
   }
 }
 
@@ -4075,7 +4101,7 @@ footer {
     bottom: 20px;
     right: 20px;
     width: 350px;
-    max-width: 90vw;
+    max-width: 90%; /* Changed from 90vw to 90% */
     height: 450px;
     background-color: white;
     border-radius: 10px;
@@ -4239,7 +4265,10 @@ footer {
     
     .chatbot-widget {
         width: 300px;
+        max-width: 90%; /* Add max-width */
         height: 400px;
+        right: 5%; /* Position from right edge */
+        bottom: 10px;
     }
     
     #banner-section {
@@ -4261,9 +4290,9 @@ footer {
     }
     
     .chatbot-widget {
-        width: 90vw;
+        width: 90%; /* Changed from 90vw to 90% */
         bottom: 10px;
-        right: 5vw;
+        right: 5%; /* Changed from 5vw to 5% */
     }
 }
 
@@ -5576,8 +5605,8 @@ footer {
 }
 
 .social-icons a {
-    margin-right: 1rem;
-    font-size: 1.2rem;
+  margin-right: 1rem;
+  font-size: 1.2rem;
 }
 
 .copyright {
@@ -5628,7 +5657,7 @@ footer {
     bottom: 20px;
     right: 20px;
     width: 350px;
-    max-width: 90vw;
+    max-width: 90%; /* Changed from 90vw to 90% */
     height: 450px;
     background-color: white;
     border-radius: 10px;
@@ -5792,7 +5821,10 @@ footer {
     
     .chatbot-widget {
         width: 300px;
+        max-width: 90%; /* Add max-width */
         height: 400px;
+        right: 5%; /* Position from right edge */
+        bottom: 10px;
     }
     
     #banner-section {
@@ -5814,9 +5846,9 @@ footer {
     }
     
     .chatbot-widget {
-        width: 90vw;
+        width: 90%; /* Changed from 90vw to 90% */
         bottom: 10px;
-        right: 5vw;
+        right: 5%; /* Changed from 5vw to 5% */
     }
 }
 
@@ -6050,3 +6082,581 @@ footer {
 }
 
 /* Skills tags */
+.experience-drawer .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease 0.4s, transform 0.4s ease 0.4s;
+}
+
+.experience-drawer:hover .skills-container,
+.experience-drawer.active .skills-container {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.experience-drawer .skill-tag {
+    padding: 6px 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    display: inline-block;
+}
+
+/* Color classes with the specified hex values */
+.color-1 {
+    background-color: rgba(108, 88, 76, 0.95); /* #6c584c with transparency */
+}
+
+.color-2 {
+    background-color: rgba(163, 133, 102, 0.95); /* #a38566 with transparency */
+}
+
+.color-3 {
+    background-color: rgba(209, 179, 138, 0.95); /* #d1b38a with transparency */
+}
+
+.color-4 {
+    background-color: rgba(233, 218, 193, 0.95); /* #e9dac1 with transparency */
+    color: rgba(0, 0, 0, 0.8); /* Darker text for light background */
+}
+
+.color-4 .drawer-title-company h3,
+.color-4 .drawer-title-company p,
+.color-4 .drawer-date,
+.color-4 .drawer-location,
+.color-4 .drawer-description,
+.color-4 .skill-tag {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+
+@media screen and (max-width: 768px) {
+    .experience-drawer {
+        padding: 20px;
+        /* Commenting out - now controlled by variable in custom-overrides.css */
+        /* margin-bottom: 15px; */ /* Standard spacing between items */
+        height: auto; /* Remove fixed height */
+        min-height: auto;
+    }
+    
+    .experience-drawer:hover {
+        /* Remove hover effect on mobile */
+        transform: none;
+        height: auto;
+        min-height: auto;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .experience-drawer.active {
+        height: auto;
+        min-height: auto;
+        transform: scale(1.02);
+        z-index: 100 !important;
+        /* Commenting out - now controlled by variable in custom-overrides.css */
+        /* margin-bottom: 25px; */
+    }
+    
+    .experience-drawer .drawer-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+        overflow: visible;
+    }
+    
+  
+    
+    .experience-drawer .drawer-title-company {
+        padding: 0;
+        margin-bottom: 5px;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .experience-drawer .drawer-title-company h3 {
+        padding-left: 22px; /* Match desktop padding */
+        font-size: 1.1rem;
+        line-height: 1.3;
+    }
+    
+    .experience-drawer .drawer-title-company p {
+        font-size: 0.9rem;
+    }
+    
+    .experience-drawer .drawer-title-company h3:before {
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+   
+    .experience-drawer .drawer-description {
+        display: none;
+        opacity: 0;
+        height: 0;
+        transform: translateY(20px);
+        overflow: hidden;
+    }
+
+    .experience-drawer.active .drawer-description {
+        display: block;
+        opacity: 1;
+        height: auto;
+        transform: translateY(0);
+        overflow: visible;
+    }
+    
+    .experience-drawer .skills-container {
+        display: none;
+    }
+    
+    .experience-drawer.active .skills-container {
+        display: flex;
+    }
+}
+
+/* Make sure the "Career Journey" header is above other elements */
+.experience-section {
+    background-color: #2a2a2a; /* Dark background to match reference */
+    padding: 60px 0;
+}
+
+.experience-section .section-title {
+    position: relative;
+    z-index: 5;
+    margin-bottom: 6rem;
+    display: block;
+    color: #7a6b5f;
+    text-align: left;
+}
+
+/* Fix for older browsers */
+.experience-drawer {
+  transition: all 0.5s cubic-bezier(0.2, 0.85, 0.4, 1.275);
+}
+
+/* Fix for any conflicting styles that might be making the section background dark */
+body .experience-section,
+.container .experience-section,
+main .experience-section {
+  background-color: #f8f8f8 !important;
+}
+
+/* ===== OVERRIDE STYLES FOR EXPERIENCE DRAWER DESCRIPTIONS ===== */
+/* These styles override any previous definitions to ensure consistency */
+
+/* Base style for drawer description - hidden by default */
+.experience-drawer .drawer-description {
+  opacity: 0 !important;
+  height: 0 !important;
+  transform: translateY(20px) !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  transition: all 0.3s ease !important;
+  margin-top: 20px !important;
+  position: relative !important;
+  z-index: 1 !important;
+  display: none !important; /* Start hidden */
+}
+
+/* Show description on hover or active state */
+.experience-drawer:hover .drawer-description,
+.experience-drawer.active .drawer-description {
+  opacity: 1 !important;
+  height: auto !important;
+  transform: translateY(0) !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+  /* On mobile, don't show on hover, only on active state */
+  .experience-drawer:hover .drawer-description {
+    opacity: 0 !important;
+    height: 0 !important;
+    transform: translateY(20px) !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    display: none !important;
+  }
+  
+  /* Only show when explicitly activated */
+  .experience-drawer.active .drawer-description {
+    opacity: 1 !important;
+    height: auto !important;
+    transform: translateY(0) !important;
+    overflow: visible !important;
+    visibility: visible !important;
+    display: block !important;
+  }
+}
+
+/* ===== SUITCASE ICON POSITIONING OVERRIDE ===== */
+/* Make suitcase icon closer to job title */
+
+.drawer-title-company h3 {
+  position: relative !important;
+  padding-left: 22px !important; /* Reduced padding for closer icon */
+}
+
+.drawer-title-company h3:before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 18px !important; /* Smaller icon */
+  height: 18px !important; /* Smaller icon */
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+/* Custom styles for Professional Experience Section */
+@import url('https://fonts.googleapis.com/css2?family=Nexa:wght@300;400;500;600;700&display=swap');
+
+.experience-section .section-title {
+  font-family: 'Nexa', sans-serif !important;
+  font-weight: 300 !important; /* Light weight for Nexa Light */
+}
+
+/* Apply Nexa Light font to all text in experience section */
+.experience-section * {
+  font-family: 'Nexa' !important;
+}
+
+/*
+ * ===============================================================
+ * IMPORTANT: Experience section styles are now consolidated in:
+ * 1. experience-section.css (primary styles)
+ * 2. custom-overrides.css (overrides with higher specificity)
+ * 
+ * Any changes to experience section styles should be made in 
+ * those files, not here in style.css
+ * ===============================================================
+ */
+
+
+/* Only basic experience section container styles here for fallback */
+.experience-section {
+  background-color: #f8f8f8;
+  padding: 30px 0 60px 0;
+  position: relative;
+  z-index: 30;
+  width: 100%;
+}
+
+.experience-section .section-title {
+  font-family: 'Nexa', sans-serif;
+  font-weight: 300; /* Light weight for Nexa Light */
+}
+
+.experience-section .section-title:after {
+  bottom: -2rem; /* Move the bar down by 2rem */
+}
+
+.certifications-section .section-title,
+.certifications-section .container .section-title,
+body .certifications-section .section-title {
+  text-align: left !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important; /* Bold weight for title */
+  color: #7a6b5f !important;
+  margin-bottom: 5rem !important;
+  margin-left: 2rem !important;
+  position: relative !important;
+  z-index: 5 !important;
+  display: block !important;
+  max-width: 1200px !important;
+  font-family: 'Nexa', sans-serif !important;
+}
+
+.certifications-section .section-title::after,
+.certifications-section .container .section-title::after,
+body .certifications-section .section-title::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -1rem !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(to right, #6c584c, #a38566) !important;
+  margin: 0 !important; /* Override previous margin */
+}
+
+/* Media queries for mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .certifications-section .section-title {
+    font-size: 2rem !important;
+    margin-left: 1rem !important;
+    margin-bottom: 3rem !important;
+  }
+  
+  .certifications-section {
+    padding: 20px 0 40px 0 !important;
+  }
+  
+  .certifications-section .container {
+    width: 95% !important;
+    max-width: 100% !important;
+    padding: 0 10px !important;
+  }
+}
+
+/* Certifications section background consistency */
+.certifications-section,
+body .certifications-section,
+.container .certifications-section,
+main .certifications-section {
+  background-color: #f8f8f8 !important;
+}
+
+/* Education Carousel Styling */
+.education-section {
+  padding: 5rem 0;
+  background-color: #f8f8f8;
+}
+
+.education-section .section-title {
+  text-align: left !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important; 
+  color: #7a6b5f !important;
+  margin-bottom: 5rem !important;
+  margin-left: 2rem !important;
+  position: relative !important;
+  z-index: 5 !important;
+  display: block !important;
+  max-width: 1200px !important;
+  font-family: 'Nexa', sans-serif !important;
+}
+
+.education-section .section-title::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -1rem !important;
+  left: 0 !important;
+  width: 80px !important;
+  height: 4px !important;
+  background: linear-gradient(to right, #6c584c, #a38566) !important;
+  margin: 0 !important;
+}
+
+.education-carousel {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+  perspective: 1000px;
+  overflow: visible;
+}
+
+.education-carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  transition: transform 0.5s ease;
+  will-change: transform;
+}
+
+.education-card {
+  flex: 0 0 320px;
+  height: 280px;
+  border-radius: 1rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  will-change: transform;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Star Background */
+.education-card-stars-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+  opacity: 0.4;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.education-card:hover .education-card-stars-container {
+  opacity: 0.6;
+}
+
+.education-card-stars {
+  width: 100%;
+  height: 100%;
+}
+
+.star {
+  opacity: 0.8;
+  transform-origin: center;
+  animation: twinkle 4s infinite ease-in-out;
+}
+
+.star.pulsate {
+  animation: pulsate 3s infinite ease-in-out;
+}
+
+.star.rotate {
+  animation: rotate 10s infinite linear;
+}
+
+.star.sparkle {
+  animation: sparkle 5s infinite ease-in-out;
+}
+
+.shootingStar {
+  animation: shoot 0.6s ease-out forwards;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes pulsate {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 0.4; }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  25% { transform: scale(1.5); opacity: 1; }
+  50% { transform: scale(0.8); opacity: 0.6; }
+  75% { transform: scale(1.2); opacity: 0.9; }
+}
+
+@keyframes shoot {
+  0% { stroke-dashoffset: 227.62; filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)); }
+  50% { filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8)); }
+  100% { stroke-dashoffset: 0; filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)); }
+}
+
+/* Card colors */
+.education-card.color-1 {
+  background-color: #6c584c;
+  color: white;
+}
+
+.education-card.color-2 {
+  background-color: #a38566;
+  color: white;
+}
+
+.education-card.color-3 {
+  background-color: #d1b38a;
+  color: #333;
+}
+
+.education-card.color-4 {
+  background-color: #f2e8d5; /* Changed from #e9dac1 to a warmer, slightly lighter beige */
+  color: #333;
+}
+
+/* Star colors for different card backgrounds */
+.education-card.color-1 .star circle {
+  fill: rgba(242, 193, 133, 0.7);
+}
+
+.education-card.color-2 .star circle {
+  fill: rgba(140, 183, 184, 0.7);
+}
+
+.education-card.color-3 .star circle {
+  fill: rgba(10, 66, 71, 0.7);
+}
+
+.education-card.color-4 .star circle {
+  fill: rgba(160, 55, 25, 0.8); /* Deeper, richer color with increased opacity for better contrast */
+}
+
+.education-card-content {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Changed from space-between to flex-end to align at bottom */
+  position: relative;
+  z-index: 2;
+}
+
+.education-card-date {
+  font-size: 0.8rem; /* Reduced from 0.9rem */
+  margin-bottom: 0.5rem; /* Reduced from 0.75rem */
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.education-card-title {
+  font-size: 1.1rem; /* Reduced from 1.25rem */
+  font-weight: 700;
+  margin-bottom: 0.4rem; /* Reduced from 0.5rem */
+  line-height: 1.25;
+  overflow: visible; /* Changed from hidden */
+  max-height: none; /* Removed height limit */
+  flex-grow: 0;
+  /* Removed text truncation properties */
+}
+
+.education-card-institution {
+  font-size: 0.9rem; /* Reduced from 1rem */
+  font-weight: 600;
+  margin-bottom: 0.2rem; /* Reduced from 0.25rem */
+  line-height: 1.2;
+  overflow: visible; /* Changed from hidden */
+  max-height: none; /* Removed height limit */
+  flex-grow: 0;
+  /* Removed text truncation properties */
+}
+
+.education-card-location {
+  font-size: 0.75rem; /* Reduced from 0.85rem */
+  font-weight: 400;
+  margin-bottom: 0.8rem; /* Reduced from 1rem */
+  line-height: 1.2;
+  overflow: visible; /* Changed from hidden */
+  max-height: none; /* Removed height limit */
+  flex-grow: 0;
+  /* Removed text truncation properties */
+}
+
+.education-card-underline {
+  width: 40px;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  margin-top: auto; /* Ensure underline stays at bottom */
+}
+
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+}
