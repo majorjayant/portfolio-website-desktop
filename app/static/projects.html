@@ -5,129 +5,304 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projects | majorjayant</title>
     
-    <!-- Critical CSS - Fallback styles in case external CSS fails -->
-    <style>
-        /* Fallback critical styles */
-        header { position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background-color: rgba(0, 0, 0, 0.6); }
-        .logo { display: block; padding: 5px 15px; position: relative; }
-        .logo img { height: 70px; width: auto; display: block; }
-        .nav-links { flex-grow: 1; margin-left: auto; text-align: right; }
-        .nav-links ul { display: flex; list-style: none; justify-content: flex-end; margin: 0; padding: 0; }
-        .nav-links li { margin: 0 1.5rem; }
-        .nav-links a { color: #e6e0d4; text-decoration: none; font-weight: 600; }
-        .banner { margin-top: 80px; width: 100%; overflow: hidden; }
-        .banner-image { width: 100%; padding-bottom: 38.75%; background-size: contain; background-position: center; background-repeat: no-repeat; }
-        footer { background-color: #0d141a; color: white; padding: 3rem 0 1rem; }
-        .footer-container { display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-        .footer-section { flex: 1; min-width: 200px; margin-bottom: 2rem; padding: 0 1rem; }
-        .footer-logo img { max-width: 100px; max-height: 60px; }
-    </style>
-    
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon">
     
-    <!-- Google Fonts - Nexa Light -->
+    <!-- Google Fonts - Inter + Nexa Light -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://use.typekit.net/efd2gxw.css" rel="stylesheet"> <!-- Nexa Light font -->
     
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
     
-    <!-- Animate.css for animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    
-    
-    <!-- Netlify deployment fix -->
     <script>
-        // Handle case when SiteConfig not available (static sites)
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if any of the image elements failed to load
-            const fixBrokenImages = function() {
-                // S3 fallback URLs
-                const fallbacks = {
-                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
-                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
-                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'
-                };
-                
-                // Fix header logo
-                const headerLogo = document.querySelector('.navbar .logo img');
-                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
-                    headerLogo.src = fallbacks.logo;
-                }
-                
-                // Fix footer logo 
-                const footerLogo = document.querySelector('.footer-logo img');
-                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
-                    footerLogo.src = fallbacks.logo;
-                }
-                
-                // Fix favicon
-                const favicon = document.querySelector('link[rel="icon"]');
-                if (favicon) {
-                    favicon.href = fallbacks.favicon;
-                }
-                
-                // Fix styles if needed
-                const fixStyles = function() {
-                    // Fix header styles
-                    const navbar = document.querySelector('.navbar');
-                    if (navbar) {
-                        navbar.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-                        navbar.style.backdropFilter = 'blur(8px)';
-                    }
-                    
-                    // Fix logo styles
-                    if (headerLogo) {
-                        headerLogo.style.height = '70px';
-                        headerLogo.style.width = 'auto';
-                        headerLogo.style.display = 'block';
-                    }
-                    
-                    // Fix navigation
-                    const navLinks = document.querySelector('.nav-links');
-                    if (navLinks) {
-                        navLinks.style.marginLeft = 'auto';
-                        navLinks.style.textAlign = 'right';
-                    }
-                    
-                    const navLinksList = document.querySelector('.nav-links ul');
-                    if (navLinksList) {
-                        navLinksList.style.display = 'flex';
-                        navLinksList.style.justifyContent = 'flex-end';
-                        navLinksList.style.padding = '0';
-                        navLinksList.style.margin = '0';
-                    }
-                    
-                    // Fix banner
-                    const bannerImage = document.getElementById('banner-image');
-                    if (bannerImage) {
-                        bannerImage.style.backgroundSize = 'contain';
-                        bannerImage.style.backgroundPosition = 'center';
-                        bannerImage.style.backgroundRepeat = 'no-repeat';
-                    }
-                    
-                    // Fix footer logo
-                    if (footerLogo) {
-                        footerLogo.style.maxWidth = '100px';
-                        footerLogo.style.maxHeight = '60px';
-                    }
-                };
-                
-                fixStyles();
-            };
-            
-            // Run immediately and also after a short delay to catch slow-loading elements
-            fixBrokenImages();
-            setTimeout(fixBrokenImages, 1000);
-        });
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                container: {
+                    center: true,
+                    padding: "2rem",
+                    screens: {
+                        "2xl": "1400px",
+                    },
+                },
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        input: "hsl(214.3 31.8% 91.4%)",
+                        ring: "hsl(35 50% 65%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        primary: {
+                            DEFAULT: "#7a6b5f",
+                            foreground: "#e6e0d4",
+                        },
+                        secondary: {
+                            DEFAULT: "#a2957f",
+                            foreground: "#e6e0d4",
+                        },
+                        accent: {
+                            DEFAULT: "#caa882",
+                            foreground: "#e6e0d4",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(210 40% 96.1%)",
+                            foreground: "hsl(215.4 16.3% 46.9%)",
+                        },
+                        card: {
+                            DEFAULT: "hsl(0 0% 100%)",
+                            foreground: "hsl(222.2 84% 4.9%)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        md: "calc(0.5rem - 2px)",
+                        sm: "calc(0.5rem - 4px)",
+                    },
+                    fontFamily: {
+                        sans: ["Nexa Light", "Inter", "sans-serif"],
+                    },
+                },
+            },
+        }
     </script>
+    
+    <style>
+        /* Custom animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        
+        /* Star and Moon animation for banner */
+        #banner-section.projects-banner {
+            height: 500px; /* Increased height */
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #333333 30%, #000000 95%);
+            margin-bottom: 2rem;
+        }
+        
+        #banner-section.projects-banner .banner-image {
+            height: 100%;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Moon styles */
+        .moon_outer {
+            position: absolute;
+            left: calc(20px + 20%); /* Moved 20% to the right */
+            top: calc(20px + 30%); /* Moved 30% down */
+            z-index: 2; /* Increased z-index to appear over stars */
+        }
+        
+        .moon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            animation: shine 2s ease-in-out infinite;
+            background-color: rgb(230, 224, 224);
+            box-shadow: 0px 0px 15px 5px rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .details {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: rgba(165, 165, 165, 0.089);
+        }
+        
+        .details.one {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: inset 2px 0 4px rgba(167, 167, 167, 0.685);
+        }
+        
+        .details.two {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: inset -2px 0 4px rgba(167, 167, 167, 0.685);
+        }
+        
+        .details.three {
+            position: absolute;
+            top: 70px;
+            left: 70px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: inset 2px 0 4px rgba(167, 167, 167, 0.685);
+        }
+        
+        .details.four.small {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: inset 2px 0 4px rgba(167, 167, 167, 0.585);
+        }
+        
+        /* Stars Container */
+        .stars-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .stars-container .star {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 4px 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Create 50 static stars with CSS */
+        .stars-container .star:nth-child(1) { width: 3px; height: 3px; top: 10%; left: 5%; animation: twinkle 3s infinite 0.1s; }
+        .stars-container .star:nth-child(2) { width: 2px; height: 2px; top: 20%; left: 15%; animation: twinkle 4s infinite 0.5s; }
+        .stars-container .star:nth-child(3) { width: 4px; height: 4px; top: 30%; left: 25%; animation: twinkle 5s infinite 1s; }
+        .stars-container .star:nth-child(4) { width: 2px; height: 2px; top: 40%; left: 35%; animation: twinkle 3.5s infinite 1.5s; }
+        .stars-container .star:nth-child(5) { width: 3px; height: 3px; top: 50%; left: 45%; animation: twinkle 4.5s infinite 2s; }
+        .stars-container .star:nth-child(6) { width: 2px; height: 2px; top: 60%; left: 55%; animation: twinkle 3s infinite 2.5s; }
+        .stars-container .star:nth-child(7) { width: 4px; height: 4px; top: 70%; left: 65%; animation: twinkle 4s infinite 3s; }
+        .stars-container .star:nth-child(8) { width: 3px; height: 3px; top: 80%; left: 75%; animation: twinkle 5s infinite 3.5s; }
+        .stars-container .star:nth-child(9) { width: 2px; height: 2px; top: 90%; left: 85%; animation: twinkle 3.5s infinite 4s; }
+        .stars-container .star:nth-child(10) { width: 4px; height: 4px; top: 5%; left: 95%; animation: twinkle 4.5s infinite 4.5s; }
+        .stars-container .star:nth-child(11) { width: 3px; height: 3px; top: 15%; left: 10%; animation: twinkle 3s infinite 5s; }
+        .stars-container .star:nth-child(12) { width: 2px; height: 2px; top: 25%; left: 20%; animation: twinkle 4s infinite 5.5s; }
+        .stars-container .star:nth-child(13) { width: 4px; height: 4px; top: 35%; left: 30%; animation: twinkle 5s infinite 0.2s; }
+        .stars-container .star:nth-child(14) { width: 3px; height: 3px; top: 45%; left: 40%; animation: twinkle 3.5s infinite 0.7s; }
+        .stars-container .star:nth-child(15) { width: 2px; height: 2px; top: 55%; left: 50%; animation: twinkle 4.5s infinite 1.2s; }
+        .stars-container .star:nth-child(16) { width: 4px; height: 4px; top: 65%; left: 60%; animation: twinkle 3s infinite 1.7s; }
+        .stars-container .star:nth-child(17) { width: 3px; height: 3px; top: 75%; left: 70%; animation: twinkle 4s infinite 2.2s; }
+        .stars-container .star:nth-child(18) { width: 2px; height: 2px; top: 85%; left: 80%; animation: twinkle 5s infinite 2.7s; }
+        .stars-container .star:nth-child(19) { width: 4px; height: 4px; top: 95%; left: 90%; animation: twinkle 3.5s infinite 3.2s; }
+        .stars-container .star:nth-child(20) { width: 3px; height: 3px; top: 7%; left: 92%; animation: twinkle 4.5s infinite 3.7s; }
+        
+        /* Add more stars with different positions */
+        .stars-container .star:nth-child(21) { width: 3px; height: 3px; top: 12%; left: 8%; animation: twinkle 3s infinite 0.3s; }
+        .stars-container .star:nth-child(22) { width: 2px; height: 2px; top: 22%; left: 18%; animation: twinkle 4s infinite 0.8s; }
+        .stars-container .star:nth-child(23) { width: 4px; height: 4px; top: 32%; left: 28%; animation: twinkle 5s infinite 1.3s; }
+        .stars-container .star:nth-child(24) { width: 2px; height: 2px; top: 42%; left: 38%; animation: twinkle 3.5s infinite 1.8s; }
+        .stars-container .star:nth-child(25) { width: 3px; height: 3px; top: 52%; left: 48%; animation: twinkle 4.5s infinite 2.3s; }
+        .stars-container .star:nth-child(26) { width: 2px; height: 2px; top: 62%; left: 58%; animation: twinkle 3s infinite 2.8s; }
+        .stars-container .star:nth-child(27) { width: 4px; height: 4px; top: 72%; left: 68%; animation: twinkle 4s infinite 3.3s; }
+        .stars-container .star:nth-child(28) { width: 3px; height: 3px; top: 82%; left: 78%; animation: twinkle 5s infinite 3.8s; }
+        .stars-container .star:nth-child(29) { width: 2px; height: 2px; top: 92%; left: 88%; animation: twinkle 3.5s infinite 4.3s; }
+        .stars-container .star:nth-child(30) { width: 4px; height: 4px; top: 3%; left: 98%; animation: twinkle 4.5s infinite 4.8s; }
+        
+        /* Large prominent stars */
+        .stars-container .star:nth-child(31) { width: 5px; height: 5px; top: 25%; left: 35%; animation: pulsate 3s infinite 1s; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.9); }
+        .stars-container .star:nth-child(32) { width: 5px; height: 5px; top: 75%; left: 25%; animation: pulsate 4s infinite 2s; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.9); }
+        .stars-container .star:nth-child(33) { width: 5px; height: 5px; top: 15%; left: 65%; animation: pulsate 5s infinite 3s; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.9); }
+        .stars-container .star:nth-child(34) { width: 5px; height: 5px; top: 85%; left: 85%; animation: pulsate 3.5s infinite 1.5s; box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.9); }
+        .stars-container .star:nth-child(35) { width: 5px; height: 5px; top: 45%; left: 15%; animation: pulsate 4.5s infinite 2.5s; }
+        .stars-container .star:nth-child(36) { width: 5px; height: 5px; top: 55%; left: 75%; animation: pulsate 3s infinite 0.5s; }
+        .stars-container .star:nth-child(37) { width: 5px; height: 5px; top: 35%; left: 95%; animation: pulsate 4s infinite 1.5s; }
+        .stars-container .star:nth-child(38) { width: 5px; height: 5px; top: 65%; left: 5%; animation: pulsate 5s infinite 2.5s; }
+        
+        /* Additional stars */
+        .stars-container .star:nth-child(39) { width: 3px; height: 3px; top: 17%; left: 23%; animation: twinkle 3s infinite 1.2s; }
+        .stars-container .star:nth-child(40) { width: 2px; height: 2px; top: 29%; left: 57%; animation: twinkle 4s infinite 0.7s; }
+        .stars-container .star:nth-child(41) { width: 4px; height: 4px; top: 38%; left: 82%; animation: twinkle 5s infinite 2.2s; }
+        .stars-container .star:nth-child(42) { width: 2px; height: 2px; top: 63%; left: 13%; animation: twinkle 3.5s infinite 3.2s; }
+        .stars-container .star:nth-child(43) { width: 3px; height: 3px; top: 79%; left: 41%; animation: twinkle 4.5s infinite 1.7s; }
+        .stars-container .star:nth-child(44) { width: 2px; height: 2px; top: 88%; left: 69%; animation: twinkle 3s infinite 0.3s; }
+        .stars-container .star:nth-child(45) { width: 4px; height: 4px; top: 9%; left: 77%; animation: twinkle 4s infinite 2.3s; }
+        .stars-container .star:nth-child(46) { width: 3px; height: 3px; top: 33%; left: 11%; animation: twinkle 5s infinite 1.8s; }
+        .stars-container .star:nth-child(47) { width: 2px; height: 2px; top: 71%; left: 29%; animation: twinkle 3.5s infinite 0.9s; }
+        .stars-container .star:nth-child(48) { width: 4px; height: 4px; top: 48%; left: 63%; animation: twinkle 4.5s infinite 2.9s; }
+        .stars-container .star:nth-child(49) { width: 3px; height: 3px; top: 27%; left: 44%; animation: twinkle 3s infinite 1.5s; }
+        .stars-container .star:nth-child(50) { width: 2px; height: 2px; top: 67%; left: 33%; animation: twinkle 4s infinite 0.4s; }
+
+        /* Banner content styles */
+        #banner-section.projects-banner .container {
+            position: relative;
+            z-index: 3;
+            color: #fff;
+            text-align: center;
+            padding-top: 180px;
+        }
+        
+        #banner-section.projects-banner .page-title {
+            font-size: 42px;
+            font-weight: 300;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        #banner-section.projects-banner .page-description {
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 3px rgba(0,0,0,0.5);
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        @keyframes pulsate {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+        
+        @keyframes shine {
+            0%, 100% {
+                box-shadow: 0px 0px 8px 2px rgba(235, 235, 231, 0.5);
+            }
+            50% {
+                box-shadow: 0px 0px 20px 10px rgba(255, 255, 255, 0.7);
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen bg-[#f8f8f8] font-sans">
     <!-- Navigation Bar -->
     <header>
         <nav class="navbar">
@@ -136,9 +311,9 @@
             </a>
             <div class="nav-links" style="flex-grow: 1 !important; margin-left: auto !important; text-align: right !important;">
                 <ul style="display: flex !important; list-style: none !important; justify-content: flex-end !important; margin: 0 !important; padding: 0 !important;">
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/" class="active" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/projects"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
-                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/contact"  style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Home</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/projects" class="active" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Projects</a></li>
+                    <li style="margin: 0 1.5rem; padding: 0;"><a href="/contact" style="color: #e6e0d4; font-weight: 600; position: relative; padding: 5px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Contact</a></li>
                 </ul>
             </div>
             <div class="social-links">
@@ -149,279 +324,382 @@
         </nav>
     </header>
 
-    <!-- Flash Messages -->
-    
-        
-    
+    <!-- Banner Section with Moon and Stars -->
+    <section id="banner-section" class="projects-banner">
+        <div class="stars-container">
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        </div>
+        <div class="moon_outer">
+            <div class="moon">
+                <div class="details one"></div>
+                <div class="details two"></div>
+                <div class="details three"></div>
+                <div class="details four small"></div>
+            </div>
+        </div>
+        <div class="banner-image">
+            <div class="container">
+                <h1 class="page-title">My Projects</h1>
+                <p class="page-description">A collection of professional documents and specifications.</p>
+            </div>
+        </div>
+    </section>
 
     <!-- Main Content -->
     <main>
+        <div class="container mx-auto py-8 px-4">
+            <!-- Search -->
+            <div class="mb-6 relative fade-in-up" style="animation-delay: 0.1s;">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search projects..." 
+                        class="w-full p-3 pl-10 border rounded-lg bg-white text-[#333333] shadow-sm focus:ring-2 focus:ring-[#caa882] focus:outline-none transition-all">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div class="fade-in-up" style="animation-delay: 0.2s;">
+                <div class="filter-tabs flex overflow-x-auto flex-nowrap p-1 bg-[#e6e0d4]/20 rounded-full mb-8">
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4] active" data-filter="all">All</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="prd">PRD</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="brd">BRD</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="srs">SRS</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="manual">User Manual</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="gap">GAP Analysis</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="roadmap">Roadmap</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="improvements">Improvements</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="dashboards">Dashboards</button>
+                    <button class="filter-tab px-4 py-2 rounded-full transition-all data-active:bg-[#7a6b5f] data-active:text-[#e6e0d4] hover:bg-[#caa882] hover:text-[#e6e0d4]" data-filter="research">Research</button>
+                </div>
+            </div>
+            
+            <!-- Projects Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projectsGrid">
+                <!-- Projects will be dynamically populated here -->
+            </div>
+            
+            <!-- Empty State -->
+            <div class="text-center py-12 text-gray-500 hidden" id="emptyState">
+                <i class="fas fa-file-alt text-4xl mb-4 opacity-30"></i>
+                <h3 class="text-xl font-medium mb-2">No projects found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+            </div>
+        </div>
         
-    <!-- Projects Banner -->
-    <section class="projects-banner">
-        <div class="container">
-            <h1 class="page-title">My Projects</h1>
-            <p class="page-description">A showcase of my professional work and deliverables</p>
-        </div>
-    </section>
-
-    <!-- Categories Menu -->
-    <section class="categories-section">
-        <div class="container">
-            <div class="categories-filter">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="prd">PRD</button>
-                <button class="filter-btn" data-filter="brd">BRD</button>
-                <button class="filter-btn" data-filter="srs">SRS</button>
-                <button class="filter-btn" data-filter="manual">User Manual</button>
-                <button class="filter-btn" data-filter="gap">GAP Analysis</button>
-                <button class="filter-btn" data-filter="roadmap">Roadmap</button>
-                <button class="filter-btn" data-filter="improvements">Improvements</button>
-                <button class="filter-btn" data-filter="dashboards">Dashboards</button>
-                <button class="filter-btn" data-filter="research">Research</button>
+        <!-- Preview Dialog -->
+        <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="previewDialog">
+            <div class="bg-white rounded-lg max-w-4xl w-[90%] max-h-[90vh] overflow-auto shadow-lg transform translate-y-4 opacity-0 transition-all duration-300">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h3 class="text-xl font-medium" id="dialogTitle">Project Preview</h3>
+                    <button class="text-2xl bg-transparent border-none cursor-pointer" id="dialogClose">&times;</button>
+                </div>
+                <div class="p-4">
+                    <img src="" alt="Preview" class="w-full object-contain max-h-[70vh]" id="dialogImage">
+                </div>
             </div>
         </div>
-    </section>
-
-    <!-- Projects Grid -->
-    <section class="projects-grid">
-        <div class="container">
-            <div class="projects-container">
-                
-                    <!-- Sample PRD -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="prd">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">E-commerce Platform PRD</h3>
-                            <p class="project-category">PRD</p>
-                            <p class="project-description">Product Requirements Document for an enterprise e-commerce platform with detailed feature specifications.</p>
-                            <a href="#" class="project-link">View Document</a>
-                        </div>
-                    </div>
-
-                    <!-- Sample BRD -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="brd">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">Financial Services BRD</h3>
-                            <p class="project-category">BRD</p>
-                            <p class="project-description">Business Requirements Document for a banking application highlighting needs and objectives.</p>
-                            <a href="#" class="project-link">View Document</a>
-                        </div>
-                    </div>
-
-                    <!-- Sample SRS -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="srs">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">Inventory Management SRS</h3>
-                            <p class="project-category">SRS</p>
-                            <p class="project-description">Software Requirements Specification for an inventory management system with technical details.</p>
-                            <a href="#" class="project-link">View Document</a>
-                        </div>
-                    </div>
-
-                    <!-- Sample User Manual -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="manual">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-book"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">CRM System User Manual</h3>
-                            <p class="project-category">User Manual</p>
-                            <p class="project-description">Comprehensive guide for users on how to navigate and utilize the CRM system efficiently.</p>
-                            <a href="#" class="project-link">View Document</a>
-                        </div>
-                    </div>
-
-                    <!-- Sample GAP Analysis -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="gap">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">Supply Chain GAP Analysis</h3>
-                            <p class="project-category">GAP Analysis</p>
-                            <p class="project-description">Analysis identifying gaps between current and desired state of supply chain operations.</p>
-                            <a href="#" class="project-link">View Document</a>
-                        </div>
-                    </div>
-
-                    <!-- Sample Roadmap -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="roadmap">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-map"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">Product Roadmap 2023-2024</h3>
-                            <p class="project-category">Roadmap</p>
-                            <p class="project-description">Strategic timeline for product development with key milestones and feature releases.</p>
-                            <a href="#" class="project-link">View Document</a>
-                        </div>
-                    </div>
-
-                    <!-- Sample Improvements -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="improvements">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-lightbulb"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">Mobile App UX Improvements</h3>
-                            <p class="project-category">Improvements</p>
-                            <p class="project-description">Analysis and recommendations for enhancing user experience in the mobile application.</p>
-                            <a href="#" class="project-link">View Document</a>
-                        </div>
-                    </div>
-
-                    <!-- Sample Dashboard -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="dashboards">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-chart-pie"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">Sales Performance Dashboard</h3>
-                            <p class="project-category">Dashboards</p>
-                            <p class="project-description">Power BI dashboard visualizing key sales metrics and performance indicators.</p>
-                            <a href="#" class="project-link">View Dashboard</a>
-                        </div>
-                    </div>
-
-                    <!-- Sample Research -->
-                    <div class="project-card animate__animated animate__fadeIn" data-category="research">
-                        <div class="project-thumbnail">
-                            <div class="default-thumbnail">
-                                <i class="fas fa-microscope"></i>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <h3 class="project-title">AI Implementation in Customer Service</h3>
-                            <p class="project-category">Research</p>
-                            <p class="project-description">Research paper on the impact and implementation of AI in improving customer service operations.</p>
-                            <a href="#" class="project-link">View Paper</a>
-                        </div>
-                    </div>
-                
-            </div>
-        </div>
-    </section>
-
     </main>
 
     <!-- Footer -->
-    <footer style="padding: 2rem 0 0.5rem;">
-        <div class="footer-container">
-            <div class="footer-section" style="flex: 1.5; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem;">
-                <div class="footer-logo" style="margin-bottom: 0.5rem;">
-                    <img src="https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo" alt="Logo" style="max-width: 100px; max-height: 60px; object-fit: contain;">
-                </div>
-                <p style="margin-bottom: 0.5rem;">Turning Chaos Into Clarity</p>
-                <div class="social-icons" style="justify-content: center; margin-top: 0.5rem;">
-                    <a href="https://github.com/majorjayant" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="https://www.linkedin.com/in/majorjayant/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://twitter.com/majorjayant" target="_blank"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Contact Info</h3>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-envelope"></i> <a href="mailto:info@majorjayant.com">info@majorjayant.com</a></p>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></p>
-                <p style="margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
-            </div>
-            <div class="footer-section" style="margin-bottom: 1rem; padding: 0 0.5rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Quick Links</h3>
-                <ul style="margin: 0; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;"><a href="/">Home</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/projects">Projects</a></li>
-                    <li style="margin-bottom: 0.5rem;"><a href="/contact">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright" style="margin-top: 1rem; padding-top: 0.8rem;">
-            <p>Made with <i class="fas fa-heart"></i> by majorjayant</p>
-        </div>
-    </footer>
+    <div id="footer-placeholder"></div>
 
     <!-- JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="/js/script.js"></script>
-    
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Category filtering functionality
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const projectCards = document.querySelectorAll('.project-card');
-
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                filterButtons.forEach(btn => btn.classList.remove('active'));
+    <script>
+        // Project data
+        const projects = [
+            {
+                id: 1,
+                title: "Customer Portal Redesign",
+                category: "prd",
+                description: "Product requirements document for the customer portal redesign project",
+                lastUpdated: "Dec 15, 2023",
+                fileType: "pdf",
+                fileSize: "2.4 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            },
+            {
+                id: 2,
+                title: "Mobile App Architecture",
+                category: "brd",
+                description: "Business requirements document for the new mobile application",
+                lastUpdated: "Nov 28, 2023",
+                fileType: "docx",
+                fileSize: "1.8 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            },
+            {
+                id: 3,
+                title: "Payment Gateway Integration",
+                category: "srs",
+                description: "Software requirements specification for payment gateway integration",
+                lastUpdated: "Jan 5, 2024",
+                fileType: "pdf",
+                fileSize: "3.2 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            },
+            {
+                id: 4,
+                title: "Admin Dashboard Guide",
+                category: "manual",
+                description: "Comprehensive user guide for the admin dashboard",
+                lastUpdated: "Oct 12, 2023",
+                fileType: "pdf",
+                fileSize: "5.1 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            },
+            {
+                id: 5,
+                title: "Current vs. Future State",
+                category: "gap",
+                description: "Analysis of current system capabilities versus future requirements",
+                lastUpdated: "Feb 20, 2024",
+                fileType: "xlsx",
+                fileSize: "1.5 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            },
+            {
+                id: 6,
+                title: "Q3-Q4 Development Plan",
+                category: "roadmap",
+                description: "Product development roadmap for the second half of the year",
+                lastUpdated: "Mar 1, 2024",
+                fileType: "pptx",
+                fileSize: "4.7 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            },
+            {
+                id: 7,
+                title: "Performance Optimization",
+                category: "improvements",
+                description: "Proposed improvements for system performance and user experience",
+                lastUpdated: "Jan 18, 2024",
+                fileType: "pdf",
+                fileSize: "2.9 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            },
+            {
+                id: 8,
+                title: "Sales Analytics",
+                category: "dashboards",
+                description: "Interactive sales analytics dashboard specifications",
+                lastUpdated: "Dec 5, 2023",
+                fileType: "pdf",
+                fileSize: "3.3 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            },
+            {
+                id: 9,
+                title: "Market Trends Analysis",
+                category: "research",
+                description: "Research findings on current market trends and competitor analysis",
+                lastUpdated: "Feb 10, 2024",
+                fileType: "pdf",
+                fileSize: "6.2 MB",
+                previewUrl: "/placeholder.svg?height=300&width=400"
+            }
+        ];
+        
+        // DOM elements
+        const projectsGrid = document.getElementById('projectsGrid');
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const searchInput = document.getElementById('searchInput');
+        const emptyState = document.getElementById('emptyState');
+        const previewDialog = document.getElementById('previewDialog');
+        const dialogTitle = document.getElementById('dialogTitle');
+        const dialogImage = document.getElementById('dialogImage');
+        const dialogClose = document.getElementById('dialogClose');
+        
+        // Current filter
+        let currentFilter = 'all';
+        let currentSearch = '';
+        
+        // Render project cards
+        function renderProjects() {
+            // Clear projects grid
+            projectsGrid.innerHTML = '';
+            
+            // Filter projects
+            const filteredProjects = projects.filter(project => {
+                const matchesFilter = currentFilter === 'all' || project.category === currentFilter;
+                const matchesSearch = project.title.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                                    project.description.toLowerCase().includes(currentSearch.toLowerCase());
+                return matchesFilter && matchesSearch;
+            });
+            
+            // Show or hide empty state
+            emptyState.classList.toggle('hidden', filteredProjects.length > 0);
+            
+            // Render project cards
+            filteredProjects.forEach((project, index) => {
+                const projectCard = document.createElement('div');
+                projectCard.className = 'perspective-1000 fade-in-up';
+                projectCard.style.animationDelay = `${0.1 * (index + 1)}s`;
                 
-                // Add active class to clicked button
-                this.classList.add('active');
+                // Get category name with proper formatting
+                const categoryName = project.category === 'prd' ? 'PRD' : 
+                                    project.category === 'brd' ? 'BRD' : 
+                                    project.category === 'srs' ? 'SRS' : 
+                                    project.category === 'manual' ? 'User Manual' :
+                                    project.category === 'gap' ? 'GAP Analysis' :
+                                    project.category === 'roadmap' ? 'Roadmap' :
+                                    project.category === 'improvements' ? 'Improvements' :
+                                    project.category === 'dashboards' ? 'Dashboards' :
+                                    project.category === 'research' ? 'Research' : project.category;
                 
-                // Get filter value
-                const filterValue = this.getAttribute('data-filter');
+                // Format file icon based on file type
+                const fileIcon = project.fileType === 'pdf' ? 'fa-file-pdf' :
+                                project.fileType === 'docx' ? 'fa-file-word' :
+                                project.fileType === 'xlsx' ? 'fa-file-excel' :
+                                project.fileType === 'pptx' ? 'fa-file-powerpoint' : 'fa-file';
                 
-                // Filter projects
-                projectCards.forEach(card => {
-                    if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                        card.style.display = 'block';
-                        setTimeout(() => {
-                            card.classList.add('animate__fadeIn');
-                        }, 50);
-                    } else {
-                        card.style.display = 'none';
-                        card.classList.remove('animate__fadeIn');
-                    }
+                projectCard.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden transform hover:scale-[1.02] hover:rotate-y-[5deg]" data-category="${project.category}" data-index="${index}">
+                        <div class="relative h-40 overflow-hidden">
+                            <img src="${project.previewUrl}" alt="${project.title}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                            <div class="absolute top-2 right-2">
+                                <span class="bg-[#7a6b5f] text-[#e6e0d4] px-2 py-1 rounded-full text-xs font-medium shadow-md">${categoryName}</span>
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-3">
+                                <button class="preview-btn bg-white/90 text-[#333333] hover:bg-[#caa882] hover:text-[#e6e0d4] transition-colors px-3 py-1 rounded-lg text-sm flex items-center gap-1">
+                                    <i class="fas fa-eye text-xs"></i>
+                                    Preview
+                                </button>
+                                <button class="download-btn bg-white/90 text-[#333333] hover:bg-[#caa882] hover:text-[#e6e0d4] transition-colors px-3 py-1 rounded-lg text-sm flex items-center gap-1">
+                                    <i class="fas fa-download text-xs"></i>
+                                    Download
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-medium text-lg text-[#333333] mb-1 truncate">${project.title}</h3>
+                            <p class="text-[#333333]/80 text-sm mb-2 line-clamp-2 h-10 overflow-hidden">${project.description}</p>
+                            <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas ${fileIcon}"></i>
+                                    <span>${project.fileType.toUpperCase()} • ${project.fileSize}</span>
+                                </div>
+                                <span>Updated: ${project.lastUpdated}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                projectsGrid.appendChild(projectCard);
+            });
+        }
+        
+        // Add event listeners to filter tabs
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Update active tab
+                filterTabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.classList.remove('bg-[#7a6b5f]');
+                    t.classList.remove('text-[#e6e0d4]');
                 });
+                this.classList.add('active');
+                this.classList.add('bg-[#7a6b5f]');
+                this.classList.add('text-[#e6e0d4]');
+                
+                // Update filter
+                currentFilter = this.getAttribute('data-filter');
+                renderProjects();
             });
         });
-    });
-</script>
-
-
-    <!-- Add script for logo background that can't be done with inline styles -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add the pseudo-element effect that can't be done with inline styles
-            const logoElement = document.querySelector('.logo');
-            if (logoElement) {
-                // Create a div that will act as our :before pseudo-element
-                const beforeElement = document.createElement('div');
-                beforeElement.style.position = 'absolute';
-                beforeElement.style.top = '-6px';
-                beforeElement.style.left = '-3px';
-                beforeElement.style.right = '-3px';
-                beforeElement.style.bottom = '-6px';
-                beforeElement.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-                beforeElement.style.borderRadius = '8px';
-                beforeElement.style.zIndex = '-1';
+        
+        // Add event listener to search input
+        searchInput.addEventListener('input', function() {
+            currentSearch = this.value;
+            renderProjects();
+        });
+        
+        // Handle preview button clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.preview-btn')) {
+                const card = e.target.closest('[data-index]');
+                const index = parseInt(card.getAttribute('data-index'));
+                const project = projects[index];
                 
-                // Insert as first child to be below the logo
-                logoElement.insertBefore(beforeElement, logoElement.firstChild);
+                // Update dialog
+                dialogTitle.textContent = project.title;
+                dialogImage.src = project.previewUrl;
+                dialogImage.alt = project.title;
+                
+                // Show dialog
+                previewDialog.classList.add('opacity-100');
+                previewDialog.classList.add('pointer-events-auto');
+                previewDialog.querySelector('div').classList.add('translate-y-0');
+                previewDialog.querySelector('div').classList.add('opacity-100');
             }
+            
+            // Close dialog when clicking close button or outside
+            if (e.target === previewDialog || e.target === dialogClose) {
+                previewDialog.classList.remove('opacity-100');
+                previewDialog.classList.remove('pointer-events-auto');
+                previewDialog.querySelector('div').classList.remove('translate-y-0');
+                previewDialog.querySelector('div').classList.remove('opacity-100');
+            }
+        });
+        
+        // Handle download button clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.download-btn')) {
+                const card = e.target.closest('[data-index]');
+                const index = parseInt(card.getAttribute('data-index'));
+                const project = projects[index];
+                
+                // Simulate download
+                alert(`Downloading ${project.title}.${project.fileType}`);
+            }
+        });
+        
+        // Load footer
+        function loadFooter() {
+            fetch('html/_footer.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Footer not found');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    const placeholder = document.getElementById('footer-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = html;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading footer:', error);
+                    const placeholder = document.getElementById('footer-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = '<p class="text-center text-red-500">Error loading footer content.</p>';
+                    }
+                });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set active tab
+            filterTabs[0].classList.add('bg-[#7a6b5f]');
+            filterTabs[0].classList.add('text-[#e6e0d4]');
+            
+            // Render projects
+            renderProjects();
+            
+            // Load footer
+            loadFooter();
         });
     </script>
 </body>
