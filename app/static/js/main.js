@@ -61,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize animations for elements when they come into view
     initScrollAnimations();
+
+    // Initialize mobile navigation
+    initMobileNavigation();
 });
 
 // Initialize chatbot functionality
@@ -1461,5 +1464,49 @@ function getRowSize() {
         return 4; // 2 rows of 2 cards
     } else {
         return 2; // 2 rows of 1 card
+    }
+}
+
+// Function to handle mobile navigation
+function initMobileNavigation() {
+    const menuToggle = document.createElement('button');
+    menuToggle.className = 'menu-toggle';
+    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    
+    const navbar = document.querySelector('.navbar');
+    const navLinks = document.querySelector('.nav-links');
+    
+    // Insert menu toggle button after logo
+    if (navbar && !document.querySelector('.menu-toggle')) {
+        navbar.insertBefore(menuToggle, navbar.querySelector('.social-links'));
+        
+        // Toggle menu on click
+        menuToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            
+            // Change icon based on menu state
+            if (navLinks.classList.contains('active')) {
+                menuToggle.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!navbar.contains(event.target) && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+        
+        // Close menu when clicking on a nav link
+        const navItems = navLinks.querySelectorAll('a');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navLinks.classList.remove('active');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
     }
 }
