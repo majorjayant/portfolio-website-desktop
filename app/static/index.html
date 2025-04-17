@@ -71,6 +71,90 @@
         }
     </style>
     
+    <!-- Loader Styles -->
+    <style>
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: linear-gradient(to bottom, #f0f9ff, #fff5f0);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        #loader-wrapper.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.2s;
+            opacity: 0;
+        }
+
+        #loader-logo {
+            width: 160px;
+            height: auto;
+            margin-bottom: 48px;
+        }
+
+        #loader-progress-bar {
+            width: 256px;
+            height: 4px;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 0.4s forwards 0.4s;
+        }
+
+        #loader-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #4fd1c5, #cbd5e0, #ed8936);
+            transition: width 0.5s ease;
+        }
+
+        #loader-text {
+            margin-top: 16px;
+            color: #4a5568;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeIn 0.4s forwards 0.6s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+    
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon">
     
@@ -104,137 +188,706 @@
       gtag('config', 'G-7V83S2VX93');
     </script>
     
-    <!-- Add loader styles -->
-    <style>
-        /* Loader styles */
-        .page-loader {
-            position: fixed;
-            inset: 0;
-            display: flex;
+<style>
+    /* About section styles */
+    .about-section {
+        padding: 6rem 0;
+        background-color: #f8f8f8;
+    }
+    
+    .about-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2rem;
+    }
+    
+    .text-main {
+        flex-basis: 45%;
+        flex-grow: 1;
+        opacity: 1;
+        transition: all 0.5s ease;
+    }
+    
+    .text-main h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #7a6b5f;
+    }
+    
+    .text-main .intro {
+        font-size: 1.8rem;
+        font-weight: 400;
+        margin-bottom: 1.5rem;
+        color: #555;
+        line-height: 1.4;
+    }
+    
+    .text-main .description {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: #666;
+    }
+    
+    .img-main {
+        flex-basis: 50%;
+        flex-grow: 1;
+        text-align: center;
+        opacity: 1;
+        transition: all 0.5s ease;
+    }
+    
+    .img-main img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .snaps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        justify-content: center;
+        margin-top: 4rem;
+        width: 100%;
+    }
+    
+    .photo-stack {
+        position: relative;
+        width: 250px;
+        height: 250px;
+        margin: 0 auto;
+        cursor: pointer;
+        perspective: 1000px;
+        transition: all 0.3s ease;
+        transform-style: preserve-3d;
+    }
+    
+    .photo-stack img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+        border: 5px solid #f3f3f3;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center center;
+        backface-visibility: hidden;
+    }
+    
+    /* Apply different initial rotations and positions to create stacked look */
+    .photo-stack img:nth-child(1) {
+        transform: translateZ(0) rotate(-8deg);
+        z-index: 3;
+    }
+    
+    .photo-stack img:nth-child(2) {
+        transform: translateZ(-20px) rotate(8deg);
+        z-index: 2;
+    }
+    
+    .photo-stack img:nth-child(3) {
+        transform: translateZ(-40px) rotate(-5deg);
+        z-index: 1;
+    }
+    
+    /* Hover effect - 3D transform */
+    .photo-stack:hover img:nth-child(1) {
+        transform: translateZ(50px) rotate(0deg) scale(1.2);
+        z-index: 4;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    .photo-stack:hover img:nth-child(2) {
+        transform: translateZ(-10px) rotate(0deg) scale(0.9);
+        z-index: 2;
+    }
+    
+    .photo-stack:hover img:nth-child(3) {
+        transform: translateZ(-30px) rotate(0deg) scale(0.8);
+        z-index: 1;
+    }
+    
+    /* Add a subtle animation for the stack */
+    @keyframes floatStack {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    .photo-stack {
+        animation: floatStack 3s ease-in-out infinite;
+    }
+    
+    /* Add transparent header on banner hover */
+    header {
+        transition: background-color 1s ease;
+    }
+    
+    .navbar {
+        transition: background-color 1s ease;
+    }
+    
+    .transparent-header .navbar {
+        background-color: transparent !important;
+        backdrop-filter: none;
+    }
+    
+    /* Modal styles */
+    .photo-modal {
+        display: none;
+        position: fixed;
+        z-index: 1100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+        animation: fadeIn 0.3s;
+    }
+    
+    .modal-content {
+        display: block;
+        position: relative;
+        margin: auto;
+        max-width: 90%;
+        max-height: 90vh;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .modal-content img {
+        width: 100%;
+        height: auto;
+        max-height: 85vh;
+        object-fit: contain;
+        border-radius: 4px;
+    }
+    
+    .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        z-index: 1101;
+    }
+    
+    .close-modal:hover,
+    .close-modal:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    @keyframes fadeIn {
+        from {opacity: 0}
+        to {opacity: 1}
+    }
+    
+    /* New Banner Styles with parallax effect */
+    #banner-section {
+        height: 100vh;
+        margin-top: 0;
+        position: relative;
+        overflow: hidden;
+        perspective: 1000px;
+    }
+
+    .parallax-container {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+    }
+
+    .parallax-layer {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-size: cover;
+        background-position: center;
+        transform-origin: center center; 
+        transition: transform 0.3s ease-out, opacity 0.5s ease-out;
+        z-index: 1;
+    }
+    
+    .layer-bg {
+        transform: translateZ(-50px) scale(1.265);
+    }
+    
+    .layer-1 {
+        background: rgba(0,0,0,0.25);
+        z-index: 2;
+    }
+    
+    .layer-2 {
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+        z-index: 3;
+    }
+
+    .banner-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #fff;
+        z-index: 4;
+    }
+    
+    /* Styles for the About section transition */
+    #about-section {
+        padding: 6rem 0;
+        background-color: #f8f8f8;
+        opacity: 0;
+        transform: scale(0.95);
+        position: relative;
+        z-index: 5;
+    }
+    
+    @media (max-width: 992px) {
+        .about-container {
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            background: linear-gradient(to bottom, #f0f9ff, #fff7ed);
-            transition: opacity 0.5s ease-out;
         }
-
-        .page-loader.loaded {
-            opacity: 0;
-            pointer-events: none;
+        
+        .text-main, .img-main {
+            flex-basis: 100%;
         }
-
-        .loader-logo {
-            width: 160px;
-            height: auto;
-            margin-bottom: 48px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        
+        .text-main h1 {
+            font-size: 3rem;
         }
-
-        .loader-bar-container {
-            width: 256px;
-            height: 4px;
-            background-color: #e2e8f0;
-            border-radius: 9999px;
-            overflow: hidden;
-            opacity: 0;
-            animation: fadeIn 0.4s ease-out 0.4s forwards;
+        
+        .text-main .intro {
+            font-size: 1.5rem;
         }
-
-        .loader-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(to right, #0ea5e9, #64748b, #f97316);
-            transition: width 0.5s ease-out;
+        
+        .snaps {
+            grid-template-columns: repeat(2, 1fr);
         }
-
-        .loader-text {
-            margin-top: 16px;
-            color: #475569;
-            font-weight: 300;
-            opacity: 0;
-            animation: fadeIn 0.4s ease-out 0.6s forwards;
+        
+        .modal-content {
+            max-width: 90%;
         }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+    }
+    
+    @media (max-width: 576px) {
+        .text-main h1 {
+            font-size: 2.5rem;
         }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        
+        .snaps {
+            grid-template-columns: 1fr;
         }
+    }
 
-        /* Hide main content initially */
-        body.loading {
-            overflow: hidden;
+    /* Updated Photo Carousel Styles */
+    .photo-carousel-container {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        margin: 100px auto;
+        perspective: 2000px;
+        overflow: visible;
+    }
+
+    .photo-carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.1s ease-out;
+    }
+
+    .photo-carousel .photo-item {
+        position: absolute;
+        width: 350px;
+        height: 350px;
+        left: 50%;
+        top: 50%;
+        transform-origin: center center -300px;
+        backface-visibility: hidden;
+        overflow: hidden;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        background: #fff;
+    }
+
+    .photo-carousel .photo-item:hover {
+        transform: translate(-50%, -50%) scale(1.1) translateZ(50px);
+        z-index: 100;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+
+    .photo-carousel .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 8px solid #f3f3f3;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .photo-carousel .photo-item:hover img {
+        transform: scale(1.05);
+    }
+
+    /* Carousel navigation controls */
+    .carousel-controls {
+        position: absolute;
+        bottom: -80px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        z-index: 5;
+    }
+
+    .carousel-controls button {
+        width: 60px;
+        height: 60px;
+        border: none;
+        border-radius: 50%;
+        background-color: rgba(122, 107, 95, 0.8);
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .carousel-controls button:hover {
+        background-color: rgba(122, 107, 95, 1);
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    .carousel-controls button:active {
+        transform: translateY(0) scale(0.95);
+    }
+
+    /* Carousel progress indicator */
+    .carousel-progress {
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 300px;
+        height: 6px;
+        background-color: rgba(0,0,0,0.1);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .carousel-progress-bar {
+        height: 100%;
+        width: 0;
+        background-color: #7a6b5f;
+        transition: width 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        .photo-carousel-container {
+            height: 500px;
         }
-
-        body.loading main,
-        body.loading header,
-        body.loading footer {
-            opacity: 0;
+        
+        .photo-carousel .photo-item {
+            width: 280px;
+            height: 280px;
+            transform-origin: center center -200px;
         }
-    </style>
-</head>
-<body class="loading">
-    <!-- Page Loader -->
-    <div class="page-loader">
-        <img src="/img/logo.png" alt="JPG Logo" class="loader-logo">
-        <div class="loader-bar-container">
-            <div class="loader-bar"></div>
-        </div>
-        <p class="loader-text">Loading...</p>
-    </div>
+    }
 
-    <!-- Add loader script -->
+    /* 3D Carousel Styles */
+    :root {
+        --crsl-bg: transparent;
+        --box-bg: #1e272e;
+        --box-shadow: #0000001c;
+        --box-shadow-border: #0000000f;
+        --box-border: #e6e0d4;
+    }
+
+    .carousel {
+        position: relative;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding-top: 20px;
+        margin-top: -40px;
+    }
+
+    .carousel__body {
+        width: 100%;
+        padding: 40px 0 40px 0; /* Adjust bottom padding now buttons are gone */
+        overflow: visible; 
+    }
+
+    .carousel__slider {
+        position: relative;
+        transition: transform 1s ease-in-out;
+        background: var(--crsl-bg);
+        z-index: 1;
+        will-change: transform;
+    }
+
+    .carousel__slider__item {
+        position: relative;
+        display: block;
+        float: left;
+        box-sizing: border-box;
+        margin-left: 20px;
+        margin-right: 20px;
+        will-change: transform;
+    }
+
+    .item__3d-frame {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 1s ease-in-out;
+        transform-style: preserve-3d;
+        will-change: transform;
+    }
+
+    .item__3d-frame:after {
+        content: '';
+        position: absolute;
+        bottom: -15%;
+        width: 100%;
+        height: 40px;
+        background: var(--box-shadow);
+        box-shadow: 0px 0px 5px 5px var(--box-shadow);
+        transform: rotateX(90deg) translate3d(0px, -20px, 0px);
+        opacity: 0.85;
+    }
+
+    .item__3d-frame__box {
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        text-align: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        border-color: var(--box-border);
+        background: var(--box-bg);
+        border-width: 3px;
+        border-style: solid;
+        border-radius: 15px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .item__3d-frame__box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .item__3d-frame__box:hover img {
+        transform: scale(1.1);
+    }
+
+    .item__3d-frame__box--right, .item__3d-frame__box--left {
+        top: 0;
+        width: 40px;
+        backface-visibility: hidden;
+        border-color: var(--box-border);
+        background: var(--box-bg);
+        border-width: 3px;
+        border-style: solid;
+        border-radius: 15px;
+    }
+
+    .item__3d-frame__box--left {
+        left: 0;
+        border-left-width: 5px;
+        transform: translate3d(1px, 0, -40px) rotateY(-90deg);
+        transform-origin: 0%;
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .item__3d-frame__box--right {
+        right: 0;
+        border-right-width: 5px;
+        transform: translate3d(-1px, 0, -40px) rotateY(90deg);
+        transform-origin: 100%;
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    
+    @media (max-width: 768px) {
+        /* .carousel__prev { left: 10px; } */
+        /* .carousel__next { right: 10px; } */
+    }
+
+    @media (max-width: 480px) {
+        /* .carousel__prev { left: 5px; } */
+        /* .carousel__next { right: 5px; } */
+        /* .carousel__prev i, .carousel__next i { ... } */
+        /* .carousel__prev, .carousel__next { ... } */
+    }
+    
+    /* Auto-rotation animation for entire carousel (not used, we're using JS control) */
+    @keyframes carousel-rotate {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+    }
+
+    /* Reduce space between carousel and work experience section */
+    .experience-section {
+        margin-top: 0px;
+        position: relative;
+        z-index: 0;
+    }
+
+    /* Styles for Transparent Header Text/Icons */
+    header.transparent-header .nav-links a,
+    header.transparent-header .social-links a i {
+        color: #333333 !important; /* Dark grey for transparent header */
+        text-shadow: none; /* Remove text shadow for better readability on light banner */
+    }
+    
+    header.transparent-header .navbar .logo img {
+        filter: none; /* Remove drop shadow on logo when header is transparent */
+    }
+    
+    /* Default Header Text/Icons (when header is NOT transparent) */
+    header:not(.transparent-header) .nav-links a,
+    header:not(.transparent-header) .social-links a i {
+        color: #e6e0d4; /* Original light color */
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Restore text shadow */
+    }
+    
+    header:not(.transparent-header) .navbar .logo img {
+         filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4)); /* Restore logo shadow */
+    }
+</style>
+
+    
+    <!-- Netlify deployment fix -->
     <script>
+        // Handle case when SiteConfig not available (static sites)
         document.addEventListener('DOMContentLoaded', function() {
-            const loader = document.querySelector('.page-loader');
-            const loaderBar = document.querySelector('.loader-bar');
-            let progress = 0;
-
-            // Simulate loading progress
-            const progressInterval = setInterval(() => {
-                if (progress < 100) {
-                    progress += 10;
-                    loaderBar.style.width = `${progress}%`;
-                } else {
-                    clearInterval(progressInterval);
-                    setTimeout(() => {
-                        document.body.classList.remove('loading');
-                        loader.classList.add('loaded');
-                        // Remove loader from DOM after animation
-                        setTimeout(() => loader.remove(), 500);
-                    }, 500);
+            // Check if any of the image elements failed to load
+            const fixBrokenImages = function() {
+                // S3 fallback URLs
+                const fallbacks = {
+                    'favicon': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/FavIcon',
+                    'logo': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Logo',
+                    'banner': 'https://website-majorjayant.s3.eu-north-1.amazonaws.com/Group+10+(1).png'
+                };
+                
+                // Fix header logo
+                const headerLogo = document.querySelector('.navbar .logo img');
+                if (headerLogo && (!headerLogo.complete || headerLogo.naturalWidth === 0)) {
+                    headerLogo.src = fallbacks.logo;
                 }
-            }, 200);
-
-            // Fallback: Hide loader if it takes too long
-            setTimeout(() => {
-                if (loader && !loader.classList.contains('loaded')) {
-                    clearInterval(progressInterval);
-                    document.body.classList.remove('loading');
-                    loader.classList.add('loaded');
-                    setTimeout(() => loader.remove(), 500);
+                
+                // Fix footer logo 
+                const footerLogo = document.querySelector('.footer-logo img');
+                if (footerLogo && (!footerLogo.complete || footerLogo.naturalWidth === 0)) {
+                    footerLogo.src = fallbacks.logo;
                 }
-            }, 5000);
+                
+                // Fix favicon
+                const favicon = document.querySelector('link[rel="icon"]');
+                if (favicon) {
+                    favicon.href = fallbacks.favicon;
+                }
+                
+                // Fix styles if needed
+                const fixStyles = function() {
+                    // Fix header styles
+                    const navbar = document.querySelector('.navbar');
+                    if (navbar) {
+                        navbar.style.backgroundColor = 'transparent';
+                        navbar.style.backdropFilter = 'none';
+                    }
+                    
+                    // Fix logo styles
+                    if (headerLogo) {
+                        headerLogo.style.height = '70px';
+                        headerLogo.style.width = 'auto';
+                        headerLogo.style.display = 'block';
+                    }
+                    
+                    // Fix navigation
+                    const navLinks = document.querySelector('.nav-links');
+                    if (navLinks) {
+                        navLinks.style.marginLeft = 'auto';
+                        navLinks.style.textAlign = 'right';
+                    }
+                    
+                    const navLinksList = document.querySelector('.nav-links ul');
+                    if (navLinksList) {
+                        navLinksList.style.display = 'flex';
+                        navLinksList.style.justifyContent = 'flex-end';
+                        navLinksList.style.padding = '0';
+                        navLinksList.style.margin = '0';
+                    }
+                    
+                    // Fix banner
+                    const bannerImage = document.getElementById('banner-image');
+                    if (bannerImage) {
+                        bannerImage.style.backgroundSize = 'contain';
+                        bannerImage.style.backgroundPosition = 'center';
+                        bannerImage.style.backgroundRepeat = 'no-repeat';
+                    }
+                    
+                    // Fix footer logo
+                    if (footerLogo) {
+                        footerLogo.style.maxWidth = '100px';
+                        footerLogo.style.maxHeight = '60px';
+                    }
+                };
+                
+                fixStyles();
+            };
+            
+            // Run immediately and also after a short delay to catch slow-loading elements
+            fixBrokenImages();
+            setTimeout(fixBrokenImages, 1000);
         });
     </script>
-
+</head>
+<body>
+    <!-- Loader -->
+    <div id="loader-wrapper">
+        <div id="loader-content">
+            <img id="loader-logo" src="assets/logo.png" alt="Logo">
+            <div id="loader-progress-bar">
+                <div id="loader-progress"></div>
+            </div>
+            <div id="loader-text">Loading...</div>
+        </div>
+    </div>
+    
     <!-- Navigation Bar -->
     <header>
         <nav class="navbar">
@@ -1217,6 +1870,51 @@
             });
             
             console.log('✅ Timeline items alternating classes applied');
+        });
+    </script>
+
+    <!-- Loader Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loader = document.getElementById('loader-wrapper');
+            const progress = document.getElementById('loader-progress');
+            const loadingText = document.getElementById('loader-text');
+            const loadingStates = ['Loading...', 'Almost there...', 'Just a moment...'];
+            let currentState = 0;
+            
+            // Simulate loading progress
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loader.classList.add('hidden');
+                    }, 500);
+                    return;
+                }
+                
+                width += Math.random() * 15;
+                if (width > 100) width = 100;
+                progress.style.width = width + '%';
+                
+                // Update loading text
+                if (width > 30 && currentState === 0) {
+                    loadingText.textContent = loadingStates[1];
+                    currentState = 1;
+                } else if (width > 70 && currentState === 1) {
+                    loadingText.textContent = loadingStates[2];
+                    currentState = 2;
+                }
+            }, 200);
+            
+            // Ensure loader is hidden even if loading takes too long
+            setTimeout(() => {
+                clearInterval(interval);
+                progress.style.width = '100%';
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                }, 500);
+            }, 5000);
         });
     </script>
 </body>
