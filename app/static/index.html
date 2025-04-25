@@ -51,6 +51,8 @@
             position: relative !important;
             z-index: 1 !important;
         }
+        /* Commenting out the stacked background effect */
+        /*
         .experience-drawers:before,
         .experience-drawers:after {
             content: '' !important;
@@ -69,6 +71,7 @@
         .experience-drawers:after {
             transform: rotate(-1deg) scale(1.05) !important;
         }
+        */
     </style>
     
     <!-- Loader Styles -->
@@ -1713,6 +1716,62 @@
                     layer2.style.transform = 'translate(0, 0)';
                 });
             }
+        });
+    </script>
+
+    <!-- Add auto-rotation for Education Carousel -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-rotate education carousel
+            const educationCarousel = document.querySelector('.education-carousel');
+            const educationTrack = document.querySelector('.education-carousel-track');
+            const educationCards = document.querySelectorAll('.education-card');
+            
+            if (!educationCarousel || !educationTrack || educationCards.length === 0) {
+                console.log('Education carousel elements not found');
+                return;
+            }
+            
+            let currentCardIndex = 0;
+            const cardWidth = educationCards[0].offsetWidth;
+            const totalCards = educationCards.length;
+            
+            // Hide the navigation arrows with CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                .education-container .carousel-nav {
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                    visibility: hidden !important;
+                }
+                
+                .education-carousel-track {
+                    transition: transform 0.8s ease-in-out !important;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Function to move to the next card
+            function moveToNextCard() {
+                currentCardIndex = (currentCardIndex + 1) % totalCards;
+                const translateX = -currentCardIndex * (cardWidth + 20); // 20px for margin
+                educationTrack.style.transform = `translateX(${translateX}px)`;
+            }
+            
+            // Set interval for auto-rotation - adjust the timing as needed (5000ms = 5 seconds)
+            const autoRotationInterval = setInterval(moveToNextCard, 5000);
+            
+            // Optional: Pause rotation on hover
+            educationCarousel.addEventListener('mouseenter', function() {
+                clearInterval(autoRotationInterval);
+            });
+            
+            educationCarousel.addEventListener('mouseleave', function() {
+                clearInterval(autoRotationInterval);
+                autoRotationInterval = setInterval(moveToNextCard, 5000);
+            });
+            
+            console.log('Education carousel auto-rotation initialized');
         });
     </script>
 

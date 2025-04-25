@@ -1034,6 +1034,15 @@ function initEducationCarousel() {
         return;
     }
     
+    // Hide navigation arrows
+    prevButton.style.opacity = '0';
+    prevButton.style.visibility = 'hidden';
+    prevButton.style.pointerEvents = 'none';
+    
+    nextButton.style.opacity = '0';
+    nextButton.style.visibility = 'hidden';
+    nextButton.style.pointerEvents = 'none';
+    
     let currentIndex = 0;
     const cardWidth = cards[0].offsetWidth + 24; // Add gap
     
@@ -1076,10 +1085,8 @@ function initEducationCarousel() {
         
         // Update button states (disabled when at start/end)
         prevButton.disabled = currentIndex === 0;
-        prevButton.style.opacity = currentIndex === 0 ? '0.5' : '1';
         
         nextButton.disabled = currentIndex >= cards.length - cardsPerView;
-        nextButton.style.opacity = currentIndex >= cards.length - cardsPerView ? '0.5' : '1';
     }
     
     // Enable touch swipe for mobile
@@ -1114,6 +1121,38 @@ function initEducationCarousel() {
             }
         }
     }
+    
+    // Auto-rotation functionality
+    let autoRotationInterval;
+    
+    function startAutoRotation() {
+        // Clear any existing interval first
+        clearInterval(autoRotationInterval);
+        
+        // Set interval for auto-rotation - 5 seconds between movements
+        autoRotationInterval = setInterval(() => {
+            if (currentIndex < cards.length - cardsPerView) {
+                // Go to next card
+                currentIndex++;
+            } else {
+                // Reset to first card when we reach the end
+                currentIndex = 0;
+            }
+            positionCards();
+        }, 5000);
+    }
+    
+    // Pause rotation on hover
+    track.parentNode.addEventListener('mouseenter', () => {
+        clearInterval(autoRotationInterval);
+    });
+    
+    track.parentNode.addEventListener('mouseleave', () => {
+        startAutoRotation();
+    });
+    
+    // Start the auto-rotation
+    startAutoRotation();
 }
 
 // Fetch education data

@@ -77,7 +77,7 @@
   z-index: 1 !important;
 }
 
-/* Skeleton background effect */
+/* Skeleton background effect 
 .experience-drawers:before,
 .experience-drawers:after {
   content: '' !important;
@@ -86,10 +86,10 @@
   left: -20px !important;
   right: -20px !important;
   bottom: -20px !important;
-  background-color: rgba(26, 26, 26, 0.3) !important; /* Dark background with opacity */
+  background-color: rgba(26, 26, 26, 0.3) !important; /* Dark background with opacity 
   border-radius: 24px !important;
   z-index: -1 !important;
-}
+} 
 
 .experience-drawers:before {
   transform: rotate(1deg) scale(1.05) !important;
@@ -97,7 +97,7 @@
 
 .experience-drawers:after {
   transform: rotate(-1deg) scale(1.05) !important;
-}
+} */
 
 /* ===== DRAWER STYLES ===== */
 .experience-drawer {
@@ -493,7 +493,7 @@
     text-align: left !important;
   }
   
-  /* Adjust background shapes on mobile */
+  /* Adjust background shapes on mobile 
   .experience-drawers:before,
   .experience-drawers:after {
     display: block !important;
@@ -503,7 +503,7 @@
     bottom: -8px !important;
     border-radius: 12px !important;
     opacity: 0.7 !important;
-  }
+  }*/
   
   /* Drawer adjustments for mobile */
   .experience-drawer {
@@ -677,20 +677,21 @@
 /* Smallest screens adjustments */
 @media (max-width: 320px) {
   .experience-section .section-title {
-    font-size: 1.5rem !important;
-    margin-bottom: 2rem !important;
+    font-size: 2.5rem !important;
+    margin-bottom: 1rem !important;
     text-align: left !important;
   }
   
   .experience-section .section-title:after {
     left: 0 !important;
     transform: none !important;
-    width: 50px !important;
+    width: 80px !important;
+    height: 4px !important;
   }
   
   .experience-drawer {
     padding: 8px 12px !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 2px !important;
   }
   
   .drawer-title-company h3 {

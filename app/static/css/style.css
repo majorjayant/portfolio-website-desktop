@@ -3349,9 +3349,10 @@ main .certifications-section {
 
 .education-carousel-track {
   display: flex;
-  gap: 1.5rem;
-  transition: transform 0.5s ease;
-  will-change: transform;
+  gap: 24px;
+  padding: 10px 0;
+  position: relative;
+  transition: transform 0.8s ease-in-out; /* Increased from default for smoother transitions */
 }
 
 .education-card {
@@ -4905,9 +4906,10 @@ main .certifications-section {
 
 .education-carousel-track {
   display: flex;
-  gap: 1.5rem;
-  transition: transform 0.5s ease;
-  will-change: transform;
+  gap: 24px;
+  padding: 10px 0;
+  position: relative;
+  transition: transform 0.8s ease-in-out; /* Increased from default for smoother transitions */
 }
 
 .education-card {
@@ -6461,9 +6463,10 @@ main .certifications-section {
 
 .education-carousel-track {
   display: flex;
-  gap: 1.5rem;
-  transition: transform 0.5s ease;
-  will-change: transform;
+  gap: 24px;
+  padding: 10px 0;
+  position: relative;
+  transition: transform 0.8s ease-in-out; /* Increased from default for smoother transitions */
 }
 
 .education-card {
