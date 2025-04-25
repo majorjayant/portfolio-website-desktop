@@ -240,7 +240,118 @@
                                             </button>
                                         </div>
                                     </div>
-
+                                    
+                                    <!-- Skills Section -->
+                                    <div class="mb-8">
+                                        <h3 class="text-lg font-medium text-gray-900 mb-4">Skills</h3>
+                                        
+                                        <!-- Key Metrics Section -->
+                                        <div class="mb-6">
+                                            <h4 class="text-md font-medium text-gray-800 mb-2">Key Metrics</h4>
+                                            <div id="key-metrics-container" class="space-y-4">
+                                                <!-- Key metrics items will be dynamically added here -->
+                                                <p id="key-metrics-loading-message" class="text-gray-500">Loading key metrics data...</p>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button type="button" id="add-key-metric-button" class="inline-flex items-center px-3 py-1 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Add Key Metric
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Skills Proficiency Section -->
+                                        <div class="mb-6">
+                                            <h4 class="text-md font-medium text-gray-800 mb-2">Skills Proficiency</h4>
+                                            <div id="skills-proficiency-container" class="space-y-4">
+                                                <!-- Skills proficiency items will be dynamically added here -->
+                                                <p id="skills-proficiency-loading-message" class="text-gray-500">Loading skills proficiency data...</p>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button type="button" id="add-skill-proficiency-button" class="inline-flex items-center px-3 py-1 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Add Skill
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Areas of Expertise Section -->
+                                        <div class="mb-6">
+                                            <h4 class="text-md font-medium text-gray-800 mb-2">Areas of Expertise</h4>
+                                            <div id="expertise-container" class="space-y-4">
+                                                <!-- Expertise items will be dynamically added here -->
+                                                <p id="expertise-loading-message" class="text-gray-500">Loading expertise data...</p>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button type="button" id="add-expertise-button" class="inline-flex items-center px-3 py-1 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Add Expertise Item
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Toolkit Section -->
+                                        <div class="mb-6">
+                                            <h4 class="text-md font-medium text-gray-800 mb-2">Toolkit</h4>
+                                            <!-- Toolkit Categories -->
+                                            <div class="mb-3">
+                                                <h5 class="text-sm font-medium text-gray-700 mb-1">Categories</h5>
+                                                <div id="toolkit-categories-container" class="space-y-3">
+                                                    <!-- Toolkit category items will be dynamically added here -->
+                                                    <p id="toolkit-categories-loading-message" class="text-gray-500">Loading toolkit categories...</p>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button type="button" id="add-toolkit-category-button" class="inline-flex items-center px-3 py-1 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                        <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        Add Category
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Toolkit Items -->
+                                            <div>
+                                                <h5 class="text-sm font-medium text-gray-700 mb-1">Tools</h5>
+                                                <div id="toolkit-items-container" class="space-y-3">
+                                                    <!-- Toolkit items will be dynamically added here -->
+                                                    <p id="toolkit-items-loading-message" class="text-gray-500">Loading toolkit items...</p>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button type="button" id="add-toolkit-item-button" class="inline-flex items-center px-3 py-1 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                        <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        Add Tool
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Domain Experience Section -->
+                                        <div class="mb-6">
+                                            <h4 class="text-md font-medium text-gray-800 mb-2">Domain Experience</h4>
+                                            <div id="domain-experience-container" class="space-y-4">
+                                                <!-- Domain experience items will be dynamically added here -->
+                                                <p id="domain-experience-loading-message" class="text-gray-500">Loading domain experience data...</p>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button type="button" id="add-domain-experience-button" class="inline-flex items-center px-3 py-1 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Add Domain Experience
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     <!-- Template for new work experience items -->
                                     <template id="work-experience-template">
                                         <div class="work-experience-item bg-gray-50 rounded-md p-4 my-4 border border-gray-200">
@@ -762,136 +873,164 @@
             
             console.log('Fetching from API endpoint:', apiEndpoint);
             
-            fetch(apiEndpoint, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                mode: 'cors',
-                credentials: 'omit'
-            })
-            .then(response => {
-                console.log('API response status:', response.status);
-                if (!response.ok) {
-                    throw new Error(`API response not OK: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Successfully loaded site config from API:', data);
-                
-                // Hide loading indicator and show form
-                loadingIndicator.classList.add('hidden');
-                formContainer.classList.remove('hidden');
-                
-                // Fix: Pass the site_config object instead of the entire response
-                populateForm(data.site_config);
-                
-                // Load work experience data if available
-                if (data.work_experience) {
-                    loadWorkExperienceData(data.work_experience);
-                } else {
-                    // Fetch work experience data separately if not included in site config
-                    fetchWorkExperienceData();
-                }
-                
-                // Load education data if available
-                if (data.education) {
-                    loadEducationData(data.education);
-                } else {
-                    // Fetch education data separately if not included in site config
-                    fetchEducationData();
-                }
-                
-                // Load certification data if available
-                if (data.certifications) {
-                    loadCertificationData(data.certifications);
-                } else {
-                    // Fetch certification data separately if not included in site config
-                    fetchCertificationData();
-                }
-            })
-            .catch(error => {
-                console.error('Error loading from API:', error);
-                
-                // Hide loading indicator
-                loadingIndicator.classList.add('hidden');
-                
-                // Show error message
-                apiError.classList.remove('hidden');
-                apiError.textContent = 'Error loading configuration data: ' + error.message;
-                setTimeout(() => {
-                    apiError.classList.add('hidden');
-                }, 5000);
-                
-                // Try loading from local JSON file as fallback
-                console.log('Trying to load from local JSON file');
-                fetch('/data/site_config.json')
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Loaded from local JSON:', data);
-                        let configData = data;
-                        if (data.site_configs) {
-                            configData = data.site_configs;
+            // Fetch site config data from the API
+            fetch('/api/get_config_all')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Successfully loaded site config from API:', data);
+                    
+                    // Hide loading indicator and show form
+                    loadingIndicator.classList.add('hidden');
+                    formContainer.classList.remove('hidden');
+                    
+                    // Fix: Pass the site_config object instead of the entire response
+                    populateForm(data.site_config);
+                    
+                    // Load work experience data if available
+                    if (data.work_experience) {
+                        loadWorkExperienceData(data.work_experience);
+                    } else {
+                        // Fetch work experience data separately if not included in site config
+                        fetchWorkExperienceData();
+                    }
+                    
+                    // Load education data if available
+                    if (data.education) {
+                        loadEducationData(data.education);
+                    } else {
+                        // Fetch education data separately if not included in site config
+                        fetchEducationData();
+                    }
+                    
+                    // Load certification data if available
+                    if (data.certifications) {
+                        loadCertificationData(data.certifications);
+                    } else {
+                        // Fetch certification data separately if not included in site config
+                        fetchCertificationData();
+                    }
+                    
+                    // Load skills data if available
+                    if (data.skills) {
+                        // Load Key Metrics
+                        if (data.skills.key_metrics) {
+                            loadKeyMetricsData(data.skills.key_metrics);
+                        } else {
+                            addKeyMetricItem();
                         }
-                        if (data.site_config) {
-                            configData = data.site_config;
+                        
+                        // Load Skills Proficiency
+                        if (data.skills.skills_proficiency) {
+                            loadSkillProficiencyData(data.skills.skills_proficiency);
+                        } else {
+                            addSkillProficiencyItem();
                         }
-                        populateForm(configData);
-                        formContainer.classList.remove('hidden');
                         
-                        // Try to load work experience data from local file
-                        fetch('/data/experience.json')
-                            .then(response => response.json())
-                            .then(expData => {
-                                loadWorkExperienceData(expData);
-                            })
-                            .catch(err => {
-                                console.error('Error loading work experience from local JSON:', err);
-                                // Add empty work experience item
-                                addWorkExperienceItem();
-                            });
-                            
-                        // Try to load education data from local file
-                        fetch('/data/education.json')
-                            .then(response => response.json())
-                            .then(eduData => {
-                                loadEducationData(eduData);
-                            })
-                            .catch(err => {
-                                console.error('Error loading education from local JSON:', err);
-                                // Add empty education item
-                                addEducationItem();
-                            });
-                            
-                        // Try to load certification data from local file
-                        fetch('/data/certifications.json')
-                            .then(response => response.json())
-                            .then(certData => {
-                                loadCertificationData(certData);
-                            })
-                            .catch(err => {
-                                console.error('Error loading certifications from local JSON:', err);
-                                // Add empty certification item
-                                addCertificationItem();
-                            });
-                    })
-                    .catch(localError => {
-                        console.error('Error loading from local JSON:', localError);
-                        // Show form anyway with empty values
-                        formContainer.classList.remove('hidden');
+                        // Load Areas of Expertise
+                        if (data.skills.areas_of_expertise) {
+                            loadExpertiseData(data.skills.areas_of_expertise);
+                        } else {
+                            addExpertiseItem();
+                        }
                         
-                        // Add empty work experience item
-                        addWorkExperienceItem();
+                        // Load Toolkit Categories
+                        if (data.skills.toolkit_categories) {
+                            loadToolkitCategoriesData(data.skills.toolkit_categories);
+                        } else {
+                            addToolkitCategoryItem();
+                        }
                         
-                        // Add empty education item
-                        addEducationItem();
+                        // Load Toolkit Items
+                        if (data.skills.toolkit_items) {
+                            loadToolkitItemsData(data.skills.toolkit_items);
+                        } else {
+                            addToolkitItem();
+                        }
                         
-                        // Add empty certification item
-                        addCertificationItem();
-                    });
-            });
+                        // Load Domain Experience
+                        if (data.skills.domain_experience) {
+                            loadDomainExperienceData(data.skills.domain_experience);
+                        } else {
+                            addDomainExperienceItem();
+                        }
+                    } else {
+                        // Initialize empty skills sections
+                        addKeyMetricItem();
+                        addSkillProficiencyItem();
+                        addExpertiseItem();
+                        addToolkitCategoryItem();
+                        addToolkitItem();
+                        addDomainExperienceItem();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading data from API:', error);
+                    
+                    // Hide loading indicator and show form
+                    loadingIndicator.classList.add('hidden');
+                    formContainer.classList.remove('hidden');
+                    
+                    // Show error message
+                    const errorMessage = document.getElementById('error-message');
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Error loading data. Please try refreshing the page.';
+                        errorMessage.classList.remove('hidden');
+                    }
+                    
+                    // Try to load site config from local file
+                    fetch('/data/config.json')
+                        .then(response => response.json())
+                        .then(configData => {
+                            populateForm(configData);
+                        })
+                        .catch(err => {
+                            console.error('Error loading site config from local JSON:', err);
+                        });
+                    
+                    // Try to load work experience data from local file
+                    fetch('/data/experience.json')
+                        .then(response => response.json())
+                        .then(expData => {
+                            loadWorkExperienceData(expData);
+                        })
+                        .catch(err => {
+                            console.error('Error loading work experience from local JSON:', err);
+                            // Add empty work experience item
+                            addWorkExperienceItem();
+                        });
+                        
+                    // Try to load education data from local file
+                    fetch('/data/education.json')
+                        .then(response => response.json())
+                        .then(eduData => {
+                            loadEducationData(eduData);
+                        })
+                        .catch(err => {
+                            console.error('Error loading education from local JSON:', err);
+                            // Add empty education item
+                            addEducationItem();
+                        });
+                        
+                    // Try to load certification data from local file
+                    fetch('/data/certifications.json')
+                        .then(response => response.json())
+                        .then(certData => {
+                            loadCertificationData(certData);
+                        })
+                        .catch(err => {
+                            console.error('Error loading certifications from local JSON:', err);
+                            // Add empty certification item
+                            addCertificationItem();
+                        });
+                        
+                    // Initialize empty skills sections
+                    addKeyMetricItem();
+                    addSkillProficiencyItem();
+                    addExpertiseItem();
+                    addToolkitCategoryItem();
+                    addToolkitItem();
+                    addDomainExperienceItem();
+                });
         }
         
         // Populate form with site config data
@@ -958,6 +1097,21 @@
             
             // Get certification data
             const certificationData = getCertificationData();
+            
+            // Get skills data
+            const keyMetricsData = getKeyMetricsData();
+            const skillProficiencyData = getSkillProficiencyData();
+            const expertiseData = getExpertiseData();
+            const toolkitCategoriesData = getToolkitCategoriesData();
+            const toolkitItemsData = getToolkitItemsData();
+            const domainExperienceData = getDomainExperienceData();
+            
+            // Validate skills data
+            if (keyMetricsData === null || skillProficiencyData === null || expertiseData === null || 
+                toolkitCategoriesData === null || toolkitItemsData === null || domainExperienceData === null) {
+                console.error('Skills validation errors found');
+                return; // Don't submit if there are validation errors
+            }
 
             // Validate for required work experience fields
             const workExValidation = document.querySelectorAll('.workex-validation-error');
@@ -985,93 +1139,90 @@
                 certValidation[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return; // Don't submit if there are validation errors
             }
-            
-            // Show loading overlay
-            document.getElementById('loading-overlay').classList.remove('hidden');
 
-            // Use the API endpoint to send the data
-            const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?action=update_site_config';
-            
-            // Get the token from storage
-                const token = localStorage.getItem('admin_token');
-                
-            // Check if token exists
-                if (!token) {
-                console.error('No admin token found for authorization');
-                document.getElementById('loading-overlay').classList.add('hidden');
-                    
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
-                errorMsg.innerHTML = '<strong>Error:</strong> Authorization required. Please log in again.';
-                siteConfigForm.prepend(errorMsg);
-                
-                    setTimeout(() => {
-                    logout();
-                }, 2000);
-                    
-                    return;
-                }
-                
-            // Prepare the data to send
-            const payload = {
+            // Construct the data object to send
+            const dataToSend = {
                 site_config: siteConfigData,
                 work_experience: workExperienceData,
                 education: educationData,
-                certifications: certificationData
+                certifications: certificationData,
+                skills: {
+                    key_metrics: keyMetricsData,
+                    skills_proficiency: skillProficiencyData,
+                    areas_of_expertise: expertiseData,
+                    toolkit_categories: toolkitCategoriesData,
+                    toolkit_items: toolkitItemsData,
+                    domain_experience: domainExperienceData
+                }
             };
+
+            console.log('Data to send:', dataToSend);
             
-            console.log('Sending payload:', payload);
-                
-            fetch(apiEndpoint, {
-                    method: 'POST',
-                    headers: {
-                    'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                body: JSON.stringify(payload),
-                mode: 'cors'
+            // Show saving indicator
+            const savingIndicator = document.getElementById('saving-indicator');
+            const formActions = document.getElementById('form-actions');
+            
+            if (savingIndicator && formActions) {
+                savingIndicator.classList.remove('hidden');
+                formActions.classList.add('hidden');
+            }
+            
+            // Send the data to the backend
+            const apiUrl = '/api/save_config_all';
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataToSend)
             })
             .then(response => {
-                console.log('API response status:', response.status);
+                console.log('Response received:', response);
                 if (!response.ok) {
-                    throw new Error(`API response not OK: ${response.status}`);
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('Save successful:', data);
-
-                // Hide loading overlay
-                document.getElementById('loading-overlay').classList.add('hidden');
-                    
-                    // Show success message
-                const successMsg = document.createElement('div');
-                successMsg.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4';
-                successMsg.innerHTML = '<strong>Success:</strong> Changes saved successfully.';
-                siteConfigForm.prepend(successMsg);
-
-                // Remove message after a few seconds
-                    setTimeout(() => {
-                    successMsg.remove();
-                }, 5000);
-            })
-            .catch(error => {
-                console.error('Error saving data:', error);
+                console.log('Success:', data);
                 
-                // Hide loading overlay
-                document.getElementById('loading-overlay').classList.add('hidden');
+                // Show success message
+                const successMessage = document.getElementById('success-message');
+                if (successMessage) {
+                    successMessage.classList.remove('hidden');
+                    
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        successMessage.classList.add('hidden');
+                    }, 5000);
+                }
+                
+                // Hide saving indicator and show form actions
+                if (savingIndicator && formActions) {
+                    savingIndicator.classList.add('hidden');
+                    formActions.classList.remove('hidden');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
                 
                 // Show error message
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
-                errorMsg.innerHTML = `<strong>Error:</strong> ${error.message}`;
-                siteConfigForm.prepend(errorMsg);
+                const errorMessage = document.getElementById('error-message');
+                if (errorMessage) {
+                    errorMessage.classList.remove('hidden');
+                    
+                    // Hide error message after 5 seconds
+                    setTimeout(() => {
+                        errorMessage.classList.add('hidden');
+                    }, 5000);
+                }
                 
-                // Remove message after a few seconds
-                setTimeout(() => {
-                    errorMsg.remove();
-                }, 5000);
+                // Hide saving indicator and show form actions
+                if (savingIndicator && formActions) {
+                    savingIndicator.classList.add('hidden');
+                    formActions.classList.remove('hidden');
+                }
             });
         });
 
@@ -1733,8 +1884,393 @@
         // Initialize education function on load
         initEducation();
         
+        // Initialize skills function on load
+        initSkills();
+        
         // Initialize certifications function on load
         initCertifications();
+        
+        // Skills Functions
+        function initSkills() {
+            console.log('Initializing skills section');
+            
+            // Add event listeners to the "Add" buttons
+            document.getElementById('add-key-metric-button').addEventListener('click', function() {
+                addKeyMetricItem();
+            });
+            
+            document.getElementById('add-skill-proficiency-button').addEventListener('click', function() {
+                addSkillProficiencyItem();
+            });
+            
+            document.getElementById('add-expertise-button').addEventListener('click', function() {
+                addExpertiseItem();
+            });
+            
+            document.getElementById('add-toolkit-category-button').addEventListener('click', function() {
+                addToolkitCategoryItem();
+            });
+            
+            document.getElementById('add-toolkit-item-button').addEventListener('click', function() {
+                addToolkitItem();
+            });
+            
+            document.getElementById('add-domain-experience-button').addEventListener('click', function() {
+                addDomainExperienceItem();
+            });
+        }
+        
+        // Key Metrics Functions
+        function addKeyMetricItem(itemData = {}, index = Date.now()) {
+            console.log('Adding key metric item:', itemData);
+            const container = document.getElementById('key-metrics-container');
+            
+            // Remove loading message if present
+            const loadingMessage = document.getElementById('key-metrics-loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'key-metric-item bg-gray-50 rounded-md p-3 my-2 border border-gray-200';
+            itemDiv.dataset.id = itemData.metric_id || '';
+            
+            // Add marked-for-deletion class if loaded item is already marked
+            if (parseInt(itemData.is_deleted || 0) === 1) {
+                itemDiv.classList.add('marked-for-deletion');
+            }
+            
+            // Create the HTML structure for the key metric item
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-medium text-gray-700">Key Metric</h5>
+                    <button type="button" class="delete-key-metric-btn text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <input type="hidden" class="key-metric-id" value="${itemData.metric_id || ''}">
+                <input type="hidden" class="key-metric-is-deleted" value="${itemData.is_deleted || 0}">
+                
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-3">
+                        <label class="block text-sm font-medium text-gray-700">Metric Name <span class="text-red-500">*</span></label>
+                        <input type="text" class="key-metric-name mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.metric_name || ''}" required>
+                        <div class="key-metric-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Metric Value <span class="text-red-500">*</span></label>
+                        <input type="text" class="key-metric-value mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.metric_value || ''}" required>
+                        <div class="key-metric-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" class="key-metric-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.display_order || 0}" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for delete button
+            itemDiv.querySelector('.delete-key-metric-btn').addEventListener('click', function() {
+                toggleDeleteKeyMetricItem(itemDiv);
+            });
+            
+            // Add event listeners for validation
+            const requiredInputs = itemDiv.querySelectorAll('input[required]');
+            requiredInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateKeyMetricInput(input);
+                });
+                
+                // Validate on initial load
+                validateKeyMetricInput(input);
+            });
+            
+            // Add the item to the container
+            container.appendChild(itemDiv);
+        }
+        
+        function validateKeyMetricInput(input) {
+            // Find the closest validation error element
+            const errorElement = input.nextElementSibling;
+            
+            // Check if the input has a value
+            if (!input.value.trim()) {
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                errorElement.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+        
+        function toggleDeleteKeyMetricItem(itemDiv) {
+            // Toggle the marked-for-deletion class
+            itemDiv.classList.toggle('marked-for-deletion');
+            
+            // Update the is-deleted field
+            const isDeletedField = itemDiv.querySelector('.key-metric-is-deleted');
+            isDeletedField.value = itemDiv.classList.contains('marked-for-deletion') ? 1 : 0;
+        }
+        
+        function getKeyMetricsData() {
+            const keyMetricItems = document.querySelectorAll('.key-metric-item');
+            const data = [];
+            
+            keyMetricItems.forEach(item => {
+                // Check if the item is marked for deletion
+                const isDeleted = parseInt(item.querySelector('.key-metric-is-deleted').value || '0');
+                
+                // Get all field values
+                const id = item.querySelector('.key-metric-id').value || null;
+                const metricName = item.querySelector('.key-metric-name').value;
+                const metricValue = item.querySelector('.key-metric-value').value;
+                const displayOrder = parseInt(item.querySelector('.key-metric-display-order').value || '0');
+                
+                // Skip validation for items marked for deletion
+                if (isDeleted !== 1) {
+                    // Validate required fields
+                    const nameInput = item.querySelector('.key-metric-name');
+                    const valueInput = item.querySelector('.key-metric-value');
+                    
+                    const nameValid = validateKeyMetricInput(nameInput);
+                    const valueValid = validateKeyMetricInput(valueInput);
+                    
+                    if (!nameValid || !valueValid) {
+                        // If any validation fails, show the appropriate error and scroll to it
+                        const errorElement = item.querySelector('.key-metric-validation-error:not(.hidden)');
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return null; // Signal validation error
+                    }
+                }
+                
+                // Create data object
+                const keyMetricObject = {
+                    metric_id: id,
+                    metric_name: metricName,
+                    metric_value: metricValue,
+                    display_order: displayOrder,
+                    is_deleted: isDeleted
+                };
+                
+                // Add to the data array
+                data.push(keyMetricObject);
+            });
+            
+            return data;
+        }
+        
+        function loadKeyMetricsData(keyMetrics) {
+            console.log('Loading key metrics data:', keyMetrics);
+            
+            // Get the container
+            const container = document.getElementById('key-metrics-container');
+            if (!container) {
+                console.error('Key metrics container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no key metrics, add an empty one
+            if (!keyMetrics || keyMetrics.length === 0) {
+                addKeyMetricItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            keyMetrics.forEach(item => addKeyMetricItem(item));
+        }
+        
+        // Skills Proficiency Functions
+        function addSkillProficiencyItem(itemData = {}, index = Date.now()) {
+            console.log('Adding skill proficiency item:', itemData);
+            const container = document.getElementById('skills-proficiency-container');
+            
+            // Remove loading message if present
+            const loadingMessage = document.getElementById('skills-proficiency-loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'skill-proficiency-item bg-gray-50 rounded-md p-3 my-2 border border-gray-200';
+            itemDiv.dataset.id = itemData.skill_id || '';
+            
+            // Add marked-for-deletion class if loaded item is already marked
+            if (parseInt(itemData.is_deleted || 0) === 1) {
+                itemDiv.classList.add('marked-for-deletion');
+            }
+            
+            // Create the HTML structure for the skill proficiency item
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-medium text-gray-700">Skill Proficiency</h5>
+                    <button type="button" class="delete-skill-proficiency-btn text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <input type="hidden" class="skill-proficiency-id" value="${itemData.skill_id || ''}">
+                <input type="hidden" class="skill-proficiency-is-deleted" value="${itemData.is_deleted || 0}">
+                
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-3">
+                        <label class="block text-sm font-medium text-gray-700">Skill Name <span class="text-red-500">*</span></label>
+                        <input type="text" class="skill-proficiency-name mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.skill_name || ''}" required>
+                        <div class="skill-proficiency-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Proficiency % <span class="text-red-500">*</span></label>
+                        <input type="number" class="skill-proficiency-level mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.proficiency_level || 0}" min="0" max="100" required>
+                        <div class="skill-proficiency-validation-error hidden text-red-500 text-xs mt-1">This field is required and must be between 0-100</div>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" class="skill-proficiency-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.display_order || 0}" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for delete button
+            itemDiv.querySelector('.delete-skill-proficiency-btn').addEventListener('click', function() {
+                toggleDeleteSkillProficiencyItem(itemDiv);
+            });
+            
+            // Add event listeners for validation
+            const requiredInputs = itemDiv.querySelectorAll('input[required]');
+            requiredInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateSkillProficiencyInput(input);
+                });
+                
+                // Validate on initial load
+                validateSkillProficiencyInput(input);
+            });
+            
+            // Add the item to the container
+            container.appendChild(itemDiv);
+        }
+        
+        function validateSkillProficiencyInput(input) {
+            // Find the closest validation error element
+            const errorElement = input.nextElementSibling;
+            
+            // Check if the input has a value
+            if (!input.value.trim()) {
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } 
+            // Additional validation for proficiency level
+            else if (input.classList.contains('skill-proficiency-level')) {
+                const value = parseInt(input.value);
+                if (isNaN(value) || value < 0 || value > 100) {
+                    errorElement.classList.remove('hidden');
+                    input.classList.add('border-red-500');
+                    return false;
+                }
+            }
+            
+            // If all validation passes
+            errorElement.classList.add('hidden');
+            input.classList.remove('border-red-500');
+            return true;
+        }
+        
+        function toggleDeleteSkillProficiencyItem(itemDiv) {
+            // Toggle the marked-for-deletion class
+            itemDiv.classList.toggle('marked-for-deletion');
+            
+            // Update the is-deleted field
+            const isDeletedField = itemDiv.querySelector('.skill-proficiency-is-deleted');
+            isDeletedField.value = itemDiv.classList.contains('marked-for-deletion') ? 1 : 0;
+        }
+        
+        function getSkillProficiencyData() {
+            const skillProficiencyItems = document.querySelectorAll('.skill-proficiency-item');
+            const data = [];
+            
+            skillProficiencyItems.forEach(item => {
+                // Check if the item is marked for deletion
+                const isDeleted = parseInt(item.querySelector('.skill-proficiency-is-deleted').value || '0');
+                
+                // Get all field values
+                const id = item.querySelector('.skill-proficiency-id').value || null;
+                const skillName = item.querySelector('.skill-proficiency-name').value;
+                const proficiencyLevel = parseInt(item.querySelector('.skill-proficiency-level').value || '0');
+                const displayOrder = parseInt(item.querySelector('.skill-proficiency-display-order').value || '0');
+                
+                // Skip validation for items marked for deletion
+                if (isDeleted !== 1) {
+                    // Validate required fields
+                    const nameInput = item.querySelector('.skill-proficiency-name');
+                    const levelInput = item.querySelector('.skill-proficiency-level');
+                    
+                    const nameValid = validateSkillProficiencyInput(nameInput);
+                    const levelValid = validateSkillProficiencyInput(levelInput);
+                    
+                    if (!nameValid || !levelValid) {
+                        // If any validation fails, show the appropriate error and scroll to it
+                        const errorElement = item.querySelector('.skill-proficiency-validation-error:not(.hidden)');
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return null; // Signal validation error
+                    }
+                }
+                
+                // Create data object
+                const skillProficiencyObject = {
+                    skill_id: id,
+                    skill_name: skillName,
+                    proficiency_level: proficiencyLevel,
+                    display_order: displayOrder,
+                    is_deleted: isDeleted
+                };
+                
+                // Add to the data array
+                data.push(skillProficiencyObject);
+            });
+            
+            return data;
+        }
+        
+        function loadSkillProficiencyData(skillProficiencies) {
+            console.log('Loading skill proficiency data:', skillProficiencies);
+            
+            // Get the container
+            const container = document.getElementById('skills-proficiency-container');
+            if (!container) {
+                console.error('Skill proficiency container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no skill proficiencies, add an empty one
+            if (!skillProficiencies || skillProficiencies.length === 0) {
+                addSkillProficiencyItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            skillProficiencies.forEach(item => addSkillProficiencyItem(item));
+        }
         
         // Certifications Functions
         function initCertifications() {
@@ -2018,6 +2554,729 @@
                     addCertificationItem();
                 }
             }
+        }
+
+        // Areas of Expertise Functions
+        function addExpertiseItem(itemData = {}, index = Date.now()) {
+            console.log('Adding expertise item:', itemData);
+            const container = document.getElementById('expertise-container');
+            
+            // Remove loading message if present
+            const loadingMessage = document.getElementById('expertise-loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'expertise-item bg-gray-50 rounded-md p-3 my-2 border border-gray-200';
+            itemDiv.dataset.id = itemData.expertise_id || '';
+            
+            // Add marked-for-deletion class if loaded item is already marked
+            if (parseInt(itemData.is_deleted || 0) === 1) {
+                itemDiv.classList.add('marked-for-deletion');
+            }
+            
+            // Create the HTML structure for the expertise item
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-medium text-gray-700">Area of Expertise</h5>
+                    <button type="button" class="delete-expertise-btn text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <input type="hidden" class="expertise-id" value="${itemData.expertise_id || ''}">
+                <input type="hidden" class="expertise-is-deleted" value="${itemData.is_deleted || 0}">
+                
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Category <span class="text-red-500">*</span></label>
+                        <input type="text" class="expertise-category mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.expertise_category || ''}" required>
+                        <div class="expertise-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Expertise Item <span class="text-red-500">*</span></label>
+                        <input type="text" class="expertise-item-name mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.expertise_item || ''}" required>
+                        <div class="expertise-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Item Order</label>
+                        <input type="number" class="expertise-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.display_order || 0}" min="0">
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Category Order</label>
+                        <input type="number" class="expertise-category-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.category_display_order || 0}" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for delete button
+            itemDiv.querySelector('.delete-expertise-btn').addEventListener('click', function() {
+                toggleDeleteExpertiseItem(itemDiv);
+            });
+            
+            // Add event listeners for validation
+            const requiredInputs = itemDiv.querySelectorAll('input[required]');
+            requiredInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateExpertiseInput(input);
+                });
+                
+                // Validate on initial load
+                validateExpertiseInput(input);
+            });
+            
+            // Add the item to the container
+            container.appendChild(itemDiv);
+        }
+        
+        function validateExpertiseInput(input) {
+            // Find the closest validation error element
+            const errorElement = input.nextElementSibling;
+            
+            // Check if the input has a value
+            if (!input.value.trim()) {
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                errorElement.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+        
+        function toggleDeleteExpertiseItem(itemDiv) {
+            // Toggle the marked-for-deletion class
+            itemDiv.classList.toggle('marked-for-deletion');
+            
+            // Update the is-deleted field
+            const isDeletedField = itemDiv.querySelector('.expertise-is-deleted');
+            isDeletedField.value = itemDiv.classList.contains('marked-for-deletion') ? 1 : 0;
+        }
+        
+        function getExpertiseData() {
+            const expertiseItems = document.querySelectorAll('.expertise-item');
+            const data = [];
+            
+            expertiseItems.forEach(item => {
+                // Check if the item is marked for deletion
+                const isDeleted = parseInt(item.querySelector('.expertise-is-deleted').value || '0');
+                
+                // Get all field values
+                const id = item.querySelector('.expertise-id').value || null;
+                const expertiseCategory = item.querySelector('.expertise-category').value;
+                const expertiseItem = item.querySelector('.expertise-item-name').value;
+                const displayOrder = parseInt(item.querySelector('.expertise-display-order').value || '0');
+                const categoryDisplayOrder = parseInt(item.querySelector('.expertise-category-display-order').value || '0');
+                
+                // Skip validation for items marked for deletion
+                if (isDeleted !== 1) {
+                    // Validate required fields
+                    const categoryInput = item.querySelector('.expertise-category');
+                    const itemInput = item.querySelector('.expertise-item-name');
+                    
+                    const categoryValid = validateExpertiseInput(categoryInput);
+                    const itemValid = validateExpertiseInput(itemInput);
+                    
+                    if (!categoryValid || !itemValid) {
+                        // If any validation fails, show the appropriate error and scroll to it
+                        const errorElement = item.querySelector('.expertise-validation-error:not(.hidden)');
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return null; // Signal validation error
+                    }
+                }
+                
+                // Create data object
+                const expertiseObject = {
+                    expertise_id: id,
+                    expertise_category: expertiseCategory,
+                    expertise_item: expertiseItem,
+                    display_order: displayOrder,
+                    category_display_order: categoryDisplayOrder,
+                    is_deleted: isDeleted
+                };
+                
+                // Add to the data array
+                data.push(expertiseObject);
+            });
+            
+            return data;
+        }
+        
+        function loadExpertiseData(expertiseItems) {
+            console.log('Loading expertise data:', expertiseItems);
+            
+            // Get the container
+            const container = document.getElementById('expertise-container');
+            if (!container) {
+                console.error('Expertise container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no expertise items, add an empty one
+            if (!expertiseItems || expertiseItems.length === 0) {
+                addExpertiseItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            expertiseItems.forEach(item => addExpertiseItem(item));
+        }
+        
+        // Toolkit Categories Functions
+        function addToolkitCategoryItem(itemData = {}, index = Date.now()) {
+            console.log('Adding toolkit category item:', itemData);
+            const container = document.getElementById('toolkit-categories-container');
+            
+            // Remove loading message if present
+            const loadingMessage = document.getElementById('toolkit-categories-loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'toolkit-category-item bg-gray-50 rounded-md p-3 my-2 border border-gray-200';
+            itemDiv.dataset.id = itemData.toolkit_category_id || '';
+            
+            // Add marked-for-deletion class if loaded item is already marked
+            if (parseInt(itemData.is_deleted || 0) === 1) {
+                itemDiv.classList.add('marked-for-deletion');
+            }
+            
+            // Create the HTML structure for the toolkit category item
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-medium text-gray-700">Toolkit Category</h5>
+                    <button type="button" class="delete-toolkit-category-btn text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <input type="hidden" class="toolkit-category-id" value="${itemData.toolkit_category_id || ''}">
+                <input type="hidden" class="toolkit-category-is-deleted" value="${itemData.is_deleted || 0}">
+                
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-5">
+                        <label class="block text-sm font-medium text-gray-700">Category Name <span class="text-red-500">*</span></label>
+                        <input type="text" class="toolkit-category-name mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.toolkit_category_name || ''}" required>
+                        <div class="toolkit-category-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" class="toolkit-category-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.display_order || 0}" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for delete button
+            itemDiv.querySelector('.delete-toolkit-category-btn').addEventListener('click', function() {
+                toggleDeleteToolkitCategoryItem(itemDiv);
+            });
+            
+            // Add event listeners for validation
+            const requiredInputs = itemDiv.querySelectorAll('input[required]');
+            requiredInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateToolkitCategoryInput(input);
+                });
+                
+                // Validate on initial load
+                validateToolkitCategoryInput(input);
+            });
+            
+            // Add the item to the container
+            container.appendChild(itemDiv);
+        }
+        
+        function validateToolkitCategoryInput(input) {
+            // Find the closest validation error element
+            const errorElement = input.nextElementSibling;
+            
+            // Check if the input has a value
+            if (!input.value.trim()) {
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                errorElement.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+        
+        function toggleDeleteToolkitCategoryItem(itemDiv) {
+            // Toggle the marked-for-deletion class
+            itemDiv.classList.toggle('marked-for-deletion');
+            
+            // Update the is-deleted field
+            const isDeletedField = itemDiv.querySelector('.toolkit-category-is-deleted');
+            isDeletedField.value = itemDiv.classList.contains('marked-for-deletion') ? 1 : 0;
+        }
+        
+        function getToolkitCategoriesData() {
+            const toolkitCategoryItems = document.querySelectorAll('.toolkit-category-item');
+            const data = [];
+            
+            toolkitCategoryItems.forEach(item => {
+                // Check if the item is marked for deletion
+                const isDeleted = parseInt(item.querySelector('.toolkit-category-is-deleted').value || '0');
+                
+                // Get all field values
+                const id = item.querySelector('.toolkit-category-id').value || null;
+                const categoryName = item.querySelector('.toolkit-category-name').value;
+                const displayOrder = parseInt(item.querySelector('.toolkit-category-display-order').value || '0');
+                
+                // Skip validation for items marked for deletion
+                if (isDeleted !== 1) {
+                    // Validate required fields
+                    const nameInput = item.querySelector('.toolkit-category-name');
+                    
+                    const nameValid = validateToolkitCategoryInput(nameInput);
+                    
+                    if (!nameValid) {
+                        // If any validation fails, show the appropriate error and scroll to it
+                        const errorElement = item.querySelector('.toolkit-category-validation-error:not(.hidden)');
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return null; // Signal validation error
+                    }
+                }
+                
+                // Create data object
+                const toolkitCategoryObject = {
+                    toolkit_category_id: id,
+                    toolkit_category_name: categoryName,
+                    display_order: displayOrder,
+                    is_deleted: isDeleted
+                };
+                
+                // Add to the data array
+                data.push(toolkitCategoryObject);
+            });
+            
+            return data;
+        }
+        
+        function loadToolkitCategoriesData(toolkitCategories) {
+            console.log('Loading toolkit categories data:', toolkitCategories);
+            
+            // Get the container
+            const container = document.getElementById('toolkit-categories-container');
+            if (!container) {
+                console.error('Toolkit categories container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no toolkit categories, add an empty one
+            if (!toolkitCategories || toolkitCategories.length === 0) {
+                addToolkitCategoryItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            toolkitCategories.forEach(item => addToolkitCategoryItem(item));
+        }
+        
+        // Toolkit Items Functions
+        function addToolkitItem(itemData = {}, index = Date.now()) {
+            console.log('Adding toolkit item:', itemData);
+            const container = document.getElementById('toolkit-items-container');
+            
+            // Remove loading message if present
+            const loadingMessage = document.getElementById('toolkit-items-loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'toolkit-item bg-gray-50 rounded-md p-3 my-2 border border-gray-200';
+            itemDiv.dataset.id = itemData.toolkit_item_id || '';
+            
+            // Add marked-for-deletion class if loaded item is already marked
+            if (parseInt(itemData.is_deleted || 0) === 1) {
+                itemDiv.classList.add('marked-for-deletion');
+            }
+            
+            // Get all toolkit categories for the dropdown
+            const categoryOptions = getToolkitCategoryOptions(itemData.toolkit_category_id);
+            
+            // Create the HTML structure for the toolkit item
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-medium text-gray-700">Toolkit Item</h5>
+                    <button type="button" class="delete-toolkit-item-btn text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <input type="hidden" class="toolkit-item-id" value="${itemData.toolkit_item_id || ''}">
+                <input type="hidden" class="toolkit-item-is-deleted" value="${itemData.is_deleted || 0}">
+                
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Category <span class="text-red-500">*</span></label>
+                        <select class="toolkit-item-category-id mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                            <option value="">Select Category</option>
+                            ${categoryOptions}
+                        </select>
+                        <div class="toolkit-item-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-3">
+                        <label class="block text-sm font-medium text-gray-700">Tool Name <span class="text-red-500">*</span></label>
+                        <input type="text" class="toolkit-item-name mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.toolkit_item_name || ''}" required>
+                        <div class="toolkit-item-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" class="toolkit-item-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.display_order || 0}" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for delete button
+            itemDiv.querySelector('.delete-toolkit-item-btn').addEventListener('click', function() {
+                toggleDeleteToolkitItem(itemDiv);
+            });
+            
+            // Add event listeners for validation
+            const requiredInputs = itemDiv.querySelectorAll('input[required], select[required]');
+            requiredInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateToolkitItemInput(input);
+                });
+                input.addEventListener('change', function() {
+                    validateToolkitItemInput(input);
+                });
+                
+                // Validate on initial load
+                validateToolkitItemInput(input);
+            });
+            
+            // Add the item to the container
+            container.appendChild(itemDiv);
+        }
+        
+        // Helper function to get category options for select dropdown
+        function getToolkitCategoryOptions(selectedCategoryId) {
+            const categoryItems = document.querySelectorAll('.toolkit-category-item');
+            let options = '';
+            
+            categoryItems.forEach(item => {
+                // Skip items marked for deletion
+                if (item.classList.contains('marked-for-deletion')) {
+                    return;
+                }
+                
+                const categoryId = item.querySelector('.toolkit-category-id').value;
+                const categoryName = item.querySelector('.toolkit-category-name').value;
+                
+                if (categoryId && categoryName) {
+                    const selected = categoryId === selectedCategoryId ? 'selected' : '';
+                    options += `<option value="${categoryId}" ${selected}>${categoryName}</option>`;
+                }
+            });
+            
+            return options;
+        }
+        
+        function validateToolkitItemInput(input) {
+            // Find the closest validation error element
+            const errorElement = input.nextElementSibling;
+            
+            // Check if the input has a value
+            if (!input.value.trim()) {
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                errorElement.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+        
+        function toggleDeleteToolkitItem(itemDiv) {
+            // Toggle the marked-for-deletion class
+            itemDiv.classList.toggle('marked-for-deletion');
+            
+            // Update the is-deleted field
+            const isDeletedField = itemDiv.querySelector('.toolkit-item-is-deleted');
+            isDeletedField.value = itemDiv.classList.contains('marked-for-deletion') ? 1 : 0;
+        }
+        
+        function getToolkitItemsData() {
+            const toolkitItems = document.querySelectorAll('.toolkit-item');
+            const data = [];
+            
+            toolkitItems.forEach(item => {
+                // Check if the item is marked for deletion
+                const isDeleted = parseInt(item.querySelector('.toolkit-item-is-deleted').value || '0');
+                
+                // Get all field values
+                const id = item.querySelector('.toolkit-item-id').value || null;
+                const categoryId = item.querySelector('.toolkit-item-category-id').value;
+                const itemName = item.querySelector('.toolkit-item-name').value;
+                const displayOrder = parseInt(item.querySelector('.toolkit-item-display-order').value || '0');
+                
+                // Skip validation for items marked for deletion
+                if (isDeleted !== 1) {
+                    // Validate required fields
+                    const categoryInput = item.querySelector('.toolkit-item-category-id');
+                    const nameInput = item.querySelector('.toolkit-item-name');
+                    
+                    const categoryValid = validateToolkitItemInput(categoryInput);
+                    const nameValid = validateToolkitItemInput(nameInput);
+                    
+                    if (!categoryValid || !nameValid) {
+                        // If any validation fails, show the appropriate error and scroll to it
+                        const errorElement = item.querySelector('.toolkit-item-validation-error:not(.hidden)');
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return null; // Signal validation error
+                    }
+                }
+                
+                // Create data object
+                const toolkitItemObject = {
+                    toolkit_item_id: id,
+                    toolkit_category_id: categoryId,
+                    toolkit_item_name: itemName,
+                    display_order: displayOrder,
+                    is_deleted: isDeleted
+                };
+                
+                // Add to the data array
+                data.push(toolkitItemObject);
+            });
+            
+            return data;
+        }
+        
+        function loadToolkitItemsData(toolkitItems) {
+            console.log('Loading toolkit items data:', toolkitItems);
+            
+            // Get the container
+            const container = document.getElementById('toolkit-items-container');
+            if (!container) {
+                console.error('Toolkit items container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no toolkit items, add an empty one
+            if (!toolkitItems || toolkitItems.length === 0) {
+                addToolkitItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            toolkitItems.forEach(item => addToolkitItem(item));
+        }
+        
+        // Domain Experience Functions
+        function addDomainExperienceItem(itemData = {}, index = Date.now()) {
+            console.log('Adding domain experience item:', itemData);
+            const container = document.getElementById('domain-experience-container');
+            
+            // Remove loading message if present
+            const loadingMessage = document.getElementById('domain-experience-loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'domain-experience-item bg-gray-50 rounded-md p-3 my-2 border border-gray-200';
+            itemDiv.dataset.id = itemData.domain_id || '';
+            
+            // Add marked-for-deletion class if loaded item is already marked
+            if (parseInt(itemData.is_deleted || 0) === 1) {
+                itemDiv.classList.add('marked-for-deletion');
+            }
+            
+            // Create the HTML structure for the domain experience item
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-medium text-gray-700">Domain Experience</h5>
+                    <button type="button" class="delete-domain-experience-btn text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <input type="hidden" class="domain-experience-id" value="${itemData.domain_id || ''}">
+                <input type="hidden" class="domain-experience-is-deleted" value="${itemData.is_deleted || 0}">
+                
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-3">
+                        <label class="block text-sm font-medium text-gray-700">Domain/Industry <span class="text-red-500">*</span></label>
+                        <input type="text" class="domain-experience-name mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.domain_name || ''}" required>
+                        <div class="domain-experience-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Experience % <span class="text-red-500">*</span></label>
+                        <input type="number" class="domain-experience-percentage mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.experience_percentage || 0}" min="0" max="100" required>
+                        <div class="domain-experience-validation-error hidden text-red-500 text-xs mt-1">This field is required and must be between 0-100</div>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" class="domain-experience-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.display_order || 0}" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for delete button
+            itemDiv.querySelector('.delete-domain-experience-btn').addEventListener('click', function() {
+                toggleDeleteDomainExperienceItem(itemDiv);
+            });
+            
+            // Add event listeners for validation
+            const requiredInputs = itemDiv.querySelectorAll('input[required]');
+            requiredInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateDomainExperienceInput(input);
+                });
+                
+                // Validate on initial load
+                validateDomainExperienceInput(input);
+            });
+            
+            // Add the item to the container
+            container.appendChild(itemDiv);
+        }
+        
+        function validateDomainExperienceInput(input) {
+            // Find the closest validation error element
+            const errorElement = input.nextElementSibling;
+            
+            // Check if the input has a value
+            if (!input.value.trim()) {
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } 
+            // Additional validation for experience percentage
+            else if (input.classList.contains('domain-experience-percentage')) {
+                const value = parseInt(input.value);
+                if (isNaN(value) || value < 0 || value > 100) {
+                    errorElement.classList.remove('hidden');
+                    input.classList.add('border-red-500');
+                    return false;
+                }
+            }
+            
+            // If all validation passes
+            errorElement.classList.add('hidden');
+            input.classList.remove('border-red-500');
+            return true;
+        }
+        
+        function toggleDeleteDomainExperienceItem(itemDiv) {
+            // Toggle the marked-for-deletion class
+            itemDiv.classList.toggle('marked-for-deletion');
+            
+            // Update the is-deleted field
+            const isDeletedField = itemDiv.querySelector('.domain-experience-is-deleted');
+            isDeletedField.value = itemDiv.classList.contains('marked-for-deletion') ? 1 : 0;
+        }
+        
+        function getDomainExperienceData() {
+            const domainExperienceItems = document.querySelectorAll('.domain-experience-item');
+            const data = [];
+            
+            domainExperienceItems.forEach(item => {
+                // Check if the item is marked for deletion
+                const isDeleted = parseInt(item.querySelector('.domain-experience-is-deleted').value || '0');
+                
+                // Get all field values
+                const id = item.querySelector('.domain-experience-id').value || null;
+                const domainName = item.querySelector('.domain-experience-name').value;
+                const experiencePercentage = parseInt(item.querySelector('.domain-experience-percentage').value || '0');
+                const displayOrder = parseInt(item.querySelector('.domain-experience-display-order').value || '0');
+                
+                // Skip validation for items marked for deletion
+                if (isDeleted !== 1) {
+                    // Validate required fields
+                    const nameInput = item.querySelector('.domain-experience-name');
+                    const percentageInput = item.querySelector('.domain-experience-percentage');
+                    
+                    const nameValid = validateDomainExperienceInput(nameInput);
+                    const percentageValid = validateDomainExperienceInput(percentageInput);
+                    
+                    if (!nameValid || !percentageValid) {
+                        // If any validation fails, show the appropriate error and scroll to it
+                        const errorElement = item.querySelector('.domain-experience-validation-error:not(.hidden)');
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return null; // Signal validation error
+                    }
+                }
+                
+                // Create data object
+                const domainExperienceObject = {
+                    domain_id: id,
+                    domain_name: domainName,
+                    experience_percentage: experiencePercentage,
+                    display_order: displayOrder,
+                    is_deleted: isDeleted
+                };
+                
+                // Add to the data array
+                data.push(domainExperienceObject);
+            });
+            
+            return data;
+        }
+        
+        function loadDomainExperienceData(domainExperience) {
+            console.log('Loading domain experience data:', domainExperience);
+            
+            // Get the container
+            const container = document.getElementById('domain-experience-container');
+            if (!container) {
+                console.error('Domain experience container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no domain experience items, add an empty one
+            if (!domainExperience || domainExperience.length === 0) {
+                addDomainExperienceItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            domainExperience.forEach(item => addDomainExperienceItem(item));
         }
     });
     </script>

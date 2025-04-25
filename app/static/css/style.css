@@ -76,10 +76,11 @@ img {
 }
 
 .section-title {
-  font-size: 2rem;
-  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem; /* Reduced from 3rem */
   position: relative;
-  display: inline-block;
 }
 
 
@@ -643,9 +644,9 @@ header {
 }
 
 .experience-section .section-title {
-  color: #333333; /* Darker color for better visibility */
-  text-align: left !important; /* Force left alignment */
-  margin-bottom: 6rem;
+  color: #333;
+  margin-bottom: 2rem; /* Reduced from 4rem or 3rem */
+  text-align: center;
   margin-left: 2rem; /* Increased left margin */
   font-size: 2.75rem;
   font-weight: 700;
@@ -1429,11 +1430,12 @@ header {
 }
 
 .certifications-section .section-title {
+  color: #333;
+  margin-bottom: 2rem; /* Reduced from 3rem or 4rem */
   text-align: center;
   font-size: 2.5rem;
   font-weight: 300; /* Correct weight for Nexa Light */
-  color: #333;
-  margin-bottom: 4rem;
+  margin-left: 2rem; /* Increased left margin */
   position: relative;
 }
 
@@ -3258,7 +3260,7 @@ body .certifications-section .section-title {
   font-size: 2.5rem !important;
   font-weight: 700 !important; /* Bold weight for title */
   color: #7a6b5f !important;
-  margin-bottom: 5rem !important;
+  margin-bottom: 2.5rem !important;
   margin-left: 2rem !important;
   position: relative !important;
   z-index: 5 !important;
@@ -3285,7 +3287,7 @@ body .certifications-section .section-title::after {
   .certifications-section .section-title {
     font-size: 2rem !important;
     margin-left: 1rem !important;
-    margin-bottom: 3rem !important;
+    margin-bottom: 1.5rem !important;
   }
   
   .certifications-section {
@@ -3318,7 +3320,7 @@ main .certifications-section {
   font-size: 2.5rem !important;
   font-weight: 700 !important; 
   color: #7a6b5f !important;
-  margin-bottom: 5rem !important;
+  margin-bottom: 2.5rem !important;
   margin-left: 2rem !important;
   position: relative !important;
   z-index: 5 !important;
@@ -3581,14 +3583,12 @@ main .certifications-section {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .education-card {
-    flex: 0 0 280px;
-    height: 260px;
+    flex: 0 0 calc(100% - 20px);
   }
   
   .education-section .section-title {
     font-size: 2rem !important;
-    margin-left: 1rem !important;
-    margin-bottom: 3rem !important;
+    margin-bottom: 1.5rem !important;
   }
   
   .education-carousel {
@@ -4815,7 +4815,7 @@ body .certifications-section .section-title {
   font-size: 2.5rem !important;
   font-weight: 700 !important; /* Bold weight for title */
   color: #7a6b5f !important;
-  margin-bottom: 5rem !important;
+  margin-bottom: 2.5rem !important;
   margin-left: 2rem !important;
   position: relative !important;
   z-index: 5 !important;
@@ -4842,7 +4842,7 @@ body .certifications-section .section-title::after {
   .certifications-section .section-title {
     font-size: 2rem !important;
     margin-left: 1rem !important;
-    margin-bottom: 3rem !important;
+    margin-bottom: 1.5rem !important;
   }
   
   .certifications-section {
@@ -5395,7 +5395,7 @@ main .certifications-section {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid #f0f0f0;
 }
