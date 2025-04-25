@@ -4,8 +4,8 @@ const mysql = require('mysql2/promise');
 // Define standard response headers
 const headers = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,Cache-Control,Pragma',
-  'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT,DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+  'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
   'Content-Type': 'application/json'
 };
 
@@ -1659,7 +1659,9 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 200,
         headers,
-        body: ''
+        body: JSON.stringify({
+          message: 'CORS preflight handled successfully'
+        })
       };
     }
     
@@ -1758,6 +1760,8 @@ exports.handler = async (event, context) => {
         const education = await getEducation();
         // Get certifications data
         const certifications = await getCertifications();
+        // Get skills data
+        const skills = await getSkillsData();
         
         return {
           statusCode: 200,
@@ -1767,6 +1771,7 @@ exports.handler = async (event, context) => {
             work_experience: workExperience,
             education: education,
             certifications: certifications,
+            skills: skills,
             _version: "2.1.14",
             source: "GET handler with query params",
             timestamp: new Date().toISOString()
@@ -1783,6 +1788,8 @@ exports.handler = async (event, context) => {
       const education = await getEducation();
       // Get certifications data
       const certifications = await getCertifications();
+      // Get skills data
+      const skills = await getSkillsData();
       
       return {
         statusCode: 200,
@@ -1792,6 +1799,7 @@ exports.handler = async (event, context) => {
           work_experience: workExperience,
           education: education,
           certifications: certifications,
+          skills: skills,
           _version: "2.1.14",
           source: "GET general handler",
           timestamp: new Date().toISOString()
@@ -1825,6 +1833,8 @@ exports.handler = async (event, context) => {
         const education = await getEducation();
         // Get certifications data
         const certifications = await getCertifications();
+        // Get skills data
+        const skills = await getSkillsData();
         
         return {
             statusCode: 200,
@@ -1834,6 +1844,7 @@ exports.handler = async (event, context) => {
                 work_experience: workExperience,
                 education: education,
                 certifications: certifications,
+                skills: skills,
                 _version: "2.1.14",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
@@ -1960,6 +1971,8 @@ exports.handler = async (event, context) => {
           // Ensure tables exist (reusing connection)
           await ensureEducationTableExists(connection);
           await ensureCertificationsTableExists(connection);
+          await ensureContactsTableExists(connection);
+          await ensureSkillsTablesExist(connection);
           
           // Save the site configuration data if provided
           if (Object.keys(configData).length > 0) {
@@ -2046,6 +2059,12 @@ exports.handler = async (event, context) => {
         // Get education data
         const education = await getEducation();
         
+        // Get certifications data
+        const certifications = await getCertifications();
+        
+        // Get skills data
+        const skills = await getSkillsData();
+        
         return {
           statusCode: 200,
           headers,
@@ -2053,6 +2072,8 @@ exports.handler = async (event, context) => {
             site_config: siteConfig,
             work_experience: workExperience,
             education: education,
+            certifications: certifications,
+            skills: skills,
             _version: "2.1.14",
             from: "post_body",
             timestamp: new Date().toISOString(),
@@ -2159,6 +2180,7 @@ exports.handler = async (event, context) => {
           await ensureEducationTableExists(connection);
           await ensureCertificationsTableExists(connection);
           await ensureContactsTableExists(connection);
+          await ensureSkillsTablesExist(connection);
           
           // Save the site configuration data if provided
           if (Object.keys(configData).length > 0) {

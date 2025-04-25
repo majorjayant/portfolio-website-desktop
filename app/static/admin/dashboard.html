@@ -874,25 +874,25 @@
             console.log('Fetching from API endpoint:', apiEndpoint);
             
             // Fetch site config data from the API
-            fetch('/api/get_config_all')
+            fetch(apiEndpoint)
                 .then(response => response.json())
-                .then(data => {
-                    console.log('Successfully loaded site config from API:', data);
-                    
-                    // Hide loading indicator and show form
-                    loadingIndicator.classList.add('hidden');
-                    formContainer.classList.remove('hidden');
-                    
-                    // Fix: Pass the site_config object instead of the entire response
-                    populateForm(data.site_config);
-                    
-                    // Load work experience data if available
-                    if (data.work_experience) {
-                        loadWorkExperienceData(data.work_experience);
-                    } else {
-                        // Fetch work experience data separately if not included in site config
-                        fetchWorkExperienceData();
-                    }
+            .then(data => {
+                console.log('Successfully loaded site config from API:', data);
+                
+                // Hide loading indicator and show form
+                loadingIndicator.classList.add('hidden');
+                formContainer.classList.remove('hidden');
+                
+                // Fix: Pass the site_config object instead of the entire response
+                populateForm(data.site_config);
+                
+                // Load work experience data if available
+                if (data.work_experience) {
+                    loadWorkExperienceData(data.work_experience);
+                } else {
+                    // Fetch work experience data separately if not included in site config
+                    fetchWorkExperienceData();
+                }
                     
                     // Load education data if available
                     if (data.education) {
@@ -962,15 +962,15 @@
                         addToolkitItem();
                         addDomainExperienceItem();
                     }
-                })
-                .catch(error => {
+            })
+            .catch(error => {
                     console.error('Error loading data from API:', error);
-                    
+                
                     // Hide loading indicator and show form
-                    loadingIndicator.classList.add('hidden');
+                loadingIndicator.classList.add('hidden');
                     formContainer.classList.remove('hidden');
-                    
-                    // Show error message
+                
+                // Show error message
                     const errorMessage = document.getElementById('error-message');
                     if (errorMessage) {
                         errorMessage.textContent = 'Error loading data. Please try refreshing the page.';
@@ -979,25 +979,25 @@
                     
                     // Try to load site config from local file
                     fetch('/data/config.json')
-                        .then(response => response.json())
+                    .then(response => response.json())
                         .then(configData => {
-                            populateForm(configData);
+                        populateForm(configData);
                         })
                         .catch(err => {
                             console.error('Error loading site config from local JSON:', err);
                         });
-                    
-                    // Try to load work experience data from local file
-                    fetch('/data/experience.json')
-                        .then(response => response.json())
-                        .then(expData => {
-                            loadWorkExperienceData(expData);
-                        })
-                        .catch(err => {
-                            console.error('Error loading work experience from local JSON:', err);
-                            // Add empty work experience item
-                            addWorkExperienceItem();
-                        });
+                        
+                        // Try to load work experience data from local file
+                        fetch('/data/experience.json')
+                            .then(response => response.json())
+                            .then(expData => {
+                                loadWorkExperienceData(expData);
+                            })
+                            .catch(err => {
+                                console.error('Error loading work experience from local JSON:', err);
+                                // Add empty work experience item
+                                addWorkExperienceItem();
+                            });
                         
                     // Try to load education data from local file
                     fetch('/data/education.json')
@@ -1030,7 +1030,7 @@
                     addToolkitCategoryItem();
                     addToolkitItem();
                     addDomainExperienceItem();
-                });
+            });
         }
         
         // Populate form with site config data
@@ -1171,9 +1171,9 @@
             const apiUrl = '/api/save_config_all';
             
             fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(dataToSend)
             })
@@ -1186,8 +1186,8 @@
             })
             .then(data => {
                 console.log('Success:', data);
-                
-                // Show success message
+                    
+                    // Show success message
                 const successMessage = document.getElementById('success-message');
                 if (successMessage) {
                     successMessage.classList.remove('hidden');
@@ -1213,9 +1213,9 @@
                     errorMessage.classList.remove('hidden');
                     
                     // Hide error message after 5 seconds
-                    setTimeout(() => {
+                setTimeout(() => {
                         errorMessage.classList.add('hidden');
-                    }, 5000);
+                }, 5000);
                 }
                 
                 // Hide saving indicator and show form actions
@@ -1356,7 +1356,7 @@
             
             // Debug log to see what's in the job_title field
             console.log('Job title from data:', data.job_title);
-            console.log('Company name from data:', data.company_name);
+            console.log('Company name from data:', data.company);
             
             // Create job title field
             const titleLabel = document.createElement('label');
@@ -1377,7 +1377,7 @@
             companyInput.className = 'workex-company';
             companyInput.id = `workex-company-${Date.now()}`; // Unique ID for toolbar
             companyInput.required = true;
-            companyInput.value = data.company_name || '';
+            companyInput.value = data.company || '';
             companyInput.placeholder = 'e.g. Tech Company Inc.';
             
             // Create location field
@@ -2491,27 +2491,64 @@
         }
         
         // Load certification data into the form
-        function loadCertificationData(certificationItems) {
-            console.log('Loading certification data:', certificationItems);
+        function loadCertificationData(certifications) {
+            console.log('Loading certification data:', certifications);
             
             // Get the container
             const container = document.getElementById('certification-items-container');
             if (!container) {
-                console.error('Certification container not found');
+                console.error('Certification items container not found');
                 return;
             }
             
             // Clear the container
             container.innerHTML = '';
             
-            // If no certification items, add an empty one
-            if (!certificationItems || certificationItems.length === 0) {
+            // If no certifications, add an empty one
+            if (!certifications || certifications.length === 0) {
                 addCertificationItem();
                 return;
             }
             
-            // Otherwise, add each item to the form
-            certificationItems.forEach(item => addCertificationItem(item));
+            // Otherwise, add each certification to the form
+            certifications.forEach(cert => {
+                // Format dates to YYYY-MM-DD if needed
+                if (cert.issue_date && !isValidDateFormat(cert.issue_date)) {
+                    cert.issued_date = formatDateToYYYYMMDD(cert.issue_date);
+                }
+                
+                if (cert.expiry_date && !isValidDateFormat(cert.expiry_date)) {
+                    cert.expiry_date = formatDateToYYYYMMDD(cert.expiry_date);
+                }
+                
+                addCertificationItem(cert);
+            });
+        }
+        
+        // Helper function to check if a date is in YYYY-MM-DD format
+        function isValidDateFormat(dateString) {
+            return /^\d{4}-\d{2}-\d{2}$/.test(dateString);
+        }
+        
+        // Helper function to convert date to YYYY-MM-DD format
+        function formatDateToYYYYMMDD(dateString) {
+            try {
+                // Try to parse the date
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    return ''; // Return empty string if invalid date
+                }
+                
+                // Format to YYYY-MM-DD
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                
+                return `${year}-${month}-${day}`;
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return '';
+            }
         }
         
         // Fetch certification data separately if needed

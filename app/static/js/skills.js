@@ -19,21 +19,36 @@ document.addEventListener('DOMContentLoaded', function() {
  * Load skills data from API or fallback to local JSON
  */
 function loadSkillsData() {
-    // Try to get data from the main API endpoint first
-    fetch('/api/get_config_all')
-        .then(response => response.json())
+    const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio?type=site_config';
+    
+    // Try to get data from the main API endpoint
+    fetch(apiEndpoint)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data && data.skills) {
+                console.log('Successfully loaded skills data from main API');
                 // Process and display the skills data
                 updateSkillsSection(data.skills);
             } else {
                 // If no skills data in the response, try to fetch from dedicated endpoint
+                console.log('No skills data in main API response, trying dedicated skills endpoint');
                 return fetch('/api/get_skills');
             }
         })
-        .then(response => response?.json())
+        .then(response => {
+            if (response && !response.ok) {
+                throw new Error(`Dedicated skills API request failed with status ${response.status}`);
+            }
+            return response?.json();
+        })
         .then(skillsData => {
             if (skillsData) {
+                console.log('Successfully loaded skills data from dedicated API');
                 // Process and display the skills data
                 updateSkillsSection(skillsData);
             }
@@ -43,8 +58,14 @@ function loadSkillsData() {
             
             // Fallback to local JSON
             fetch('/data/skills.json')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Local JSON request failed with status ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(localData => {
+                    console.log('Successfully loaded skills data from local JSON');
                     updateSkillsSection(localData);
                 })
                 .catch(err => {
