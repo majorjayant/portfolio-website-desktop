@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Management - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin-dashboard.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen bg-gray-100">
+        <!-- Authentication check -->
+        <div id="auth-loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-lg text-gray-600">Verifying authentication...</p>
+            </div>
+        </div>
+        
+        <!-- Not Authenticated Message -->
+        <div id="not-authenticated" class="hidden fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div class="text-center max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+                <svg class="h-12 w-12 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">Authentication Required</h2>
+                <p class="text-gray-600 mb-4">You need to log in to access the admin dashboard.</p>
+                <button id="login-redirect-button" class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Log In
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="hidden min-h-screen">
+            <div class="flex">
+                <!-- Sidebar -->
+                <div class="w-64 bg-indigo-800 min-h-screen fixed z-30">
+                    <div class="flex items-center justify-center h-16 px-4 bg-indigo-900">
+                        <h1 class="text-xl font-semibold text-white">Admin Dashboard</h1>
+                    </div>
+                    <nav class="mt-5">
+                        <div class="px-4 pb-2">
+                            <p class="text-xs font-semibold text-indigo-300 uppercase tracking-wider">Navigation</p>
+                        </div>
+                        <a href="dashboard.html" class="flex items-center px-4 py-3 hover:bg-indigo-700 text-white sidebar-item" data-page="dashboard">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="site-config.html" class="flex items-center px-4 py-3 hover:bg-indigo-700 text-white sidebar-item" data-page="site-config">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Site Configuration
+                        </a>
+                        <a href="work-experience.html" class="flex items-center px-4 py-3 hover:bg-indigo-700 text-white sidebar-item" data-page="work-experience">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            Work Experience
+                        </a>
+                        <a href="education.html" class="flex items-center px-4 py-3 hover:bg-indigo-700 text-white sidebar-item" data-page="education">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                                <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                            </svg>
+                            Education
+                        </a>
+                        <a href="certifications.html" class="flex items-center px-4 py-3 hover:bg-indigo-700 text-white sidebar-item" data-page="certifications">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            Certifications
+                        </a>
+                        <a href="skills.html" class="flex items-center px-4 py-3 bg-indigo-700 hover:bg-indigo-700 text-white sidebar-item" data-page="skills">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Skills
+                        </a>
+
+                        <div class="px-4 mt-8 pb-2">
+                            <p class="text-xs font-semibold text-indigo-300 uppercase tracking-wider">Actions</p>
+                        </div>
+                        <button id="logout-button" class="w-full flex items-center px-4 py-3 hover:bg-indigo-700 text-white">
+                            <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Logout
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Main Content -->
+                <div class="pl-64 flex-1">
+                    <!-- Top bar -->
+                    <div class="bg-white shadow py-4 px-6 w-full flex items-center justify-between">
+                        <h1 id="page-title" class="text-2xl font-semibold text-gray-800">Skills Management</h1>
+                        <div class="flex items-center space-x-3">
+                            <span id="username-display" class="text-sm text-gray-600"></span>
+                            <button id="save-button" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notification -->
+                    <div id="save-notification" class="fixed top-4 right-4 px-4 py-2 bg-green-500 text-white rounded shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none flex items-center">
+                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Changes saved successfully!</span>
+                    </div>
+
+                    <!-- Loading indicator -->
+                    <div id="loading-indicator" class="text-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
+                        <p class="text-gray-500">Loading skills data...</p>
+                    </div>
+
+                    <!-- Error message -->
+                    <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4 mx-6" role="alert">
+                        <span class="block sm:inline">There was an error processing your request.</span>
+                    </div>
+
+                    <!-- Main content area -->
+                    <div id="main-content-area" class="py-6 hidden">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <!-- Skills Section -->
+                            <div class="bg-white shadow rounded-lg mb-6">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Technical Skills</h3>
+                                    <div class="space-y-4" id="skills-container">
+                                        <!-- Skills will be loaded here -->
+                                    </div>
+                                    <button id="add-skill-btn" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                                        </svg>
+                                        Add Skill
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Skill Categories Section -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Skill Categories</h3>
+                                    <div class="space-y-4" id="categories-container">
+                                        <!-- Categories will be loaded here -->
+                                    </div>
+                                    <button id="add-category-btn" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                                        </svg>
+                                        Add Category
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Item Template -->
+    <template id="skill-template">
+        <div class="skill-item bg-gray-50 p-4 rounded-md border border-gray-200">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex-1">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Name*</label>
+                            <input type="text" class="skill-name w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                            <select class="skill-category w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Proficiency (1-100)</label>
+                            <input type="number" min="1" max="100" class="skill-proficiency w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500" value="80">
+                        </div>
+                    </div>
+                </div>
+                <button class="delete-skill-btn ml-2 text-red-600 hover:text-red-800 focus:outline-none">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Category Item Template -->
+    <template id="category-template">
+        <div class="category-item bg-gray-50 p-4 rounded-md border border-gray-200">
+            <div class="flex justify-between items-center">
+                <div class="flex-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Name*</label>
+                            <input type="text" class="category-name w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                            <input type="number" min="1" class="category-order w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500" value="1">
+                        </div>
+                    </div>
+                </div>
+                <button class="delete-category-btn ml-2 text-red-600 hover:text-red-800 focus:outline-none">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script>
+        // DOM Elements
+        const authLoading = document.getElementById('auth-loading');
+        const notAuthenticated = document.getElementById('not-authenticated');
+        const dashboardContent = document.getElementById('dashboard-content');
+        const loginRedirectButton = document.getElementById('login-redirect-button');
+        const logoutButton = document.getElementById('logout-button');
+        const saveButton = document.getElementById('save-button');
+        const saveNotification = document.getElementById('save-notification');
+        const errorMessage = document.getElementById('error-message');
+        const usernameDisplay = document.getElementById('username-display');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const mainContentArea = document.getElementById('main-content-area');
+        const skillsContainer = document.getElementById('skills-container');
+        const categoriesContainer = document.getElementById('categories-container');
+        const addSkillBtn = document.getElementById('add-skill-btn');
+        const addCategoryBtn = document.getElementById('add-category-btn');
+        const skillTemplate = document.getElementById('skill-template');
+        const categoryTemplate = document.getElementById('category-template');
+
+        // API endpoint
+        const apiEndpoint = 'https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio';
+        let skillsData = [];
+        let categoriesData = [];
+
+        // Authentication check
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Checking authentication status');
+            const token = localStorage.getItem('admin_token');
+            
+            if (token) {
+                console.log('Token found, validating...');
+                
+                // Decode the token to get username
+                try {
+                    const tokenData = JSON.parse(atob(token.split('.')[1]));
+                    console.log('Token data:', tokenData);
+                    
+                    if (tokenData.username) {
+                        console.log('Valid token, showing dashboard');
+                        usernameDisplay.textContent = tokenData.username;
+                        authLoading.classList.add('hidden');
+                        dashboardContent.classList.remove('hidden');
+                        
+                        // Load data
+                        loadSkillsData();
+                    } else {
+                        console.error('Invalid token structure');
+                        showNotAuthenticated();
+                    }
+                } catch (error) {
+                    console.error('Error parsing token:', error);
+                    showNotAuthenticated();
+                }
+            } else {
+                console.log('No token found');
+                showNotAuthenticated();
+            }
+        });
+
+        function showNotAuthenticated() {
+            authLoading.classList.add('hidden');
+            notAuthenticated.classList.remove('hidden');
+        }
+
+        function redirectToLogin() {
+            window.location.href = '/admin/login.html';
+        }
+        
+        // Event listeners
+        loginRedirectButton.addEventListener('click', redirectToLogin);
+        
+        logoutButton.addEventListener('click', function() {
+            console.log('Logging out');
+            localStorage.removeItem('admin_token');
+            window.location.href = 'login.html';
+        });
+
+        // Add buttons events
+        addSkillBtn.addEventListener('click', function() {
+            addSkillItem();
+        });
+
+        addCategoryBtn.addEventListener('click', function() {
+            addCategoryItem();
+        });
+
+        // Save button event
+        saveButton.addEventListener('click', function() {
+            saveSkillsData();
+        });
+
+        // Load skills data
+        function loadSkillsData() {
+            console.log('Loading skills data');
+            
+            // Show loading, hide content
+            loadingIndicator.classList.remove('hidden');
+            mainContentArea.classList.add('hidden');
+            
+            // API endpoint for skills data
+            const url = `${apiEndpoint}?type=skills`;
+            
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Skills data loaded:', data);
+                    
+                    // Store the data
+                    skillsData = data.skills || [];
+                    categoriesData = data.skillCategories || [];
+                    
+                    // Populate the UI
+                    populateSkillItems(skillsData);
+                    populateCategoryItems(categoriesData);
+                    
+                    // Hide loading, show content
+                    loadingIndicator.classList.add('hidden');
+                    mainContentArea.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error loading skills data:', error);
+                    
+                    // Hide loading, show error
+                    loadingIndicator.classList.add('hidden');
+                    mainContentArea.classList.remove('hidden');
+                    errorMessage.textContent = 'Error loading skills data. Please try refreshing the page.';
+                    errorMessage.classList.remove('hidden');
+                    
+                    // Try to load from localStorage as fallback
+                    const savedSkills = localStorage.getItem('skillsData');
+                    const savedCategories = localStorage.getItem('skillCategoriesData');
+                    
+                    if (savedSkills) {
+                        try {
+                            skillsData = JSON.parse(savedSkills);
+                            populateSkillItems(skillsData);
+                        } catch (e) {
+                            console.error('Error parsing saved skills data:', e);
+                            populateSkillItems([]);
+                        }
+                    } else {
+                        populateSkillItems([]);
+                    }
+                    
+                    if (savedCategories) {
+                        try {
+                            categoriesData = JSON.parse(savedCategories);
+                            populateCategoryItems(categoriesData);
+                        } catch (e) {
+                            console.error('Error parsing saved categories data:', e);
+                            populateCategoryItems([]);
+                        }
+                    } else {
+                        populateCategoryItems([]);
+                    }
+                });
+        }
+
+        // Populate skills in the UI
+        function populateSkillItems(items) {
+            skillsContainer.innerHTML = '';
+            
+            if (items.length === 0) {
+                addSkillItem();
+                return;
+            }
+            
+            items.forEach(item => {
+                addSkillItem(item);
+            });
+        }
+
+        // Populate categories in the UI
+        function populateCategoryItems(items) {
+            categoriesContainer.innerHTML = '';
+            
+            if (items.length === 0) {
+                addCategoryItem();
+                return;
+            }
+            
+            items.forEach(item => {
+                addCategoryItem(item);
+            });
+            
+            // Update category dropdowns in all skills
+            updateCategoryDropdowns();
+        }
+
+        // Add a new skill item to the UI
+        function addSkillItem(data = null) {
+            const template = skillTemplate.content.cloneNode(true);
+            const itemElement = template.querySelector('.skill-item');
+            
+            const itemId = `skill-item-${Date.now()}`;
+            itemElement.setAttribute('id', itemId);
+            
+            if (data) {
+                itemElement.querySelector('.skill-name').value = data.name || '';
+                itemElement.querySelector('.skill-proficiency').value = data.proficiency || 80;
+            }
+            
+            // Add event listener for delete button
+            const deleteButton = itemElement.querySelector('.delete-skill-btn');
+            deleteButton.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this skill?')) {
+                    document.getElementById(itemId).remove();
+                }
+            });
+            
+            skillsContainer.appendChild(itemElement);
+            
+            // Update category dropdown
+            updateCategoryDropdownForItem(itemElement, data ? data.category : '');
+        }
+
+        // Add a new category item to the UI
+        function addCategoryItem(data = null) {
+            const template = categoryTemplate.content.cloneNode(true);
+            const itemElement = template.querySelector('.category-item');
+            
+            const itemId = `category-item-${Date.now()}`;
+            itemElement.setAttribute('id', itemId);
+            
+            if (data) {
+                itemElement.querySelector('.category-name').value = data.name || '';
+                itemElement.querySelector('.category-order').value = data.order || 1;
+            }
+            
+            // Add event listener for delete button
+            const deleteButton = itemElement.querySelector('.delete-category-btn');
+            deleteButton.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this category?')) {
+                    document.getElementById(itemId).remove();
+                    
+                    // Update categories after deletion
+                    updateCategoryDropdowns();
+                }
+            });
+            
+            categoriesContainer.appendChild(itemElement);
+            
+            // Update all category dropdowns
+            updateCategoryDropdowns();
+        }
+
+        // Update category dropdown for a specific skill item
+        function updateCategoryDropdownForItem(itemElement, selectedCategory = '') {
+            const categoryDropdown = itemElement.querySelector('.skill-category');
+            const categories = Array.from(document.querySelectorAll('.category-item')).map(item => {
+                return {
+                    name: item.querySelector('.category-name').value.trim(),
+                    id: item.id
+                };
+            });
+            
+            // Clear existing options, keeping the first one
+            categoryDropdown.innerHTML = '<option value="">Select Category</option>';
+            
+            // Add options
+            categories.forEach(category => {
+                if (category.name) {
+                    const option = document.createElement('option');
+                    option.value = category.name;
+                    option.textContent = category.name;
+                    
+                    if (category.name === selectedCategory) {
+                        option.selected = true;
+                    }
+                    
+                    categoryDropdown.appendChild(option);
+                }
+            });
+        }
+
+        // Update all category dropdowns
+        function updateCategoryDropdowns() {
+            const skillItems = document.querySelectorAll('.skill-item');
+            skillItems.forEach(item => {
+                const currentValue = item.querySelector('.skill-category').value;
+                updateCategoryDropdownForItem(item, currentValue);
+            });
+        }
+
+        // Get skills data from the UI
+        function getSkillsData() {
+            const items = document.querySelectorAll('.skill-item');
+            const data = [];
+            let hasError = false;
+            
+            items.forEach(item => {
+                const nameInput = item.querySelector('.skill-name');
+                
+                if (!nameInput.value.trim()) {
+                    nameInput.classList.add('border-red-500');
+                    hasError = true;
+                } else {
+                    nameInput.classList.remove('border-red-500');
+                    
+                    data.push({
+                        name: nameInput.value.trim(),
+                        category: item.querySelector('.skill-category').value,
+                        proficiency: parseInt(item.querySelector('.skill-proficiency').value) || 80
+                    });
+                }
+            });
+            
+            if (hasError) {
+                errorMessage.textContent = 'Please fill in all required fields marked with *';
+                errorMessage.classList.remove('hidden');
+                return null;
+            }
+            
+            return data;
+        }
+
+        // Get categories data from the UI
+        function getCategoriesData() {
+            const items = document.querySelectorAll('.category-item');
+            const data = [];
+            let hasError = false;
+            
+            items.forEach(item => {
+                const nameInput = item.querySelector('.category-name');
+                
+                if (!nameInput.value.trim()) {
+                    nameInput.classList.add('border-red-500');
+                    hasError = true;
+                } else {
+                    nameInput.classList.remove('border-red-500');
+                    
+                    data.push({
+                        name: nameInput.value.trim(),
+                        order: parseInt(item.querySelector('.category-order').value) || 1
+                    });
+                }
+            });
+            
+            if (hasError) {
+                errorMessage.textContent = 'Please fill in all required fields marked with *';
+                errorMessage.classList.remove('hidden');
+                return null;
+            }
+            
+            return data;
+        }
+
+        // Save skills data
+        function saveSkillsData() {
+            const skillsData = getSkillsData();
+            const categoriesData = getCategoriesData();
+            
+            if (!skillsData || !categoriesData) {
+                return;
+            }
+            
+            // Show loading indicator
+            loadingIndicator.classList.remove('hidden');
+            mainContentArea.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            
+            // Prepare data for API
+            const payload = {
+                skills: skillsData,
+                skillCategories: categoriesData
+            };
+            
+            // Send to API
+            fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(result => {
+                console.log('Save successful:', result);
+                
+                // Update local data
+                localStorage.setItem('skillsData', JSON.stringify(skillsData));
+                localStorage.setItem('skillCategoriesData', JSON.stringify(categoriesData));
+                
+                // Hide loading indicator
+                loadingIndicator.classList.add('hidden');
+                mainContentArea.classList.remove('hidden');
+                
+                // Show success notification
+                showSaveNotification();
+            })
+            .catch(error => {
+                console.error('Error saving skills data:', error);
+                
+                // Hide loading indicator
+                loadingIndicator.classList.add('hidden');
+                mainContentArea.classList.remove('hidden');
+                
+                // Show error message
+                errorMessage.textContent = 'Error saving data. Please try again.';
+                errorMessage.classList.remove('hidden');
+                
+                // Still save to localStorage as backup
+                localStorage.setItem('skillsData', JSON.stringify(skillsData));
+                localStorage.setItem('skillCategoriesData', JSON.stringify(categoriesData));
+            });
+        }
+
+        // Show save notification
+        function showSaveNotification() {
+            saveNotification.classList.remove('opacity-0');
+            saveNotification.classList.add('opacity-100');
+            
+            setTimeout(() => {
+                saveNotification.classList.remove('opacity-100');
+                saveNotification.classList.add('opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 
