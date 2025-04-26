@@ -225,7 +225,7 @@
         </div>
     </div>
     
-    <script src="/app/static/js/auth.js"></script>
+    <script src="auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Check if user is already logged in
@@ -233,6 +233,55 @@
                 window.location.href = '../admin/dashboard.html';
                 return;
             }
+            
+            // Set up login form submission
+            const loginForm = document.getElementById('login-form');
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const errorElement = document.getElementById('error-message');
+                const successElement = document.getElementById('success-message');
+                
+                // Simple validation
+                if (!username || !password) {
+                    errorElement.textContent = 'Please enter both username and password';
+                    errorElement.style.display = 'block';
+                    return;
+                }
+                
+                // For demo, we'll allow the default admin credentials
+                if (username === 'admin' && password === 'admin123') {
+                    // Create token
+                    const token = 'demo-token-' + Date.now();
+                    
+                    // Store in localStorage with expiration
+                    const expiresAt = new Date(Date.now() + Auth.TOKEN_EXPIRY).toISOString();
+                    const userData = {
+                        username: 'admin',
+                        role: 'Administrator',
+                        expiresAt: expiresAt
+                    };
+                    
+                    localStorage.setItem(Auth.TOKEN_KEY, token);
+                    localStorage.setItem(Auth.USER_KEY, JSON.stringify(userData));
+                    
+                    // Show success message
+                    errorElement.style.display = 'none';
+                    successElement.textContent = 'Login successful! Redirecting...';
+                    successElement.style.display = 'block';
+                    
+                    // Redirect to dashboard
+                    setTimeout(function() {
+                        window.location.href = '../admin/dashboard.html';
+                    }, 1000);
+                } else {
+                    // Show error for invalid credentials
+                    errorElement.textContent = 'Invalid username or password';
+                    errorElement.style.display = 'block';
+                }
+            });
             
             // Direct access button (for demo)
             const directAccessBtn = document.getElementById('direct-access-btn');
