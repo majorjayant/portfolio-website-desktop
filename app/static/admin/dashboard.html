@@ -148,7 +148,7 @@
     <script src="../js/auth.js"></script>
     <script>
         // Initialize authentication check
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
             // Create an authentication overlay if it doesn't exist
             if (!document.getElementById('auth-overlay')) {
                 const overlay = document.createElement('div');
@@ -203,8 +203,8 @@
             const logoutButton = document.getElementById('logout-btn');
             if (logoutButton) {
                 logoutButton.addEventListener('click', Auth.logout.bind(Auth));
-            }
-        });
+        }
+    });
     </script>
 </body>
 </html> 

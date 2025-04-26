@@ -957,7 +957,7 @@ async function saveContactSubmission(contactData) {
     );
     
     console.log(`Contact form submission saved. Insert ID: ${result.insertId}`);
-    return {
+        return {
       success: true,
       message: "Contact form submission saved successfully",
       id: result.insertId
@@ -1191,7 +1191,7 @@ async function getSkillsData() {
   } catch (error) {
     console.error('Error retrieving skills data from database:', error);
     console.log('Returning empty skills data object');
-    return {
+        return {
       key_metrics: [],
       skills_proficiency: [],
       areas_of_expertise: [],
@@ -1686,33 +1686,33 @@ const handleAdminLogin = async (event) => {
     const { username, password } = body;
     
     // Validate input
-    if (!username || !password) {
-      return {
+        if (!username || !password) {
+          return {
         statusCode: 400,
-        headers,
-        body: JSON.stringify({
-          success: false,
+            headers,
+            body: JSON.stringify({
+              success: false,
           message: 'Username and password are required'
-        })
-      };
-    }
-    
+            })
+          };
+        }
+        
     // In a real application, you would verify against database
     // For this example, use the hard-coded admin credentials
     const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
     
     if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
-      return {
+        return {
         statusCode: 401,
-        headers,
-        body: JSON.stringify({
+          headers,
+          body: JSON.stringify({
           success: false,
           message: 'Invalid username or password'
-        })
-      };
-    }
-    
+          })
+        };
+      }
+      
     // Generate JWT token
     const token = jwt.sign(
       { 
@@ -1725,30 +1725,30 @@ const handleAdminLogin = async (event) => {
     );
     
     // Return success with token
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
         message: 'Login successful',
         token,
         user: {
           username,
           role: 'Administrator'
-        }
-      })
-    };
+            }
+          })
+        };
   } catch (error) {
     console.error('Login error:', error);
-    return {
+          return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({
-        success: false,
+            headers,
+            body: JSON.stringify({
+              success: false,
         message: 'Internal server error during login'
-      })
-    };
-  }
+            })
+          };
+        }
 };
 
 // Handle admin work experience GET request
@@ -1756,10 +1756,10 @@ const getAdminWorkExperience = async () => {
   try {
     const workExperience = await getWorkExperience();
     
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
         success: true,
         data: workExperience,
         timestamp: new Date().toISOString()
@@ -1767,16 +1767,16 @@ const getAdminWorkExperience = async () => {
     };
   } catch (error) {
     console.error('Error getting admin work experience:', error);
-    return {
+        return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({
+          headers,
+          body: JSON.stringify({
         success: false,
         message: 'Error retrieving work experience data',
         error: error.message
-      })
-    };
-  }
+          })
+        };
+      }
 };
 
 // Lambda handler
@@ -1785,9 +1785,9 @@ exports.handler = async (event, context) => {
   
   // Handle preflight OPTIONS request
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
+        return {
+          statusCode: 200,
+          headers,
       body: JSON.stringify({ message: 'Preflight request successful' })
     };
   }
@@ -1807,16 +1807,16 @@ exports.handler = async (event, context) => {
       // Verify authentication
       const authData = authenticate(event);
       if (!authData) {
-        return {
+      return {
           statusCode: 401,
-          headers,
-          body: JSON.stringify({
-            success: false,
+        headers,
+        body: JSON.stringify({
+          success: false,
             message: 'Authentication required'
-          })
-        };
-      }
-      
+        })
+      };
+    }
+    
       // Now that we've authenticated, handle the admin routes
       if (path === '/api/admin/work-experience') {
         if (method === 'GET') {
@@ -1829,10 +1829,10 @@ exports.handler = async (event, context) => {
       // Add more protected routes as needed
       
       // If we reach here, it's an unknown admin route
-      return {
+    return {
         statusCode: 404,
-        headers,
-        body: JSON.stringify({
+      headers,
+      body: JSON.stringify({
           success: false,
           message: 'Admin endpoint not found'
         })
