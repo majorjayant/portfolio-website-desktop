@@ -6,22 +6,7 @@
     <title>Admin Dashboard - Work Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3b82f6',
-                        secondary: '#10b981',
-                        accent: '#8b5cf6',
-                        dark: '#1f2937',
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -37,8 +22,39 @@
                 transform: translateX(0);
             }
         }
-        .tox-tinymce {
+        /* Rich text editor styles */
+        .rich-text-editor {
+            border: 1px solid #e2e8f0;
             border-radius: 0.375rem;
+            padding: 0.5rem;
+            min-height: 200px;
+        }
+        .rich-text-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            background-color: #f9fafb;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+        }
+        .rich-text-toolbar button {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        .rich-text-toolbar button:hover {
+            background-color: #f3f4f6;
+        }
+        .rich-text-content {
+            min-height: 150px;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            background-color: #fff;
         }
     </style>
 </head>
@@ -57,7 +73,7 @@
             <div class="text-red-500 text-5xl mb-4"><i class="fas fa-lock"></i></div>
             <h2 class="text-2xl font-bold mb-2">Authentication Required</h2>
             <p class="mb-4 text-gray-600">Please log in to access the admin dashboard.</p>
-            <button onclick="window.location.href='login.html'" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600">
+            <button onclick="window.location.href='login.html'" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 Go to Login
             </button>
         </div>
@@ -66,7 +82,7 @@
     <!-- Main content (displayed when authenticated) -->
     <div id="authenticated-content" class="hidden min-h-screen flex flex-col md:flex-row">
         <!-- Sidebar -->
-        <div class="sidebar bg-dark text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform md:relative md:translate-x-0 z-20">
+        <div class="sidebar bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform md:relative md:translate-x-0 z-20">
             <div class="flex items-center justify-between px-3">
                 <div class="text-2xl font-semibold">Admin Panel</div>
                 <button id="close-sidebar" class="md:hidden">
@@ -130,7 +146,7 @@
                         <div id="experience-items-container" class="border border-gray-200 rounded-lg p-4">
                             <!-- Experience items will be generated here -->
                         </div>
-                        <button id="add-experience-btn" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600">
+                        <button id="add-experience-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                             <i class="fas fa-plus mr-1"></i> Add Experience
                         </button>
                         <div class="mt-6 flex justify-end">
@@ -151,6 +167,73 @@
         let apiEndpoint = localStorage.getItem('apiEndpoint') || 'https://f7r74v22od.execute-api.us-east-1.amazonaws.com/production';
         let lastUpdate = new Date();
         let localExperienceData = [];
+
+        // Simple rich text editor implementation
+        function initSimpleEditor(containerSelector) {
+            const container = document.querySelector(containerSelector);
+            if (!container) return;
+            
+            // Create toolbar and content area
+            const toolbar = document.createElement('div');
+            toolbar.className = 'rich-text-toolbar';
+            
+            const content = document.createElement('div');
+            content.className = 'rich-text-content';
+            content.contentEditable = true;
+            
+            // Get the original textarea
+            const textarea = container.querySelector('textarea');
+            const initialValue = textarea ? textarea.value : '';
+            content.innerHTML = initialValue;
+            
+            // Create toolbar buttons
+            const buttons = [
+                { cmd: 'bold', icon: 'fas fa-bold', title: 'Bold' },
+                { cmd: 'italic', icon: 'fas fa-italic', title: 'Italic' },
+                { cmd: 'underline', icon: 'fas fa-underline', title: 'Underline' },
+                { cmd: 'insertUnorderedList', icon: 'fas fa-list-ul', title: 'Bullet List' },
+                { cmd: 'insertOrderedList', icon: 'fas fa-list-ol', title: 'Numbered List' },
+                { cmd: 'createLink', icon: 'fas fa-link', title: 'Insert Link' },
+                { cmd: 'formatBlock', param: 'h2', icon: 'fas fa-heading', title: 'Heading' },
+                { cmd: 'formatBlock', param: 'p', icon: 'fas fa-paragraph', title: 'Paragraph' }
+            ];
+            
+            buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.innerHTML = `<i class="${btn.icon}"></i>`;
+                button.title = btn.title;
+                button.addEventListener('click', () => {
+                    if (btn.cmd === 'createLink') {
+                        const url = prompt('Enter the URL:');
+                        if (url) document.execCommand(btn.cmd, false, url);
+                    } else if (btn.param) {
+                        document.execCommand(btn.cmd, false, btn.param);
+                    } else {
+                        document.execCommand(btn.cmd);
+                    }
+                    // Update the hidden textarea for form submission
+                    if (textarea) textarea.value = content.innerHTML;
+                });
+                toolbar.appendChild(button);
+            });
+            
+            // Update textarea when content changes
+            content.addEventListener('input', () => {
+                if (textarea) textarea.value = content.innerHTML;
+            });
+            
+            // Clear existing content and append the new editor
+            container.innerHTML = '';
+            container.appendChild(toolbar);
+            container.appendChild(content);
+            
+            return {
+                getContent: () => content.innerHTML,
+                setContent: (html) => { content.innerHTML = html; if (textarea) textarea.value = html; },
+                setReadOnly: (isReadOnly) => { content.contentEditable = !isReadOnly; }
+            };
+        }
 
         // Authentication check
         document.addEventListener('DOMContentLoaded', function() {
@@ -203,153 +286,148 @@
             saveExperienceData();
         });
 
-        // Update the last updated time
+        // Update last updated time display
         function updateLastUpdatedTime() {
             const timeElement = document.getElementById('last-updated');
-            timeElement.textContent = `Last updated: ${lastUpdate.toLocaleTimeString()}`;
-        }
-
-        // Experience Items Functions
-        function addExperienceItem(data = null) {
-            const container = document.getElementById('experience-items-container');
-            const itemId = `experience-item-${Date.now()}`;
-            
-            let isDeleted = data && data.isDeleted ? true : false;
-            let positionTitle = data ? data.positionTitle : '';
-            let company = data ? data.company : '';
-            let startDate = data ? data.startDate : '';
-            let endDate = data ? data.endDate : '';
-            let isCurrent = data && data.isCurrent ? true : false;
-            let description = data ? data.description : '';
-            
-            const newItem = document.createElement('div');
-            newItem.className = `experience-item mb-4 p-4 border ${isDeleted ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'} rounded-lg`;
-            newItem.id = itemId;
-            newItem.dataset.deleted = isDeleted;
-            
-            newItem.innerHTML = `
-                <div class="flex justify-between mb-2">
-                    <h3 class="text-lg font-semibold">${isDeleted ? 'Marked for Deletion' : 'Experience Details'}</h3>
-                    <button class="delete-toggle-btn text-sm px-2 py-1 rounded ${isDeleted ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}">
-                        ${isDeleted ? '<i class="fas fa-undo mr-1"></i> Restore' : '<i class="fas fa-trash mr-1"></i> Delete'}
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Position Title*</label>
-                        <input type="text" class="position-title w-full p-2 border border-gray-300 rounded" value="${positionTitle}" ${isDeleted ? 'disabled' : ''}>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Company*</label>
-                        <input type="text" class="company w-full p-2 border border-gray-300 rounded" value="${company}" ${isDeleted ? 'disabled' : ''}>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date*</label>
-                        <input type="date" class="start-date w-full p-2 border border-gray-300 rounded" value="${startDate}" ${isDeleted ? 'disabled' : ''}>
-                    </div>
-                    <div class="end-date-container ${isCurrent ? 'hidden' : ''}">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                        <input type="date" class="end-date w-full p-2 border border-gray-300 rounded" value="${endDate}" ${isDeleted ? 'disabled' : ''}>
-                    </div>
-                    <div>
-                        <label class="flex items-center mt-6">
-                            <input type="checkbox" class="current-position mr-2 h-4 w-4" ${isCurrent ? 'checked' : ''} ${isDeleted ? 'disabled' : ''}>
-                            <span class="text-sm font-medium text-gray-700">Current Position</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Description*</label>
-                    <textarea class="description w-full p-2 border border-gray-300 rounded min-h-[100px] tinymce-editor" ${isDeleted ? 'disabled' : ''}>${description}</textarea>
-                </div>
-            `;
-            
-            container.appendChild(newItem);
-            
-            // Initialize TinyMCE on the new description field
-            initTinyMCE(`#${itemId} .tinymce-editor`);
-            
-            // Setup event listeners for the new item
-            const deleteToggleBtn = newItem.querySelector('.delete-toggle-btn');
-            deleteToggleBtn.addEventListener('click', function() {
-                toggleDeleteExperienceItem(itemId);
-            });
-            
-            const currentCheckbox = newItem.querySelector('.current-position');
-            currentCheckbox.addEventListener('change', function() {
-                const endDateContainer = newItem.querySelector('.end-date-container');
-                if (this.checked) {
-                    endDateContainer.classList.add('hidden');
-                } else {
-                    endDateContainer.classList.remove('hidden');
-                }
-            });
-        }
-
-        function toggleDeleteExperienceItem(itemId) {
-            const item = document.getElementById(itemId);
-            const isCurrentlyDeleted = item.dataset.deleted === 'true';
-            
-            // Toggle the deleted status
-            item.dataset.deleted = !isCurrentlyDeleted;
-            
-            // Update the UI
-            if (!isCurrentlyDeleted) {
-                // Mark as deleted
-                item.classList.remove('bg-gray-50', 'border-gray-200');
-                item.classList.add('bg-red-50', 'border-red-200');
-                item.querySelector('h3').textContent = 'Marked for Deletion';
-                
-                const deleteBtn = item.querySelector('.delete-toggle-btn');
-                deleteBtn.classList.remove('bg-red-500');
-                deleteBtn.classList.add('bg-green-500');
-                deleteBtn.innerHTML = '<i class="fas fa-undo mr-1"></i> Restore';
-                
-                // Disable all inputs
-                item.querySelectorAll('input, textarea').forEach(input => {
-                    input.disabled = true;
-                });
-                
-                // Disable TinyMCE if it's initialized
-                const editorId = item.querySelector('.tinymce-editor').id;
-                if (editorId && tinymce.get(editorId)) {
-                    tinymce.get(editorId).setMode('readonly');
-                }
-            } else {
-                // Restore
-                item.classList.remove('bg-red-50', 'border-red-200');
-                item.classList.add('bg-gray-50', 'border-gray-200');
-                item.querySelector('h3').textContent = 'Experience Details';
-                
-                const deleteBtn = item.querySelector('.delete-toggle-btn');
-                deleteBtn.classList.remove('bg-green-500');
-                deleteBtn.classList.add('bg-red-500');
-                deleteBtn.innerHTML = '<i class="fas fa-trash mr-1"></i> Delete';
-                
-                // Enable all inputs
-                item.querySelectorAll('input, textarea').forEach(input => {
-                    input.disabled = false;
-                });
-                
-                // Enable TinyMCE if it's initialized
-                const editorId = item.querySelector('.tinymce-editor').id;
-                if (editorId && tinymce.get(editorId)) {
-                    tinymce.get(editorId).setMode('design');
-                }
+            if (timeElement) {
+                timeElement.textContent = `Last updated: ${lastUpdate.toLocaleTimeString()}`;
             }
         }
 
-        function initTinyMCE(selector) {
-            tinymce.init({
-                selector: selector,
-                height: 200,
-                menubar: false,
-                plugins: 'lists link code',
-                toolbar: 'undo redo | formatselect | bold italic | bullist numlist | link | code',
-                content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }'
+        // Template for experience item
+        function addExperienceItem(data = null) {
+            const container = document.getElementById('experience-items-container');
+            const itemId = `experience-item-${Date.now()}`;
+            const isDeleted = false;
+            
+            // Extract values from data or use defaults
+            const positionTitle = data?.positionTitle || '';
+            const company = data?.company || '';
+            const startDate = data?.startDate || '';
+            const endDate = data?.endDate || '';
+            const isCurrent = data?.isCurrent || false;
+            const description = data?.description || '';
+            
+            // Create the experience item element
+            const itemElement = document.createElement('div');
+            itemElement.id = itemId;
+            itemElement.className = 'experience-item bg-gray-50 p-4 rounded-lg mb-4';
+            itemElement.dataset.deleted = isDeleted ? 'true' : 'false';
+            
+            // Create the HTML structure
+            itemElement.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">${positionTitle || 'New Position'}</h3>
+                    <div>
+                        <button class="delete-toggle-btn px-2 py-1 bg-red-500 text-white rounded text-sm">
+                            <i class="fas fa-trash mr-1"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Position Title*</label>
+                        <input type="text" class="position-title w-full p-2 border border-gray-300 rounded" value="${positionTitle}" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Company*</label>
+                        <input type="text" class="company w-full p-2 border border-gray-300 rounded" value="${company}" required>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date*</label>
+                        <input type="month" class="start-date w-full p-2 border border-gray-300 rounded" value="${startDate}" required>
+                    </div>
+                    <div class="end-date-field ${isCurrent ? 'opacity-50' : ''}">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                        <input type="month" class="end-date w-full p-2 border border-gray-300 rounded" value="${endDate}" ${isCurrent ? 'disabled' : ''}>
+                    </div>
+                    <div class="flex items-end">
+                        <label class="inline-flex items-center mb-1">
+                            <input type="checkbox" class="current-position form-checkbox" ${isCurrent ? 'checked' : ''}>
+                            <span class="ml-2 text-sm text-gray-700">Current Position</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description*</label>
+                    <div class="editor-container">
+                        <textarea class="description w-full p-2 border border-gray-300 rounded min-h-[100px]" ${isDeleted ? 'disabled' : ''}>${description}</textarea>
+                    </div>
+                </div>
+            `;
+            
+            // Add to container
+            container.appendChild(itemElement);
+            
+            // Add event listeners
+            const deleteBtn = itemElement.querySelector('.delete-toggle-btn');
+            const currentPositionCheckbox = itemElement.querySelector('.current-position');
+            const endDateField = itemElement.querySelector('.end-date-field');
+            const endDateInput = itemElement.querySelector('.end-date');
+            const positionTitleInput = itemElement.querySelector('.position-title');
+            const titleDisplay = itemElement.querySelector('h3');
+            
+            // Delete button
+            deleteBtn.addEventListener('click', function() {
+                const isDeleted = itemElement.dataset.deleted === 'true';
+                
+                if (isDeleted) {
+                    // Restore
+                    itemElement.dataset.deleted = 'false';
+                    itemElement.classList.remove('bg-red-50', 'border-red-200');
+                    itemElement.classList.add('bg-gray-50');
+                    this.classList.remove('bg-green-500');
+                    this.classList.add('bg-red-500');
+                    this.innerHTML = '<i class="fas fa-trash mr-1"></i> Delete';
+                    
+                    // Enable all inputs
+                    itemElement.querySelectorAll('input, textarea').forEach(input => {
+                        input.disabled = false;
+                    });
+                    
+                    // Re-check if current position is checked
+                    if (currentPositionCheckbox.checked) {
+                        endDateInput.disabled = true;
+                    }
+                } else {
+                    // Delete
+                    itemElement.dataset.deleted = 'true';
+                    itemElement.classList.remove('bg-gray-50');
+                    itemElement.classList.add('bg-red-50', 'border-red-200');
+                    this.classList.remove('bg-red-500');
+                    this.classList.add('bg-green-500');
+                    this.innerHTML = '<i class="fas fa-undo mr-1"></i> Restore';
+                    
+                    // Disable all inputs
+                    itemElement.querySelectorAll('input, textarea').forEach(input => {
+                        input.disabled = true;
+                    });
+                }
             });
+            
+            // Current position checkbox
+            currentPositionCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    endDateInput.disabled = true;
+                    endDateField.classList.add('opacity-50');
+                } else {
+                    endDateInput.disabled = false;
+                    endDateField.classList.remove('opacity-50');
+                }
+            });
+            
+            // Update title display when position title changes
+            positionTitleInput.addEventListener('input', function() {
+                titleDisplay.textContent = this.value || 'New Position';
+            });
+            
+            // Initialize the rich text editor
+            initSimpleEditor(`#${itemId} .editor-container`);
         }
 
         function getExperienceData() {
@@ -371,13 +449,15 @@
                     endDate = item.querySelector('.end-date').value;
                 }
                 
-                // Get content from TinyMCE
-                const textareaId = item.querySelector('.tinymce-editor').id;
+                // Get content from editor
+                const editorContainer = item.querySelector('.editor-container');
+                const editorContent = editorContainer.querySelector('.rich-text-content');
                 let description = '';
-                if (textareaId && tinymce.get(textareaId)) {
-                    description = tinymce.get(textareaId).getContent();
+                
+                if (editorContent) {
+                    description = editorContent.innerHTML;
                 } else {
-                    description = item.querySelector('.description').value.trim();
+                    description = item.querySelector('textarea.description').value.trim();
                 }
                 
                 // Validate required fields
