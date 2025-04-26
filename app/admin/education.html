@@ -594,42 +594,26 @@
                 const token = localStorage.getItem('admin_token');
                 const user = localStorage.getItem('admin_user');
                 
-                // If no token at all, we can't authenticate
-                if (!token) {
+                if (!token || !user) {
                     authOverlay.style.display = 'flex';
                     authStatus.innerHTML = '<div class="alert alert-danger">No authentication found. Please log in.</div>';
                     return false;
                 }
                 
-                // Check for user data in localStorage (from direct login)
-                if (user) {
-                    try {
-                        // Parse user data to validate it
-                        JSON.parse(user);
-                        // Valid user data found, hide auth overlay
-                        authOverlay.style.display = 'none';
-                        return true;
-                    } catch (error) {
-                        console.error('Error parsing user data:', error);
-                    }
-                }
-                
-                // Try to decode token as JWT (alternative method)
                 try {
-                    const tokenData = JSON.parse(atob(token.split('.')[1]));
+                    // Set user info in the header
+                    const userData = JSON.parse(user);
+                    document.getElementById('userName').textContent = userData.username || 'Admin User';
+                    document.getElementById('userRole').textContent = userData.role || 'Administrator';
                     
-                    if (tokenData) {
-                        // Hide the auth overlay
-                        authOverlay.style.display = 'none';
-                        return true;
-                    } else {
-                        throw new Error('Invalid token structure');
-                    }
-                } catch (error) {
-                    console.error('Authentication error:', error);
-                    // Even with an error, if we have a token, we'll proceed
+                    // Hide the auth overlay
                     authOverlay.style.display = 'none';
                     return true;
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    authOverlay.style.display = 'flex';
+                    authStatus.innerHTML = '<div class="alert alert-danger">Authentication error. Please log in again.</div>';
+                    return false;
                 }
             }
             

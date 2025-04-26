@@ -4,255 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Work Experience Admin - Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/admin.css">
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
-            --accent-color: #e74c3c;
             --text-color: #333;
             --light-bg: #f8f9fa;
             --border-color: #dee2e6;
-            --white: #ffffff;
-            --light-text: #6c757d;
-            --sidebar-width: 250px;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Arial', sans-serif;
             color: var(--text-color);
             background-color: var(--light-bg);
-            line-height: 1.6;
         }
         
-        /* Layout */
-        .admin-container {
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        .sidebar {
-            width: var(--sidebar-width);
+        .admin-header {
             background-color: var(--primary-color);
-            color: var(--white);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-        
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .sidebar-logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--white);
-        }
-        
-        .sidebar-nav {
-            padding: 20px 0;
-        }
-        
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-        
-        .nav-item:hover, .nav-item.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--white);
-        }
-        
-        .nav-item i {
-            margin-right: 10px;
-            width: 20px;
+            color: white;
+            padding: 1rem;
             text-align: center;
+            margin-bottom: 2rem;
         }
         
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            padding: 20px;
-            transition: all 0.3s ease;
+        .admin-nav {
+            background-color: var(--primary-color);
+            padding: 0.5rem 0;
+            margin-bottom: 2rem;
         }
         
-        .content-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .page-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 0;
-            flex: 1;
-        }
-        
-        .user-actions {
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-info {
-            text-align: right;
-            margin-right: 15px;
-        }
-        
-        .user-name {
+        .admin-nav a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
             font-weight: 500;
         }
         
-        .user-role {
-            font-size: 0.85rem;
-            color: var(--light-text);
+        .admin-nav a:hover {
+            color: var(--secondary-color);
         }
         
-        .logout-btn {
-            background-color: var(--accent-color);
-            color: var(--white);
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        
-        .logout-btn:hover {
-            background-color: #c0392b;
-        }
-        
-        /* Cards */
         .card {
-            background-color: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-            overflow: hidden;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
         
         .card-header {
-            padding: 20px;
-            background-color: var(--white);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .card-title {
-            font-size: 1.2rem;
+            background-color: var(--primary-color);
+            color: white;
             font-weight: 600;
-            margin: 0;
-        }
-        
-        .card-body {
-            padding: 30px;
-        }
-        
-        /* Buttons */
-        .btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
         }
         
         .btn-primary {
             background-color: var(--secondary-color);
-            color: var(--white);
+            border-color: var(--secondary-color);
         }
         
         .btn-primary:hover {
             background-color: #2980b9;
-        }
-        
-        .btn-danger {
-            background-color: var(--accent-color);
-            color: var(--white);
-        }
-        
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-        
-        .btn-sm {
-            padding: 6px 10px;
-            font-size: 0.85rem;
-        }
-        
-        /* Forms */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .form-group-row .form-group {
-            flex: 1;
-            margin-bottom: 0;
+            border-color: #2980b9;
         }
         
         .form-label {
-            display: block;
             font-weight: 500;
-            margin-bottom: 8px;
         }
         
-        .form-control {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border-color 0.2s ease;
+        .section-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 2rem 0;
         }
         
-        .form-control:focus {
-            border-color: var(--secondary-color);
-            outline: none;
-        }
-        
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        /* Work Experience Items */
         .experience-item {
-            background-color: var(--white);
+            background-color: white;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
             position: relative;
-            transition: all 0.3s ease;
         }
         
         .experience-item.deleted {
@@ -261,676 +96,441 @@
             border: 1px dashed #ffaaaa;
         }
         
-        .experience-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .experience-handle {
-            cursor: grab;
-            color: var(--light-text);
-        }
-        
-        .no-experience-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--light-text);
-            font-style: italic;
-        }
-        
-        /* Alert Messages */
-        .alert {
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .alert-success {
-            background-color: #d1fae5;
-            color: #065f46;
-            border-left: 4px solid #10b981;
-        }
-        
-        .alert-danger {
-            background-color: #fee2e2;
-            color: #b91c1c;
-            border-left: 4px solid #ef4444;
-        }
-        
-        .alert-warning {
-            background-color: #fef3c7;
-            color: #92400e;
-            border-left: 4px solid #f59e0b;
-        }
-        
-        .alert-close {
+        .delete-btn {
             position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
+            top: 0.5rem;
+            right: 0.5rem;
+            color: #dc3545;
             cursor: pointer;
-            font-size: 1.2rem;
-            color: inherit;
-            opacity: 0.7;
         }
         
-        .alert-close:hover {
-            opacity: 1;
+        .restore-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 2.5rem;
+            color: #28a745;
+            cursor: pointer;
         }
         
-        /* Authentication overlay */
-        .auth-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(15, 23, 42, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .auth-panel {
-            background-color: var(--white);
-            border-radius: 8px;
-            width: 90%;
+        #login-section {
             max-width: 400px;
-            overflow: hidden;
-            animation: fadeIn 0.3s ease-out;
+            margin: 100px auto;
         }
         
-        .auth-header {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .auth-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin: 0;
-        }
-        
-        .auth-body {
-            padding: 30px;
-        }
-        
-        .auth-message {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--light-text);
-        }
-        
-        .auth-btn {
-            width: 100%;
-            padding: 12px;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        
-        /* Loading spinner */
-        .loading-spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--secondary-color);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 0;
-                position: fixed;
-                z-index: 100;
-            }
-            
-            .sidebar.active {
-                width: var(--sidebar-width);
-            }
-            
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .toggle-sidebar {
-                display: block;
-            }
-            
-            .form-group-row {
-                flex-direction: column;
-                gap: 0;
-            }
-        }
-        
-        .toggle-sidebar {
+        #dashboard-section {
             display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--secondary-color);
-            margin-right: 15px;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+        }
+        
+        .admin-navigation {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .admin-navigation h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        
+        .admin-navigation .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .admin-navigation .nav-link {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .admin-navigation .nav-link i {
+            margin-right: 5px;
+        }
+        
+        .bullet-points textarea {
+            height: 150px;
         }
     </style>
 </head>
 <body>
-    <!-- Authentication Overlay -->
-    <div class="auth-overlay" id="authOverlay">
-        <div class="auth-panel">
-            <div class="auth-header">
-                <h2 class="auth-title">Authentication Required</h2>
-            </div>
-            <div class="auth-body">
-                <p class="auth-message">You need to be logged in to access the admin panel.</p>
-                <div id="authStatus"></div>
-                <a href="/admin-direct" class="btn btn-primary auth-btn">Go to Login</a>
+    <!-- Login Required Section -->
+    <div id="loginRequired" style="display: none;" class="container mt-5 text-center">
+        <div class="card shadow-lg mx-auto" style="max-width: 500px;">
+            <div class="card-body p-5">
+                <h2 class="mb-4">Authentication Required</h2>
+                <p>You need to log in to access the admin dashboard.</p>
+                <button id="loginBtn" class="btn btn-primary btn-lg">Go to Login</button>
             </div>
         </div>
     </div>
 
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">Admin Dashboard</div>
-            </div>
-            <div class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="work-experience.html" class="nav-item active">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Work Experience</span>
-                </a>
-                <a href="education.html" class="nav-item">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>Education</span>
-                </a>
-                <a href="certifications.html" class="nav-item">
-                    <i class="fas fa-certificate"></i>
-                    <span>Certifications</span>
-                </a>
-                <a href="skills.html" class="nav-item">
-                    <i class="fas fa-code"></i>
-                    <span>Skills</span>
-                </a>
-                <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-cogs"></i>
-                    <span>Site Settings</span>
-                </a>
-                <a href="/" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Visit Website</span>
-                </a>
-            </div>
-        </div>
+    <!-- Authenticated Content -->
+    <div id="authenticatedContent">
+        <!-- Main layout container -->
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" id="sidebarMenu">
+                    <!-- ... existing sidebar code ... -->
+                </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-header">
-                <button class="toggle-sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 class="page-title">Work Experience Management</h1>
-                <div class="user-actions">
-                    <div class="user-info">
-                        <div class="user-name" id="userName">Admin User</div>
-                        <div class="user-role" id="userRole">Administrator</div>
+                <!-- Main content area -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Work Experience Management</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user me-1"></i> <span id="currentUser">Admin</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><button id="logoutBtn" class="dropdown-item"><i class="fas fa-sign-out-alt me-1"></i> Logout</button></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <button class="logout-btn" id="logoutBtn">Logout</button>
-                </div>
-            </div>
 
-            <div id="alertContainer"></div>
-
-            <!-- Work Experience Management -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Manage Work Experience</h2>
-                    <button class="btn btn-primary btn-sm" id="saveWorkExperienceBtn">Save All Changes</button>
-                </div>
-                <div class="card-body">
-                    <button class="btn btn-primary add-experience-btn" id="addExperienceBtn">Add New Experience</button>
-                    
-                    <div id="experienceContainer">
-                        <!-- Work experience items will be loaded here -->
-                        <div class="loading-spinner"></div>
+                    <!-- Work Experience Management Content -->
+                    <div class="container mt-4">
+                        <button id="logout-btn" class="btn btn-danger logout-btn">Logout</button>
+                        
+                        <div class="admin-header">
+                            <h1>Work Experience Management</h1>
+                            <p>Add, edit, and manage your professional work experience</p>
+                        </div>
+                        
+                        <!-- Work Experience Items Section -->
+                        <div class="card mb-4">
+                            <div class="card-header">Work Experience</div>
+                            <div class="card-body">
+                                <div id="experience-container">
+                                    <!-- Work experience items will be populated here -->
+                                </div>
+                                <button id="add-experience-btn" class="btn btn-primary mt-3">Add Work Experience</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Save Changes Section -->
+                        <div class="card mb-4">
+                            <div class="card-header">Save Changes</div>
+                            <div class="card-body">
+                                <div id="save-status" class="alert alert-success" style="display:none;"></div>
+                                <div id="save-error" class="alert alert-danger" style="display:none;"></div>
+                                <button id="save-experience-btn" class="btn btn-primary">Save Work Experience Data</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </main>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Authentication check
-            const authOverlay = document.getElementById('authOverlay');
-            const authStatus = document.getElementById('authStatus');
+        // Authentication check
+        function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            const username = localStorage.getItem('admin_user');
             
-            // Check if the user is logged in
-            function checkAuthentication() {
-                const token = localStorage.getItem('admin_token');
-                const user = localStorage.getItem('admin_user');
-                
-                // If no token at all, we can't authenticate
-                if (!token) {
-                    authOverlay.style.display = 'flex';
-                    authStatus.innerHTML = '<div class="alert alert-danger">No authentication found. Please log in.</div>';
-                    return false;
-                }
-                
-                // Check for user data in localStorage (from direct login)
-                if (user) {
-                    try {
-                        // Parse user data to validate it
-                        JSON.parse(user);
-                        // Valid user data found, hide auth overlay
-                        authOverlay.style.display = 'none';
-                        return true;
-                    } catch (error) {
-                        console.error('Error parsing user data:', error);
-                    }
-                }
-                
-                // Try to decode token as JWT (alternative method)
-                try {
-                    const tokenData = JSON.parse(atob(token.split('.')[1]));
-                    
-                    if (tokenData) {
-                        // Hide the auth overlay
-                        authOverlay.style.display = 'none';
-                        return true;
-                    } else {
-                        throw new Error('Invalid token structure');
-                    }
-                } catch (error) {
-                    console.error('Authentication error:', error);
-                    // Even with an error, if we have a token, we'll proceed
-                    authOverlay.style.display = 'none';
-                    return true;
-                }
+            if (!token || !username) {
+                document.getElementById('loginRequired').style.display = 'block';
+                document.getElementById('authenticatedContent').style.display = 'none';
+                return false;
+            } else {
+                document.getElementById('loginRequired').style.display = 'none';
+                document.getElementById('authenticatedContent').style.display = 'block';
+                document.getElementById('username').textContent = username;
+                return true;
             }
+        }
+
+        // Initialize TinyMCE
+        function initTinyMCE() {
+            tinymce.init({
+                selector: '.experience-description',
+                height: 300,
+                menubar: false,
+                plugins: 'link lists table code',
+                toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link | table | code',
+                content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
+                setup: function(editor) {
+                    editor.on('change', function() {
+                        editor.save();
+                    });
+                }
+            });
+        }
+
+        // Document ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!checkAuth()) return;
             
-            // Check authentication on page load
-            const isAuthenticated = checkAuthentication();
+            // Initialize TinyMCE
+            initTinyMCE();
             
-            // Handle logout
+            // Load work experience data
+            loadWorkExperienceData();
+            
+            // Event listeners
+            document.getElementById('loginBtn').addEventListener('click', function() {
+                window.location.href = '../admin-direct/index.html';
+            });
+            
             document.getElementById('logoutBtn').addEventListener('click', function() {
                 localStorage.removeItem('admin_token');
                 localStorage.removeItem('admin_user');
-                window.location.href = '/admin-direct';
+                window.location.href = '../admin-direct/index.html';
             });
             
-            // Toggle sidebar on mobile
-            const toggleSidebarBtn = document.querySelector('.toggle-sidebar');
-            const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
+            document.getElementById('add-experience-btn').addEventListener('click', function() {
+                addWorkExperienceItem();
+            });
             
-            if (toggleSidebarBtn) {
-                toggleSidebarBtn.addEventListener('click', function() {
-                    sidebar.classList.toggle('active');
-                    if (sidebar.classList.contains('active')) {
-                        mainContent.style.marginLeft = 'var(--sidebar-width)';
-                    } else {
-                        mainContent.style.marginLeft = '0';
-                    }
-                });
-            }
-            
-            // Alert function
-            function showAlert(message, type = 'success') {
-                const alertContainer = document.getElementById('alertContainer');
-                const alertId = 'alert_' + Date.now();
-                
-                const alertHTML = `
-                    <div class="alert alert-${type} fade-in" id="${alertId}">
-                        ${message}
-                        <span class="alert-close">&times;</span>
-                    </div>
-                `;
-                
-                alertContainer.innerHTML += alertHTML;
-                
-                // Add event listener to close button
-                setTimeout(() => {
-                    const closeBtn = document.querySelector(`#${alertId} .alert-close`);
-                    if (closeBtn) {
-                        closeBtn.addEventListener('click', function() {
-                            const alert = document.getElementById(alertId);
-                            alert.remove();
-                        });
-                    }
-                }, 100);
-                
-                // Auto close after 5 seconds
-                setTimeout(() => {
-                    const alert = document.getElementById(alertId);
-                    if (alert) {
-                        alert.remove();
-                    }
-                }, 5000);
-            }
-            
-            // Work Experience Management Functions
-            if (isAuthenticated) {
-                // Elements
-                const experienceContainer = document.getElementById('experienceContainer');
-                const addExperienceBtn = document.getElementById('addExperienceBtn');
-                const saveWorkExperienceBtn = document.getElementById('saveWorkExperienceBtn');
-                
-                // Load work experience data
-                function loadWorkExperience() {
-                    experienceContainer.innerHTML = '<div class="loading-spinner"></div>';
-                    
-                    fetchWorkExperience()
-                        .then(data => {
-                            experienceContainer.innerHTML = '';
-                            
-                            if (data && data.length > 0) {
-                                data.forEach(item => {
-                                    addWorkExperienceItem(item);
-                                });
-                                
-                                // Add event listeners
-                                addExperienceEventListeners();
-                            } else {
-                                // No work experience found
-                                experienceContainer.innerHTML = '<div class="no-experience-message">No work experience entries found. Click "Add New Experience" to create your first entry.</div>';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error loading work experience:', error);
-                            experienceContainer.innerHTML = '<div class="alert alert-danger">Failed to load work experience data. Please try again later.</div>';
-                        });
-                }
-                
-                function fetchWorkExperience() {
-                    return fetch('/api/admin/work-experience')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Failed to fetch work experience data');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data && data.success && data.data) {
-                                return data.data;
-                            }
-                            return [];
-                        })
-                        .catch(error => {
-                            console.error('API error:', error);
-                            // Fallback to local sample data
-                            return [
-                                {
-                                    id: '1',
-                                    title: 'Senior Software Engineer',
-                                    company: 'Tech Solutions Inc',
-                                    startDate: '2020-01',
-                                    endDate: '',
-                                    location: 'San Francisco, CA',
-                                    logoUrl: '/images/sample-company-logo.png',
-                                    bulletPoints: [
-                                        'Led development of core platform features',
-                                        'Managed team of 5 junior developers',
-                                        'Implemented CI/CD pipeline improving deployment time by 40%'
-                                    ]
-                                },
-                                {
-                                    id: '2',
-                                    title: 'Web Developer',
-                                    company: 'Digital Agency XYZ',
-                                    startDate: '2018-03',
-                                    endDate: '2019-12',
-                                    location: 'Chicago, IL',
-                                    logoUrl: '',
-                                    bulletPoints: [
-                                        'Built responsive websites for enterprise clients',
-                                        'Developed custom CMS solutions',
-                                        'Optimized site performance and SEO'
-                                    ]
-                                }
-                            ];
-                        });
-                }
-                
-                // Format date for input fields
-                function formatDateForInput(dateString) {
-                    if (!dateString) return '';
-                    
-                    // Extract just yyyy-mm part from date string
-                    // This handles both "2020-01" format and "2020-01-01" format
-                    const match = dateString.match(/^(\d{4}-\d{2})/);
-                    return match ? match[1] : '';
-                }
-                
-                // Add a work experience item to the DOM
-                function addWorkExperienceItem(experienceData = null) {
-                    // Generate a unique ID
-                    const tempId = 'exp_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-                    const id = experienceData && experienceData.id ? experienceData.id : tempId;
-                    
-                    const newExperienceHTML = `
-                        <div class="experience-item" data-exp-id="${id}" ${experienceData && experienceData.deleted ? 'data-deleted="true"' : 'data-deleted="false"'}>
-                            <div class="experience-header">
-                                <div class="experience-handle">
-                                    <i class="fas fa-grip-lines"></i>
-                                </div>
-                                <div class="experience-actions">
-                                    <button class="btn btn-danger btn-sm toggle-delete-exp">Delete</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Job Title*</label>
-                                <input type="text" class="form-control exp-title" placeholder="e.g., Senior Software Engineer" value="${experienceData ? experienceData.title || '' : ''}" required>
-                            </div>
-                            
-                            <div class="form-group-row">
-                                <div class="form-group">
-                                    <label class="form-label">Company*</label>
-                                    <input type="text" class="form-control exp-company" placeholder="e.g., Tech Solutions Inc" value="${experienceData ? experienceData.company || '' : ''}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Location</label>
-                                    <input type="text" class="form-control exp-location" placeholder="e.g., San Francisco, CA" value="${experienceData ? experienceData.location || '' : ''}">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group-row">
-                                <div class="form-group">
-                                    <label class="form-label">Start Date*</label>
-                                    <input type="month" class="form-control exp-start-date" value="${experienceData ? formatDateForInput(experienceData.startDate) : ''}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">End Date (leave blank if current)</label>
-                                    <input type="month" class="form-control exp-end-date" value="${experienceData ? formatDateForInput(experienceData.endDate) : ''}">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Company Logo URL</label>
-                                <input type="text" class="form-control exp-logo-url" placeholder="e.g., https://example.com/logo.png" value="${experienceData ? experienceData.logoUrl || '' : ''}">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Responsibilities/Achievements* (One per line)</label>
-                                <textarea class="form-control exp-bullet-points" rows="5" placeholder="• Led development of core platform features
-• Managed team of 5 junior developers
-• Implemented CI/CD pipeline">${experienceData && experienceData.bulletPoints ? experienceData.bulletPoints.join('\n') : ''}</textarea>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Remove no experience message if present
-                    const noExperienceMessage = experienceContainer.querySelector('.no-experience-message');
-                    if (noExperienceMessage) {
-                        experienceContainer.innerHTML = '';
-                    }
-                    
-                    // Add the new experience to the container
-                    experienceContainer.insertAdjacentHTML('afterbegin', newExperienceHTML);
-                    
-                    // If the item is deleted, update its visual state
-                    if (experienceData && experienceData.deleted) {
-                        const item = experienceContainer.querySelector(`[data-exp-id="${id}"]`);
-                        item.classList.add('deleted');
-                        item.querySelector('.toggle-delete-exp').textContent = 'Restore';
-                    }
-                    
-                    // Focus on the title input
-                    setTimeout(() => {
-                        const titleInput = document.querySelector(`[data-exp-id="${id}"] .exp-title`);
-                        if (titleInput) titleInput.focus();
-                    }, 100);
-                    
-                    showAlert('New work experience entry added. Remember to save your changes!');
-                }
-                
-                function addExperienceEventListeners() {
-                    // Add event listeners to delete buttons
-                    document.querySelectorAll('.toggle-delete-exp').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const expItem = this.closest('.experience-item');
-                            toggleDeleteExperienceItem(expItem);
-                        });
-                    });
-                }
-                
-                function toggleDeleteExperienceItem(item) {
-                    const isDeleted = item.getAttribute('data-deleted') === 'true';
-                    const newState = !isDeleted;
-                    
-                    item.setAttribute('data-deleted', newState.toString());
-                    
-                    if (newState) {
-                        item.classList.add('deleted');
-                        item.querySelector('.toggle-delete-exp').textContent = 'Restore';
-                    } else {
-                        item.classList.remove('deleted');
-                        item.querySelector('.toggle-delete-exp').textContent = 'Delete';
-                    }
-                }
-                
-                function getWorkExperienceData() {
-                    const workExperience = [];
-                    const experienceItems = document.querySelectorAll('.experience-item');
-                    
-                    experienceItems.forEach(item => {
-                        const isDeleted = item.getAttribute('data-deleted') === 'true';
-                        const id = item.getAttribute('data-exp-id');
-                        
-                        if (isDeleted) {
-                            // For deleted items, just send the ID
-                            workExperience.push({
-                                id: id,
-                                deleted: true
-                            });
-                            return;
-                        }
-                        
-                        const title = item.querySelector('.exp-title').value.trim();
-                        const company = item.querySelector('.exp-company').value.trim();
-                        const startDate = item.querySelector('.exp-start-date').value;
-                        
-                        // Validate required fields
-                        if (!title || !company || !startDate) {
-                            throw new Error('Please fill in all required fields (Job Title, Company, Start Date)');
-                        }
-                        
-                        const bulletPointsText = item.querySelector('.exp-bullet-points').value;
-                        const bulletPoints = bulletPointsText
-                            .split('\n')
-                            .map(point => point.trim())
-                            .filter(point => point !== '');
-                        
-                        if (bulletPoints.length === 0) {
-                            throw new Error('Please add at least one responsibility or achievement');
-                        }
-                        
-                        workExperience.push({
-                            id: id,
-                            title: title,
-                            company: company,
-                            location: item.querySelector('.exp-location').value.trim(),
-                            startDate: startDate,
-                            endDate: item.querySelector('.exp-end-date').value,
-                            logoUrl: item.querySelector('.exp-logo-url').value.trim(),
-                            bulletPoints: bulletPoints,
-                            deleted: false
-                        });
-                    });
-                    
-                    return workExperience;
-                }
-                
-                // Add event listeners
-                addExperienceBtn.addEventListener('click', function() {
-                    addWorkExperienceItem();
-                    addExperienceEventListeners();
-                });
-                
-                saveWorkExperienceBtn.addEventListener('click', function() {
-                    try {
-                        const workExperienceData = getWorkExperienceData();
-                        console.log('Work experience to save:', workExperienceData);
-                        
-                        // Here you would send the data to your API
-                        /*
-                        fetch('/api/admin/work-experience', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(workExperienceData)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showAlert('Work experience data saved successfully!');
-                                loadWorkExperience(); // Reload the data
-                            } else {
-                                showAlert(data.message || 'Failed to save data. Please try again.', 'danger');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Save error:', error);
-                            showAlert('Failed to save data. Please try again.', 'danger');
-                        });
-                        */
-                        
-                        // For now, just show a success message
-                        showAlert('Work experience data saved successfully!');
-                    } catch (error) {
-                        showAlert(error.message, 'danger');
-                    }
-                });
-                
-                // Initial load
-                loadWorkExperience();
-            }
+            document.getElementById('save-experience-btn').addEventListener('click', function() {
+                saveWorkExperience();
+            });
         });
+
+        // Add work experience item
+        function loadWorkExperienceData() {
+            fetchWorkExperienceData()
+                .then(data => {
+                    const container = document.getElementById('experience-container');
+                    container.innerHTML = '';
+                    
+                    if (data && data.length > 0) {
+                        data.forEach((item, index) => {
+                            addWorkExperienceItem(item, index);
+                        });
+                    } else {
+                        // Add an empty item if none exists
+                        addWorkExperienceItem();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading work experience data:', error);
+                });
+        }
+
+        function fetchWorkExperienceData() {
+            const token = localStorage.getItem('admin_token');
+            
+            return fetch('/api/admin/work-experience', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch work experience data');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.success && data.data) {
+                    return data.data;
+                } else {
+                    return [];
+                }
+            })
+            .catch(error => {
+                console.error('API error:', error);
+                // Fallback to local JSON if API fails
+                return fetch('/data/work-experience.json')
+                    .then(response => response.json())
+                    .catch(localError => {
+                        console.error('Local data error:', localError);
+                        return [];
+                    });
+            });
+        }
+
+        function addWorkExperienceItem(data = null, index = null) {
+            const container = document.getElementById('experience-container');
+            const itemId = 'experience-item-' + (index !== null ? index : Date.now());
+            
+            const div = document.createElement('div');
+            div.className = 'experience-item';
+            div.id = itemId;
+            div.dataset.deleted = 'false';
+            
+            div.innerHTML = `
+                <i class="fas fa-times delete-btn" onclick="toggleDeleteExperienceItem('${itemId}')"></i>
+                <i class="fas fa-undo restore-btn" style="display:none;" onclick="toggleDeleteExperienceItem('${itemId}')"></i>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Job Title*</label>
+                        <input type="text" class="form-control job-title" value="${data ? data.title || '' : ''}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Company*</label>
+                        <input type="text" class="form-control company" value="${data ? data.company || '' : ''}" required>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Start Date*</label>
+                        <input type="month" class="form-control start-date" value="${data ? data.startDate || '' : ''}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">End Date (leave empty for current)</label>
+                        <input type="month" class="form-control end-date" value="${data ? data.endDate || '' : ''}">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control location" value="${data ? data.location || '' : ''}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Company Logo URL</label>
+                        <input type="text" class="form-control logo-url" value="${data ? data.logoUrl || '' : ''}">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label class="form-label">Description*</label>
+                        <textarea class="form-control experience-description" required>${data ? data.description || '' : ''}</textarea>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-12 bullet-points">
+                        <label class="form-label">Responsibilities/Achievements* (One per line)</label>
+                        <textarea class="form-control bullet-points" required>${data && data.bulletPoints ? data.bulletPoints.join('\n') : ''}</textarea>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(div);
+        }
+
+        function toggleDeleteExperienceItem(itemId) {
+            const item = document.getElementById(itemId);
+            const isDeleted = item.dataset.deleted === 'true';
+            
+            item.dataset.deleted = isDeleted ? 'false' : 'true';
+            
+            if (isDeleted) {
+                item.classList.remove('deleted');
+                item.querySelector('.delete-btn').style.display = 'block';
+                item.querySelector('.restore-btn').style.display = 'none';
+            } else {
+                item.classList.add('deleted');
+                item.querySelector('.delete-btn').style.display = 'none';
+                item.querySelector('.restore-btn').style.display = 'block';
+            }
+        }
+
+        function getWorkExperienceData() {
+            const items = document.querySelectorAll('.experience-item');
+            const experienceData = [];
+            
+            items.forEach(item => {
+                if (item.dataset.deleted === 'true') {
+                    return; // Skip deleted items
+                }
+                
+                const jobTitle = item.querySelector('.job-title').value;
+                const company = item.querySelector('.company').value;
+                const startDate = item.querySelector('.start-date').value;
+                
+                // Validate required fields
+                if (!jobTitle || !company || !startDate) {
+                    throw new Error('Please fill in all required fields (Job Title, Company, Start Date)');
+                }
+                
+                const bulletPointsText = item.querySelector('.bullet-points').value;
+                const bulletPoints = bulletPointsText
+                    .split('\n')
+                    .map(point => point.trim())
+                    .filter(point => point !== '');
+                
+                if (bulletPoints.length === 0) {
+                    throw new Error('Please add at least one responsibility or achievement');
+                }
+                
+                experienceData.push({
+                    title: jobTitle,
+                    company: company,
+                    startDate: startDate,
+                    endDate: item.querySelector('.end-date').value,
+                    location: item.querySelector('.location').value,
+                    logoUrl: item.querySelector('.logo-url').value,
+                    bulletPoints: bulletPoints
+                });
+            });
+            
+            return experienceData;
+        }
+
+        function saveWorkExperience() {
+            try {
+                // Make sure TinyMCE updates all textareas before getting data
+                tinymce.triggerSave();
+                
+                const experienceData = getWorkExperienceData();
+                const token = localStorage.getItem('admin_token');
+                
+                document.getElementById('save-status').style.display = 'none';
+                document.getElementById('save-error').style.display = 'none';
+                
+                fetch('/api/admin/work-experience', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(experienceData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('save-status').textContent = 'Work experience data saved successfully!';
+                        document.getElementById('save-status').style.display = 'block';
+                        
+                        // Reload data to refresh the page
+                        setTimeout(() => {
+                            loadWorkExperienceData();
+                        }, 1000);
+                    } else {
+                        document.getElementById('save-error').textContent = data.message || 'Failed to save data. Please try again.';
+                        document.getElementById('save-error').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Save error:', error);
+                    document.getElementById('save-error').textContent = 'Failed to save data. Please try again.';
+                    document.getElementById('save-error').style.display = 'block';
+                });
+            } catch (error) {
+                document.getElementById('save-error').textContent = error.message;
+                document.getElementById('save-error').style.display = 'block';
+            }
+        }
     </script>
 </body>
 </html> 
