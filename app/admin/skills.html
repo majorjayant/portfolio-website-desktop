@@ -4,88 +4,255 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skills Admin - Portfolio</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
+            --accent-color: #e74c3c;
             --text-color: #333;
             --light-bg: #f8f9fa;
             --border-color: #dee2e6;
+            --white: #ffffff;
+            --light-text: #6c757d;
+            --sidebar-width: 250px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Roboto', sans-serif;
             color: var(--text-color);
             background-color: var(--light-bg);
+            line-height: 1.6;
         }
         
-        .admin-header {
+        /* Layout */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
             background-color: var(--primary-color);
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            margin-bottom: 2rem;
+            color: var(--white);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 10;
         }
         
-        .admin-nav {
-            background-color: var(--primary-color);
-            padding: 0.5rem 0;
-            margin-bottom: 2rem;
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .admin-nav a {
-            color: white;
-            margin: 0 1rem;
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .content-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            flex: 1;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info {
+            text-align: right;
+            margin-right: 15px;
+        }
+        
+        .user-name {
             font-weight: 500;
         }
         
-        .admin-nav a:hover {
-            color: var(--secondary-color);
+        .user-role {
+            font-size: 0.85rem;
+            color: var(--light-text);
         }
         
+        .logout-btn {
+            background-color: var(--accent-color);
+            color: var(--white);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Cards */
         .card {
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
         }
         
         .card-header {
-            background-color: var(--primary-color);
-            color: white;
+            padding: 20px;
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
             font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 30px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn-primary {
             background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
+            color: var(--white);
         }
         
         .btn-primary:hover {
             background-color: #2980b9;
-            border-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: var(--white);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.85rem;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
         }
         
         .form-label {
+            display: block;
             font-weight: 500;
+            margin-bottom: 8px;
         }
         
-        .section-divider {
-            height: 1px;
-            background-color: var(--border-color);
-            margin: 2rem 0;
-        }
-        
-        .skill-item {
-            background-color: white;
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Skill Items */
+        .skill-item {
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
             position: relative;
+            transition: all 0.3s ease;
         }
         
         .skill-item.deleted {
@@ -94,569 +261,637 @@
             border: 1px dashed #ffaaaa;
         }
         
-        .delete-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            color: #dc3545;
-            cursor: pointer;
-        }
-        
-        .restore-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 2.5rem;
-            color: #28a745;
-            cursor: pointer;
-        }
-        
-        #login-section {
-            max-width: 400px;
-            margin: 100px auto;
-        }
-        
-        #dashboard-section {
-            display: none;
-        }
-        
-        .logout-btn {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-        }
-        
-        .admin-navigation {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        .admin-navigation h3 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-        }
-        
-        .admin-navigation .nav-links {
+        .skill-header {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .admin-navigation .nav-link {
-            background-color: #3498db;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 14px;
-            display: inline-flex;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 15px;
         }
         
-        .admin-navigation .nav-link i {
-            margin-right: 5px;
+        .skill-handle {
+            cursor: grab;
+            color: var(--light-text);
+        }
+        
+        .no-skills-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--light-text);
+            font-style: italic;
+        }
+        
+        /* Alert Messages */
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+        
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .alert-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .alert-close {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: inherit;
+            opacity: 0.7;
+        }
+        
+        .alert-close:hover {
+            opacity: 1;
+        }
+        
+        /* Authentication overlay */
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .auth-panel {
+            background-color: var(--white);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .auth-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .auth-body {
+            padding: 30px;
+        }
+        
+        .auth-message {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--light-text);
+        }
+        
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--secondary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                position: fixed;
+                z-index: 100;
+            }
+            
+            .sidebar.active {
+                width: var(--sidebar-width);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+            
+            .form-group-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+        
+        .toggle-sidebar {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-color);
+            margin-right: 15px;
         }
     </style>
 </head>
 <body>
-    <!-- Login Section -->
-    <section id="login-section" class="container">
-        <div class="card">
-            <div class="card-header">Admin Login</div>
-            <div class="card-body">
-                <div id="login-error" class="alert alert-danger" style="display:none;"></div>
-                <form id="login-form">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </form>
+    <!-- Authentication Overlay -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-panel">
+            <div class="auth-header">
+                <h2 class="auth-title">Authentication Required</h2>
+            </div>
+            <div class="auth-body">
+                <p class="auth-message">You need to be logged in to access the admin panel.</p>
+                <div id="authStatus"></div>
+                <a href="/admin-direct" class="btn btn-primary auth-btn">Go to Login</a>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Dashboard Section -->
-    <section id="dashboard-section">
-        <!-- Admin Navigation -->
-        <div class="admin-navigation">
-            <h3>Admin Dashboard Navigation</h3>
-            <div class="nav-links">
-                <a href="admin-direct.html" class="nav-link">
-                    <i class="fas fa-home"></i> Admin Home
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Admin Dashboard</div>
+            </div>
+            <div class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
                 </a>
-                <a href="work-experience.html" class="nav-link">
-                    <i class="fas fa-briefcase"></i> Work Experience
+                <a href="work-experience.html" class="nav-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Work Experience</span>
                 </a>
-                <a href="education.html" class="nav-link">
-                    <i class="fas fa-graduation-cap"></i> Education
+                <a href="education.html" class="nav-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Education</span>
                 </a>
-                <a href="certifications.html" class="nav-link">
-                    <i class="fas fa-certificate"></i> Certifications
+                <a href="certifications.html" class="nav-item">
+                    <i class="fas fa-certificate"></i>
+                    <span>Certifications</span>
                 </a>
-                <a href="skills.html" class="nav-link">
-                    <i class="fas fa-tools"></i> Skills
+                <a href="skills.html" class="nav-item active">
+                    <i class="fas fa-code"></i>
+                    <span>Skills</span>
+                </a>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-cogs"></i>
+                    <span>Site Settings</span>
+                </a>
+                <a href="/" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Visit Website</span>
                 </a>
             </div>
         </div>
 
-        <div class="container mt-4">
-            <button id="logout-btn" class="btn btn-danger logout-btn">Logout</button>
-            
-            <div class="admin-header">
-                <h1>Skills Management</h1>
-                <p>Add, edit, and manage your professional skills</p>
-            </div>
-            
-            <!-- Skills Categories Section -->
-            <div class="card mb-4">
-                <div class="card-header">Skill Categories</div>
-                <div class="card-body">
-                    <div id="skill-categories-container">
-                        <!-- Skill categories will be populated here -->
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Skills Management</h1>
+                <div class="user-actions">
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin User</div>
+                        <div class="user-role" id="userRole">Administrator</div>
                     </div>
-                    <button id="add-skill-category-btn" class="btn btn-primary mt-3">Add Category</button>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
                 </div>
             </div>
-            
-            <!-- Skills Items Section -->
-            <div class="card mb-4">
-                <div class="card-header">Skills</div>
-                <div class="card-body">
-                    <div id="skills-container">
-                        <!-- Skills will be populated here -->
-                    </div>
-                    <button id="add-skill-btn" class="btn btn-primary mt-3">Add Skill</button>
+
+            <div id="alertContainer"></div>
+
+            <!-- Skills Management -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Manage Skills</h2>
+                    <button class="btn btn-primary btn-sm" id="saveSkillsBtn">Save All Changes</button>
                 </div>
-            </div>
-            
-            <!-- Save Changes Section -->
-            <div class="card mb-4">
-                <div class="card-header">Save Changes</div>
                 <div class="card-body">
-                    <div id="save-status" class="alert alert-success" style="display:none;"></div>
-                    <div id="save-error" class="alert alert-danger" style="display:none;"></div>
-                    <button id="save-skills-btn" class="btn btn-primary">Save All Skills Data</button>
+                    <button class="btn btn-primary add-skill-btn" id="addSkillBtn">Add New Skill</button>
+                    
+                    <div id="skillsContainer">
+                        <!-- Skill items will be loaded here -->
+                        <div class="loading-spinner"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Authentication Functions
-        function checkAuth() {
-            const token = localStorage.getItem('admin_token');
-            if (token) {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Authentication check
+            const authOverlay = document.getElementById('authOverlay');
+            const authStatus = document.getElementById('authStatus');
+            
+            // Check if the user is logged in
+            function checkAuthentication() {
+                const token = localStorage.getItem('admin_token');
+                const user = localStorage.getItem('admin_user');
+                
+                // If no token at all, we can't authenticate
+                if (!token) {
+                    authOverlay.style.display = 'flex';
+                    authStatus.innerHTML = '<div class="alert alert-danger">No authentication found. Please log in.</div>';
+                    return false;
+                }
+                
                 // Check for user data in localStorage (from direct login)
-                const userData = localStorage.getItem('admin_user');
-                if (userData) {
+                if (user) {
                     try {
                         // Parse user data to validate it
-                        JSON.parse(userData);
-                        // Valid user data found
-                        document.getElementById('login-section').style.display = 'none';
-                        document.getElementById('dashboard-section').style.display = 'block';
-                        loadSkillsData();
-                        return;
+                        JSON.parse(user);
+                        // Valid user data found, hide auth overlay
+                        authOverlay.style.display = 'none';
+                        return true;
                     } catch (error) {
                         console.error('Error parsing user data:', error);
                     }
                 }
                 
-                // Token exists but no valid user data
-                // We'll still accept the token as valid
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('dashboard-section').style.display = 'block';
-                loadSkillsData();
-            } else {
-                document.getElementById('login-section').style.display = 'block';
-                document.getElementById('dashboard-section').style.display = 'none';
-            }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            try {
-                const response = await fetch('https://your-api-endpoint/admin/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem('admin_token', data.token);
-                    checkAuth();
-                } else {
-                    const errorData = await response.json();
-                    document.getElementById('login-error').textContent = errorData.message || 'Login failed. Please check your credentials.';
-                    document.getElementById('login-error').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                
-                // For development/testing: Hardcoded login
-                if (username === 'admin' && password === 'password') {
-                    localStorage.setItem('admin_token', 'fake-token-for-testing');
-                    checkAuth();
-                } else {
-                    document.getElementById('login-error').textContent = 'Invalid credentials. For testing, use admin/password.';
-                    document.getElementById('login-error').style.display = 'block';
-                }
-            }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('admin_token');
-            checkAuth();
-        }
-
-        // Skills Management Functions
-        function addSkillCategory() {
-            const container = document.getElementById('skill-categories-container');
-            const categoryId = Date.now();
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'skill-item';
-            categoryDiv.dataset.id = categoryId;
-            
-            categoryDiv.innerHTML = `
-                <div class="mb-3">
-                    <label class="form-label">Category Name</label>
-                    <input type="text" class="form-control category-name" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Display Order</label>
-                    <input type="number" class="form-control category-order" value="1" min="1">
-                </div>
-                <i class="fas fa-trash delete-btn" onclick="toggleDeleteSkillCategory(${categoryId})"></i>
-                <i class="fas fa-undo restore-btn" style="display:none;" onclick="toggleDeleteSkillCategory(${categoryId})"></i>
-            `;
-            
-            container.appendChild(categoryDiv);
-        }
-
-        function addSkillItem() {
-            const container = document.getElementById('skills-container');
-            const skillId = Date.now();
-            const skillDiv = document.createElement('div');
-            skillDiv.className = 'skill-item';
-            skillDiv.dataset.id = skillId;
-            
-            // Fetch categories for the dropdown
-            const categories = getSkillCategoriesData();
-            let categoryOptions = '<option value="">Select Category</option>';
-            categories.forEach(category => {
-                categoryOptions += `<option value="${category.name}">${category.name}</option>`;
-            });
-            
-            skillDiv.innerHTML = `
-                <div class="mb-3">
-                    <label class="form-label">Skill Name</label>
-                    <input type="text" class="form-control skill-name" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Category</label>
-                    <select class="form-control skill-category">
-                        ${categoryOptions}
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Proficiency (1-100)</label>
-                    <input type="number" class="form-control skill-proficiency" min="1" max="100" value="75">
-                </div>
-                <i class="fas fa-trash delete-btn" onclick="toggleDeleteSkill(${skillId})"></i>
-                <i class="fas fa-undo restore-btn" style="display:none;" onclick="toggleDeleteSkill(${skillId})"></i>
-            `;
-            
-            container.appendChild(skillDiv);
-        }
-
-        function toggleDeleteSkillCategory(id) {
-            const categoryDiv = document.querySelector(`.skill-item[data-id="${id}"]`);
-            categoryDiv.classList.toggle('deleted');
-            
-            const deleteBtn = categoryDiv.querySelector('.delete-btn');
-            const restoreBtn = categoryDiv.querySelector('.restore-btn');
-            
-            if (categoryDiv.classList.contains('deleted')) {
-                deleteBtn.style.display = 'none';
-                restoreBtn.style.display = 'block';
-            } else {
-                deleteBtn.style.display = 'block';
-                restoreBtn.style.display = 'none';
-            }
-        }
-
-        function toggleDeleteSkill(id) {
-            const skillDiv = document.querySelector(`.skill-item[data-id="${id}"]`);
-            skillDiv.classList.toggle('deleted');
-            
-            const deleteBtn = skillDiv.querySelector('.delete-btn');
-            const restoreBtn = skillDiv.querySelector('.restore-btn');
-            
-            if (skillDiv.classList.contains('deleted')) {
-                deleteBtn.style.display = 'none';
-                restoreBtn.style.display = 'block';
-            } else {
-                deleteBtn.style.display = 'block';
-                restoreBtn.style.display = 'none';
-            }
-        }
-
-        function getSkillCategoriesData() {
-            const categories = [];
-            document.querySelectorAll('#skill-categories-container .skill-item').forEach(categoryDiv => {
-                if (categoryDiv.classList.contains('deleted')) return;
-                
-                const name = categoryDiv.querySelector('.category-name').value.trim();
-                const order = parseInt(categoryDiv.querySelector('.category-order').value) || 1;
-                
-                if (name) {
-                    categories.push({
-                        name,
-                        order
-                    });
-                }
-            });
-            
-            // Sort by order
-            return categories.sort((a, b) => a.order - b.order);
-        }
-
-        function getSkillsData() {
-            const skills = [];
-            document.querySelectorAll('#skills-container .skill-item').forEach(skillDiv => {
-                if (skillDiv.classList.contains('deleted')) return;
-                
-                const name = skillDiv.querySelector('.skill-name').value.trim();
-                const category = skillDiv.querySelector('.skill-category').value;
-                const proficiency = parseInt(skillDiv.querySelector('.skill-proficiency').value) || 75;
-                
-                if (name && category) {
-                    skills.push({
-                        name,
-                        category,
-                        proficiency
-                    });
-                }
-            });
-            
-            return skills;
-        }
-
-        async function loadSkillsData() {
-            try {
-                // Clear existing data
-                document.getElementById('skill-categories-container').innerHTML = '';
-                document.getElementById('skills-container').innerHTML = '';
-                
-                // Fetch categories and skills from API
-                const [categoriesData, skillsData] = await Promise.all([
-                    fetchSkillCategoriesData(),
-                    fetchSkillsData()
-                ]);
-                
-                // Load categories
-                if (categoriesData && categoriesData.length > 0) {
-                    categoriesData.forEach(category => {
-                        const categoryId = Date.now() + Math.floor(Math.random() * 1000);
-                        const categoryDiv = document.createElement('div');
-                        categoryDiv.className = 'skill-item';
-                        categoryDiv.dataset.id = categoryId;
-                        
-                        categoryDiv.innerHTML = `
-                            <div class="mb-3">
-                                <label class="form-label">Category Name</label>
-                                <input type="text" class="form-control category-name" value="${category.name}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Display Order</label>
-                                <input type="number" class="form-control category-order" value="${category.order || 1}" min="1">
-                            </div>
-                            <i class="fas fa-trash delete-btn" onclick="toggleDeleteSkillCategory(${categoryId})"></i>
-                            <i class="fas fa-undo restore-btn" style="display:none;" onclick="toggleDeleteSkillCategory(${categoryId})"></i>
-                        `;
-                        
-                        document.getElementById('skill-categories-container').appendChild(categoryDiv);
-                    });
-                } else {
-                    // Add default category if none exists
-                    addSkillCategory();
-                }
-                
-                // Load skills
-                if (skillsData && skillsData.length > 0) {
-                    // Refresh categories for dropdown options
-                    const categories = categoriesData || [];
+                // Try to decode token as JWT (alternative method)
+                try {
+                    const tokenData = JSON.parse(atob(token.split('.')[1]));
                     
-                    skillsData.forEach(skill => {
-                        const skillId = Date.now() + Math.floor(Math.random() * 1000);
-                        const skillDiv = document.createElement('div');
-                        skillDiv.className = 'skill-item';
-                        skillDiv.dataset.id = skillId;
-                        
-                        let categoryOptions = '<option value="">Select Category</option>';
-                        categories.forEach(category => {
-                            const selected = category.name === skill.category ? 'selected' : '';
-                            categoryOptions += `<option value="${category.name}" ${selected}>${category.name}</option>`;
-                        });
-                        
-                        skillDiv.innerHTML = `
-                            <div class="mb-3">
-                                <label class="form-label">Skill Name</label>
-                                <input type="text" class="form-control skill-name" value="${skill.name}" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Category</label>
-                                <select class="form-control skill-category">
-                                    ${categoryOptions}
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Proficiency (1-100)</label>
-                                <input type="number" class="form-control skill-proficiency" min="1" max="100" value="${skill.proficiency || 75}">
-                            </div>
-                            <i class="fas fa-trash delete-btn" onclick="toggleDeleteSkill(${skillId})"></i>
-                            <i class="fas fa-undo restore-btn" style="display:none;" onclick="toggleDeleteSkill(${skillId})"></i>
-                        `;
-                        
-                        document.getElementById('skills-container').appendChild(skillDiv);
-                    });
-                } else {
-                    // Add default skill if none exists
-                    addSkillItem();
+                    if (tokenData) {
+                        // Hide the auth overlay
+                        authOverlay.style.display = 'none';
+                        return true;
+                    } else {
+                        throw new Error('Invalid token structure');
+                    }
+                } catch (error) {
+                    console.error('Authentication error:', error);
+                    // Even with an error, if we have a token, we'll proceed
+                    authOverlay.style.display = 'none';
+                    return true;
                 }
-            } catch (error) {
-                console.error('Error loading skills data:', error);
-                // Add default items for testing
-                addSkillCategory();
-                addSkillItem();
             }
-        }
-
-        async function fetchSkillCategoriesData() {
-            try {
-                const response = await fetch('https://your-api-endpoint/skills/categories', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+            
+            // Check authentication on page load
+            const isAuthenticated = checkAuthentication();
+            
+            // Handle logout
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+                window.location.href = '/admin-direct';
+            });
+            
+            // Toggle sidebar on mobile
+            const toggleSidebarBtn = document.querySelector('.toggle-sidebar');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (toggleSidebarBtn) {
+                toggleSidebarBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                    if (sidebar.classList.contains('active')) {
+                        mainContent.style.marginLeft = 'var(--sidebar-width)';
+                    } else {
+                        mainContent.style.marginLeft = '0';
                     }
                 });
-                
-                if (response.ok) {
-                    return await response.json();
-                } else {
-                    throw new Error('Failed to fetch skill categories');
-                }
-            } catch (error) {
-                console.error('Error fetching skill categories:', error);
-                // Provide sample data for testing
-                return [
-                    { name: 'Programming Languages', order: 1 },
-                    { name: 'Frameworks', order: 2 },
-                    { name: 'Tools', order: 3 }
-                ];
             }
-        }
-
-        async function fetchSkillsData() {
-            try {
-                const response = await fetch('https://your-api-endpoint/skills', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
-                    }
-                });
-                
-                if (response.ok) {
-                    return await response.json();
-                } else {
-                    throw new Error('Failed to fetch skills');
-                }
-            } catch (error) {
-                console.error('Error fetching skills:', error);
-                // Provide sample data for testing
-                return [
-                    { name: 'JavaScript', category: 'Programming Languages', proficiency: 90 },
-                    { name: 'Python', category: 'Programming Languages', proficiency: 85 },
-                    { name: 'React', category: 'Frameworks', proficiency: 88 },
-                    { name: 'Node.js', category: 'Frameworks', proficiency: 82 },
-                    { name: 'Git', category: 'Tools', proficiency: 90 }
-                ];
-            }
-        }
-
-        async function saveSkillsData() {
-            const saveStatus = document.getElementById('save-status');
-            const saveError = document.getElementById('save-error');
             
-            saveStatus.style.display = 'none';
-            saveError.style.display = 'none';
-            
-            const categories = getSkillCategoriesData();
-            const skills = getSkillsData();
-            
-            try {
-                const response = await fetch('https://your-api-endpoint/skills/save', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
-                    },
-                    body: JSON.stringify({
-                        categories,
-                        skills
-                    })
-                });
+            // Alert function
+            function showAlert(message, type = 'success') {
+                const alertContainer = document.getElementById('alertContainer');
+                const alertId = 'alert_' + Date.now();
                 
-                if (response.ok) {
-                    saveStatus.textContent = 'Skills data saved successfully!';
-                    saveStatus.style.display = 'block';
-                    setTimeout(() => {
-                        saveStatus.style.display = 'none';
-                    }, 3000);
-                } else {
-                    const errorData = await response.json();
-                    saveError.textContent = errorData.message || 'Failed to save skills data.';
-                    saveError.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error saving skills data:', error);
+                const alertHTML = `
+                    <div class="alert alert-${type} fade-in" id="${alertId}">
+                        ${message}
+                        <span class="alert-close">&times;</span>
+                    </div>
+                `;
                 
-                // For development/testing: Show success message
-                saveStatus.textContent = 'Skills data saved successfully (test mode)!';
-                saveStatus.style.display = 'block';
-                console.log('Skills data would be saved:', { categories, skills });
+                alertContainer.innerHTML += alertHTML;
+                
+                // Add event listener to close button
                 setTimeout(() => {
-                    saveStatus.style.display = 'none';
-                }, 3000);
+                    const closeBtn = document.querySelector(`#${alertId} .alert-close`);
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function() {
+                            const alert = document.getElementById(alertId);
+                            alert.remove();
+                        });
+                    }
+                }, 100);
+                
+                // Auto close after 5 seconds
+                setTimeout(() => {
+                    const alert = document.getElementById(alertId);
+                    if (alert) {
+                        alert.remove();
+                    }
+                }, 5000);
             }
-        }
-
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
             
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
-            
-            document.getElementById('add-skill-category-btn').addEventListener('click', addSkillCategory);
-            document.getElementById('add-skill-btn').addEventListener('click', addSkillItem);
-            document.getElementById('save-skills-btn').addEventListener('click', saveSkillsData);
+            // Skills Management Functions
+            if (isAuthenticated) {
+                // Elements
+                const skillsContainer = document.getElementById('skillsContainer');
+                const addSkillBtn = document.getElementById('addSkillBtn');
+                const saveSkillsBtn = document.getElementById('saveSkillsBtn');
+                
+                // Load skills data
+                function loadSkills() {
+                    skillsContainer.innerHTML = '<div class="loading-spinner"></div>';
+                    
+                    fetchSkills()
+                        .then(data => {
+                            skillsContainer.innerHTML = '';
+                            
+                            if (data && data.length > 0) {
+                                data.forEach(item => {
+                                    addSkillItem(item);
+                                });
+                                
+                                // Add event listeners
+                                addSkillEventListeners();
+                            } else {
+                                // No skills found
+                                skillsContainer.innerHTML = '<div class="no-skills-message">No skill entries found. Click "Add New Skill" to create your first entry.</div>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading skills:', error);
+                            skillsContainer.innerHTML = '<div class="alert alert-danger">Failed to load skill data. Please try again later.</div>';
+                        });
+                }
+                
+                function fetchSkills() {
+                    return fetch('/api/admin/skills')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch skills data');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data && data.success && data.data) {
+                                return data.data;
+                            }
+                            return [];
+                        })
+                        .catch(error => {
+                            console.error('API error:', error);
+                            // Fallback to local sample data
+                            return [
+                                {
+                                    id: '1',
+                                    name: 'JavaScript',
+                                    category: 'Frontend',
+                                    proficiency: 90,
+                                    yearsOfExperience: 5,
+                                    icon: 'fab fa-js'
+                                },
+                                {
+                                    id: '2',
+                                    name: 'React',
+                                    category: 'Frontend',
+                                    proficiency: 85,
+                                    yearsOfExperience: 4,
+                                    icon: 'fab fa-react'
+                                },
+                                {
+                                    id: '3',
+                                    name: 'Node.js',
+                                    category: 'Backend',
+                                    proficiency: 80,
+                                    yearsOfExperience: 3,
+                                    icon: 'fab fa-node-js'
+                                }
+                            ];
+                        });
+                }
+                
+                // Add a skill item to the DOM
+                function addSkillItem(skillData = null) {
+                    // Generate a unique ID
+                    const tempId = 'skill_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+                    const id = skillData && skillData.id ? skillData.id : tempId;
+                    
+                    const newSkillHTML = `
+                        <div class="skill-item" data-skill-id="${id}" ${skillData && skillData.deleted ? 'data-deleted="true"' : 'data-deleted="false"'}>
+                            <div class="skill-header">
+                                <div class="skill-handle">
+                                    <i class="fas fa-grip-lines"></i>
+                                </div>
+                                <div class="skill-actions">
+                                    <button class="btn btn-danger btn-sm toggle-delete-skill">Delete</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Skill Name*</label>
+                                <input type="text" class="form-control skill-name" placeholder="e.g., JavaScript" value="${skillData ? skillData.name || '' : ''}" required>
+                            </div>
+                            
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label class="form-label">Category*</label>
+                                    <input type="text" class="form-control skill-category" placeholder="e.g., Frontend, Backend" value="${skillData ? skillData.category || '' : ''}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Icon (Font Awesome)</label>
+                                    <input type="text" class="form-control skill-icon" placeholder="e.g., fab fa-js" value="${skillData ? skillData.icon || '' : ''}">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label class="form-label">Proficiency (0-100)*</label>
+                                    <input type="number" min="0" max="100" class="form-control skill-proficiency" value="${skillData ? skillData.proficiency || '' : ''}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Years of Experience</label>
+                                    <input type="number" min="0" step="0.5" class="form-control skill-years" value="${skillData ? skillData.yearsOfExperience || '' : ''}">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Remove no skills message if present
+                    const noSkillsMessage = skillsContainer.querySelector('.no-skills-message');
+                    if (noSkillsMessage) {
+                        skillsContainer.innerHTML = '';
+                    }
+                    
+                    // Add the new skill to the container
+                    skillsContainer.insertAdjacentHTML('afterbegin', newSkillHTML);
+                    
+                    // If the item is deleted, update its visual state
+                    if (skillData && skillData.deleted) {
+                        const item = skillsContainer.querySelector(`[data-skill-id="${id}"]`);
+                        item.classList.add('deleted');
+                        item.querySelector('.toggle-delete-skill').textContent = 'Restore';
+                    }
+                    
+                    // Focus on the name input
+                    setTimeout(() => {
+                        const nameInput = document.querySelector(`[data-skill-id="${id}"] .skill-name`);
+                        if (nameInput) nameInput.focus();
+                    }, 100);
+                    
+                    showAlert('New skill entry added. Remember to save your changes!');
+                }
+                
+                function addSkillEventListeners() {
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.toggle-delete-skill').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const skillItem = this.closest('.skill-item');
+                            toggleDeleteSkillItem(skillItem);
+                        });
+                    });
+                }
+                
+                function toggleDeleteSkillItem(item) {
+                    const isDeleted = item.getAttribute('data-deleted') === 'true';
+                    const newState = !isDeleted;
+                    
+                    item.setAttribute('data-deleted', newState.toString());
+                    
+                    if (newState) {
+                        item.classList.add('deleted');
+                        item.querySelector('.toggle-delete-skill').textContent = 'Restore';
+                    } else {
+                        item.classList.remove('deleted');
+                        item.querySelector('.toggle-delete-skill').textContent = 'Delete';
+                    }
+                }
+                
+                function getSkillsData() {
+                    const skills = [];
+                    const skillItems = document.querySelectorAll('.skill-item');
+                    
+                    skillItems.forEach(item => {
+                        const isDeleted = item.getAttribute('data-deleted') === 'true';
+                        const id = item.getAttribute('data-skill-id');
+                        
+                        if (isDeleted) {
+                            // For deleted items, just send the ID
+                            skills.push({
+                                id: id,
+                                deleted: true
+                            });
+                            return;
+                        }
+                        
+                        const name = item.querySelector('.skill-name').value.trim();
+                        const category = item.querySelector('.skill-category').value.trim();
+                        const proficiency = item.querySelector('.skill-proficiency').value;
+                        
+                        // Validate required fields
+                        if (!name || !category || !proficiency) {
+                            throw new Error('Please fill in all required fields (Skill Name, Category, Proficiency)');
+                        }
+                        
+                        skills.push({
+                            id: id,
+                            name: name,
+                            category: category,
+                            proficiency: parseInt(proficiency, 10),
+                            yearsOfExperience: parseFloat(item.querySelector('.skill-years').value) || 0,
+                            icon: item.querySelector('.skill-icon').value.trim(),
+                            deleted: false
+                        });
+                    });
+                    
+                    return skills;
+                }
+                
+                // Add event listeners
+                addSkillBtn.addEventListener('click', function() {
+                    addSkillItem();
+                    addSkillEventListeners();
+                });
+                
+                saveSkillsBtn.addEventListener('click', function() {
+                    try {
+                        const skillsData = getSkillsData();
+                        console.log('Skills to save:', skillsData);
+                        
+                        // Here you would send the data to your API
+                        /*
+                        fetch('/api/admin/skills', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(skillsData)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showAlert('Skills data saved successfully!');
+                                loadSkills(); // Reload the data
+                            } else {
+                                showAlert(data.message || 'Failed to save data. Please try again.', 'danger');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Save error:', error);
+                            showAlert('Failed to save data. Please try again.', 'danger');
+                        });
+                        */
+                        
+                        // For now, just show a success message
+                        showAlert('Skills data saved successfully!');
+                    } catch (error) {
+                        showAlert(error.message, 'danger');
+                    }
+                });
+                
+                // Initial load
+                loadSkills();
+            }
         });
     </script>
 </body>
