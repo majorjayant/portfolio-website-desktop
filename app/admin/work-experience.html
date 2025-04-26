@@ -6,8 +6,6 @@
     <title>Work Experience Admin - Portfolio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../static/css/admin.css">
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -171,146 +169,155 @@
     </style>
 </head>
 <body>
-    <!-- Login Required Section -->
-    <div id="loginRequired" style="display: none;" class="container mt-5 text-center">
-        <div class="card shadow-lg mx-auto" style="max-width: 500px;">
-            <div class="card-body p-5">
-                <h2 class="mb-4">Authentication Required</h2>
-                <p>You need to log in to access the admin dashboard.</p>
-                <button id="loginBtn" class="btn btn-primary btn-lg">Go to Login</button>
+    <!-- Login Section -->
+    <section id="login-section" class="container">
+        <div class="card">
+            <div class="card-header">Admin Login</div>
+            <div class="card-body">
+                <div id="login-error" class="alert alert-danger" style="display:none;"></div>
+                <form id="login-form">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Authenticated Content -->
-    <div id="authenticatedContent">
-        <!-- Main layout container -->
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Sidebar -->
-                <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" id="sidebarMenu">
-                    <!-- ... existing sidebar code ... -->
+    <!-- Dashboard Section -->
+    <section id="dashboard-section">
+        <!-- Admin Navigation -->
+        <div class="admin-navigation">
+            <h3>Admin Dashboard Navigation</h3>
+            <div class="nav-links">
+                <a href="admin-direct.html" class="nav-link">
+                    <i class="fas fa-home"></i> Admin Home
+                </a>
+                <a href="work-experience.html" class="nav-link">
+                    <i class="fas fa-briefcase"></i> Work Experience
+                </a>
+                <a href="education.html" class="nav-link">
+                    <i class="fas fa-graduation-cap"></i> Education
+                </a>
+                <a href="certifications.html" class="nav-link">
+                    <i class="fas fa-certificate"></i> Certifications
+                </a>
+                <a href="skills.html" class="nav-link">
+                    <i class="fas fa-tools"></i> Skills
+                </a>
+            </div>
+        </div>
+
+        <div class="container mt-4">
+            <button id="logout-btn" class="btn btn-danger logout-btn">Logout</button>
+            
+            <div class="admin-header">
+                <h1>Work Experience Management</h1>
+                <p>Add, edit, and manage your professional work experience</p>
+            </div>
+            
+            <!-- Work Experience Items Section -->
+            <div class="card mb-4">
+                <div class="card-header">Work Experience</div>
+                <div class="card-body">
+                    <div id="experience-container">
+                        <!-- Work experience items will be populated here -->
+                    </div>
+                    <button id="add-experience-btn" class="btn btn-primary mt-3">Add Work Experience</button>
                 </div>
-
-                <!-- Main content area -->
-                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                        <h1 class="h2">Work Experience Management</h1>
-                        <div class="btn-toolbar mb-2 mb-md-0">
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user me-1"></i> <span id="currentUser">Admin</span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><button id="logoutBtn" class="dropdown-item"><i class="fas fa-sign-out-alt me-1"></i> Logout</button></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Work Experience Management Content -->
-                    <div class="container mt-4">
-                        <button id="logout-btn" class="btn btn-danger logout-btn">Logout</button>
-                        
-                        <div class="admin-header">
-                            <h1>Work Experience Management</h1>
-                            <p>Add, edit, and manage your professional work experience</p>
-                        </div>
-                        
-                        <!-- Work Experience Items Section -->
-                        <div class="card mb-4">
-                            <div class="card-header">Work Experience</div>
-                            <div class="card-body">
-                                <div id="experience-container">
-                                    <!-- Work experience items will be populated here -->
-                                </div>
-                                <button id="add-experience-btn" class="btn btn-primary mt-3">Add Work Experience</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Save Changes Section -->
-                        <div class="card mb-4">
-                            <div class="card-header">Save Changes</div>
-                            <div class="card-body">
-                                <div id="save-status" class="alert alert-success" style="display:none;"></div>
-                                <div id="save-error" class="alert alert-danger" style="display:none;"></div>
-                                <button id="save-experience-btn" class="btn btn-primary">Save Work Experience Data</button>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+            </div>
+            
+            <!-- Save Changes Section -->
+            <div class="card mb-4">
+                <div class="card-header">Save Changes</div>
+                <div class="card-body">
+                    <div id="save-status" class="alert alert-success" style="display:none;"></div>
+                    <div id="save-error" class="alert alert-danger" style="display:none;"></div>
+                    <button id="save-experience-btn" class="btn btn-primary">Save Work Experience Data</button>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Authentication check
+        // Authentication functions
         function checkAuth() {
             const token = localStorage.getItem('admin_token');
-            const username = localStorage.getItem('admin_user');
-            
-            if (!token || !username) {
-                document.getElementById('loginRequired').style.display = 'block';
-                document.getElementById('authenticatedContent').style.display = 'none';
+            if (!token) {
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('dashboard-section').style.display = 'none';
                 return false;
             } else {
-                document.getElementById('loginRequired').style.display = 'none';
-                document.getElementById('authenticatedContent').style.display = 'block';
-                document.getElementById('username').textContent = username;
+                // Check for user data in localStorage (from direct login)
+                const userData = localStorage.getItem('admin_user');
+                if (userData) {
+                    try {
+                        // Parse user data to validate it
+                        JSON.parse(userData);
+                        // Valid user data found
+                        document.getElementById('login-section').style.display = 'none';
+                        document.getElementById('dashboard-section').style.display = 'block';
+                        loadWorkExperienceData();
+                        return true;
+                    } catch (error) {
+                        console.error('Error parsing user data:', error);
+                    }
+                }
+                
+                // Token exists but no valid user data
+                // We'll still accept the token as valid
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('dashboard-section').style.display = 'block';
+                loadWorkExperienceData();
                 return true;
             }
         }
 
-        // Initialize TinyMCE
-        function initTinyMCE() {
-            tinymce.init({
-                selector: '.experience-description',
-                height: 300,
-                menubar: false,
-                plugins: 'link lists table code',
-                toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link | table | code',
-                content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
-                setup: function(editor) {
-                    editor.on('change', function() {
-                        editor.save();
-                    });
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simulate API call for authentication
+            fetch('/api/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem('admin_token', data.token);
+                    localStorage.setItem('admin_user', JSON.stringify(data.user));
+                    checkAuth();
+                } else {
+                    document.getElementById('login-error').textContent = data.message || 'Login failed. Please try again.';
+                    document.getElementById('login-error').style.display = 'block';
                 }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                document.getElementById('login-error').textContent = 'Login failed. Please try again.';
+                document.getElementById('login-error').style.display = 'block';
             });
         }
 
-        // Document ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication
-            if (!checkAuth()) return;
-            
-            // Initialize TinyMCE
-            initTinyMCE();
-            
-            // Load work experience data
-            loadWorkExperienceData();
-            
-            // Event listeners
-            document.getElementById('loginBtn').addEventListener('click', function() {
-                window.location.href = '../admin-direct/index.html';
-            });
-            
-            document.getElementById('logoutBtn').addEventListener('click', function() {
-                localStorage.removeItem('admin_token');
-                localStorage.removeItem('admin_user');
-                window.location.href = '../admin-direct/index.html';
-            });
-            
-            document.getElementById('add-experience-btn').addEventListener('click', function() {
-                addWorkExperienceItem();
-            });
-            
-            document.getElementById('save-experience-btn').addEventListener('click', function() {
-                saveWorkExperience();
-            });
-        });
+        function handleLogout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            checkAuth();
+        }
 
-        // Add work experience item
+        // Work Experience Management Functions
         function loadWorkExperienceData() {
             fetchWorkExperienceData()
                 .then(data => {
@@ -411,13 +418,6 @@
                 </div>
                 
                 <div class="row mb-3">
-                    <div class="col-12">
-                        <label class="form-label">Description*</label>
-                        <textarea class="form-control experience-description" required>${data ? data.description || '' : ''}</textarea>
-                    </div>
-                </div>
-                
-                <div class="row mb-3">
                     <div class="col-12 bullet-points">
                         <label class="form-label">Responsibilities/Achievements* (One per line)</label>
                         <textarea class="form-control bullet-points" required>${data && data.bulletPoints ? data.bulletPoints.join('\n') : ''}</textarea>
@@ -487,11 +487,8 @@
             return experienceData;
         }
 
-        function saveWorkExperience() {
+        function saveWorkExperienceData() {
             try {
-                // Make sure TinyMCE updates all textareas before getting data
-                tinymce.triggerSave();
-                
                 const experienceData = getWorkExperienceData();
                 const token = localStorage.getItem('admin_token');
                 
@@ -531,6 +528,16 @@
                 document.getElementById('save-error').style.display = 'block';
             }
         }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            document.getElementById('add-experience-btn').addEventListener('click', () => addWorkExperienceItem());
+            document.getElementById('save-experience-btn').addEventListener('click', saveWorkExperienceData);
+        });
     </script>
 </body>
 </html> 
