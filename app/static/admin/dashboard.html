@@ -3542,51 +3542,50 @@
         }
     });
     
-    <script>
-        // Function to handle collapsible sections
-        function setupCollapsibleSections() {
-            // Get all section headers
-            const sectionHeaders = document.querySelectorAll('.section-header');
-            
-            // Add click event listener to each header
-            sectionHeaders.forEach(header => {
-                header.addEventListener('click', function() {
-                    // Toggle the collapsed class on the header
-                    this.classList.toggle('collapsed');
-                    
-                    // Get the section ID from the data attribute
-                    const sectionId = this.getAttribute('data-section');
-                    
-                    // Find all content elements related to this section
-                    const contentElements = document.querySelectorAll(`.section-content[data-parent="${sectionId}"]`);
-                    
-                    // Toggle the collapsed class on each content element
-                    contentElements.forEach(content => {
-                        content.classList.toggle('collapsed');
-                    });
+    // Function to handle collapsible sections
+    function setupCollapsibleSections() {
+        // Get all section headers
+        const sectionHeaders = document.querySelectorAll('.section-header');
+        
+        // Add click event listener to each header
+        sectionHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                // Toggle the collapsed class on the header
+                this.classList.toggle('collapsed');
+                
+                // Get the section ID from the data attribute
+                const sectionId = this.getAttribute('data-section');
+                
+                // Find all content elements related to this section
+                const contentElements = document.querySelectorAll(`.section-content[data-parent="${sectionId}"]`);
+                
+                // Toggle the collapsed class on each content element
+                contentElements.forEach(content => {
+                    content.classList.toggle('collapsed');
                 });
             });
-            
-            // Initial state - collapse all subsections except the main ones
-            const subsectionHeaders = document.querySelectorAll('.section-header:not([data-section="site-config"]):not([data-section="work-experience"]):not([data-section="education"]):not([data-section="certifications"]):not([data-section="skills"])');
-            subsectionHeaders.forEach(header => {
-                // Simulate a click to collapse subsections
-                header.click();
-            });
-        }
-        
-        // Initialize collapsible sections when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Setup after a short delay to ensure all elements are loaded
-            setTimeout(() => {
-                setupCollapsibleSections();
-            }, 500);
         });
         
-        // After form is loaded, setup collapsible sections again
-        document.addEventListener('formLoaded', function() {
+        // Initial state - collapse all subsections except the main ones
+        const subsectionHeaders = document.querySelectorAll('.section-header:not([data-section="site-config"]):not([data-section="work-experience"]):not([data-section="education"]):not([data-section="certifications"]):not([data-section="skills"])');
+        subsectionHeaders.forEach(header => {
+            // Simulate a click to collapse subsections
+            header.click();
+        });
+    }
+    
+    // Initialize collapsible sections when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Setup after a short delay to ensure all elements are loaded
+        setTimeout(() => {
             setupCollapsibleSections();
-        });
-    </script>
+        }, 500);
+    });
+    
+    // After form is loaded, setup collapsible sections again
+    document.addEventListener('formLoaded', function() {
+        setupCollapsibleSections();
+    });
+</script>
 </body>
 </html> 
