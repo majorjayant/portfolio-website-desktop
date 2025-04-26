@@ -1908,7 +1908,11 @@
             });
             
             document.getElementById('add-toolkit-category-button').addEventListener('click', function() {
-                addToolkitCategoryItem();
+                const newCategory = addToolkitCategoryItem();
+                // Update dropdowns after adding a new category
+                setTimeout(() => {
+                    updateToolkitItemCategoryDropdowns();
+                }, 100);
             });
             
             document.getElementById('add-toolkit-item-button').addEventListener('click', function() {
@@ -2822,6 +2826,10 @@
             // Add event listener for delete button
             itemDiv.querySelector('.delete-toolkit-category-btn').addEventListener('click', function() {
                 toggleDeleteToolkitCategoryItem(itemDiv);
+                // Update toolkit item dropdowns after deleting a category
+                setTimeout(() => {
+                    updateToolkitItemCategoryDropdowns();
+                }, 100);
             });
             
             // Add event listeners for validation
@@ -2829,6 +2837,12 @@
             requiredInputs.forEach(input => {
                 input.addEventListener('input', function() {
                     validateToolkitCategoryInput(input);
+                    // Update toolkit item dropdowns when category name changes
+                    if (input.classList.contains('toolkit-category-name')) {
+                        setTimeout(() => {
+                            updateToolkitItemCategoryDropdowns();
+                        }, 100);
+                    }
                 });
                 
                 // Validate on initial load
@@ -2837,6 +2851,8 @@
             
             // Add the item to the container
             container.appendChild(itemDiv);
+            
+            return itemDiv;
         }
         
         function validateToolkitCategoryInput(input) {
@@ -2952,9 +2968,6 @@
                 itemDiv.classList.add('marked-for-deletion');
             }
             
-            // Get all toolkit categories for the dropdown
-            const categoryOptions = getToolkitCategoryOptions(itemData.toolkit_category_id);
-            
             // Create the HTML structure for the toolkit item
             itemDiv.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
@@ -2974,7 +2987,6 @@
                         <label class="block text-sm font-medium text-gray-700">Category <span class="text-red-500">*</span></label>
                         <select class="toolkit-item-category-id mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                             <option value="">Select Category</option>
-                            ${categoryOptions}
                         </select>
                         <div class="toolkit-item-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
                     </div>
@@ -2993,31 +3005,52 @@
             `;
             
             // Add event listener for delete button
-            itemDiv.querySelector('.delete-toolkit-item-btn').addEventListener('click', function() {
-                toggleDeleteToolkitItem(itemDiv);
-            });
-            
-            // Add event listeners for validation
-            const requiredInputs = itemDiv.querySelectorAll('input[required], select[required]');
-            requiredInputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    validateToolkitItemInput(input);
+            const deleteButton = itemDiv.querySelector('.delete-toolkit-item-btn');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', function() {
+                    toggleDeleteToolkitItem(itemDiv);
                 });
-                input.addEventListener('change', function() {
-                    validateToolkitItemInput(input);
-                });
-                
-                // Validate on initial load
-                validateToolkitItemInput(input);
-            });
+            }
             
             // Add the item to the container
             container.appendChild(itemDiv);
+            
+            // Populate category dropdown
+            const categorySelect = itemDiv.querySelector('.toolkit-item-category-id');
+            if (categorySelect) {
+                // Set the options
+                const options = getToolkitCategoryOptions(itemData.toolkit_category_id);
+                categorySelect.innerHTML = `<option value="">Select Category</option>${options}`;
+                
+                // Try to set the selected value if it exists
+                if (itemData.toolkit_category_id) {
+                    categorySelect.value = itemData.toolkit_category_id;
+                }
+                
+                // Add validation for the dropdown
+                categorySelect.addEventListener('change', function() {
+                    validateToolkitItemInput(categorySelect);
+                });
+                
+                // Initial validation
+                validateToolkitItemInput(categorySelect);
+            }
+            
+            // Add event listeners for other validation
+            const nameInput = itemDiv.querySelector('.toolkit-item-name');
+            if (nameInput) {
+                nameInput.addEventListener('input', function() {
+                    validateToolkitItemInput(nameInput);
+                });
+                validateToolkitItemInput(nameInput);
+            }
+            
+            return itemDiv;
         }
         
         // Helper function to get category options for select dropdown
         function getToolkitCategoryOptions(selectedCategoryId) {
-            const categoryItems = document.querySelectorAll('.toolkit-category-item');
+            const categoryItems = document.querySelectorAll('.toolkit-category-item:not(.marked-for-deletion)');
             let options = '';
             
             categoryItems.forEach(item => {
@@ -3030,12 +3063,90 @@
                 const categoryName = item.querySelector('.toolkit-category-name').value;
                 
                 if (categoryId && categoryName) {
-                    const selected = categoryId === selectedCategoryId ? 'selected' : '';
+                    const selected = categoryId == selectedCategoryId ? 'selected' : '';
                     options += `<option value="${categoryId}" ${selected}>${categoryName}</option>`;
                 }
             });
             
             return options;
+        }
+
+        // Modified function to update toolkit item category dropdowns
+        function updateToolkitItemCategoryDropdowns() {
+            console.log('Updating toolkit item category dropdowns');
+            const toolkitItems = document.querySelectorAll('.toolkit-item');
+            
+            toolkitItems.forEach(item => {
+                const categorySelect = item.querySelector('.toolkit-item-category-id');
+                const currentValue = categorySelect.value;
+                
+                // Store current selection
+                categorySelect.innerHTML = `
+                    <option value="">Select Category</option>
+                    ${getToolkitCategoryOptions(currentValue)}
+                `;
+                
+                // Validate after update
+                validateToolkitItemInput(categorySelect);
+            });
+        }
+
+        // Modified loadToolkitItemsData to be called after categories are loaded
+        function loadToolkitItemsData(toolkitItems) {
+            console.log('Loading toolkit items data:', toolkitItems);
+            
+            // Get the container
+            const container = document.getElementById('toolkit-items-container');
+            if (!container) {
+                console.error('Toolkit items container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no toolkit items, add an empty one
+            if (!toolkitItems || toolkitItems.length === 0) {
+                addToolkitItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            toolkitItems.forEach(item => addToolkitItem(item));
+            
+            // Update all category dropdowns after all items are added
+            setTimeout(() => {
+                updateToolkitItemCategoryDropdowns();
+            }, 100);
+        }
+
+        // Modified loadToolkitCategoriesData to update toolkit item dropdowns after loading
+        function loadToolkitCategoriesData(toolkitCategories) {
+            console.log('Loading toolkit categories data:', toolkitCategories);
+            
+            // Get the container
+            const container = document.getElementById('toolkit-categories-container');
+            if (!container) {
+                console.error('Toolkit categories container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no toolkit categories, add an empty one
+            if (!toolkitCategories || toolkitCategories.length === 0) {
+                addToolkitCategoryItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            toolkitCategories.forEach(item => addToolkitCategoryItem(item));
+            
+            // Update toolkit item category dropdowns after categories are loaded
+            setTimeout(() => {
+                updateToolkitItemCategoryDropdowns();
+            }, 100);
         }
         
         function validateToolkitItemInput(input) {
@@ -3110,29 +3221,6 @@
             });
             
             return data;
-        }
-        
-        function loadToolkitItemsData(toolkitItems) {
-            console.log('Loading toolkit items data:', toolkitItems);
-            
-            // Get the container
-            const container = document.getElementById('toolkit-items-container');
-            if (!container) {
-                console.error('Toolkit items container not found');
-                return;
-            }
-            
-            // Clear the container
-            container.innerHTML = '';
-            
-            // If no toolkit items, add an empty one
-            if (!toolkitItems || toolkitItems.length === 0) {
-                addToolkitItem();
-                return;
-            }
-            
-            // Otherwise, add each item to the form
-            toolkitItems.forEach(item => addToolkitItem(item));
         }
         
         // Domain Experience Functions
