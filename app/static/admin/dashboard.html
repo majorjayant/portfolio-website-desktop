@@ -293,7 +293,24 @@
             if (token) {
                 console.log('Token found, validating...');
                 
-                // Decode the token to get username (in a real app, you'd verify with the server)
+                // First try to get user data from localStorage (direct login method)
+                const userData = localStorage.getItem('admin_user');
+                if (userData) {
+                    try {
+                        const userObj = JSON.parse(userData);
+                        console.log('User data found:', userObj);
+                        
+                        // Show dashboard using user data from localStorage
+                        usernameDisplay.textContent = userObj.username || 'Admin User';
+                        authLoading.classList.add('hidden');
+                        dashboardContent.classList.remove('hidden');
+                        return;
+                    } catch (error) {
+                        console.error('Error parsing user data:', error);
+                    }
+                }
+                
+                // Fallback: try to decode the token as JWT (alternative login method)
                 try {
                     const tokenData = JSON.parse(atob(token.split('.')[1]));
                     console.log('Token data:', tokenData);
@@ -323,7 +340,7 @@
         }
         
         function redirectToLogin() {
-            window.location.href = '/admin/login.html';
+            window.location.href = '/admin-direct/';
         }
         
         // Event listeners
