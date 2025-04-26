@@ -589,15 +589,24 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Authentication check
             const authOverlay = document.getElementById('authOverlay');
-            const authStatus = document.getElementById('authStatus');
             
             // Check if the user is logged in
             function checkAuthentication() {
-                return Auth.checkAuth();
+                return Auth.isAuthenticated();
             }
             
             // Check authentication on page load
             const isAuthenticated = checkAuthentication();
+            
+            if (isAuthenticated) {
+                // Hide the auth overlay if user is authenticated
+                if (authOverlay) {
+                    authOverlay.style.display = 'none';
+                }
+                
+                // Load education data if authenticated
+                loadEducation();
+            }
             
             // Handle logout
             document.getElementById('logoutBtn').addEventListener('click', function() {

@@ -212,84 +212,52 @@
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/auth.js"></script>
     <script>
-        // Authentication Functions
-        function checkAuth() {
-            const token = localStorage.getItem('admin_token');
-            if (token) {
-                // Check for user data in localStorage (from direct login)
-                const userData = localStorage.getItem('admin_user');
-                if (userData) {
-                    try {
-                        // Parse user data to validate it
-                        JSON.parse(userData);
-                        // Valid user data found
-                        document.getElementById('login-section').style.display = 'none';
-                        document.getElementById('dashboard-section').style.display = 'block';
-                        return;
-                    } catch (error) {
-                        console.error('Error parsing user data:', error);
-                    }
-                }
-                
-                // Token exists but no valid user data
-                // We'll still accept the token as valid
+        // Document ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Use Auth module's isAuthenticated method
+            if (Auth.isAuthenticated()) {
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('dashboard-section').style.display = 'block';
             } else {
                 document.getElementById('login-section').style.display = 'block';
                 document.getElementById('dashboard-section').style.display = 'none';
             }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
             
-            try {
-                const response = await fetch('https://your-api-endpoint/admin/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                });
+            // Set up form submission handler
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem('admin_token', data.token);
-                    checkAuth();
-                } else {
-                    const errorData = await response.json();
-                    document.getElementById('login-error').textContent = errorData.message || 'Login failed. Please check your credentials.';
-                    document.getElementById('login-error').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Login error:', error);
+                // For development: Create direct login without API request
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
                 
-                // For development/testing: Hardcoded login
                 if (username === 'admin' && password === 'password') {
-                    localStorage.setItem('admin_token', 'fake-token-for-testing');
-                    checkAuth();
+                    // Create mock user data with expiration
+                    const expiresAt = new Date(Date.now() + (4 * 60 * 60 * 1000)).toISOString();
+                    const userData = {
+                        username: 'Admin',
+                        role: 'Administrator',
+                        expiresAt: expiresAt
+                    };
+                    
+                    // Store authentication data
+                    localStorage.setItem('admin_token', 'direct-login-token');
+                    localStorage.setItem('admin_user', JSON.stringify(userData));
+                    
+                    // Show dashboard
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('dashboard-section').style.display = 'block';
                 } else {
-                    document.getElementById('login-error').textContent = 'Invalid credentials. For testing, use admin/password.';
-                    document.getElementById('login-error').style.display = 'block';
+                    const errorElement = document.getElementById('login-error');
+                    errorElement.textContent = 'Invalid credentials. For testing, use admin/password.';
+                    errorElement.style.display = 'block';
                 }
-            }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('admin_token');
-            checkAuth();
-        }
-
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
+            });
             
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            // Set up logout handler
+            document.getElementById('logout-btn').addEventListener('click', Auth.logout.bind(Auth));
         });
     </script>
 </body>

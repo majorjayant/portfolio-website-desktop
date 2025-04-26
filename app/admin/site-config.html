@@ -1,24 +1,7 @@
-// Authentication Functions
-function checkAuth() {
-    const token = localStorage.getItem('admin_token');
-    if (token) {
-        // Check for user data in localStorage (from direct login)
-        const userData = localStorage.getItem('admin_user');
-        if (userData) {
-            try {
-                // Parse user data to validate it
-                JSON.parse(userData);
-                // Valid user data found
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('dashboard-section').style.display = 'block';
-                loadSiteConfiguration();
-                return;
-            } catch (error) {
-                console.error('Error parsing user data:', error);
-            }
-        }
-        
-        // Even without valid user data, if we have a token we still accept it
+// Authentication Functions - Use shared Auth module
+document.addEventListener('DOMContentLoaded', function() {
+    // Use Auth module's isAuthenticated method
+    if (Auth.isAuthenticated()) {
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('dashboard-section').style.display = 'block';
         loadSiteConfiguration();
@@ -26,10 +9,10 @@ function checkAuth() {
         document.getElementById('login-section').style.display = 'block';
         document.getElementById('dashboard-section').style.display = 'none';
     }
-}
-
-// Document Ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Check authentication on page load
-    checkAuth();
+    
+    // Set up logout event listener
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', Auth.logout.bind(Auth));
+    }
 }); 
