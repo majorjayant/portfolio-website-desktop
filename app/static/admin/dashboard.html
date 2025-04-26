@@ -145,82 +145,66 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../js/auth.js"></script>
     <script>
-        // DOM Elements
-        const authLoading = document.getElementById('auth-loading');
-        const notAuthenticated = document.getElementById('not-authenticated');
-        const dashboardContent = document.getElementById('dashboard-content');
-        const loginRedirectButton = document.getElementById('login-redirect-button');
-        const logoutButton = document.getElementById('logout-button');
-        const usernameDisplay = document.getElementById('username-display');
-
-        // Authentication check
+        // Initialize authentication check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Checking authentication status');
-            const token = localStorage.getItem('admin_token');
+            // Create an authentication overlay if it doesn't exist
+            if (!document.getElementById('auth-overlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'auth-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+                overlay.style.display = 'flex';
+                overlay.style.justifyContent = 'center';
+                overlay.style.alignItems = 'center';
+                overlay.style.flexDirection = 'column';
+                overlay.style.zIndex = '9999';
+                
+                const authBox = document.createElement('div');
+                authBox.style.backgroundColor = 'white';
+                authBox.style.padding = '2rem';
+                authBox.style.borderRadius = '10px';
+                authBox.style.maxWidth = '400px';
+                authBox.style.width = '100%';
+                
+                const title = document.createElement('h2');
+                title.textContent = 'Authentication Required';
+                title.style.marginBottom = '1rem';
+                title.style.textAlign = 'center';
+                
+                const statusDiv = document.createElement('div');
+                statusDiv.id = 'authStatus';
+                
+                const loginButton = document.createElement('button');
+                loginButton.textContent = 'Go to Login Page';
+                loginButton.className = 'btn btn-primary w-100';
+                loginButton.style.marginTop = '1rem';
+                loginButton.addEventListener('click', function() {
+                    window.location.href = '/admin-direct';
+                });
+                
+                authBox.appendChild(title);
+                authBox.appendChild(statusDiv);
+                authBox.appendChild(loginButton);
+                overlay.appendChild(authBox);
+                
+                document.body.appendChild(overlay);
+            }
             
-            if (token) {
-                console.log('Token found, validating...');
-                
-                // First try to get user data from localStorage (direct login method)
-                const userData = localStorage.getItem('admin_user');
-                if (userData) {
-                    try {
-                        const userObj = JSON.parse(userData);
-                        console.log('User data found:', userObj);
-                        
-                        // Show dashboard using user data from localStorage
-                        usernameDisplay.textContent = userObj.username || 'Admin User';
-                        authLoading.classList.add('hidden');
-                        dashboardContent.classList.remove('hidden');
-                        return;
-                    } catch (error) {
-                        console.error('Error parsing user data:', error);
-                    }
-                }
-                
-                // Fallback: try to decode the token as JWT (alternative login method)
-                try {
-                    const tokenData = JSON.parse(atob(token.split('.')[1]));
-                    console.log('Token data:', tokenData);
-                    
-                    if (tokenData.username) {
-                        console.log('Valid token, showing dashboard');
-                        usernameDisplay.textContent = tokenData.username;
-                        authLoading.classList.add('hidden');
-                        dashboardContent.classList.remove('hidden');
-                    } else {
-                        console.error('Invalid token structure');
-                        showNotAuthenticated();
-                    }
-                } catch (error) {
-                    console.error('Error parsing token:', error);
-                    showNotAuthenticated();
-                }
-            } else {
-                console.log('No token found');
-                showNotAuthenticated();
+            // Check authentication
+            Auth.checkAuth();
+            
+            // Set up logout button event listener
+            const logoutButton = document.getElementById('logout-btn');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', Auth.logout.bind(Auth));
             }
         });
-
-        function showNotAuthenticated() {
-                authLoading.classList.add('hidden');
-                    notAuthenticated.classList.remove('hidden');
-        }
-        
-        function redirectToLogin() {
-            window.location.href = '/admin-direct';
-        }
-        
-        // Event listeners
-        loginRedirectButton.addEventListener('click', redirectToLogin);
-        
-        logoutButton.addEventListener('click', function() {
-            console.log('Logging out');
-            localStorage.removeItem('admin_token');
-            dashboardContent.classList.add('hidden');
-            notAuthenticated.classList.remove('hidden');
-    });
     </script>
 </body>
 </html> 
