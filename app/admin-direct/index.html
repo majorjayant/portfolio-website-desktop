@@ -158,15 +158,15 @@
                         }
                     };
                     
-                    // Store auth data in local storage - using the consistent key name 'adminToken'
-                    localStorage.setItem('adminToken', mockLoginData.token);
-                    localStorage.setItem('adminUser', JSON.stringify(mockLoginData.user));
+                    // Store auth data in local storage
+                    localStorage.setItem('admin_token', mockLoginData.token);
+                    localStorage.setItem('admin_user', JSON.stringify(mockLoginData.user));
                     
                     showMessage(successMessage, 'Direct access granted! Redirecting to dashboard...');
                     
-                    // Redirect to the dashboard - using the correct path that includes /static/
+                    // Redirect to the dashboard
                     setTimeout(() => {
-                        window.location.href = '/static/admin/dashboard.html';
+                        window.location.href = '/admin/dashboard';
                     }, 1500);
                 } catch (error) {
                     showMessage(errorMessage, 'Error: ' + error.message);
@@ -174,16 +174,11 @@
                 }
             });
             
-            // Check if already logged in - using the consistent key name 'adminToken'
-            const token = localStorage.getItem('adminToken');
+            // Check if already logged in
+            const token = localStorage.getItem('admin_token');
             if (token) {
                 showMessage(successMessage, 'You are already logged in. You can proceed to the dashboard.');
                 directAccessBtn.textContent = 'GO TO DASHBOARD';
-                
-                // Update click action for "GO TO DASHBOARD" button
-                directAccessBtn.onclick = function() {
-                    window.location.href = '/static/admin/dashboard.html';
-                };
             }
         });
     </script>

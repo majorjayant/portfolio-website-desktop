@@ -3,697 +3,515 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Experience | Admin Dashboard</title>
+    <title>Admin Dashboard - Work Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#3B82F6',
-                        secondary: '#10B981',
+                        primary: '#3b82f6',
+                        secondary: '#10b981',
+                        accent: '#8b5cf6',
+                        dark: '#1f2937',
                     }
                 }
             }
         }
     </script>
     <style>
-        .experience-item {
-            transition: all 0.3s ease;
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        .experience-item.deleted {
-            opacity: 0.6;
-            background-color: #f9f9f9;
-            border-color: #ccc !important;
-            position: relative;
+        .sidebar {
+            transition: all 0.3s;
         }
-        .experience-item.deleted::before {
-            content: "MARKED FOR DELETION";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-20deg);
-            font-size: 24px;
-            color: rgba(220, 38, 38, 0.8);
-            font-weight: bold;
-            text-transform: uppercase;
-            border: 3px solid rgba(220, 38, 38, 0.8);
-            padding: 10px;
-            z-index: 10;
-            pointer-events: none;
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
         }
-        .progress-bar {
-            height: 8px;
-            background-color: #E5E7EB;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-value {
-            height: 100%;
-            background-color: #3B82F6;
-            border-radius: 4px;
-            transition: width 0.3s ease;
+        .tox-tinymce {
+            border-radius: 0.375rem;
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gray-100">
-    <div id="header-container"></div>
-
-    <main class="flex-grow p-6">
-        <div class="max-w-7xl mx-auto">
-            <!-- Work Experience Section -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold">Work Experience</h2>
-                    <button id="add-experience-btn" class="px-4 py-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 transition-colors">
-                        <i class="fas fa-plus mr-2"></i>Add Experience
-                    </button>
-                </div>
-                
-                <div id="experience-items-container" class="space-y-5">
-                    <!-- Experience items will be added here dynamically -->
-                </div>
-                
-                <div class="flex justify-end mt-6">
-                    <button id="save-experience-btn" class="px-6 py-2 bg-green-500 text-white font-medium rounded-md hover:bg-green-600 transition-colors">
-                        <i class="fas fa-save mr-2"></i>Save Experience
-                    </button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="footer-container"></div>
-
-    <!-- Loading overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <div class="flex items-center">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
-                <p>Loading...</p>
-            </div>
+<body class="bg-gray-100">
+    <!-- Loading indicator -->
+    <div id="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p class="mt-3 text-gray-600">Verifying authentication...</p>
         </div>
     </div>
 
-    <!-- Notification -->
-    <div id="notification" class="fixed top-4 right-4 p-4 rounded-md shadow-md transform transition-transform duration-300 translate-x-full z-50">
-        <div class="flex items-center">
-            <i id="notification-icon" class="fas mr-2"></i>
-            <p id="notification-message"></p>
+    <!-- Not authenticated message -->
+    <div id="not-authenticated" class="hidden fixed inset-0 flex items-center justify-center bg-white z-40">
+        <div class="text-center p-6 max-w-sm mx-auto">
+            <div class="text-red-500 text-5xl mb-4"><i class="fas fa-lock"></i></div>
+            <h2 class="text-2xl font-bold mb-2">Authentication Required</h2>
+            <p class="mb-4 text-gray-600">Please log in to access the admin dashboard.</p>
+            <button onclick="window.location.href='login.html'" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600">
+                Go to Login
+            </button>
         </div>
     </div>
 
-    <script src="js/admin-utils.js"></script>
-    <script>
-        // Load header and footer components
-        fetch('components/header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-                const currentPage = 'work-experience'; 
-                document.querySelector(`.nav-link[data-page="${currentPage}"]`).classList.add('bg-gray-200');
-            });
+    <!-- Main content (displayed when authenticated) -->
+    <div id="authenticated-content" class="hidden min-h-screen flex flex-col md:flex-row">
+        <!-- Sidebar -->
+        <div class="sidebar bg-dark text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform md:relative md:translate-x-0 z-20">
+            <div class="flex items-center justify-between px-3">
+                <div class="text-2xl font-semibold">Admin Panel</div>
+                <button id="close-sidebar" class="md:hidden">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="mt-10">
+                <a href="dashboard.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <a href="site-config.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    <i class="fas fa-cog mr-2"></i>Site Configuration
+                </a>
+                <a href="work-experience.html" class="block py-2.5 px-4 rounded bg-gray-700 transition duration-200">
+                    <i class="fas fa-briefcase mr-2"></i>Work Experience
+                </a>
+                <a href="education.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    <i class="fas fa-graduation-cap mr-2"></i>Education
+                </a>
+                <a href="certifications.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    <i class="fas fa-certificate mr-2"></i>Certifications
+                </a>
+                <a href="skills.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    <i class="fas fa-tools mr-2"></i>Skills
+                </a>
+                <a href="toolkit.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    <i class="fas fa-toolbox mr-2"></i>Toolkit
+                </a>
+                <a href="projects.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                    <i class="fas fa-project-diagram mr-2"></i>Projects
+                </a>
+                <div class="border-t border-gray-700 my-4"></div>
+                <a href="#" id="logout-button" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 text-red-400">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+            </nav>
+        </div>
 
-        fetch('components/footer.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('footer-container').innerHTML = data;
-            });
-
-        // Work Experience Functions
-        function addExperienceItem(data = {}) {
-            const container = document.getElementById('experience-items-container');
-            // Use the existing ID from data if available, otherwise generate a temporary one
-            const itemId = data.id || ('temp_' + Date.now()); // Use database ID or generate unique temp ID
-            
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'experience-item border rounded-lg p-4 ' + (data.deleted ? 'deleted' : '');
-            itemDiv.setAttribute('data-id', itemId);
-            itemDiv.setAttribute('data-deleted', data.deleted ? 'true' : 'false');
-            
-            // Log the item being added for debugging
-            console.log(`Adding experience item with ID: ${itemId}`, data);
-            
-            itemDiv.innerHTML = `
-                <div class="flex justify-between items-start mb-3">
-                    <h3 class="text-lg font-medium">Experience Item ${itemId.toString().includes('temp_') ? '(New)' : `#${itemId}`}</h3>
-                    <div class="flex space-x-2">
-                        <button class="move-up-btn px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                            <i class="fas fa-arrow-up"></i>
-                        </button>
-                        <button class="move-down-btn px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                            <i class="fas fa-arrow-down"></i>
-                        </button>
-                        <button class="toggle-delete-btn px-2 py-1 ${data.deleted ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'} rounded hover:opacity-80">
-                            ${data.deleted ? '<i class="fas fa-undo"></i>' : '<i class="fas fa-trash"></i>'}
-                        </button>
-                    </div>
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-x-auto">
+            <header class="bg-white shadow-sm py-4 px-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="show-sidebar" class="md:hidden mr-4">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="text-xl font-semibold">Work Experience Management</h1>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name*</label>
-                        <input type="text" class="company-name w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                            value="${data.company || ''}" ${data.deleted ? 'disabled' : ''}>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Position*</label>
-                        <input type="text" class="position w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                            value="${data.position || ''}" ${data.deleted ? 'disabled' : ''}>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date*</label>
-                        <input type="date" class="start-date w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                            value="${data.startDate || ''}" ${data.deleted ? 'disabled' : ''}>
-                    </div>
-                    
-                    <div class="end-date-container">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                        <div class="flex items-center">
-                            <input type="date" class="end-date w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                                value="${data.endDate || ''}" ${data.current || data.deleted ? 'disabled' : ''}>
-                            <div class="ml-2 flex items-center">
-                                <input type="checkbox" class="current-job h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
-                                    ${data.current ? 'checked' : ''} ${data.deleted ? 'disabled' : ''}>
-                                <label class="ml-1 text-sm text-gray-700">Current</label>
-                            </div>
+                <div class="flex items-center space-x-4">
+                    <button id="refresh-data" class="bg-gray-200 p-2 rounded-full hover:bg-gray-300">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div id="last-updated" class="text-sm text-gray-500"></div>
+                </div>
+            </header>
+
+            <main class="container mx-auto px-4 py-6">
+                <!-- Work Experience Section -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Work Experience</h2>
+                    <div class="space-y-4">
+                        <div id="experience-items-container" class="border border-gray-200 rounded-lg p-4">
+                            <!-- Experience items will be generated here -->
+                        </div>
+                        <button id="add-experience-btn" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-600">
+                            <i class="fas fa-plus mr-1"></i> Add Experience
+                        </button>
+                        <div class="mt-6 flex justify-end">
+                            <button id="save-experience-btn" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+                                <i class="fas fa-save mr-1"></i> Save Changes
+                            </button>
                         </div>
                     </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript for the admin dashboard -->
+    <script>
+        let username = localStorage.getItem('adminUsername');
+        let password = localStorage.getItem('adminPassword');
+        let apiEndpoint = localStorage.getItem('apiEndpoint') || 'https://f7r74v22od.execute-api.us-east-1.amazonaws.com/production';
+        let lastUpdate = new Date();
+        let localExperienceData = [];
+
+        // Authentication check
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                if (!username || !password) {
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('not-authenticated').classList.remove('hidden');
+                } else {
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('authenticated-content').classList.remove('hidden');
                     
+                    // Load data
+                    fetchExperienceData();
+                    
+                    // Update last updated time
+                    updateLastUpdatedTime();
+                }
+            }, 1000);
+        });
+
+        // Sidebar toggle for mobile
+        document.getElementById('show-sidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.add('active');
+        });
+
+        document.getElementById('close-sidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.remove('active');
+        });
+
+        // Logout button
+        document.getElementById('logout-button').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('adminUsername');
+            localStorage.removeItem('adminPassword');
+            window.location.href = 'login.html';
+        });
+
+        // Refresh data button
+        document.getElementById('refresh-data').addEventListener('click', function() {
+            fetchExperienceData();
+        });
+
+        // Add experience button
+        document.getElementById('add-experience-btn').addEventListener('click', function() {
+            addExperienceItem();
+        });
+
+        // Save experience button
+        document.getElementById('save-experience-btn').addEventListener('click', function() {
+            saveExperienceData();
+        });
+
+        // Update the last updated time
+        function updateLastUpdatedTime() {
+            const timeElement = document.getElementById('last-updated');
+            timeElement.textContent = `Last updated: ${lastUpdate.toLocaleTimeString()}`;
+        }
+
+        // Experience Items Functions
+        function addExperienceItem(data = null) {
+            const container = document.getElementById('experience-items-container');
+            const itemId = `experience-item-${Date.now()}`;
+            
+            let isDeleted = data && data.isDeleted ? true : false;
+            let positionTitle = data ? data.positionTitle : '';
+            let company = data ? data.company : '';
+            let startDate = data ? data.startDate : '';
+            let endDate = data ? data.endDate : '';
+            let isCurrent = data && data.isCurrent ? true : false;
+            let description = data ? data.description : '';
+            
+            const newItem = document.createElement('div');
+            newItem.className = `experience-item mb-4 p-4 border ${isDeleted ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'} rounded-lg`;
+            newItem.id = itemId;
+            newItem.dataset.deleted = isDeleted;
+            
+            newItem.innerHTML = `
+                <div class="flex justify-between mb-2">
+                    <h3 class="text-lg font-semibold">${isDeleted ? 'Marked for Deletion' : 'Experience Details'}</h3>
+                    <button class="delete-toggle-btn text-sm px-2 py-1 rounded ${isDeleted ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}">
+                        ${isDeleted ? '<i class="fas fa-undo mr-1"></i> Restore' : '<i class="fas fa-trash mr-1"></i> Delete'}
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                        <input type="text" class="location w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                            value="${data.location || ''}" ${data.deleted ? 'disabled' : ''}>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Position Title*</label>
+                        <input type="text" class="position-title w-full p-2 border border-gray-300 rounded" value="${positionTitle}" ${isDeleted ? 'disabled' : ''}>
                     </div>
-                    
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Company URL</label>
-                        <input type="url" class="company-url w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                            value="${data.companyUrl || ''}" ${data.deleted ? 'disabled' : ''}>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Company*</label>
+                        <input type="text" class="company w-full p-2 border border-gray-300 rounded" value="${company}" ${isDeleted ? 'disabled' : ''}>
                     </div>
                 </div>
-                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date*</label>
+                        <input type="date" class="start-date w-full p-2 border border-gray-300 rounded" value="${startDate}" ${isDeleted ? 'disabled' : ''}>
+                    </div>
+                    <div class="end-date-container ${isCurrent ? 'hidden' : ''}">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                        <input type="date" class="end-date w-full p-2 border border-gray-300 rounded" value="${endDate}" ${isDeleted ? 'disabled' : ''}>
+                    </div>
+                    <div>
+                        <label class="flex items-center mt-6">
+                            <input type="checkbox" class="current-position mr-2 h-4 w-4" ${isCurrent ? 'checked' : ''} ${isDeleted ? 'disabled' : ''}>
+                            <span class="text-sm font-medium text-gray-700">Current Position</span>
+                        </label>
+                    </div>
+                </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Description*</label>
-                    <textarea class="description w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                        rows="4" ${data.deleted ? 'disabled' : ''}>${data.description || ''}</textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Key Responsibilities & Achievements</label>
-                    <div class="responsibilities-container space-y-2">
-                        ${generateResponsibilitiesHTML(data.responsibilities || [], data.deleted)}
-                    </div>
-                    <button class="add-responsibility-btn mt-2 px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300" 
-                        ${data.deleted ? 'disabled' : ''}>
-                        <i class="fas fa-plus mr-1"></i>Add Responsibility
-                    </button>
-                </div>
-                
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Technologies Used</label>
-                    <div class="technologies-container space-y-2">
-                        ${generateTechnologiesHTML(data.technologies || [], data.deleted)}
-                    </div>
-                    <button class="add-technology-btn mt-2 px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300" 
-                        ${data.deleted ? 'disabled' : ''}>
-                        <i class="fas fa-plus mr-1"></i>Add Technology
-                    </button>
+                    <textarea class="description w-full p-2 border border-gray-300 rounded min-h-[100px] tinymce-editor" ${isDeleted ? 'disabled' : ''}>${description}</textarea>
                 </div>
             `;
             
-            container.appendChild(itemDiv);
+            container.appendChild(newItem);
             
-            // Add event listeners
-            const currentJobCheckbox = itemDiv.querySelector('.current-job');
-            const endDateInput = itemDiv.querySelector('.end-date');
+            // Initialize TinyMCE on the new description field
+            initTinyMCE(`#${itemId} .tinymce-editor`);
             
-            if (currentJobCheckbox) {
-                currentJobCheckbox.addEventListener('change', function() {
-                    endDateInput.disabled = this.checked;
-                    if (this.checked) {
-                        endDateInput.value = '';
-                    }
-                });
-            }
-            
-            const addResponsibilityBtn = itemDiv.querySelector('.add-responsibility-btn');
-            if (addResponsibilityBtn) {
-                addResponsibilityBtn.addEventListener('click', function() {
-                    addResponsibilityItem(this.parentElement.querySelector('.responsibilities-container'), '');
-                });
-            }
-            
-            const addTechnologyBtn = itemDiv.querySelector('.add-technology-btn');
-            if (addTechnologyBtn) {
-                addTechnologyBtn.addEventListener('click', function() {
-                    addTechnologyItem(this.parentElement.querySelector('.technologies-container'), '');
-                });
-            }
-            
-            const toggleDeleteBtn = itemDiv.querySelector('.toggle-delete-btn');
-            if (toggleDeleteBtn) {
-                toggleDeleteBtn.addEventListener('click', function() {
-                    toggleDeleteItem(itemDiv);
-                });
-            }
-            
-            const moveUpBtn = itemDiv.querySelector('.move-up-btn');
-            if (moveUpBtn) {
-                moveUpBtn.addEventListener('click', function() {
-                    moveItemUp(itemDiv);
-                });
-            }
-            
-            const moveDownBtn = itemDiv.querySelector('.move-down-btn');
-            if (moveDownBtn) {
-                moveDownBtn.addEventListener('click', function() {
-                    moveItemDown(itemDiv);
-                });
-            }
-        }
-
-        function generateResponsibilitiesHTML(responsibilities, isDisabled) {
-            if (!responsibilities || responsibilities.length === 0) {
-                return addResponsibilityItem(null, '', isDisabled, true);
-            }
-            
-            let html = '';
-            responsibilities.forEach(responsibility => {
-                html += addResponsibilityItem(null, responsibility, isDisabled, true);
+            // Setup event listeners for the new item
+            const deleteToggleBtn = newItem.querySelector('.delete-toggle-btn');
+            deleteToggleBtn.addEventListener('click', function() {
+                toggleDeleteExperienceItem(itemId);
             });
             
-            return html;
-        }
-
-        function addResponsibilityItem(container, value = '', isDisabled = false, returnHTML = false) {
-            const html = `
-                <div class="responsibility-item flex items-center">
-                    <input type="text" class="responsibility w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                        value="${value}" ${isDisabled ? 'disabled' : ''}>
-                    <button class="remove-responsibility-btn ml-2 px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200" 
-                        ${isDisabled ? 'disabled' : ''}>
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            
-            if (returnHTML) {
-                return html;
-            }
-            
-            if (container) {
-                container.insertAdjacentHTML('beforeend', html);
-                const newItem = container.lastElementChild;
-                const removeBtn = newItem.querySelector('.remove-responsibility-btn');
-                
-                if (removeBtn) {
-                    removeBtn.addEventListener('click', function() {
-                        newItem.remove();
-                    });
+            const currentCheckbox = newItem.querySelector('.current-position');
+            currentCheckbox.addEventListener('change', function() {
+                const endDateContainer = newItem.querySelector('.end-date-container');
+                if (this.checked) {
+                    endDateContainer.classList.add('hidden');
+                } else {
+                    endDateContainer.classList.remove('hidden');
                 }
-            }
-        }
-
-        function generateTechnologiesHTML(technologies, isDisabled) {
-            if (!technologies || technologies.length === 0) {
-                return addTechnologyItem(null, '', isDisabled, true);
-            }
-            
-            let html = '';
-            technologies.forEach(technology => {
-                html += addTechnologyItem(null, technology, isDisabled, true);
             });
-            
-            return html;
         }
 
-        function addTechnologyItem(container, value = '', isDisabled = false, returnHTML = false) {
-            const html = `
-                <div class="technology-item flex items-center">
-                    <input type="text" class="technology w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                        value="${value}" ${isDisabled ? 'disabled' : ''}>
-                    <button class="remove-technology-btn ml-2 px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200" 
-                        ${isDisabled ? 'disabled' : ''}>
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
+        function toggleDeleteExperienceItem(itemId) {
+            const item = document.getElementById(itemId);
+            const isCurrentlyDeleted = item.dataset.deleted === 'true';
             
-            if (returnHTML) {
-                return html;
-            }
+            // Toggle the deleted status
+            item.dataset.deleted = !isCurrentlyDeleted;
             
-            if (container) {
-                container.insertAdjacentHTML('beforeend', html);
-                const newItem = container.lastElementChild;
-                const removeBtn = newItem.querySelector('.remove-technology-btn');
+            // Update the UI
+            if (!isCurrentlyDeleted) {
+                // Mark as deleted
+                item.classList.remove('bg-gray-50', 'border-gray-200');
+                item.classList.add('bg-red-50', 'border-red-200');
+                item.querySelector('h3').textContent = 'Marked for Deletion';
                 
-                if (removeBtn) {
-                    removeBtn.addEventListener('click', function() {
-                        newItem.remove();
-                    });
-                }
-            }
-        }
-
-        function toggleDeleteItem(itemDiv) {
-            const isDeleted = itemDiv.getAttribute('data-deleted') === 'true';
-            const newState = !isDeleted;
-            const itemId = itemDiv.getAttribute('data-id');
-            
-            // Prompt for confirmation when deleting an item with a real ID
-            if (newState && !itemId.toString().includes('temp_')) {
-                if (!confirm('Are you sure you want to mark this item for deletion? The item will be permanently removed when you save.')) {
-                    return;
-                }
-            }
-            
-            itemDiv.setAttribute('data-deleted', newState);
-            
-            if (newState) {
-                // Mark for deletion
-                itemDiv.classList.add('deleted');
-                itemDiv.querySelectorAll('input, textarea, select, button:not(.toggle-delete-btn)').forEach(element => {
-                    element.disabled = true;
+                const deleteBtn = item.querySelector('.delete-toggle-btn');
+                deleteBtn.classList.remove('bg-red-500');
+                deleteBtn.classList.add('bg-green-500');
+                deleteBtn.innerHTML = '<i class="fas fa-undo mr-1"></i> Restore';
+                
+                // Disable all inputs
+                item.querySelectorAll('input, textarea').forEach(input => {
+                    input.disabled = true;
                 });
                 
-                const toggleBtn = itemDiv.querySelector('.toggle-delete-btn');
-                toggleBtn.classList.remove('bg-red-500');
-                toggleBtn.classList.add('bg-blue-500');
-                toggleBtn.innerHTML = '<i class="fas fa-undo"></i>';
-                toggleBtn.title = "Undo deletion";
+                // Disable TinyMCE if it's initialized
+                const editorId = item.querySelector('.tinymce-editor').id;
+                if (editorId && tinymce.get(editorId)) {
+                    tinymce.get(editorId).setMode('readonly');
+                }
             } else {
-                // Restore from deletion
-                itemDiv.classList.remove('deleted');
-                itemDiv.querySelectorAll('input, textarea, select, button:not(.toggle-delete-btn)').forEach(element => {
-                    // Handle special case for end date
-                    if (element.classList.contains('end-date')) {
-                        const currentCheckbox = itemDiv.querySelector('.current-job');
-                        if (currentCheckbox && currentCheckbox.checked) {
-                            return; // Keep end date disabled if "current" is checked
-                        }
-                    }
-                    element.disabled = false;
+                // Restore
+                item.classList.remove('bg-red-50', 'border-red-200');
+                item.classList.add('bg-gray-50', 'border-gray-200');
+                item.querySelector('h3').textContent = 'Experience Details';
+                
+                const deleteBtn = item.querySelector('.delete-toggle-btn');
+                deleteBtn.classList.remove('bg-green-500');
+                deleteBtn.classList.add('bg-red-500');
+                deleteBtn.innerHTML = '<i class="fas fa-trash mr-1"></i> Delete';
+                
+                // Enable all inputs
+                item.querySelectorAll('input, textarea').forEach(input => {
+                    input.disabled = false;
                 });
                 
-                const toggleBtn = itemDiv.querySelector('.toggle-delete-btn');
-                toggleBtn.classList.remove('bg-blue-500');
-                toggleBtn.classList.add('bg-red-500');
-                toggleBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                toggleBtn.title = "Mark for deletion";
-            }
-            
-            console.log(`Item with ID ${itemId} ${newState ? 'marked for deletion' : 'restored'}`);
-        }
-
-        function moveItemUp(itemDiv) {
-            const prevItem = itemDiv.previousElementSibling;
-            if (prevItem) {
-                itemDiv.parentNode.insertBefore(itemDiv, prevItem);
+                // Enable TinyMCE if it's initialized
+                const editorId = item.querySelector('.tinymce-editor').id;
+                if (editorId && tinymce.get(editorId)) {
+                    tinymce.get(editorId).setMode('design');
+                }
             }
         }
 
-        function moveItemDown(itemDiv) {
-            const nextItem = itemDiv.nextElementSibling;
-            if (nextItem) {
-                itemDiv.parentNode.insertBefore(nextItem, itemDiv);
-            }
-        }
-
-        function validateExperienceForm() {
-            let isValid = true;
-            const items = document.querySelectorAll('.experience-item:not(.deleted)');
-            
-            items.forEach(item => {
-                const companyInput = item.querySelector('.company-name');
-                const positionInput = item.querySelector('.position');
-                const startDateInput = item.querySelector('.start-date');
-                const descriptionInput = item.querySelector('.description');
-                
-                const requiredInputs = [companyInput, positionInput, startDateInput, descriptionInput];
-                
-                requiredInputs.forEach(input => {
-                    if (!input.value.trim()) {
-                        input.classList.add('border-red-500');
-                        isValid = false;
-                    } else {
-                        input.classList.remove('border-red-500');
-                    }
-                });
+        function initTinyMCE(selector) {
+            tinymce.init({
+                selector: selector,
+                height: 200,
+                menubar: false,
+                plugins: 'lists link code',
+                toolbar: 'undo redo | formatselect | bold italic | bullist numlist | link | code',
+                content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }'
             });
-            
-            return isValid;
         }
 
         function getExperienceData() {
             const items = document.querySelectorAll('.experience-item');
-            const data = [];
+            const experienceData = [];
             
             items.forEach(item => {
-                // Get the item ID from the data attribute
-                const itemId = item.getAttribute('data-id');
-                // Extract numeric ID if it's a database ID (not a temp ID)
-                const numericId = itemId && !itemId.toString().includes('temp_') ? parseInt(itemId, 10) : null;
+                const isDeleted = item.dataset.deleted === 'true';
                 
-                // Get deletion status
-                const isDeleted = item.getAttribute('data-deleted') === 'true';
+                // Skip if marked for deletion
+                if (isDeleted) return;
                 
-                // For deleted items with a valid numeric ID, include them with is_deleted flag
-                // Skip temporary items that were marked for deletion
-                if (isDeleted && !numericId) {
-                    return; // Skip temporary items that were deleted
+                const positionTitle = item.querySelector('.position-title').value.trim();
+                const company = item.querySelector('.company').value.trim();
+                const startDate = item.querySelector('.start-date').value;
+                const isCurrent = item.querySelector('.current-position').checked;
+                let endDate = '';
+                if (!isCurrent) {
+                    endDate = item.querySelector('.end-date').value;
                 }
                 
-                const companyInput = item.querySelector('.company-name');
-                const positionInput = item.querySelector('.position');
-                const startDateInput = item.querySelector('.start-date');
-                const endDateInput = item.querySelector('.end-date');
-                const currentJobCheckbox = item.querySelector('.current-job');
-                const locationInput = item.querySelector('.location');
-                const companyUrlInput = item.querySelector('.company-url');
-                const descriptionInput = item.querySelector('.description');
-                
-                const responsibilityItems = Array.from(item.querySelectorAll('.responsibility-item'));
-                const responsibilities = responsibilityItems.map(respItem => {
-                    const input = respItem.querySelector('.responsibility');
-                    return input.value.trim();
-                }).filter(text => text !== '');
-                
-                const technologyItems = Array.from(item.querySelectorAll('.technology-item'));
-                const technologies = technologyItems.map(techItem => {
-                    const input = techItem.querySelector('.technology');
-                    return input.value.trim();
-                }).filter(text => text !== '');
-                
-                data.push({
-                    id: numericId,
-                    company: companyInput.value.trim(),
-                    position: positionInput.value.trim(),
-                    startDate: startDateInput.value,
-                    endDate: currentJobCheckbox.checked ? null : endDateInput.value,
-                    current: currentJobCheckbox.checked,
-                    location: locationInput.value.trim(),
-                    companyUrl: companyUrlInput.value.trim(),
-                    description: descriptionInput.value.trim(),
-                    is_deleted: isDeleted ? 1 : 0, // Convert to numeric format for Lambda
-                    responsibilities: responsibilities,
-                    technologies: technologies
-                });
-            });
-            
-            return data;
-        }
-
-        async function loadWorkExperience() {
-            showLoading(true);
-            try {
-                // Use the proper API endpoint with format expected by Lambda function
-                const response = await fetchFromAPI(`?type=work&action=get_site_config`);
-                
-                if (response && response.work_experience && Array.isArray(response.work_experience)) {
-                    const container = document.getElementById('experience-items-container');
-                    container.innerHTML = ''; // Clear container
-                    
-                    if (response.work_experience.length === 0) {
-                        // Add empty experience item if no experience exists
-                        addExperienceItem();
-                    } else {
-                        // Add experience items from data, map field names to our expected structure
-                        response.work_experience.forEach(item => {
-                            const experienceItem = {
-                                id: item.id || null,
-                                company: item.company_name || '',
-                                position: item.job_title || '',
-                                startDate: item.from_date || '',
-                                endDate: item.to_date || '',
-                                current: item.is_current || false,
-                                location: item.location || '',
-                                description: item.description || '',
-                                // These might not be in the database yet
-                                companyUrl: item.company_url || '',
-                                responsibilities: item.responsibilities || [],
-                                technologies: item.technologies || []
-                            };
-                            addExperienceItem(experienceItem);
-                        });
-                    }
-                    console.log('Successfully loaded work experience data from API');
+                // Get content from TinyMCE
+                const textareaId = item.querySelector('.tinymce-editor').id;
+                let description = '';
+                if (textareaId && tinymce.get(textareaId)) {
+                    description = tinymce.get(textareaId).getContent();
                 } else {
-                    throw new Error('Invalid work experience data structure from API');
+                    description = item.querySelector('.description').value.trim();
                 }
-            } catch (error) {
-                console.error('Error loading work experience:', error);
-                showNotification('Failed to load work experience', 'error');
                 
-                // Load local JSON data as fallback
-                try {
-                    const localResponse = await fetch('../data/experience.json');
-                    if (localResponse.ok) {
-                        const data = await localResponse.json();
-                        
-                        const container = document.getElementById('experience-items-container');
-                        container.innerHTML = ''; // Clear container
-                        
-                        if (!data || data.length === 0) {
-                            // Add empty experience item if no experience exists
-                            addExperienceItem();
-                        } else {
-                            // Add experience items from data, map fields to expected format
-                            data.forEach(item => {
-                                const experienceItem = {
-                                    id: item.id || null,
-                                    company: item.company || '',
-                                    position: item.job_title || '',
-                                    startDate: item.start_date || '',
-                                    endDate: item.end_date || '',
-                                    current: !item.end_date,
-                                    location: item.location || '',
-                                    description: item.description || '',
-                                    // These fields might not be in local JSON
-                                    companyUrl: '',
-                                    responsibilities: [],
-                                    technologies: []
-                                };
-                                addExperienceItem(experienceItem);
-                            });
-                        }
-                    }
-                } catch (localError) {
-                    console.error('Error loading local work experience:', localError);
-                    // Add empty experience item if everything fails
-                    const container = document.getElementById('experience-items-container');
-                    container.innerHTML = ''; // Clear container
-                    addExperienceItem();
-                }
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function saveWorkExperience() {
-            if (!validateExperienceForm()) {
-                showNotification('Please fill in all required fields', 'error');
-                return;
-            }
-            
-            const formData = getExperienceData();
-            console.log('Experience Form Data:', formData);
-            
-            // Check if we have any items to save
-            if (formData.length === 0) {
-                showNotification('No experience items to save', 'error');
-                return;
-            }
-            
-            // Transform to the format expected by Lambda
-            const workExperienceData = formData.map(item => {
-                return {
-                    id: item.id || null,
-                    job_title: item.position,
-                    company_name: item.company,
-                    location: item.location,
-                    from_date: item.startDate,
-                    to_date: item.current ? null : item.endDate,
-                    is_current: item.current ? 1 : 0,
-                    description: item.description,
-                    // Get the is_deleted flag
-                    is_deleted: item.is_deleted || 0
-                };
-            });
-            
-            // Summary information for user feedback
-            const totalItems = workExperienceData.length;
-            const newItems = workExperienceData.filter(item => !item.id).length;
-            const updatedItems = workExperienceData.filter(item => item.id && item.is_deleted === 0).length;
-            const deletedItems = workExperienceData.filter(item => item.id && item.is_deleted === 1).length;
-            
-            // Confirm deletion if there are items marked for deletion
-            if (deletedItems > 0) {
-                if (!confirm(`You have marked ${deletedItems} item(s) for deletion. This cannot be undone. Continue?`)) {
+                // Validate required fields
+                if (!positionTitle || !company || !startDate || !description) {
+                    console.error('Missing required fields in experience item');
                     return;
                 }
-            }
-            
-            showLoading(true);
-            try {
-                // Construct the payload in the format expected by the lambda function
-                const payload = {
-                    work_experience: workExperienceData
-                };
                 
-                const response = await fetchFromAPI(`?type=config&action=save_config_all`, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
+                experienceData.push({
+                    positionTitle,
+                    company,
+                    startDate,
+                    endDate,
+                    isCurrent,
+                    description
                 });
-                
-                if (response && response.success) {
-                    // Show detailed success message
-                    const message = `Successfully saved work experience: ${newItems} new, ${updatedItems} updated, ${deletedItems} deleted`;
-                    console.log(message);
-                    showNotification(message);
-                    
-                    // Reload the data to refresh IDs and remove deleted items
-                    setTimeout(() => {
-                        loadWorkExperience();
-                    }, 1000);
-                } else {
-                    throw new Error(response?.message || 'Failed to save work experience');
-                }
-            } catch (error) {
-                console.error('Error saving work experience:', error);
-                showNotification('Failed to save work experience: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
+            });
+            
+            return experienceData;
+        }
+
+        function loadExperienceData(data) {
+            // Clear existing items
+            const container = document.getElementById('experience-items-container');
+            container.innerHTML = '';
+            
+            // Add each experience item
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    addExperienceItem(item);
+                });
+            } else {
+                // If no data, add an empty experience item
+                addExperienceItem();
             }
         }
 
-        function initWorkExperiencePage() {
-            // Load work experience
-            loadWorkExperience();
+        function fetchExperienceData() {
+            const url = `${apiEndpoint}/api/work-experience`;
             
-            // Add experience button
-            document.getElementById('add-experience-btn').addEventListener('click', function() {
-                addExperienceItem();
-            });
+            // Show loading indicator
+            document.getElementById('loading').classList.remove('hidden');
             
-            // Save experience button
-            document.getElementById('save-experience-btn').addEventListener('click', saveWorkExperience);
-            
-            // Remove error indicator when user starts typing
-            document.addEventListener('input', function(event) {
-                if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-                    event.target.classList.remove('border-red-500');
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
+                    'Content-Type': 'application/json'
                 }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                localExperienceData = data;
+                loadExperienceData(data);
+                lastUpdate = new Date();
+                updateLastUpdatedTime();
+            })
+            .catch(error => {
+                console.error('Error fetching work experience data:', error);
+                // Try to load from localStorage as fallback
+                const savedData = localStorage.getItem('workExperienceData');
+                if (savedData) {
+                    try {
+                        const parsedData = JSON.parse(savedData);
+                        localExperienceData = parsedData;
+                        loadExperienceData(parsedData);
+                    } catch (e) {
+                        console.error('Error parsing saved work experience data:', e);
+                    }
+                }
+            })
+            .finally(() => {
+                // Hide loading indicator
+                document.getElementById('loading').classList.add('hidden');
             });
         }
 
-        // Initialize page
-        initPage(initWorkExperiencePage);
+        function saveExperienceData() {
+            const experienceData = getExperienceData();
+            
+            // Validate data
+            if (!experienceData || experienceData.length === 0) {
+                alert('No valid experience data to save. Please check required fields.');
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('loading').classList.remove('hidden');
+            
+            // Save to API
+            const url = `${apiEndpoint}/api/work-experience`;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(experienceData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Work experience data saved successfully!');
+                // Update local data and UI
+                localExperienceData = experienceData;
+                localStorage.setItem('workExperienceData', JSON.stringify(experienceData));
+                lastUpdate = new Date();
+                updateLastUpdatedTime();
+                
+                // Refresh data from server
+                fetchExperienceData();
+            })
+            .catch(error => {
+                console.error('Error saving work experience data:', error);
+                alert('Error saving work experience data. Please try again later.');
+                
+                // Save locally as fallback
+                localStorage.setItem('workExperienceData', JSON.stringify(experienceData));
+            })
+            .finally(() => {
+                // Hide loading indicator
+                document.getElementById('loading').classList.add('hidden');
+            });
+        }
     </script>
 </body>
 </html> 
