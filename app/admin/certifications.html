@@ -1,30 +1,46 @@
-// Authentication Functions
-function checkAuth() {
-    const token = localStorage.getItem('admin_token');
-    if (token) {
-        // Check for user data in localStorage (from direct login)
-        const userData = localStorage.getItem('admin_user');
-        if (userData) {
-            try {
-                // Parse user data to validate it
-                JSON.parse(userData);
-                // Valid user data found
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('dashboard-section').style.display = 'block';
-                loadCertificationsData();
-                return;
-            } catch (error) {
-                console.error('Error parsing user data:', error);
+<script>
+    // Authentication Functions
+    function checkAuth() {
+        const token = localStorage.getItem('admin_token');
+        if (token) {
+            // Check for user data in localStorage (from direct login)
+            const userData = localStorage.getItem('admin_user');
+            if (userData) {
+                try {
+                    // Parse user data to validate it
+                    JSON.parse(userData);
+                    // Valid user data found
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('dashboard-section').style.display = 'block';
+                    loadCertificationsData();
+                    return;
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                }
             }
+            
+            // Token exists but no valid user data
+            // We'll still accept the token as valid
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            loadCertificationsData();
+        } else {
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('dashboard-section').style.display = 'none';
         }
-        
-        // Token exists but no valid user data
-        // We'll still accept the token as valid
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('dashboard-section').style.display = 'block';
-        loadCertificationsData();
-    } else {
-        document.getElementById('login-section').style.display = 'block';
-        document.getElementById('dashboard-section').style.display = 'none';
     }
-} 
+
+    // Rest of your script...
+    
+    // Document Ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check auth status
+        checkAuth();
+        
+        // Add event listeners
+        document.getElementById('login-form').addEventListener('submit', handleLogin);
+        document.getElementById('logout-btn').addEventListener('click', handleLogout);
+        document.getElementById('add-certification-btn').addEventListener('click', addCertificationItem);
+        document.getElementById('save-certification-btn').addEventListener('click', saveCertificationData);
+    });
+</script> 

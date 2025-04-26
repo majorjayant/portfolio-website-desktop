@@ -18,8 +18,7 @@ function checkAuth() {
             }
         }
         
-        // Token exists but no valid user data
-        // We'll still accept the token as valid
+        // Even without valid user data, if we have a token we still accept it
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('dashboard-section').style.display = 'block';
         loadSiteConfiguration();
@@ -27,4 +26,10 @@ function checkAuth() {
         document.getElementById('login-section').style.display = 'block';
         document.getElementById('dashboard-section').style.display = 'none';
     }
-} 
+}
+
+// Document Ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication on page load
+    checkAuth();
+}); 
