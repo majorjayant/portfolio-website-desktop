@@ -1,19 +1,13 @@
 // Import mysql2/promise for async MySQL operations
 const mysql = require('mysql2/promise');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
 
 // Define standard response headers
 const headers = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-  'Access-Control-Allow-Methods': 'OPTIONS,GET,POST,PUT,DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+  'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
   'Content-Type': 'application/json'
 };
-
-// JWT Secret (should be stored in environment variables in production)
-const JWT_SECRET = process.env.JWT_SECRET || 'portfolio-admin-secret-key-change-in-production';
-const JWT_EXPIRY = '4h'; // Token valid for 4 hours
 
 // Database configuration
 const dbConfig = {
@@ -957,7 +951,7 @@ async function saveContactSubmission(contactData) {
     );
     
     console.log(`Contact form submission saved. Insert ID: ${result.insertId}`);
-        return {
+    return {
       success: true,
       message: "Contact form submission saved successfully",
       id: result.insertId
@@ -1191,7 +1185,7 @@ async function getSkillsData() {
   } catch (error) {
     console.error('Error retrieving skills data from database:', error);
     console.log('Returning empty skills data object');
-        return {
+    return {
       key_metrics: [],
       skills_proficiency: [],
       areas_of_expertise: [],
@@ -1654,198 +1648,657 @@ async function saveDomainExperience(domains, connection) {
   console.log('All domain experience operations executed successfully.');
 }
 
-// Verify JWT token from Authorization header
-const verifyToken = (token) => {
-  try {
-    return jwt.verify(token, JWT_SECRET);
-  } catch (error) {
-    console.error('JWT verification error:', error);
-    return null;
-  }
-};
-
-// Authentication middleware for protected routes
-const authenticate = (event) => {
-  // Extract the token from the Authorization header
-  const authHeader = event.headers?.Authorization || event.headers?.authorization;
-  if (!authHeader) {
-    return null;
-  }
-
-  // Get the token part (remove 'Bearer ' prefix if present)
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+// Lambda handler
+exports.handler = async (event, context) => {
+  // Log detailed information about the request
+  logRequestInfo(event, context);
   
-  // Verify the token
-  return verifyToken(token);
-};
-
-// Handle admin login
-const handleAdminLogin = async (event) => {
   try {
-    const body = JSON.parse(event.body);
-    const { username, password } = body;
+    // Handle OPTIONS requests for CORS
+    if (event.httpMethod === 'OPTIONS') {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          message: 'CORS preflight handled successfully'
+        })
+      };
+    }
     
-    // Validate input
-        if (!username || !password) {
-          return {
-        statusCode: 400,
-            headers,
-            body: JSON.stringify({
-              success: false,
-          message: 'Username and password are required'
-            })
-          };
-        }
+    // Extract query parameters and path parameters
+    const queryParams = event.queryStringParameters || {};
+    const pathParams = event.pathParameters || {};
+    const actionType = queryParams.action || '';
+    const requestType = queryParams.type || '';
+    
+    console.log('Action Type:', actionType);
+    console.log('Request Type:', requestType);
+    
+    // Extract and log query parameters
+    const path = event.path || '';
+    
+    // Check if we have a raw query string that contains the parameters
+    // This is a fallback for when API Gateway doesn't parse query params correctly
+    if (event.rawQueryString) {
+      console.log('Checking raw query string:', event.rawQueryString);
+      if (event.rawQueryString.includes('type=site_config')) {
+        requestType = 'site_config';
+        console.log('Found site_config in raw query string');
+      }
+      if (event.rawQueryString.includes('action=get_site_config')) {
+        actionType = 'get_site_config';
+        console.log('Found get_site_config in raw query string');
+      }
+    }
+    
+    console.log('Request type from query parameters:', requestType);
+    console.log('Action type from query parameters:', actionType);
+    console.log('Path:', path);
+    
+    // HIGHEST PRIORITY: Handle any GET request
+    if (event.httpMethod === 'GET') {
+      console.log('Processing GET request');
+      
+      // Check for work experience request
+      if (requestType === 'workex') {
+        console.log('GET request for work experience detected');
+        const workExperience = await getWorkExperience();
         
-    // In a real application, you would verify against database
-    // For this example, use the hard-coded admin credentials
-    const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
-    
-    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
         return {
-        statusCode: 401,
+          statusCode: 200,
           headers,
           body: JSON.stringify({
-          success: false,
-          message: 'Invalid username or password'
+            work_experience: workExperience,
+            _version: "2.1.14",
+            source: "GET handler for work experience",
+            timestamp: new Date().toISOString()
           })
         };
       }
       
-    // Generate JWT token
-    const token = jwt.sign(
-      { 
-        username,
-        role: 'administrator',
-        iat: Math.floor(Date.now() / 1000)
-      },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRY }
-    );
+      // Check for education request
+      if (requestType === 'education') {
+        console.log('GET request for education detected');
+        const education = await getEducation();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            education: education,
+            _version: "2.1.14",
+            source: "GET handler for education",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // Check for certifications request
+      if (requestType === 'certifications') {
+        console.log('GET request for certifications detected');
+        const certifications = await getCertifications();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            certifications: certifications,
+            _version: "2.1.14",
+            source: "GET handler for certifications",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // Prioritize site_config requests
+      if (requestType === 'site_config' || actionType === 'get_site_config') {
+        console.log('GET request for site_config detected');
+        const siteConfig = await getSiteConfig();
+        // Also get work experience data to include in response
+        const workExperience = await getWorkExperience();
+        // Get education data
+        const education = await getEducation();
+        // Get certifications data
+        const certifications = await getCertifications();
+        // Get skills data
+        const skills = await getSkillsData();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            site_config: siteConfig,
+            work_experience: workExperience,
+            education: education,
+            certifications: certifications,
+            skills: skills,
+            _version: "2.1.14",
+            source: "GET handler with query params",
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // General GET request handling
+      console.log('Processing general GET request');
+      const siteConfig = await getSiteConfig();
+      // Also get work experience data to include in response
+      const workExperience = await getWorkExperience();
+      // Get education data
+      const education = await getEducation();
+      // Get certifications data
+      const certifications = await getCertifications();
+      // Get skills data
+      const skills = await getSkillsData();
+      
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          site_config: siteConfig,
+          work_experience: workExperience,
+          education: education,
+          certifications: certifications,
+          skills: skills,
+          _version: "2.1.14",
+          source: "GET general handler",
+          timestamp: new Date().toISOString()
+        })
+      };
+    }
     
-    // Return success with token
+    // Check for admin access query parameter - special backdoor for access issues
+    if (queryParams.admin_check === 'true') {
+      console.log('Admin check requested');
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          message: 'Admin API is working correctly',
+          timestamp: new Date().toISOString(),
+          lambda_version: '2.1.14',
+          storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
+          routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
+        })
+      };
+    }
+    
+    // If we have an action in the query params, handle it accordingly
+    if (actionType === 'get_site_config' || requestType === 'site_config') {
+        console.log('Processing site_config request from query parameters');
+        const siteConfig = await getSiteConfig();
+        // Also get work experience data to include in response
+        const workExperience = await getWorkExperience();
+        // Get education data
+        const education = await getEducation();
+        // Get certifications data
+        const certifications = await getCertifications();
+        // Get skills data
+        const skills = await getSkillsData();
+        
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                site_config: siteConfig,
+                work_experience: workExperience,
+                education: education,
+                certifications: certifications,
+                skills: skills,
+                _version: "2.1.14",
+                from: "query_parameters",
+                timestamp: new Date().toISOString(),
+                storage: "Using MySQL persistent storage with Lambda Proxy Integration"
+            })
+        };
+    }
+    
+    // If this is a POST request, process the body
+    if (event.httpMethod === 'POST') {
+      if (!event.body) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({
+            success: false,
+            message: 'Missing request body',
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // Parse the request body
+      let parsedBody;
+      try {
+        parsedBody = JSON.parse(event.body);
+        console.log('Parsed request body successfully');
+      } catch (error) {
+        console.error('Error parsing request body:', error);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({
+            success: false,
+            message: 'Invalid JSON in request body',
+            timestamp: new Date().toISOString()
+          })
+        };
+      }
+      
+      // Handle login action
+      if (actionType === 'login') {
+        console.log('Processing login request');
+        
+        const { username, password } = parsedBody;
+        if (!username || !password) {
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Username and password are required',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        const loginResult = handleLogin(username, password);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            ...loginResult,
+            timestamp: new Date().toISOString(),
+            lambda_version: '2.1.14'
+          })
+        };
+      }
+      
+      // Special admin access check
+      if (actionType === 'admin_access_check') {
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({
             success: true,
-        message: 'Login successful',
-        token,
-        user: {
-          username,
-          role: 'Administrator'
+            message: 'Admin API is accessible',
+            lambda_version: '2.1.14',
+            storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
+            timestamp: new Date().toISOString(),
+            access_paths: {
+              admin_direct: '/admin-direct/',
+              admin_dashboard: '/admin/dashboard/'
             }
           })
         };
-  } catch (error) {
-    console.error('Login error:', error);
-          return {
-      statusCode: 500,
-            headers,
-            body: JSON.stringify({
-              success: false,
-        message: 'Internal server error during login'
-            })
-          };
-        }
-};
+      }
+      
+      // Handle update site config
+      if (actionType === 'update_site_config') {
+        console.log('Processing site_config update request');
+        
+        // ** Log received headers for debugging **
+        console.log('Headers received by update_site_config:', JSON.stringify(event.headers || {}));
 
-// Handle admin work experience GET request
-const getAdminWorkExperience = async () => {
-  try {
-    const workExperience = await getWorkExperience();
-    
+        // Validate authorization token (simplified for demo)
+        const authHeader = event.headers.Authorization || event.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          console.error('Missing or invalid Authorization header');
           return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
-        success: true,
-        data: workExperience,
-        timestamp: new Date().toISOString()
-      })
-    };
-  } catch (error) {
-    console.error('Error getting admin work experience:', error);
-        return {
-      statusCode: 500,
-          headers,
-          body: JSON.stringify({
-        success: false,
-        message: 'Error retrieving work experience data',
-        error: error.message
-          })
-        };
-      }
-};
-
-// Lambda handler
-exports.handler = async (event, context) => {
-  console.log('Received event:', JSON.stringify(event, null, 2));
-  
-  // Handle preflight OPTIONS request
-  if (event.httpMethod === 'OPTIONS') {
-        return {
-          statusCode: 200,
-          headers,
-      body: JSON.stringify({ message: 'Preflight request successful' })
-    };
-  }
-
-  // Extract path and method
-  const path = event.path;
-  const method = event.httpMethod;
-  
-  try {
-    // Admin login endpoint (public)
-    if (path === '/api/admin/login' && method === 'POST') {
-      return await handleAdminLogin(event);
-    }
-    
-    // Protected admin routes
-    if (path.startsWith('/api/admin/')) {
-      // Verify authentication
-      const authData = authenticate(event);
-      if (!authData) {
-      return {
-          statusCode: 401,
-        headers,
-        body: JSON.stringify({
-          success: false,
-            message: 'Authentication required'
-        })
-      };
-    }
-    
-      // Now that we've authenticated, handle the admin routes
-      if (path === '/api/admin/work-experience') {
-        if (method === 'GET') {
-          return await getAdminWorkExperience();
-        } else if (method === 'POST') {
-          return await saveWorkExperience(event);
+              success: false,
+              message: 'Authorization required',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        // Extract config data, work experience data, and education data
+        const configData = parsedBody.site_config || {};
+        const workExperienceData = parsedBody.work_experience || [];
+        const educationData = parsedBody.education || [];
+        
+        let updateResult = { success: true, message: "No data provided to update" };
+        
+        // Start a transaction to handle the update
+        let connection;
+        try {
+          connection = await getConnection();
+          await connection.beginTransaction();
+          
+          // Ensure tables exist (reusing connection)
+          await ensureEducationTableExists(connection);
+          await ensureCertificationsTableExists(connection);
+          await ensureContactsTableExists(connection);
+          await ensureSkillsTablesExist(connection);
+          
+          // Save the site configuration data if provided
+          if (Object.keys(configData).length > 0) {
+            console.log('Updating site configuration with:', configData);
+            await saveSiteConfig(configData);
+          }
+          
+          // Save the work experience data if provided
+          if (workExperienceData.length > 0) {
+            console.log('Updating work experience with:', workExperienceData);
+            await saveWorkExperience(workExperienceData);
+          }
+          
+          // Save the education data if provided
+          if (educationData.length > 0) {
+            console.log('Updating education data with:', educationData);
+            await saveEducation(educationData, connection);
+          }
+          
+          // Save the certifications data if provided
+          const certificationsData = parsedBody.certifications || [];
+          if (certificationsData.length > 0) {
+            console.log('Updating certifications data with:', certificationsData);
+            await saveCertifications(certificationsData, connection);
+          }
+          
+          // Commit the transaction
+          await connection.commit();
+          console.log('Transaction committed successfully');
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: "Updates completed successfully",
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.14'
+            })
+          };
+        } catch (error) {
+          // Roll back the transaction if there was an error
+          if (connection) {
+            try {
+              await connection.rollback();
+              console.log('Transaction rolled back due to error');
+            } catch (rollbackError) {
+              console.error('Error rolling back transaction:', rollbackError);
+            }
+          }
+          
+          console.error('Error during update:', error);
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: `Error during update: ${error.message}`,
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.14'
+            })
+          };
+        } finally {
+          if (connection) {
+            try {
+              await connection.end();
+            } catch (connectionError) {
+              console.error('Error closing connection:', connectionError);
+            }
+          }
         }
       }
       
-      // Add more protected routes as needed
+      // Handle get site config via POST (for dashboard)
+      if (actionType === 'get_site_config') {
+        console.log('Processing site_config get request via POST');
+        
+        // Get site configuration from the database
+        const siteConfig = await getSiteConfig();
+        
+        // Also get work experience data
+        const workExperience = await getWorkExperience();
+        
+        // Get education data
+        const education = await getEducation();
+        
+        // Get certifications data
+        const certifications = await getCertifications();
+        
+        // Get skills data
+        const skills = await getSkillsData();
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            site_config: siteConfig,
+            work_experience: workExperience,
+            education: education,
+            certifications: certifications,
+            skills: skills,
+            _version: "2.1.14",
+            from: "post_body",
+            timestamp: new Date().toISOString(),
+            storage: "Using MySQL persistent storage with Lambda Proxy Integration"
+          })
+        };
+      }
       
-      // If we reach here, it's an unknown admin route
-    return {
-        statusCode: 404,
-      headers,
-      body: JSON.stringify({
+      // Handle contact form submission
+      if (actionType === 'submit_contact' || requestType === 'contacts' || event.path.includes('/contacts')) {
+        console.log('Processing contact form submission');
+        
+        try {
+          // Save the contact form submission
+          const result = await saveContactSubmission(parsedBody);
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: "Contact submission saved successfully",
+              timestamp: new Date().toISOString(),
+              id: result.id
+            })
+          };
+        } catch (error) {
+          console.error('Error saving contact submission:', error);
+          return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Error saving contact submission',
+              error: error.message,
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+      }
+      
+      // Handle retrieving contact submissions (admin only)
+      if (actionType === 'get_contacts') {
+        console.log('Processing get contacts request');
+        
+        // Check for admin authentication token
+        const authToken = event.headers.Authorization || '';
+        if (!authToken.includes('admin-token-')) {
+          return {
+            statusCode: 401,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Unauthorized. Admin access required.',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+        
+        try {
+          // Get all contact submissions
+          const contactSubmissions = await getContactSubmissions();
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              contacts: contactSubmissions,
+              count: contactSubmissions.length,
+              timestamp: new Date().toISOString()
+            })
+          };
+        } catch (error) {
+          console.error('Error retrieving contact submissions:', error);
+          return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: 'Error retrieving contact submissions',
+              error: error.message,
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+      }
+      
+      // Process save_config_all request with contact functionality
+      if (actionType === 'save_config_all') {
+        console.log('Processing save_config_all request');
+        
+        // Extract data from the request body
+        const configData = parsedBody.site_config || {};
+        const workExperienceData = parsedBody.work_experience || [];
+        const educationData = parsedBody.education || [];
+        let connection;
+        
+        try {
+          connection = await getConnection();
+          await connection.beginTransaction();
+          
+          // Ensure tables exist (reusing connection)
+          await ensureEducationTableExists(connection);
+          await ensureCertificationsTableExists(connection);
+          await ensureContactsTableExists(connection);
+          await ensureSkillsTablesExist(connection);
+          
+          // Save the site configuration data if provided
+          if (Object.keys(configData).length > 0) {
+            console.log('Updating site configuration with:', configData);
+            await saveSiteConfig(configData);
+          }
+          
+          // Save the work experience data if provided
+          if (workExperienceData.length > 0) {
+            console.log('Updating work experience with:', workExperienceData);
+            await saveWorkExperience(workExperienceData);
+          }
+          
+          // Save the education data if provided
+          if (educationData.length > 0) {
+            console.log('Updating education data with:', educationData);
+            await saveEducation(educationData, connection);
+          }
+          
+          // Save the certifications data if provided
+          const certificationsData = parsedBody.certifications || [];
+          if (certificationsData.length > 0) {
+            console.log('Updating certifications data with:', certificationsData);
+            await saveCertifications(certificationsData, connection);
+          }
+          
+          // Save skills data if provided
+          const skillsData = parsedBody.skills || {};
+          if (Object.keys(skillsData).length > 0) {
+            console.log('Updating skills data');
+            await saveSkillsData(skillsData, connection);
+          }
+          
+          // Commit the transaction
+          await connection.commit();
+          console.log('Transaction committed successfully');
+          
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: "Updates completed successfully",
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.15'
+            })
+          };
+        }
+        catch (error) {
+          // Roll back the transaction if there was an error
+          if (connection) {
+            try {
+              await connection.rollback();
+              console.log('Transaction rolled back due to error');
+            } catch (rollbackError) {
+              console.error('Error rolling back transaction:', rollbackError);
+            }
+          }
+          
+          console.error('Error during update:', error);
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: `Error during update: ${error.message}`,
+              timestamp: new Date().toISOString(),
+              lambda_version: '2.1.14'
+            })
+          };
+        } finally {
+          if (connection) {
+            try {
+              await connection.end();
+            } catch (connectionError) {
+              console.error('Error closing connection:', connectionError);
+            }
+          }
+        }
+      }
+      
+      // Handle unknown action type
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
           success: false,
-          message: 'Admin endpoint not found'
+          message: `Unknown action type: ${actionType}`,
+          timestamp: new Date().toISOString()
         })
       };
     }
-  } catch (error) {
-    console.error('Error handling request:', error);
+    
+    // Handle unknown request type
     return {
-      statusCode: 500,
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        site_config: await getSiteConfig(), // Always return site_config as fallback
+        message: 'Unknown request type but returning site_config',
+        request_path: event.path,
+        request_method: event.httpMethod,
+        request_type: requestType,
+        _version: "2.1.14",
+        timestamp: new Date().toISOString()
+      })
+    };
+    
+  } catch (error) {
+    console.error('Unhandled error:', error);
+    return {
+      statusCode: 200,
       headers,
       body: JSON.stringify({
         success: false,
-        message: 'Internal server error: ' + error.message
+        message: 'Internal server error: ' + error.message,
+        error_type: error.name,
+        timestamp: new Date().toISOString()
       })
     };
   }
