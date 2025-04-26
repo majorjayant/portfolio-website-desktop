@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolkit Management - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin-dashboard.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen bg-gray-100">
+        <!-- Authentication check -->
+        <div id="auth-loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-lg text-gray-600">Verifying authentication...</p>
+            </div>
+        </div>
+        
+        <!-- Not Authenticated Message -->
+        <div id="not-authenticated" class="hidden fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div class="text-center">
+                <div class="text-red-600 text-6xl mb-4">⚠️</div>
+                <p class="text-lg text-gray-800 mb-4">You need to log in to access this page</p>
+                <a href="/admin/login" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                    Go to Login
+                </a>
+            </div>
+        </div>
+        
+        <!-- API Error Message -->
+        <div id="api-error" class="hidden fixed top-4 right-4 p-4 bg-red-100 text-red-700 rounded-md shadow-md z-40">
+            Error loading data. Please try again later.
+        </div>
+        
+        <!-- Dashboard Content (hidden until authenticated) -->
+        <div id="dashboard-content" class="hidden">
+            <!-- Navigation -->
+            <nav class="bg-indigo-600 shadow">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between h-16">
+                        <div class="flex">
+                            <div class="flex-shrink-0 flex items-center">
+                                <span class="text-white text-xl font-bold">Admin Dashboard</span>
+                            </div>
+                            <div class="ml-6 flex items-center space-x-4">
+                                <a href="/admin/dashboard.html" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-indigo-700">
+                                    Dashboard
+                                </a>
+                                <a href="/admin/site-config.html" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-indigo-700">
+                                    Site Config
+                                </a>
+                                <a href="/admin/work-experience.html" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-indigo-700">
+                                    Work Experience
+                                </a>
+                                <a href="/admin/education.html" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-indigo-700">
+                                    Education
+                                </a>
+                                <a href="/admin/certifications.html" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-indigo-700">
+                                    Certifications
+                                </a>
+                                <a href="/admin/toolkit.html" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-indigo-700 bg-indigo-700">
+                                    Toolkit
+                                </a>
+                                <a href="/admin/skills.html" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-indigo-700">
+                                    Skills
+                                </a>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <button id="logout-button" class="px-3 py-2 rounded-md text-sm font-medium text-white bg-indigo-700 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Main Content -->
+            <main class="py-6">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <h2 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                Toolkit Management
+                            </h2>
+                            
+                            <div id="loading-indicator" class="text-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-2"></div>
+                                <p class="text-gray-500">Loading toolkit data...</p>
+                            </div>
+                            
+                            <div id="toolkit-form" class="hidden mt-4">
+                                <form id="toolkit-management-form" class="space-y-6">
+                                    <!-- Toolkit Categories Section -->
+                                    <div class="bg-gray-50 p-4 rounded-md shadow-sm">
+                                        <h3 class="text-md font-medium text-gray-800 mb-2">Toolkit Categories</h3>
+                                        
+                                        <!-- Toolkit Categories Container -->
+                                        <div id="toolkit-categories-container" class="space-y-3">
+                                            <!-- Toolkit category items will be dynamically added here -->
+                                            <p id="toolkit-categories-loading-message" class="text-gray-500">Loading toolkit categories...</p>
+                                        </div>
+                                        
+                                        <!-- Add Category Button -->
+                                        <button type="button" id="add-toolkit-category-button" class="inline-flex items-center px-3 py-1 mt-4 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                            </svg>
+                                            Add Category
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Toolkit Items Section -->
+                                    <div class="bg-gray-50 p-4 rounded-md shadow-sm">
+                                        <h3 class="text-md font-medium text-gray-800 mb-2">Toolkit Items</h3>
+                                        
+                                        <!-- Toolkit Items Container -->
+                                        <div id="toolkit-items-container" class="space-y-3">
+                                            <!-- Toolkit items will be dynamically added here -->
+                                            <p id="toolkit-items-loading-message" class="text-gray-500">Loading toolkit items...</p>
+                                        </div>
+                                        
+                                        <!-- Add Item Button -->
+                                        <button type="button" id="add-toolkit-item-button" class="inline-flex items-center px-3 py-1 mt-4 border border-indigo-600 text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                            </svg>
+                                            Add Item
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Save Button -->
+                                    <div class="flex justify-end">
+                                        <button type="button" id="save-toolkit-button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/admin-utils.js"></script>
+    <script>
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            
+            // Set up logout button
+            document.getElementById('logout-button').addEventListener('click', logout);
+            
+            // Load toolkit data
+            loadToolkitData();
+            
+            // Add event listeners for buttons
+            document.getElementById('add-toolkit-category-button').addEventListener('click', function() {
+                const newCategory = addToolkitCategoryItem();
+                updateToolkitItemCategoryDropdowns();
+            });
+            
+            document.getElementById('add-toolkit-item-button').addEventListener('click', function() {
+                addToolkitItem();
+            });
+            
+            document.getElementById('save-toolkit-button').addEventListener('click', saveToolkitData);
+        });
+        
+        // Function to load toolkit data
+        async function loadToolkitData() {
+            showLoading('loading-indicator', 'Loading toolkit data...');
+            
+            try {
+                // Fetch skills data which includes toolkit data
+                const response = await fetchSkillsData();
+                
+                if (response && response.skills) {
+                    console.log('Successfully loaded toolkit data:', response.skills);
+                    
+                    // Hide loading and show form
+                    document.getElementById('loading-indicator').classList.add('hidden');
+                    document.getElementById('toolkit-form').classList.remove('hidden');
+                    
+                    // Load toolkit categories first
+                    if (response.skills.toolkit_categories) {
+                        loadToolkitCategoriesData(response.skills.toolkit_categories);
+                    } else {
+                        // If no categories, add an empty one
+                        addToolkitCategoryItem();
+                    }
+                    
+                    // Then load toolkit items
+                    if (response.skills.toolkit_items) {
+                        loadToolkitItemsData(response.skills.toolkit_items);
+                    } else {
+                        // If no items, add an empty one
+                        addToolkitItem();
+                    }
+                } else {
+                    throw new Error('Invalid response format or missing skills data');
+                }
+            } catch (error) {
+                console.error('Error loading toolkit data:', error);
+                
+                // Show error message
+                showApiError('Failed to load toolkit data. Using default empty values.');
+                
+                // Hide loading and show form with empty items
+                document.getElementById('loading-indicator').classList.add('hidden');
+                document.getElementById('toolkit-form').classList.remove('hidden');
+                
+                // Add empty items
+                addToolkitCategoryItem();
+                addToolkitItem();
+            }
+        }
+        
+        // Function to save toolkit data
+        async function saveToolkitData() {
+            // Validate and get data
+            const toolkitCategoriesData = getToolkitCategoriesData();
+            const toolkitItemsData = getToolkitItemsData();
+            
+            // Check for validation errors
+            if (toolkitCategoriesData === null || toolkitItemsData === null) {
+                showApiError('Please fix the validation errors before saving.');
+                return;
+            }
+            
+            // Show loading indicator
+            const saveButton = document.getElementById('save-toolkit-button');
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+            `;
+            saveButton.disabled = true;
+            
+            try {
+                // Prepare the data payload
+                const skillsData = {
+                    toolkit_categories: toolkitCategoriesData,
+                    toolkit_items: toolkitItemsData
+                };
+                
+                // Send the data to the API
+                const response = await saveToAPI(`${API_ENDPOINT}${API_SKILLS_TYPE}&action=save_skills`, skillsData);
+                
+                if (response && response.success) {
+                    console.log('Toolkit data saved successfully:', response);
+                    showSuccess('Toolkit data saved successfully!');
+                    
+                    // Reload the data to get updated IDs
+                    loadToolkitData();
+                } else {
+                    throw new Error('Failed to save toolkit data');
+                }
+            } catch (error) {
+                console.error('Error saving toolkit data:', error);
+                showApiError('Failed to save toolkit data. Please try again.');
+            } finally {
+                // Restore save button
+                saveButton.innerHTML = originalButtonText;
+                saveButton.disabled = false;
+            }
+        }
+        
+        // Function to add a toolkit category item
+        function addToolkitCategoryItem(itemData = {}, index = Date.now()) {
+            console.log('Adding toolkit category item:', itemData);
+            const container = document.getElementById('toolkit-categories-container');
+            
+            // Remove loading message if present
+            const loadingMessage = document.getElementById('toolkit-categories-loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'toolkit-category-item bg-gray-50 rounded-md p-3 my-2 border border-gray-200';
+            itemDiv.dataset.id = itemData.toolkit_category_id || '';
+            
+            // Add marked-for-deletion class if loaded item is already marked
+            if (parseInt(itemData.is_deleted || 0) === 1) {
+                itemDiv.classList.add('marked-for-deletion');
+            }
+            
+            // Create the HTML structure for the toolkit category item
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-medium text-gray-700">Toolkit Category</h5>
+                    <button type="button" class="delete-toolkit-category-btn text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <input type="hidden" class="toolkit-category-id" value="${itemData.toolkit_category_id || ''}">
+                <input type="hidden" class="toolkit-category-is-deleted" value="${itemData.is_deleted || 0}">
+                
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-5">
+                        <label class="block text-sm font-medium text-gray-700">Category Name <span class="text-red-500">*</span></label>
+                        <input type="text" class="toolkit-category-name mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.toolkit_category_name || ''}" required>
+                        <div class="toolkit-category-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" class="toolkit-category-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.display_order || 0}" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for delete button
+            itemDiv.querySelector('.delete-toolkit-category-btn').addEventListener('click', function() {
+                toggleDeleteToolkitCategoryItem(itemDiv);
+                // Update toolkit item dropdowns after deleting a category
+                setTimeout(() => {
+                    updateToolkitItemCategoryDropdowns();
+                }, 100);
+            });
+            
+            // Add event listeners for validation
+            const requiredInputs = itemDiv.querySelectorAll('input[required]');
+            requiredInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateToolkitCategoryInput(input);
+                    // Update toolkit item dropdowns when category name changes
+                    if (input.classList.contains('toolkit-category-name')) {
+                        setTimeout(() => {
+                            updateToolkitItemCategoryDropdowns();
+                        }, 100);
+                    }
+                });
+                
+                // Validate on initial load
+                validateToolkitCategoryInput(input);
+            });
+            
+            // Add the item to the container
+            container.appendChild(itemDiv);
+            
+            return itemDiv;
+        }
+        
+        // Function to validate toolkit category input
+        function validateToolkitCategoryInput(input) {
+            // Find the closest validation error element
+            const errorElement = input.nextElementSibling;
+            
+            // Check if the input has a value
+            if (!input.value.trim()) {
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                errorElement.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+        
+        // Function to toggle delete state for toolkit category item
+        function toggleDeleteToolkitCategoryItem(itemDiv) {
+            // Toggle the marked-for-deletion class
+            itemDiv.classList.toggle('marked-for-deletion');
+            
+            // Update the is-deleted field
+            const isDeletedField = itemDiv.querySelector('.toolkit-category-is-deleted');
+            isDeletedField.value = itemDiv.classList.contains('marked-for-deletion') ? 1 : 0;
+        }
+        
+        // Function to get toolkit categories data
+        function getToolkitCategoriesData() {
+            const toolkitCategoryItems = document.querySelectorAll('.toolkit-category-item');
+            const data = [];
+            
+            toolkitCategoryItems.forEach(item => {
+                // Check if the item is marked for deletion
+                const isDeleted = parseInt(item.querySelector('.toolkit-category-is-deleted').value || '0');
+                
+                // Get all field values
+                const id = item.querySelector('.toolkit-category-id').value || null;
+                const categoryName = item.querySelector('.toolkit-category-name').value;
+                const displayOrder = parseInt(item.querySelector('.toolkit-category-display-order').value || '0');
+                
+                // Skip validation for items marked for deletion
+                if (isDeleted !== 1) {
+                    // Validate required fields
+                    const nameInput = item.querySelector('.toolkit-category-name');
+                    
+                    const nameValid = validateToolkitCategoryInput(nameInput);
+                    
+                    if (!nameValid) {
+                        // If any validation fails, show the appropriate error and scroll to it
+                        const errorElement = item.querySelector('.toolkit-category-validation-error:not(.hidden)');
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return null; // Signal validation error
+                    }
+                }
+                
+                // Create data object
+                const toolkitCategoryObject = {
+                    toolkit_category_id: id,
+                    toolkit_category_name: categoryName,
+                    display_order: displayOrder,
+                    is_deleted: isDeleted
+                };
+                
+                // Add to the data array
+                data.push(toolkitCategoryObject);
+            });
+            
+            return data;
+        }
+        
+        // Function to load toolkit categories data
+        function loadToolkitCategoriesData(toolkitCategories) {
+            console.log('Loading toolkit categories data:', toolkitCategories);
+            
+            // Get the container
+            const container = document.getElementById('toolkit-categories-container');
+            if (!container) {
+                console.error('Toolkit categories container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no toolkit categories, add an empty one
+            if (!toolkitCategories || toolkitCategories.length === 0) {
+                addToolkitCategoryItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            toolkitCategories.forEach(item => addToolkitCategoryItem(item));
+            
+            // Update toolkit item category dropdowns after categories are loaded
+            setTimeout(() => {
+                updateToolkitItemCategoryDropdowns();
+            }, 100);
+        }
+        
+        // Function to add a toolkit item
+        function addToolkitItem(itemData = {}, index = Date.now()) {
+            console.log('Adding toolkit item:', itemData);
+            const container = document.getElementById('toolkit-items-container');
+            
+            // Remove loading message if present
+            const loadingMessage = document.getElementById('toolkit-items-loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'toolkit-item bg-gray-50 rounded-md p-3 my-2 border border-gray-200';
+            itemDiv.dataset.id = itemData.toolkit_item_id || '';
+            
+            // Add marked-for-deletion class if loaded item is already marked
+            if (parseInt(itemData.is_deleted || 0) === 1) {
+                itemDiv.classList.add('marked-for-deletion');
+            }
+            
+            // Create the HTML structure for the toolkit item
+            itemDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-medium text-gray-700">Toolkit Item</h5>
+                    <button type="button" class="delete-toolkit-item-btn text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <input type="hidden" class="toolkit-item-id" value="${itemData.toolkit_item_id || ''}">
+                <input type="hidden" class="toolkit-item-is-deleted" value="${itemData.is_deleted || 0}">
+                
+                <div class="grid grid-cols-6 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Category <span class="text-red-500">*</span></label>
+                        <select class="toolkit-item-category-id mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                            <option value="">Select Category</option>
+                        </select>
+                        <div class="toolkit-item-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-3">
+                        <label class="block text-sm font-medium text-gray-700">Tool Name <span class="text-red-500">*</span></label>
+                        <input type="text" class="toolkit-item-name mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.toolkit_item_name || ''}" required>
+                        <div class="toolkit-item-validation-error hidden text-red-500 text-xs mt-1">This field is required</div>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                        <input type="number" class="toolkit-item-display-order mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="${itemData.display_order || 0}" min="0">
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for delete button
+            const deleteButton = itemDiv.querySelector('.delete-toolkit-item-btn');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', function() {
+                    toggleDeleteToolkitItem(itemDiv);
+                });
+            }
+            
+            // Add the item to the container
+            container.appendChild(itemDiv);
+            
+            // Populate category dropdown
+            const categorySelect = itemDiv.querySelector('.toolkit-item-category-id');
+            if (categorySelect) {
+                // Set the options
+                const options = getToolkitCategoryOptions(itemData.toolkit_category_id);
+                categorySelect.innerHTML = `<option value="">Select Category</option>${options}`;
+                
+                // Try to set the selected value if it exists
+                if (itemData.toolkit_category_id) {
+                    categorySelect.value = itemData.toolkit_category_id;
+                }
+                
+                // Add validation for the dropdown
+                categorySelect.addEventListener('change', function() {
+                    validateToolkitItemInput(categorySelect);
+                });
+                
+                // Initial validation
+                validateToolkitItemInput(categorySelect);
+            }
+            
+            // Add event listeners for other validation
+            const nameInput = itemDiv.querySelector('.toolkit-item-name');
+            if (nameInput) {
+                nameInput.addEventListener('input', function() {
+                    validateToolkitItemInput(nameInput);
+                });
+                validateToolkitItemInput(nameInput);
+            }
+            
+            return itemDiv;
+        }
+        
+        // Function to get toolkit category options
+        function getToolkitCategoryOptions(selectedCategoryId) {
+            const categoryItems = document.querySelectorAll('.toolkit-category-item:not(.marked-for-deletion)');
+            let options = '';
+            
+            categoryItems.forEach(item => {
+                // Skip items marked for deletion
+                if (item.classList.contains('marked-for-deletion')) {
+                    return;
+                }
+                
+                const categoryId = item.querySelector('.toolkit-category-id').value;
+                const categoryName = item.querySelector('.toolkit-category-name').value;
+                
+                if (categoryId && categoryName) {
+                    const selected = categoryId == selectedCategoryId ? 'selected' : '';
+                    options += `<option value="${categoryId}" ${selected}>${categoryName}</option>`;
+                } else if (categoryName) {
+                    // For new categories that don't have an ID yet, use a temporary data-id
+                    const tempId = item.dataset.id;
+                    const selected = tempId == selectedCategoryId ? 'selected' : '';
+                    options += `<option value="${tempId}" ${selected}>${categoryName}</option>`;
+                }
+            });
+            
+            return options;
+        }
+        
+        // Function to update toolkit item category dropdowns
+        function updateToolkitItemCategoryDropdowns() {
+            console.log('Updating toolkit item category dropdowns');
+            const toolkitItems = document.querySelectorAll('.toolkit-item');
+            
+            toolkitItems.forEach(item => {
+                const categorySelect = item.querySelector('.toolkit-item-category-id');
+                const currentValue = categorySelect.value;
+                
+                // Store current selection
+                categorySelect.innerHTML = `
+                    <option value="">Select Category</option>
+                    ${getToolkitCategoryOptions(currentValue)}
+                `;
+                
+                // Validate after update
+                validateToolkitItemInput(categorySelect);
+            });
+        }
+        
+        // Function to validate toolkit item input
+        function validateToolkitItemInput(input) {
+            // Find the closest validation error element
+            const errorElement = input.nextElementSibling;
+            
+            // Check if the input has a value
+            if (!input.value.trim()) {
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                errorElement.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+        
+        // Function to toggle delete state for toolkit item
+        function toggleDeleteToolkitItem(itemDiv) {
+            // Toggle the marked-for-deletion class
+            itemDiv.classList.toggle('marked-for-deletion');
+            
+            // Update the is-deleted field
+            const isDeletedField = itemDiv.querySelector('.toolkit-item-is-deleted');
+            isDeletedField.value = itemDiv.classList.contains('marked-for-deletion') ? 1 : 0;
+        }
+        
+        // Function to get toolkit items data
+        function getToolkitItemsData() {
+            const toolkitItems = document.querySelectorAll('.toolkit-item');
+            const data = [];
+            
+            toolkitItems.forEach(item => {
+                // Check if the item is marked for deletion
+                const isDeleted = parseInt(item.querySelector('.toolkit-item-is-deleted').value || '0');
+                
+                // Get all field values
+                const id = item.querySelector('.toolkit-item-id').value || null;
+                const categoryId = item.querySelector('.toolkit-item-category-id').value;
+                const itemName = item.querySelector('.toolkit-item-name').value;
+                const displayOrder = parseInt(item.querySelector('.toolkit-item-display-order').value || '0');
+                
+                // Skip validation for items marked for deletion
+                if (isDeleted !== 1) {
+                    // Validate required fields
+                    const categoryInput = item.querySelector('.toolkit-item-category-id');
+                    const nameInput = item.querySelector('.toolkit-item-name');
+                    
+                    const categoryValid = validateToolkitItemInput(categoryInput);
+                    const nameValid = validateToolkitItemInput(nameInput);
+                    
+                    if (!categoryValid || !nameValid) {
+                        // If any validation fails, show the appropriate error and scroll to it
+                        const errorElement = item.querySelector('.toolkit-item-validation-error:not(.hidden)');
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return null; // Signal validation error
+                    }
+                }
+                
+                // Create data object
+                const toolkitItemObject = {
+                    toolkit_item_id: id,
+                    toolkit_category_id: categoryId,
+                    toolkit_item_name: itemName,
+                    display_order: displayOrder,
+                    is_deleted: isDeleted
+                };
+                
+                // Add to the data array
+                data.push(toolkitItemObject);
+            });
+            
+            return data;
+        }
+        
+        // Function to load toolkit items data
+        function loadToolkitItemsData(toolkitItems) {
+            console.log('Loading toolkit items data:', toolkitItems);
+            
+            // Get the container
+            const container = document.getElementById('toolkit-items-container');
+            if (!container) {
+                console.error('Toolkit items container not found');
+                return;
+            }
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // If no toolkit items, add an empty one
+            if (!toolkitItems || toolkitItems.length === 0) {
+                addToolkitItem();
+                return;
+            }
+            
+            // Otherwise, add each item to the form
+            toolkitItems.forEach(item => addToolkitItem(item));
+            
+            // Update all category dropdowns after all items are added
+            setTimeout(() => {
+                updateToolkitItemCategoryDropdowns();
+            }, 100);
+        }
+    </script>
+</body>
+</html> 

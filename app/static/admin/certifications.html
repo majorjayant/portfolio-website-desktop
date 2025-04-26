@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certifications | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="flex flex-col min-h-screen bg-gray-100">
+    <div id="header-container"></div>
+
+    <main class="flex-grow p-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold">Certifications</h2>
+                    <button id="add-certification" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Add Certification
+                    </button>
+                </div>
+                
+                <div id="certifications-container" class="space-y-4">
+                    <!-- Certification items will be added here -->
+                </div>
+                
+                <div class="flex justify-end mt-6">
+                    <button id="save-certifications" class="px-6 py-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex items-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="fixed top-4 right-4 p-4 rounded-md shadow-md transform transition-transform duration-300 translate-x-full z-50">
+        <div class="flex items-center">
+            <i id="notification-icon" class="fas mr-2"></i>
+            <p id="notification-message"></p>
+        </div>
+    </div>
+
+    <script src="js/admin-utils.js"></script>
+    <script>
+        // Load header and footer components
+        fetch('components/header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+                const currentPage = 'certifications'; 
+                document.querySelector(`.nav-link[data-page="${currentPage}"]`).classList.add('bg-gray-200');
+            });
+
+        fetch('components/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+            });
+
+        // Certification Functions
+        function addCertificationItem(data = {}) {
+            const container = document.getElementById('certifications-container');
+            const itemIndex = container.children.length;
+            const itemId = Date.now() + Math.floor(Math.random() * 1000);
+            
+            const certificationDiv = document.createElement('div');
+            certificationDiv.className = 'certification-item bg-gray-50 p-4 rounded-md border relative';
+            certificationDiv.dataset.id = itemId;
+            certificationDiv.dataset.deleted = 'false';
+            
+            if (data.id) {
+                certificationDiv.dataset.originalId = data.id;
+            }
+
+            certificationDiv.innerHTML = `
+                <div class="absolute top-2 right-2 flex space-x-2">
+                    <button type="button" class="toggle-delete-certification p-1 hover:text-red-500">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button type="button" class="move-up-certification p-1 hover:text-blue-500 ${itemIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <button type="button" class="move-down-certification p-1 hover:text-blue-500 ${itemIndex === container.children.length ? 'opacity-50 cursor-not-allowed' : ''}">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
+                        <input type="text" class="name w-full px-3 py-2 border rounded-md" value="${data.name || ''}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Issuer <span class="text-red-500">*</span></label>
+                        <input type="text" class="issuer w-full px-3 py-2 border rounded-md" value="${data.issuer || ''}">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Issue Date <span class="text-red-500">*</span></label>
+                        <input type="month" class="issue-date w-full px-3 py-2 border rounded-md" value="${data.issueDate || ''}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Expiration Date</label>
+                        <div class="flex items-center">
+                            <input type="month" class="expiration-date w-full px-3 py-2 border rounded-md" value="${data.expirationDate || ''}" ${data.noExpiration ? 'disabled' : ''}>
+                            <div class="ml-2 flex items-center">
+                                <input type="checkbox" id="no-expiration-${itemId}" class="no-expiration form-checkbox h-4 w-4 text-blue-500" ${data.noExpiration ? 'checked' : ''}>
+                                <label for="no-expiration-${itemId}" class="ml-1 text-sm text-gray-700">No Expiration</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Credential ID</label>
+                    <input type="text" class="credential-id w-full px-3 py-2 border rounded-md" value="${data.credentialId || ''}">
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Credential URL</label>
+                    <input type="url" class="credential-url w-full px-3 py-2 border rounded-md" value="${data.credentialUrl || ''}">
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea class="description w-full px-3 py-2 border rounded-md" rows="3">${data.description || ''}</textarea>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Skills (comma separated)</label>
+                    <input type="text" class="skills w-full px-3 py-2 border rounded-md" value="${data.skills ? data.skills.join(', ') : ''}">
+                </div>
+            `;
+            
+            container.appendChild(certificationDiv);
+            
+            // Add event listeners
+            const noExpirationCheckbox = certificationDiv.querySelector('.no-expiration');
+            const expirationDateInput = certificationDiv.querySelector('.expiration-date');
+            
+            noExpirationCheckbox.addEventListener('change', function() {
+                expirationDateInput.disabled = this.checked;
+                if (this.checked) {
+                    expirationDateInput.value = '';
+                }
+            });
+            
+            const deleteButton = certificationDiv.querySelector('.toggle-delete-certification');
+            deleteButton.addEventListener('click', function() {
+                toggleDeleteCertification(certificationDiv);
+            });
+            
+            const moveUpButton = certificationDiv.querySelector('.move-up-certification');
+            moveUpButton.addEventListener('click', function() {
+                if (itemIndex > 0) {
+                    moveCertificationItem(itemIndex, itemIndex - 1);
+                }
+            });
+            
+            const moveDownButton = certificationDiv.querySelector('.move-down-certification');
+            moveDownButton.addEventListener('click', function() {
+                if (itemIndex < container.children.length - 1) {
+                    moveCertificationItem(itemIndex, itemIndex + 1);
+                }
+            });
+        }
+
+        function toggleDeleteCertification(item) {
+            const deleted = item.dataset.deleted === 'true';
+            item.dataset.deleted = (!deleted).toString();
+            
+            if (!deleted) {
+                item.classList.add('opacity-50', 'border-red-500');
+            } else {
+                item.classList.remove('opacity-50', 'border-red-500');
+            }
+        }
+
+        function moveCertificationItem(fromIndex, toIndex) {
+            const container = document.getElementById('certifications-container');
+            const items = Array.from(container.children);
+            
+            if (fromIndex < 0 || fromIndex >= items.length || toIndex < 0 || toIndex >= items.length) {
+                return;
+            }
+            
+            const itemToMove = items[fromIndex];
+            
+            if (toIndex < fromIndex) {
+                container.insertBefore(itemToMove, items[toIndex]);
+            } else {
+                container.insertBefore(itemToMove, items[toIndex].nextSibling);
+            }
+            
+            updateMoveButtons();
+        }
+
+        function updateMoveButtons() {
+            const container = document.getElementById('certifications-container');
+            const items = Array.from(container.children);
+            
+            items.forEach((item, index) => {
+                const upButton = item.querySelector('.move-up-certification');
+                const downButton = item.querySelector('.move-down-certification');
+                
+                if (index === 0) {
+                    upButton.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    upButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                
+                if (index === items.length - 1) {
+                    downButton.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    downButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        }
+
+        function getCertificationData() {
+            const certificationItems = document.querySelectorAll('.certification-item');
+            const certificationsData = [];
+            
+            let hasError = false;
+            
+            certificationItems.forEach(item => {
+                if (item.dataset.deleted === 'true') {
+                    return;
+                }
+                
+                const name = item.querySelector('.name').value.trim();
+                const issuer = item.querySelector('.issuer').value.trim();
+                const issueDate = item.querySelector('.issue-date').value;
+                const noExpiration = item.querySelector('.no-expiration').checked;
+                const expirationDate = noExpiration ? null : item.querySelector('.expiration-date').value;
+                const credentialId = item.querySelector('.credential-id').value.trim();
+                const credentialUrl = item.querySelector('.credential-url').value.trim();
+                const description = item.querySelector('.description').value.trim();
+                const skills = item.querySelector('.skills').value.trim().split(',').map(s => s.trim()).filter(s => s !== '');
+                
+                // Validate required fields
+                if (!name || !issuer || !issueDate) {
+                    hasError = true;
+                    showNotification('Please fill in all required fields', 'error');
+                    if (!name) item.querySelector('.name').classList.add('border-red-500');
+                    if (!issuer) item.querySelector('.issuer').classList.add('border-red-500');
+                    if (!issueDate) item.querySelector('.issue-date').classList.add('border-red-500');
+                    return;
+                }
+                
+                const certificationItem = {
+                    name,
+                    issuer,
+                    issueDate,
+                    expirationDate,
+                    noExpiration,
+                    credentialId,
+                    credentialUrl,
+                    description,
+                    skills
+                };
+                
+                if (item.dataset.originalId) {
+                    certificationItem.id = item.dataset.originalId;
+                }
+                
+                certificationsData.push(certificationItem);
+            });
+            
+            if (hasError) {
+                return null;
+            }
+            
+            return certificationsData;
+        }
+
+        async function loadCertificationData() {
+            showLoading(true);
+            try {
+                const response = await fetchFromAPI('/certifications');
+                if (response && response.data) {
+                    const certifications = response.data;
+                    
+                    document.getElementById('certifications-container').innerHTML = '';
+                    certifications.forEach(item => {
+                        addCertificationItem(item);
+                    });
+                    
+                    updateMoveButtons();
+                }
+            } catch (error) {
+                console.error('Error loading certification data:', error);
+                showNotification('Failed to load certification data', 'error');
+                
+                // Load local JSON data as fallback
+                try {
+                    const localResponse = await fetch('../js/certifications.json');
+                    if (localResponse.ok) {
+                        const localData = await localResponse.json();
+                        document.getElementById('certifications-container').innerHTML = '';
+                        localData.forEach(item => {
+                            addCertificationItem(item);
+                        });
+                        updateMoveButtons();
+                    }
+                } catch (localError) {
+                    console.error('Error loading local certification data:', localError);
+                }
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function saveCertificationData() {
+            const certificationsData = getCertificationData();
+            if (!certificationsData) {
+                return;
+            }
+            
+            showLoading(true);
+            try {
+                const response = await fetchFromAPI('/certifications', {
+                    method: 'POST',
+                    body: JSON.stringify(certificationsData)
+                });
+                
+                if (response && response.success) {
+                    showNotification('Certifications saved successfully');
+                    await loadCertificationData();
+                } else {
+                    throw new Error('Failed to save certification data');
+                }
+            } catch (error) {
+                console.error('Error saving certification data:', error);
+                showNotification('Failed to save certification data', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function initCertificationsPage() {
+            loadCertificationData();
+            
+            document.getElementById('add-certification').addEventListener('click', () => {
+                addCertificationItem();
+                updateMoveButtons();
+            });
+            
+            document.getElementById('save-certifications').addEventListener('click', saveCertificationData);
+        }
+
+        // Initialize page
+        initPage(initCertificationsPage);
+    </script>
+</body>
+</html> 

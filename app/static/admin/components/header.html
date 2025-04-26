@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/admin-dashboard.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen bg-gray-100">
+        <!-- Authentication check -->
+        <div id="auth-loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p class="text-lg text-gray-600">Verifying authentication...</p>
+            </div>
+        </div>
+        
+        <!-- Not Authenticated Message -->
+        <div id="not-authenticated" class="hidden fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div class="text-center">
+                <div class="text-red-600 text-6xl mb-4">⚠️</div>
+                <p class="text-lg text-gray-800 mb-4">You need to log in to access this page</p>
+                <a href="/admin/login" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                    Go to Login
+                </a>
+            </div>
+        </div>
+        
+        <!-- API Error Message -->
+        <div id="api-error" class="hidden fixed top-4 right-4 p-4 bg-red-100 text-red-700 rounded-md shadow-md z-40">
+            Error loading data. Please try again later.
+        </div>
+        
+        <!-- Dashboard Content (hidden until authenticated) -->
+        <div id="dashboard-content" class="hidden">
+            <!-- Admin Dashboard Header -->
+            <header class="bg-gradient-to-r from-blue-900 to-purple-900 text-white shadow-lg">
+                <div class="container mx-auto py-4 px-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <h1 class="text-xl font-bold">Portfolio Admin</h1>
+                        </div>
+                        <nav class="hidden md:flex space-x-6">
+                            <a href="dashboard.html" class="hover:text-blue-200 transition-colors">Dashboard</a>
+                            <a href="site-config.html" class="hover:text-blue-200 transition-colors">Site Config</a>
+                            <a href="work-experience.html" class="hover:text-blue-200 transition-colors">Work Experience</a>
+                            <a href="education.html" class="hover:text-blue-200 transition-colors">Education</a>
+                            <a href="certifications.html" class="hover:text-blue-200 transition-colors">Certifications</a>
+                            <a href="skills.html" class="hover:text-blue-200 transition-colors">Skills</a>
+                            <a href="toolkit.html" class="hover:text-blue-200 transition-colors">Toolkit</a>
+                            <button id="logout-button" class="text-red-300 hover:text-red-100 transition-colors">Logout</button>
+                        </nav>
+                        <div class="md:hidden">
+                            <button id="mobile-menu-button" class="text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Mobile menu, show/hide based on menu state. -->
+            <div id="mobile-menu" class="hidden md:hidden bg-blue-800 shadow-inner">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="dashboard.html" class="block px-3 py-2 rounded-md text-white hover:bg-blue-700 transition-colors">Dashboard</a>
+                    <a href="site-config.html" class="block px-3 py-2 rounded-md text-white hover:bg-blue-700 transition-colors">Site Config</a>
+                    <a href="work-experience.html" class="block px-3 py-2 rounded-md text-white hover:bg-blue-700 transition-colors">Work Experience</a>
+                    <a href="education.html" class="block px-3 py-2 rounded-md text-white hover:bg-blue-700 transition-colors">Education</a>
+                    <a href="certifications.html" class="block px-3 py-2 rounded-md text-white hover:bg-blue-700 transition-colors">Certifications</a>
+                    <a href="skills.html" class="block px-3 py-2 rounded-md text-white hover:bg-blue-700 transition-colors">Skills</a>
+                    <a href="toolkit.html" class="block px-3 py-2 rounded-md text-white hover:bg-blue-700 transition-colors">Toolkit</a>
+                    <button id="mobile-logout-button" class="block w-full text-left px-3 py-2 rounded-md text-red-300 hover:bg-blue-700 transition-colors">Logout</button>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <main class="py-6">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> 
+
+<script>
+    // Toggle mobile menu
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Mobile logout button
+    document.getElementById('mobile-logout-button').addEventListener('click', function() {
+        logout();
+    });
+    
+    // Highlight current page in navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPage = window.location.pathname.split('/').pop();
+        const navLinks = document.querySelectorAll('header nav a, #mobile-menu a');
+        
+        navLinks.forEach(link => {
+            const linkPage = link.getAttribute('href');
+            if (linkPage === currentPage) {
+                link.classList.add('font-bold', 'border-b-2', 'border-white');
+                
+                // For mobile
+                if (link.parentElement.id === 'mobile-menu') {
+                    link.classList.add('bg-blue-700');
+                }
+            }
+        });
+    });
+</script> 
