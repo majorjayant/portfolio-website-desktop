@@ -1,15 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Work Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+    // Inline Auth Module - Prevents 404s from external files
+    // Check if user is authenticated
+    const Auth = {
+        getCredentials() {
+            return {
+                username: localStorage.getItem('adminUsername'),
+                password: localStorage.getItem('adminPassword'),
+                apiEndpoint: localStorage.getItem('apiEndpoint') || 'https://f7r74v22od.execute-api.us-east-1.amazonaws.com/production'
+            };
+        },
+        
+        isAuthenticated() {
+            const { username, password } = this.getCredentials();
+            return Boolean(username && password);
+        },
+        
+        logout() {
+            localStorage.removeItem('adminUsername');
+            localStorage.removeItem('adminPassword');
+            // Add timestamp to prevent caching
+            window.location.href = `login.html?t=${Date.now()}`;
+        }
+    };
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         body {
@@ -66,7 +90,7 @@
     <!-- Loading indicator -->
     <div id="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
         <div class="text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
             <p class="mt-3 text-gray-600">Verifying authentication...</p>
         </div>
     </div>
@@ -94,28 +118,28 @@
                 </button>
             </div>
             <nav class="mt-10">
-                <a href="dashboard.html?t=${Date.now()}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                <a href="dashboard.html?t=<?= Date.now() ?>" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     <i class="fas fa-home mr-2"></i>Dashboard
                 </a>
-                <a href="site-config.html?t=${Date.now()}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                <a href="site-config.html?t=<?= Date.now() ?>" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     <i class="fas fa-cog mr-2"></i>Site Configuration
                 </a>
-                <a href="work-experience.html?t=${Date.now()}" class="block py-2.5 px-4 rounded bg-gray-700 transition duration-200">
+                <a href="work-experience.html?t=<?= Date.now() ?>" class="block py-2.5 px-4 rounded bg-gray-700 transition duration-200">
                     <i class="fas fa-briefcase mr-2"></i>Work Experience
                 </a>
-                <a href="education.html?t=${Date.now()}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                <a href="education.html?t=<?= Date.now() ?>" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     <i class="fas fa-graduation-cap mr-2"></i>Education
                 </a>
-                <a href="certifications.html?t=${Date.now()}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                <a href="certifications.html?t=<?= Date.now() ?>" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     <i class="fas fa-certificate mr-2"></i>Certifications
                 </a>
-                <a href="skills.html?t=${Date.now()}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                <a href="skills.html?t=<?= Date.now() ?>" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     <i class="fas fa-tools mr-2"></i>Skills
                 </a>
-                <a href="toolkit.html?t=${Date.now()}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                <a href="toolkit.html?t=<?= Date.now() ?>" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     <i class="fas fa-toolbox mr-2"></i>Toolkit
                 </a>
-                <a href="projects.html?t=${Date.now()}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                <a href="projects.html?t=<?= Date.now() ?>" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
                     <i class="fas fa-project-diagram mr-2"></i>Projects
                 </a>
                 <div class="border-t border-gray-700 my-4"></div>
@@ -166,39 +190,8 @@
 
     <!-- JavaScript for the admin dashboard -->
     <script>
-        // Auth module
-        const Auth = {
-            getCredentials: function() {
-                try {
-                    const username = localStorage.getItem('adminUsername');
-                    const password = localStorage.getItem('adminPassword');
-                    return { username, password };
-                } catch (error) {
-                    console.error('Error getting credentials from localStorage:', error);
-                    return { username: null, password: null };
-                }
-            },
-            
-            isAuthenticated: function() {
-                const { username, password } = this.getCredentials();
-                return Boolean(username && password);
-            },
-            
-            logout: function() {
-                try {
-                    localStorage.removeItem('adminUsername');
-                    localStorage.removeItem('adminPassword');
-                    return true;
-                } catch (error) {
-                    console.error('Error during logout:', error);
-                    return false;
-                }
-            }
-        };
-
-        // Get credentials from Auth module
-        const { username, password } = Auth.getCredentials();
-        let apiEndpoint = localStorage.getItem('apiEndpoint') || 'https://f7r74v22od.execute-api.us-east-1.amazonaws.com/production';
+        // Get credentials from Auth module instead of directly accessing localStorage
+        const { username, password, apiEndpoint } = Auth.getCredentials();
         let lastUpdate = new Date();
         let localExperienceData = [];
 
@@ -269,24 +262,18 @@
             };
         }
 
-        // Fix navigation links to include timestamp for cache busting
-        document.querySelectorAll('a[href]').forEach(link => {
-            if (link.getAttribute('href').includes('.html') && !link.getAttribute('href').includes('?t=')) {
-                link.setAttribute('href', link.getAttribute('href') + '?t=' + Date.now());
-            }
-        });
-
         // Authentication check
         document.addEventListener('DOMContentLoaded', function() {
-            // Immediately check auth
-            checkAuth();
-        });
-
-        function checkAuth() {
+            console.log("DOM loaded, checking auth status...");
+            console.log("Auth status:", Auth.isAuthenticated() ? "Authenticated" : "Not authenticated");
+            
+            // Remove the timeout delay for immediate verification
             if (!Auth.isAuthenticated()) {
+                console.log("Not authenticated, showing login message");
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('not-authenticated').classList.remove('hidden');
             } else {
+                console.log("Authenticated, showing dashboard content");
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('authenticated-content').classList.remove('hidden');
                 
@@ -296,7 +283,7 @@
                 // Update last updated time
                 updateLastUpdatedTime();
             }
-        }
+        });
 
         // Sidebar toggle for mobile
         document.getElementById('show-sidebar').addEventListener('click', function() {
@@ -307,11 +294,10 @@
             document.querySelector('.sidebar').classList.remove('active');
         });
 
-        // Logout button
+        // Logout button - use Auth module's logout method
         document.getElementById('logout-button').addEventListener('click', function(e) {
             e.preventDefault();
             Auth.logout();
-            window.location.href = 'login.html?t=' + Date.now();
         });
 
         // Refresh data button
