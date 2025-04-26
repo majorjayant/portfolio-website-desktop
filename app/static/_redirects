@@ -1,3 +1,25 @@
 # AWS Amplify redirects file
 # Redirect all routes to index.html for SPA-like behavior
+
+# Admin Direct Access
+/admin-direct    /admin-direct/index.html    200
+/admin-direct/*  /admin-direct/index.html    200
+
+# Admin Static Files - preserve these paths
+/static/admin/dashboard.html     /static/admin/dashboard.html    200
+/static/admin/login.html         /static/admin/login.html        200
+/static/admin/work-experience.html /static/admin/work-experience.html 200
+/static/admin/education.html     /static/admin/education.html    200
+/static/admin/site-config.html   /static/admin/site-config.html  200
+/static/admin/skills.html        /static/admin/skills.html       200
+/static/admin/certifications.html /static/admin/certifications.html 200
+/static/admin/toolkit.html       /static/admin/toolkit.html      200
+/static/admin/js/*              /static/admin/js/:splat         200
+/static/admin/components/*      /static/admin/components/:splat 200
+
+# Legacy admin paths - redirect to new paths
+/admin/dashboard    /static/admin/dashboard.html    301
+/admin/login        /static/admin/login.html        301
+/admin              /static/admin/dashboard.html    301
+
 /*    /index.html   200

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .login-button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .login-button:hover {
+            background-color: #2563eb;
+        }
+        .error-message {
+            color: #ef4444;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1 class="text-2xl font-bold text-center mb-6">Admin Login</h1>
+            
+            <div id="login-form">
+                <div class="input-group">
+                    <label for="username" class="input-label">Username</label>
+                    <input type="text" id="username" class="input-field" placeholder="Enter your username">
+                </div>
+                
+                <div class="input-group">
+                    <label for="password" class="input-label">Password</label>
+                    <input type="password" id="password" class="input-field" placeholder="Enter your password">
+                </div>
+                
+                <button id="login-button" class="login-button">
+                    <span id="login-text">Login</span>
+                    <span id="login-spinner" class="hidden">
+                        <i class="fas fa-spinner fa-spin"></i> Logging in...
+                    </span>
+                </button>
+                
+                <p id="error-message" class="error-message"></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginButton = document.getElementById('login-button');
+            const loginText = document.getElementById('login-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Check if already logged in
+            const token = localStorage.getItem('adminToken');
+            if (token) {
+                window.location.href = 'dashboard.html';
+            }
+            
+            // Login function
+            loginButton.addEventListener('click', async function() {
+                // Clear previous error
+                errorMessage.style.display = 'none';
+                
+                // Get values
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                // Validate
+                if (!username || !password) {
+                    errorMessage.textContent = 'Please enter both username and password.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                // Show loading
+                loginText.classList.add('hidden');
+                loginSpinner.classList.remove('hidden');
+                loginButton.disabled = true;
+                
+                try {
+                    // Special case for direct access credentials
+                    if (username === 'direct_access' && password === 'override_access_2024') {
+                        // Create admin token
+                        const token = 'admin-token-' + Date.now();
+                        localStorage.setItem('adminToken', token);
+                        
+                        // Redirect to dashboard
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+                    
+                    // Regular login - check if it's the default admin credentials
+                    if (username === 'admin' && password === 'admin123') {
+                        // Create admin token
+                        const token = 'admin-token-' + Date.now();
+                        localStorage.setItem('adminToken', token);
+                        
+                        // Redirect to dashboard
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+                    
+                    // If not direct access or default admin, show error
+                    throw new Error('Invalid username or password');
+                    
+                } catch (error) {
+                    // Show error
+                    errorMessage.textContent = error.message || 'Failed to login. Please try again.';
+                    errorMessage.style.display = 'block';
+                    
+                    // Reset loading state
+                    loginText.classList.remove('hidden');
+                    loginSpinner.classList.add('hidden');
+                    loginButton.disabled = false;
+                }
+            });
+            
+            // Allow login with Enter key
+            passwordInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    loginButton.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

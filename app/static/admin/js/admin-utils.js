@@ -4,20 +4,24 @@
  */
 
 // API Configuration
-const API_ENDPOINT = "https://api.aloompa.com/my-lambda-function";
+const API_ENDPOINT = "https://zelbc2vwg2.execute-api.eu-north-1.amazonaws.com/Staging/website-portfolio";
 const LOCAL_STORAGE_KEY = "portfolioAdminData";
 
 // Authentication
 function checkAuthentication() {
     const token = localStorage.getItem('adminToken');
     if (!token) {
-        window.location.href = 'login.html';
+        // Redirect to the login page (relative path)
+        window.location.href = './login.html';
+        return false;
     }
+    return true;
 }
 
 function logout() {
     localStorage.removeItem('adminToken');
-    window.location.href = 'login.html';
+    // Redirect to the login page (relative path)
+    window.location.href = './login.html';
 }
 
 // API Requests
@@ -126,10 +130,23 @@ function validateRequiredFields(formData, requiredFields) {
 // Page initialization
 function initPage(pageLoadFunction) {
     document.addEventListener('DOMContentLoaded', () => {
-        checkAuthentication();
-        document.getElementById('logout-btn').addEventListener('click', logout);
-        document.getElementById('mobile-logout-btn').addEventListener('click', logout);
+        // Check authentication first
+        if (!checkAuthentication()) {
+            return; // Stop if not authenticated
+        }
         
+        // Add logout button event listeners if elements exist
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', logout);
+        }
+        
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+        if (mobileLogoutBtn) {
+            mobileLogoutBtn.addEventListener('click', logout);
+        }
+        
+        // Call the page-specific initialization function
         if (pageLoadFunction && typeof pageLoadFunction === 'function') {
             pageLoadFunction();
         }
