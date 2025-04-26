@@ -13,13 +13,19 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: background-color 0.2s;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            background-color: #f9fafb;
+            border-left: 4px solid #4f46e5;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         
         .section-header:hover {
             background-color: #f3f4f6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         
         .section-header .icon {
@@ -30,11 +36,22 @@
             transform: rotate(-90deg);
         }
         
+        .section-header h2, 
+        .section-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
         .section-content {
             transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
             max-height: 10000px; /* Start expanded */
             opacity: 1;
             overflow: hidden;
+            padding: 1rem 1.75rem 2rem;
+            margin-bottom: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         
         .section-content.collapsed {
@@ -46,21 +63,284 @@
             margin-bottom: 0;
         }
         
+        /* Improved form element spacing */
+        form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        form input[type="text"],
+        form input[type="date"],
+        form input[type="number"],
+        form textarea,
+        form select {
+            margin-bottom: 1.25rem;
+            padding: 0.625rem;
+            border-radius: 0.375rem;
+        }
+        
+        /* Item styling */
+        .workex-item, 
+        .education-item, 
+        .certification-item,
+        .key-metric-item,
+        .skill-proficiency-item,
+        .expertise-item,
+        .toolkit-category-item,
+        .toolkit-item,
+        .domain-experience-item {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Separator between items */
+        .workex-item + .workex-item,
+        .education-item + .education-item,
+        .certification-item + .certification-item {
+            border-top: 1px solid #f3f4f6;
+            padding-top: 1.5rem;
+        }
+        
+        /* Section title styling */
+        h2.text-lg, h3.text-lg {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        h4.text-md {
+            color: #374151;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+        }
+        
+        /* Improve subsection margins */
+        .section-content [data-parent] {
+            margin-top: 1.5rem;
+        }
+        
+        /* Button styling */
+        button[type="button"], 
+        button[type="submit"] {
+            padding: 0.625rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        
+        /* Marked for deletion styling */
         .marked-for-deletion {
             background-color: #fee2e2 !important;
             position: relative;
+            border-color: #fca5a5;
+            opacity: 0.75;
         }
         
         .marked-for-deletion::after {
             content: "Marked for deletion";
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 0.5rem;
+            right: 0.5rem;
             background-color: #ef4444;
             color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* Date fields layout */
+        .workex-dates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            align-items: center;
+        }
+        
+        /* Rich text editor toolbar styling */
+        .editor-toolbar {
+            border-radius: 0.5rem 0.5rem 0 0;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-bottom: none;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0.375rem;
+            gap: 0.25rem;
+        }
+        
+        .editor-toolbar button {
+            padding: 0.375rem;
+            border-radius: 0.25rem;
+            border: none;
+            background: transparent;
+            color: #4b5563;
+            transition: all 0.2s;
+        }
+        
+        .editor-toolbar button:hover {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+        
+        /* Input field styling */
+        input[type="text"], 
+        input[type="date"], 
+        input[type="number"],
+        select,
+        textarea {
+            display: block;
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            outline: none;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        input[type="text"]:focus, 
+        input[type="date"]:focus, 
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Form field container */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        /* Item cards styling */
+        .workex-item, 
+        .education-item, 
+        .certification-item {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        
+        .workex-item:hover, 
+        .education-item:hover, 
+        .certification-item:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Item header */
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .item-header h4 {
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+        }
+        
+        /* Delete button styling */
+        .delete-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .delete-button:hover {
+            background-color: #fecaca;
+            transform: scale(1.05);
+        }
+        
+        /* Add button styling */
+        .add-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.625rem 1rem;
+            background-color: #f3f4f6;
+            color: #4f46e5;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .add-button:hover {
+            background-color: #e5e7eb;
+            border-color: #d1d5db;
+        }
+        
+        .add-button svg {
+            margin-right: 0.5rem;
+        }
+        
+        /* Save button prominence */
+        #save-button {
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 1rem;
+        }
+        
+        #save-button:hover {
+            background-color: #4338ca;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Improve spacing in grid layouts */
+        .grid {
+            gap: 1.25rem;
+        }
+        
+        /* Custom styling for form inputs */
+        .workex-title, 
+        .workex-company, 
+        .workex-location,
+        .workex-description {
+            width: 100%;
+            margin-bottom: 1.25rem;
+            border: 1px solid #d1d5db;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+        }
+        
+        /* Add some breathing room around the main content */
+        main.py-6 {
+            padding-top: 2rem;
+            padding-bottom: 3rem;
         }
     </style>
 </head>
@@ -548,189 +828,57 @@
                                             </div>
                                         </div>
                                     </template>
-                                    
-                                    <div class="mt-6 flex justify-between items-center">
-                                        <button type="button" id="refresh-button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                            <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-                                            </svg>
-                                            Refresh Data
-                                        </button>
-                                        <button type="submit" id="save-button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                            Save Changes
-                                        </button>
-                                    </div>
                                 </form>
                                 
-                                <!-- Ensure rich text editors are initialized -->
-                                <script>
-                                    // Initialize rich text toolbars when the form becomes visible
-                                    const observer = new MutationObserver(function(mutations) {
-                                        mutations.forEach(function(mutation) {
-                                            if (mutation.target.style.display !== 'none' && !mutation.target.classList.contains('hidden')) {
-                                                console.log('Form container visible, initializing rich text editors');
-                                                initRichTextToolbars();
-                                            }
-                                        });
-                                    });
-                                    
-                                    // Start observing the form container
-                                    const formContainer = document.getElementById('form-container');
-                                    if (formContainer) {
-                                        observer.observe(formContainer, { attributes: true, attributeFilter: ['style', 'class'] });
-                                    }
-                                    
-                                    // Also try to initialize on page load
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        console.log('DOM loaded, trying to initialize rich text editors');
-                                        setTimeout(initRichTextToolbars, 500);
-                                    });
-                                    
-                                    // Add the missing initRichTextToolbars function
-                                    function initRichTextToolbars() {
-                                        console.log('Initializing rich text toolbars');
-                                        
-                                        // Find all textarea elements that need rich text editing
-                                        const richTextAreas = document.querySelectorAll('textarea[data-rich-text="true"]');
-                                        
-                                        // If no textareas with rich text attribute are found, look for description fields
-                                        if (richTextAreas.length === 0) {
-                                            // Add toolbar to work experience description fields
-                                            const workExDescriptions = document.querySelectorAll('.workex-description');
-                                            workExDescriptions.forEach(textarea => {
-                                                createToolbarForElement(textarea);
-                                            });
-                                            
-                                            // Add toolbar to about description field if it exists
-                                            const aboutDescription = document.getElementById('about_description');
-                                            if (aboutDescription) {
-                                                createToolbarForElement(aboutDescription);
-                                            }
-                                        } else {
-                                            // Add toolbar to explicitly marked rich text areas
-                                            richTextAreas.forEach(textarea => {
-                                                createToolbarForElement(textarea);
-                                            });
-                                        }
-                                    }
-                                    
-                                    // Helper function to create a toolbar for a specific element
-                                    function createToolbarForElement(element) {
-                                        // Skip if element already has a toolbar
-                                        if (element.parentNode.querySelector('.rich-text-toolbar')) {
-                                            return;
-                                        }
-                                        
-                                        // Create toolbar container
-                                        const toolbar = document.createElement('div');
-                                        toolbar.className = 'rich-text-toolbar';
-                                        toolbar.dataset.for = element.id;
-                                        
-                                        // Define buttons for the toolbar
-                                        const buttons = [
-                                            { icon: '<b>B</b>', title: 'Bold', action: 'b' },
-                                            { icon: '<i>I</i>', title: 'Italic', action: 'i' },
-                                            { icon: '<u>U</u>', title: 'Underline', action: 'u' },
-                                            { icon: 'P', title: 'Paragraph', action: 'p' },
-                                            { icon: 'H1', title: 'Heading 1', action: 'h1' },
-                                            { icon: 'H2', title: 'Heading 2', action: 'h2' },
-                                            { icon: 'BR', title: 'Line Break', action: 'br' },
-                                            { icon: 'Link', title: 'Insert Link', action: 'link' },
-                                            { icon: 'List', title: 'Bulleted List', action: 'ul' }
-                                        ];
-                                        
-                                        // Create buttons
-                                        buttons.forEach(btn => {
-                                            const button = document.createElement('button');
-                                            button.type = 'button';
-                                            button.innerHTML = btn.icon;
-                                            button.title = btn.title;
-                                            button.className = 'tooltip';
-                                            button.addEventListener('click', function() {
-                                                insertTag(element.id, btn.action);
-                                            });
-                                            toolbar.appendChild(button);
-                                        });
-                                        
-                                        // Insert toolbar before the element
-                                        element.parentNode.insertBefore(toolbar, element);
-                                    }
-                                    
-                                    // Function to insert HTML tags in textareas
-                                    function insertTag(elementId, tag) {
-                                        const textarea = document.getElementById(elementId);
-                                        if (!textarea) return;
-                                        
-                                        const start = textarea.selectionStart;
-                                        const end = textarea.selectionEnd;
-                                        const selectedText = textarea.value.substring(start, end);
-                                        let insertedText = '';
-                                        
-                                        // Handle different tag types
-                                        switch(tag) {
-                                            case 'b':
-                                                insertedText = `<b>${selectedText}</b>`;
-                                                break;
-                                            case 'i':
-                                                insertedText = `<i>${selectedText}</i>`;
-                                                break;
-                                            case 'u':
-                                                insertedText = `<u>${selectedText}</u>`;
-                                                break;
-                                            case 'p':
-                                                insertedText = `<p>${selectedText}</p>`;
-                                                break;
-                                            case 'h1':
-                                                insertedText = `<h1>${selectedText}</h1>`;
-                                                break;
-                                            case 'h2':
-                                                insertedText = `<h2>${selectedText}</h2>`;
-                                                break;
-                                            case 'br':
-                                                insertedText = `${selectedText}<br>`;
-                                                break;
-                                            case 'link':
-                                                const url = prompt('Enter URL:', 'https://');
-                                                if (url) {
-                                                    insertedText = `<a href="${url}" target="_blank">${selectedText || url}</a>`;
-                                                }
-                                                break;
-                                            case 'ul':
-                                                if (selectedText) {
-                                                    // If there's already a line break in the selection, create list items
-                                                    if (selectedText.includes('\n')) {
-                                                        const items = selectedText.split('\n').filter(item => item.trim() !== '');
-                                                        const listItems = items.map(item => `  <li>${item.trim()}</li>`).join('\n');
-                                                        insertedText = `<ul>\n${listItems}\n</ul>`;
-                                                    } else {
-                                                        insertedText = `<ul>\n  <li>${selectedText}</li>\n</ul>`;
-                                                    }
-                                                } else {
-                                                    insertedText = `<ul>\n  <li>List item</li>\n</ul>`;
-                                                }
-                                                break;
-                                            default:
-                                                return;
-                                        }
-                                        
-                                        // Insert the new text
-                                        textarea.focus();
-                                        textarea.value = textarea.value.substring(0, start) + insertedText + textarea.value.substring(end);
-                                        
-                                        // Set cursor position after insertion
-                                        const newCursorPos = start + insertedText.length;
-                                        textarea.setSelectionRange(newCursorPos, newCursorPos);
-                                        
-                                        // Trigger change event to ensure form state updates
-                                        const event = new Event('change', { bubbles: true });
-                                        textarea.dispatchEvent(event);
-                                    }
-                                </script>
+                                <!-- Form actions -->
+                                <div class="form-actions mt-8 border-t pt-6 flex justify-end space-x-3">
+                                    <button type="button" id="refresh-button" class="px-5 py-2.5 rounded-md bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        Refresh
+                                    </button>
+                                    <button type="button" id="save-button" class="px-5 py-2.5 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Save Changes
+                                    </button>
+                                </div>
+                                
+                                <!-- Success message -->
+                                <div id="save-success" class="hidden mt-4 p-4 bg-green-50 border border-green-200 rounded-md text-green-800">
+                                    <div class="flex items-center">
+                                        <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <p class="font-medium">Changes saved successfully!</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Error message -->
+                                <div id="save-error" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-800">
+                                    <div class="flex items-center">
+                                        <svg class="h-5 w-5 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        <p class="font-medium">Error saving changes. Please try again.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
+            
+            <!-- Footer -->
+            <footer class="bg-white border-t border-gray-200 mt-8">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <p class="text-center text-gray-500 text-sm">
+                        Admin Dashboard &copy; 2023-2024
+                    </p>
+                </div>
+            </footer>
         </div>
     </div>
 
@@ -1493,7 +1641,7 @@
             
             // Debug log to see what's in the job_title field
             console.log('Job title from data:', data.job_title);
-            console.log('Company name from data:', data.company);
+            console.log('Company name from data:', data.company_name);
             
             // Create job title field
             const titleLabel = document.createElement('label');
@@ -1514,7 +1662,7 @@
             companyInput.className = 'workex-company';
             companyInput.id = `workex-company-${Date.now()}`; // Unique ID for toolbar
             companyInput.required = true;
-            companyInput.value = data.company || '';
+            companyInput.value = data.company_name || '';
             companyInput.placeholder = 'e.g. Tech Company Inc.';
             
             // Create location field
