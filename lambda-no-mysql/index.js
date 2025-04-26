@@ -1700,7 +1700,7 @@ const handleAdminLogin = async (event) => {
     // In a real application, you would verify against database
     // For this example, use the hard-coded admin credentials
     const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'password123';
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
     
     if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
       return {
