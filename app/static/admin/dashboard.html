@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
@@ -145,7 +149,132 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../js/auth.js"></script>
+    <script>
+        // Inline Auth object - no external dependency
+        const Auth = {
+            // Storage keys
+            TOKEN_KEY: 'admin_token',
+            USER_KEY: 'admin_user',
+            
+            // Token expiration (4 hours in milliseconds)
+            TOKEN_EXPIRY: 4 * 60 * 60 * 1000,
+            
+            /**
+             * Check if the user is authenticated
+             */
+            isAuthenticated() {
+                const token = localStorage.getItem(this.TOKEN_KEY);
+                const user = localStorage.getItem(this.USER_KEY);
+                
+                if (!token || !user) {
+                    return false;
+                }
+                
+                // Check token expiration
+                try {
+                    const userData = JSON.parse(user);
+                    if (userData.expiresAt && new Date(userData.expiresAt) < new Date()) {
+                        this.clearAuth();
+                        return false;
+                    }
+                    return true;
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    return false;
+                }
+            },
+            
+            /**
+             * Get the current user data
+             */
+            getUser() {
+                if (!this.isAuthenticated()) {
+                    return null;
+                }
+                
+                try {
+                    return JSON.parse(localStorage.getItem(this.USER_KEY));
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    return null;
+                }
+            },
+            
+            /**
+             * Clear authentication data
+             */
+            clearAuth() {
+                localStorage.removeItem(this.TOKEN_KEY);
+                localStorage.removeItem(this.USER_KEY);
+            },
+            
+            /**
+             * Log out the current user
+             */
+            logout() {
+                this.clearAuth();
+                this.redirectToLogin();
+            },
+            
+            /**
+             * Redirect to the login page
+             */
+            redirectToLogin() {
+                window.location.href = '/admin-direct/?t=' + Date.now();
+            },
+            
+            /**
+             * Check authentication and update UI
+             */
+            checkAuth() {
+                const authLoading = document.getElementById('auth-loading');
+                const notAuthenticated = document.getElementById('not-authenticated');
+                const dashboardContent = document.getElementById('dashboard-content');
+                const loginRedirectButton = document.getElementById('login-redirect-button');
+                
+                // Check if user is authenticated
+                if (this.isAuthenticated()) {
+                    console.log('User is authenticated');
+                    
+                    // Hide authentication loading and error messages
+                    if (authLoading) authLoading.style.display = 'none';
+                    if (notAuthenticated) notAuthenticated.style.display = 'none';
+                    
+                    // Show dashboard content
+                    if (dashboardContent) dashboardContent.classList.remove('hidden');
+                    
+                    // Display username if element exists
+                    const userData = this.getUser();
+                    const usernameDisplay = document.getElementById('username-display');
+                    if (userData && usernameDisplay) {
+                        usernameDisplay.textContent = userData.username || 'Admin';
+                    }
+                    
+                    return true;
+                } else {
+                    console.log('User is not authenticated');
+                    
+                    // Hide loading indicator
+                    if (authLoading) authLoading.style.display = 'none';
+                    
+                    // Show not authenticated message
+                    if (notAuthenticated) notAuthenticated.style.display = 'flex';
+                    
+                    // Hide dashboard content
+                    if (dashboardContent) dashboardContent.classList.add('hidden');
+                    
+                    // Add event listener to login redirect button
+                    if (loginRedirectButton) {
+                        loginRedirectButton.addEventListener('click', () => {
+                            window.location.href = '/admin-direct/?t=' + Date.now();
+                        });
+                    }
+                    
+                    return false;
+                }
+            }
+        };
+    </script>
     <script>
         // Initialize authentication check
     document.addEventListener('DOMContentLoaded', function() {
@@ -200,10 +329,12 @@
             Auth.checkAuth();
             
             // Set up logout button event listener
-            const logoutButton = document.getElementById('logout-btn');
+            const logoutButton = document.getElementById('logout-button');
             if (logoutButton) {
-                logoutButton.addEventListener('click', Auth.logout.bind(Auth));
-        }
+                logoutButton.addEventListener('click', function() {
+                    Auth.logout();
+                });
+            }
     });
     </script>
 </body>
