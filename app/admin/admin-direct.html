@@ -217,6 +217,23 @@
         function checkAuth() {
             const token = localStorage.getItem('admin_token');
             if (token) {
+                // Check for user data in localStorage (from direct login)
+                const userData = localStorage.getItem('admin_user');
+                if (userData) {
+                    try {
+                        // Parse user data to validate it
+                        JSON.parse(userData);
+                        // Valid user data found
+                        document.getElementById('login-section').style.display = 'none';
+                        document.getElementById('dashboard-section').style.display = 'block';
+                        return;
+                    } catch (error) {
+                        console.error('Error parsing user data:', error);
+                    }
+                }
+                
+                // Token exists but no valid user data
+                // We'll still accept the token as valid
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('dashboard-section').style.display = 'block';
             } else {
