@@ -1999,6 +1999,13 @@ exports.handler = async (event, context) => {
             await saveCertifications(certificationsData, connection);
           }
           
+          // Save the skills data if provided
+          const skillsData = parsedBody.skills || {};
+          if (Object.keys(skillsData).length > 0) {
+            console.log('Updating skills data with:', skillsData);
+            await saveSkillsData(skillsData, connection);
+          }
+          
           // Commit the transaction
           await connection.commit();
           console.log('Transaction committed successfully');
@@ -2207,10 +2214,10 @@ exports.handler = async (event, context) => {
             await saveCertifications(certificationsData, connection);
           }
           
-          // Save skills data if provided
+          // Save the skills data if provided
           const skillsData = parsedBody.skills || {};
           if (Object.keys(skillsData).length > 0) {
-            console.log('Updating skills data');
+            console.log('Updating skills data with:', skillsData);
             await saveSkillsData(skillsData, connection);
           }
           
