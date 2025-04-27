@@ -36,31 +36,144 @@
 }
 
 .key-metric-card {
-    background: linear-gradient(135deg, #f8f4e9 0%, #fff 100%);
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(135deg, rgba(245, 239, 230, 0.9) 0%, rgba(255, 255, 255, 0.95) 100%);
+    border-radius: 12px;
+    padding: 25px 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
     text-align: center;
-    border: 1px solid rgba(163, 133, 102, 0.2);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(122, 107, 95, 0.15);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+}
+
+.key-metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(162, 149, 127, 0.2) 0%, rgba(202, 168, 130, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+    border-radius: 12px;
+}
+
+.key-metric-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(122, 107, 95, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.8);
+    z-index: 0;
+    transition: transform 0.8s ease, opacity 0.8s ease;
 }
 
 .key-metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    border-color: rgba(122, 107, 95, 0.3);
+}
+
+.key-metric-card:hover::before {
+    opacity: 1;
+}
+
+.key-metric-card:hover::after {
+    opacity: 0.8;
+    transform: scale(1);
+    animation: pulse 2s infinite;
 }
 
 .key-metric-value {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 700;
-    color: #6c584c;
-    margin-bottom: 5px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
 .key-metric-name {
-    font-size: 1rem;
-    color: #a38566;
+    font-size: 1.1rem;
+    color: var(--accent-color);
     font-weight: 500;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.key-metric-card:hover .key-metric-value {
+    transform: scale(1.05);
+    color: var(--accent-color);
+}
+
+.key-metric-card:hover .key-metric-name {
+    color: var(--primary-color);
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.9;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+.animate-on-scroll.key-metric-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.animate-on-scroll.key-metric-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Apply cascading animation delay to metrics */
+.key-metrics-grid .animate-on-scroll:nth-child(1) { transition-delay: 0.1s; }
+.key-metrics-grid .animate-on-scroll:nth-child(2) { transition-delay: 0.2s; }
+.key-metrics-grid .animate-on-scroll:nth-child(3) { transition-delay: 0.3s; }
+.key-metrics-grid .animate-on-scroll:nth-child(4) { transition-delay: 0.4s; }
+.key-metrics-grid .animate-on-scroll:nth-child(5) { transition-delay: 0.5s; }
+.key-metrics-grid .animate-on-scroll:nth-child(6) { transition-delay: 0.6s; }
+
+@media screen and (max-width: 768px) {
+    .key-metrics-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .key-metric-card {
+        padding: 20px 15px;
+        min-height: 140px;
+    }
+    
+    .key-metric-value {
+        font-size: 2.4rem;
+    }
+    
+    .key-metric-name {
+        font-size: 1rem;
+    }
 }
 
 /* Skills Proficiency */
