@@ -3714,10 +3714,9 @@
             });
         });
         
-        // Initial state - collapse all subsections except the main ones
-        const subsectionHeaders = document.querySelectorAll('.section-header:not([data-section="site-config"]):not([data-section="work-experience"]):not([data-section="education"]):not([data-section="certifications"]):not([data-section="skills"])');
-        subsectionHeaders.forEach(header => {
-            // Simulate a click to collapse subsections
+        // Initial state - collapse ALL sections by default
+        sectionHeaders.forEach(header => {
+            // Simulate a click to collapse all sections
             header.click();
         });
     }
