@@ -124,34 +124,15 @@ function updateKeyMetrics(keyMetrics) {
     keyMetrics.sort((a, b) => a.display_order - b.display_order);
     
     // Add each key metric
-    keyMetrics.forEach((metric, index) => {
+    keyMetrics.forEach(metric => {
         const metricCard = document.createElement('div');
         metricCard.className = 'key-metric-card animate-on-scroll';
-        
-        // Create a formatter for numbers if metric value is numeric
-        let formattedValue = metric.metric_value;
-        if (!isNaN(parseFloat(metric.metric_value)) && isFinite(metric.metric_value)) {
-            // Apply number formatting for numeric values
-            const numValue = parseFloat(metric.metric_value);
-            formattedValue = numValue >= 1000 ? 
-                numValue.toLocaleString() : 
-                metric.metric_value;
-        }
-        
         metricCard.innerHTML = `
-            <div class="key-metric-value">${formattedValue}</div>
+            <div class="key-metric-value">${metric.metric_value}</div>
             <div class="key-metric-name">${metric.metric_name}</div>
         `;
         container.appendChild(metricCard);
-        
-        // Stagger the animation trigger
-        setTimeout(() => {
-            metricCard.classList.add('visible');
-        }, 100 + (index * 150)); // Increasing delay for each card
     });
-    
-    // Ensure our observer is set up
-    setupAnimations();
 }
 
 /**
@@ -371,29 +352,21 @@ function setupAnimations() {
     if ('IntersectionObserver' in window) {
         const observerOptions = {
             root: null,
-            rootMargin: '0px 0px -50px 0px', // Start animations slightly before elements enter viewport
-            threshold: 0.15
+            rootMargin: '0px',
+            threshold: 0.1
         };
         
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // For key metrics, we already handle animation in updateKeyMetrics
-                    if (!entry.target.classList.contains('key-metric-card')) {
-                        entry.target.classList.add('visible');
-                    }
-                    
-                    // Only unobserve non-key-metric elements or visible key metrics
-                    if (!entry.target.classList.contains('key-metric-card') || 
-                        entry.target.classList.contains('visible')) {
-                        observer.unobserve(entry.target);
-                    }
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
         
         // Observe all elements with the animate-on-scroll class
-        document.querySelectorAll('.animate-on-scroll:not(.key-metric-card.visible)').forEach(el => {
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
             observer.observe(el);
         });
     } else {
@@ -402,23 +375,6 @@ function setupAnimations() {
             el.classList.add('visible');
         });
     }
-    
-    // Add scroll event listener for subtle parallax effect on key metric cards
-    window.addEventListener('scroll', () => {
-        const metricsContainer = document.querySelector('.key-metrics-grid');
-        if (!metricsContainer) return;
-        
-        const scrollY = window.scrollY;
-        const cards = metricsContainer.querySelectorAll('.key-metric-card');
-        
-        // Apply subtle parallax effect to visible cards
-        cards.forEach((card, index) => {
-            if (card.classList.contains('visible')) {
-                const offset = scrollY * 0.05 * (index % 3 + 1) * 0.1;
-                card.style.transform = `translateY(${offset}px) scale(${1 + offset * 0.001})`;
-            }
-        });
-    }, { passive: true }); // Use passive listener for better performance
 }
 
 /**
