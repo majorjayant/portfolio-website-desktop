@@ -338,17 +338,21 @@ async function getWorkExperience() {
 }
 
 // Function to save site configuration to the database
-async function saveSiteConfig(configData) {
-  let connection;
+async function saveSiteConfig(configData, connection) {
+  let shouldCloseConnection = false;
   try {
     // First ensure the table exists
     await ensureTableExists();
     
-    // Create a connection to the database
-    connection = await getConnection();
-    
-    // Start a transaction for atomicity
-    await connection.beginTransaction();
+    // Create a connection if one wasn't provided
+    if (!connection) {
+      connection = await getConnection();
+      await connection.beginTransaction();
+      shouldCloseConnection = true;
+      console.log('Creating new connection for saveSiteConfig');
+    } else {
+      console.log('Using existing connection for saveSiteConfig');
+    }
     
     // Prepare for batch operations
     const updates = [];
@@ -372,10 +376,14 @@ async function saveSiteConfig(configData) {
       }
     }
     
-    // Commit the transaction
-    await connection.commit();
+    // Commit the transaction only if we created it
+    if (shouldCloseConnection) {
+      await connection.commit();
+      console.log('Configuration saved to database successfully (local transaction)');
+    } else {
+      console.log('Configuration saved to database successfully (part of larger transaction)');
+    }
     
-    console.log('Configuration saved to database successfully');
     return {
       success: true,
       message: "Configuration updated successfully"
@@ -383,24 +391,33 @@ async function saveSiteConfig(configData) {
   } catch (error) {
     console.error('Error saving configuration to database:', error);
     
-    // Rollback in case of error
-    if (connection) await connection.rollback();
+    // Rollback in case of error only if we created the transaction
+    if (shouldCloseConnection && connection) {
+      await connection.rollback();
+    }
     
-    return {
-      success: false,
-      message: "Failed to update configuration: " + error.message
-    };
+    throw error; // Propagate the error to the caller for proper transaction handling
   } finally {
-    if (connection) await connection.end();
+    // Close the connection only if we created it
+    if (shouldCloseConnection && connection) {
+      await connection.end();
+    }
   }
 }
 
 // Function to save work experience data (implements soft delete based on payload flag)
-async function saveWorkExperience(workExperienceData) {
-  let connection;
+async function saveWorkExperience(workExperienceData, connection) {
+  let shouldCloseConnection = false;
   try {
-    connection = await getConnection();
-    await connection.beginTransaction();
+    if (!connection) {
+      connection = await getConnection();
+      await connection.beginTransaction();
+      shouldCloseConnection = true;
+      console.log('Creating new connection for saveWorkExperience');
+    } else {
+      console.log('Using existing connection for saveWorkExperience');
+    }
+    
     console.log('Starting transaction to save work experience (soft delete based on payload)...');
 
     const now = new Date();
@@ -455,8 +472,7 @@ async function saveWorkExperience(workExperienceData) {
             console.log(`Inserted new work experience with ID ${newId}`);
         } else {
             console.error("Insert failed to return a valid new ID.");
-            await connection.rollback();
-            return { success: false, message: "Failed to insert new work experience item." };
+            throw new Error("Failed to insert new work experience item.");
         }
       } else {
            // Item has no ID AND is marked deleted - This case shouldn't be sent by the current dashboard logic.
@@ -464,21 +480,32 @@ async function saveWorkExperience(workExperienceData) {
       }
     }
 
-    // Commit all changes (updates, inserts, soft deletes)
-    await connection.commit();
-    console.log('Transaction committed successfully.');
+    // Commit only if we created the transaction
+    if (shouldCloseConnection) {
+      await connection.commit();
+      console.log('Transaction committed successfully (local transaction).');
+    } else {
+      console.log('Work experience updated successfully (part of larger transaction).');
+    }
+    
     return { success: true, message: "Work experience updated successfully" };
 
   } catch (error) {
     console.error('Error in saveWorkExperience function:', error);
-    if (connection) await connection.rollback();
-    console.log('Transaction rolled back due to error.');
-    return { success: false, message: "Failed to update work experience: " + error.message };
+    if (shouldCloseConnection && connection) {
+      try {
+        await connection.rollback();
+        console.log('Transaction rolled back due to error.');
+      } catch (rollbackError) {
+        console.error('Error during rollback:', rollbackError);
+      }
+    }
+    throw error; // Propagate the error to the caller for proper transaction handling
 
   } finally {
-    if (connection) {
-        console.log('Closing database connection.');
-        await connection.end();
+    if (shouldCloseConnection && connection) {
+      console.log('Closing database connection.');
+      await connection.end();
     }
   }
 }
@@ -1816,7 +1843,7 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({
           message: 'Admin API is working correctly',
           timestamp: new Date().toISOString(),
-          lambda_version: '2.1.14',
+          lambda_version: '2.1.15',
           storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
           routing_hint: 'If you are experiencing admin access issues, use the direct access credentials at /admin-direct/'
         })
@@ -1845,7 +1872,7 @@ exports.handler = async (event, context) => {
                 education: education,
                 certifications: certifications,
                 skills: skills,
-                _version: "2.1.14",
+                _version: "2.1.15",
                 from: "query_parameters",
                 timestamp: new Date().toISOString(),
                 storage: "Using MySQL persistent storage with Lambda Proxy Integration"
@@ -1909,7 +1936,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             ...loginResult,
             timestamp: new Date().toISOString(),
-            lambda_version: '2.1.14'
+            lambda_version: '2.1.15'
           })
         };
       }
@@ -1922,7 +1949,7 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({
             success: true,
             message: 'Admin API is accessible',
-            lambda_version: '2.1.14',
+            lambda_version: '2.1.15',
             storage: 'Using MySQL persistent storage with Lambda Proxy Integration',
             timestamp: new Date().toISOString(),
             access_paths: {
@@ -1955,55 +1982,66 @@ exports.handler = async (event, context) => {
           };
         }
         
-        // Extract config data, work experience data, and education data
+        // Extract data to update from the request body
         const configData = parsedBody.site_config || {};
         const workExperienceData = parsedBody.work_experience || [];
         const educationData = parsedBody.education || [];
-        
-        let updateResult = { success: true, message: "No data provided to update" };
+        const certificationsData = parsedBody.certifications || [];
+        const skillsData = parsedBody.skills || {};
         
         // Start a transaction to handle the update
         let connection;
         try {
+          console.log('Starting database transaction for site config update');
           connection = await getConnection();
           await connection.beginTransaction();
           
-          // Ensure tables exist (reusing connection)
+          // Ensure all tables exist (reusing connection)
           await ensureEducationTableExists(connection);
           await ensureCertificationsTableExists(connection);
           await ensureContactsTableExists(connection);
           await ensureSkillsTablesExist(connection);
           
+          // Track if any data is actually saved
+          let hasUpdatedData = false;
+          
           // Save the site configuration data if provided
           if (Object.keys(configData).length > 0) {
             console.log('Updating site configuration with:', configData);
-            await saveSiteConfig(configData);
+            await saveSiteConfig(configData, connection);
+            hasUpdatedData = true;
           }
           
           // Save the work experience data if provided
           if (workExperienceData.length > 0) {
             console.log('Updating work experience with:', workExperienceData);
-            await saveWorkExperience(workExperienceData);
+            await saveWorkExperience(workExperienceData, connection);
+            hasUpdatedData = true;
           }
           
           // Save the education data if provided
           if (educationData.length > 0) {
             console.log('Updating education data with:', educationData);
             await saveEducation(educationData, connection);
+            hasUpdatedData = true;
           }
           
           // Save the certifications data if provided
-          const certificationsData = parsedBody.certifications || [];
           if (certificationsData.length > 0) {
             console.log('Updating certifications data with:', certificationsData);
             await saveCertifications(certificationsData, connection);
+            hasUpdatedData = true;
           }
           
           // Save the skills data if provided
-          const skillsData = parsedBody.skills || {};
           if (Object.keys(skillsData).length > 0) {
             console.log('Updating skills data with:', skillsData);
             await saveSkillsData(skillsData, connection);
+            hasUpdatedData = true;
+          }
+          
+          if (!hasUpdatedData) {
+            console.log('No data was provided to update');
           }
           
           // Commit the transaction
@@ -2015,9 +2053,9 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
               success: true,
-              message: "Updates completed successfully",
+              message: hasUpdatedData ? "Updates completed successfully" : "No data provided to update",
               timestamp: new Date().toISOString(),
-              lambda_version: '2.1.14'
+              lambda_version: '2.1.15'
             })
           };
         } catch (error) {
@@ -2039,13 +2077,14 @@ exports.handler = async (event, context) => {
               success: false,
               message: `Error during update: ${error.message}`,
               timestamp: new Date().toISOString(),
-              lambda_version: '2.1.14'
+              lambda_version: '2.1.15'
             })
           };
         } finally {
           if (connection) {
             try {
               await connection.end();
+              console.log('Database connection closed');
             } catch (connectionError) {
               console.error('Error closing connection:', connectionError);
             }
@@ -2192,13 +2231,13 @@ exports.handler = async (event, context) => {
           // Save the site configuration data if provided
           if (Object.keys(configData).length > 0) {
             console.log('Updating site configuration with:', configData);
-            await saveSiteConfig(configData);
+            await saveSiteConfig(configData, connection);
           }
           
           // Save the work experience data if provided
           if (workExperienceData.length > 0) {
             console.log('Updating work experience with:', workExperienceData);
-            await saveWorkExperience(workExperienceData);
+            await saveWorkExperience(workExperienceData, connection);
           }
           
           // Save the education data if provided
