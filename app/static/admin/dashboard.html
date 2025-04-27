@@ -3202,6 +3202,12 @@
             return data;
         }
         
+        // This function aliases getExpertiseData for better semantic naming consistency
+        function getAreasOfExpertiseData() {
+            console.log('Getting areas of expertise data');
+            return getExpertiseData();
+        }
+        
         function loadExpertiseData(expertiseItems) {
             console.log('Loading expertise data:', expertiseItems);
             
