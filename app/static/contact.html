@@ -1024,12 +1024,14 @@
                     const web3FormsPromise = fetch('https://api.web3forms.com/submit', {
                         method: 'POST',
                         body: web3FormsData
-                    }).then(response => {
+                    })
+                    .then(response => {
                         if (!response.ok) {
                             console.warn('Web3Forms submission had issues:', response.status);
                         }
                         return response.json();
-                    }).catch(error => {
+                    })
+                    .catch(error => {
                         console.error('Web3Forms submission error:', error);
                         // Don't fail the whole submission if just Web3Forms fails
                         return { success: false, message: 'Email notification failed but data was saved' };
